@@ -1,0 +1,11 @@
+
+# object files
+*.o
+
+# codeblocks project files
+*.layout
+*.depend
+
+# executables
+PineconeDbg
+Pinecone
