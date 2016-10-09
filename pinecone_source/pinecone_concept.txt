@@ -1,0 +1,89 @@
+# Programming language concept by Sophie Winter
+# This is not ment to be actual code, just a place to exparament with different ideas of how the language might look
+
+add={a=$ b=$ a+b}
+
+a=7
+b=3
+
+z={sqrt(@)_}
+
+add=z
+
+add(&w &x w+x}, b)
+
+b==3?
+	print("yes")
+:b==4?
+	print("4")
+:{
+	print(z)
+	add()
+}
+
+print(add(a))
+
+max=
+{
+    a,b,c=$
+    a>b && a>c? a
+    : b>c? b
+    : c
+}
+
+max=
+{
+	a,b=$
+	a>b?a:b
+}
+
+
+max: a, b, c
+
+print: "hello world, the numer is " 7
+
+a>b?a,b
+
+car.drive
+
+"hello world".print
+
+7,5.max
+
+b:7
+g:9.81
+
+str:"hello world"
+
+zero:Int
+
+max$:
+{
+	Int: z
+	
+	>.z
+}
+
+$func:
+{
+	a,b:$Dub
+}
+
+func:
+{
+	a:tru
+	b:fls
+	
+	a?
+	(
+		print: "hello"
+		9
+	),(
+	
+	b? print: "world"
+	
+	7)
+}
+
+
+
