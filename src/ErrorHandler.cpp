@@ -34,6 +34,12 @@ string ErrorHandler::priorityToStr(ErrorPriority in)
 	}
 }
 
+void ErrorHandler::log(string msg, ErrorPriority priority)
+{
+	//cout << data.file << ":" << ((data.line<0)?" ":std::to_string(data.line)+": ") << priorityToStr(priority) << ": " << msg << endl;
+	cout << priorityToStr(priority) << ": " << msg << endl;
+}
+
 void ErrorHandler::log(string msg, ElementData data, ErrorPriority priority)
 {
 	//cout << data.file << ":" << ((data.line<0)?" ":std::to_string(data.line)+": ") << priorityToStr(priority) << ": " << msg << endl;

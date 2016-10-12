@@ -17,7 +17,8 @@ public:
 	///	4. if it has a literal, add a class for that in LiteralElement.h
 	/// 5. add the creation of said literal to LiteralElement::makeNew in LiteralElement.cpp
 	///	6. you may have to add logic to initialProgramPopulation or getElementType to correctly capture the section of source containing your type literal
-	///	7. in the future you will have to do more stuff for the transpiler or interpreter
+	///	7. add a class to DataElem.h
+	/// 8. add it to makeNewOfType in DataElem.cpp
 	enum PrimitiveType
 	{
 		UNKNOWN,
@@ -34,6 +35,7 @@ public:
 	static Type getDominant(Type a, Type b);
 	
 	bool isCreatable();
+	bool isVoid();
 	
 	Type() {type=UNKNOWN;}
 	Type(PrimitiveType typeIn) {type=typeIn;}

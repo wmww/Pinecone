@@ -7,6 +7,7 @@
 PineconeParser::PineconeParser()
 {
 	populateCharVectors();
+	populateStandardLibrary();
 }
 
 void PineconeParser::cleanUp()
@@ -47,6 +48,22 @@ void PineconeParser::resolveProgram(bool printOutput)
 	
 	if (printOutput)
 		cout << "resolving done" << endl;
+}
+
+void PineconeParser::populateStandardLibrary()
+{
+	Identifier * ptr;
+	
+	ptr=program.makeIdentifier("print");
+	ptr->addAction(
+			new Action(Type(Type::VOID), Type(Type::VOID), Type(Type::DUB),
+					[](DataElem * left, DataElem * right)->DataElem *
+					{
+						cout << *((double *)right->getData()) << endl;
+						return new VoidData();
+					},
+			"standard library print")
+	);
 }
 
 void PineconeParser::populateCharVectors()

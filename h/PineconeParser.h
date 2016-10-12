@@ -35,6 +35,8 @@ public:
 	
 	void resolveProgram(bool printExtraOutput);
 	
+	void execute() {delete program.execute();}
+	
 	string resolveProgram(string input, string fileIn, bool printExtraOutput=true)
 	{
 		setSource(input);
@@ -46,6 +48,7 @@ public:
 private:
 	
 	void cleanUp();
+	void populateStandardLibrary();
 	void populateCharVectors();
 	void initialProgramPopulation();
 	ElementData::Type getElementType(char c, ElementData::Type previousType);

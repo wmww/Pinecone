@@ -4,6 +4,7 @@
 #include "ElementData.h"
 #include "Type.h"
 #include "IdentifierTable.h"
+#include "DataElem.h"
 
 using std::string;
 
@@ -30,6 +31,8 @@ public:
 	virtual ElementData::Type getElemType()=0;
 	
 	virtual Type getReturnType() {return Type::UNKNOWN;}
+	
+	virtual DataElem * execute()=0;
 	
 	virtual void printToString(string& in, int depth=-1);
 	string printToBoxedString(string name);

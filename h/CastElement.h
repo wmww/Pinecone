@@ -21,7 +21,12 @@ public:
 	
 	Type getReturnType() {return type;}
 	
+	DataElem * execute();
+	
 private:
+	
+	DataElem * castToType(DataElem * ptr, Type type);
+	
 	Type type;
 	
 	Element * input;

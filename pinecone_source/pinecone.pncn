@@ -4,6 +4,6 @@ a: 7
 bc: 32.7
 
 zz: bc
-zz: a
 out: a-(zz-bc)+a
-print: out
+print: 2.7
+

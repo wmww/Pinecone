@@ -23,13 +23,19 @@ int main(int argc, char ** argv)
 	
 	cout << putStringInBox(widapLangSource, inputFilename) << endl;
 	
-	PineconeParser transpiler;
+	PineconeParser parser;
 	
-	string cppSource=transpiler.resolveProgram(widapLangSource, inputFilename, true);
+	string cppSource=parser.resolveProgram(widapLangSource, inputFilename, true);
+	
+	cout << "executing program..." << endl << endl;
+	
+	parser.execute();
+	
+	cout << endl << "all done" << endl;
 	
 	string outputFilename;
 	
-	if (argc>2)
+	/*if (argc>2)
 		outputFilename=string(argv[2]);
 	else
 		outputFilename="output.cpp";
@@ -38,7 +44,7 @@ int main(int argc, char ** argv)
 	
 	cout << putStringInBox(cppSource, outputFilename) << endl;
 	
-	cout << "program done" << endl;
+	cout << "program done" << endl;*/
 	
     return 0;
 }

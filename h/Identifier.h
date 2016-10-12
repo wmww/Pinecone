@@ -1,6 +1,11 @@
 #pragma once
 
 #include "Type.h"
+#include "Action.h"
+
+#include <vector>
+using std::vector;
+
 #include <string>
 using std::string;
 
@@ -10,29 +15,27 @@ class Identifier
 {
 public:
 	
+	~Identifier();
+	
 	string getName() {return name;}
-	//int getId() {return id;}
-	Type getType() {return type;}
+	vector<Action *>& getActions() {return actions;}
+	Action * getAction(int index) {return actions[index];}
+	void addAction(Action * in) {actions.push_back(in);}
 	IdentifierTable * getTable() {return table;}
-	
-	
 	
 protected:
 	
 	friend IdentifierTable;
 	
 	//should only be called from within IdentifierTable
-	Identifier(string nameIn, /*int idIn,*/ Type typeIn, IdentifierTable * tableIn)
+	Identifier(string nameIn, IdentifierTable * tableIn)
 	{
 		name=nameIn;
-		//id=idIn;
-		type=typeIn;
 		table=tableIn;
 	}
 	
 	string name;
-	//int id;
-	Type type={Type::UNKNOWN};
+	vector<Action *> actions;
 	IdentifierTable * table;
 };
 

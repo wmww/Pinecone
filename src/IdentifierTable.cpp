@@ -23,26 +23,10 @@ Identifier * IdentifierTable::getIdentifier(string nameIn)
 	return nullptr;
 }
 
-Identifier * IdentifierTable::getOrMakeIdentifier(string nameIn, Type type)
+Identifier * IdentifierTable::makeIdentifier(string nameIn)
 {
-	Identifier * ptr=getIdentifier(nameIn);
-	
-	if (ptr)
-	{
-		if (ptr->getType()==type)
-		{
-			return ptr;
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-	else
-	{
-		identifiers.push_back(Identifier(nameIn, /*identifiers.size(),*/ type, this));
-		return &identifiers.back();
-	}
+	identifiers.push_back(Identifier(nameIn, this));
+	return &identifiers.back();
 }
 
 void IdentifierTable::clear()

@@ -19,6 +19,7 @@ public:
 	
 	static string priorityToStr(ErrorPriority in);
 	
+	void log(string msg, ErrorPriority priority);
 	void log(string msg, ElementData data, ErrorPriority priority);
 	
 	void msg(string in);

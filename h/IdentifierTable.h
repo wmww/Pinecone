@@ -14,7 +14,11 @@ public:
 	IdentifierTable(IdentifierTable * parentIn=nullptr) {parent=parentIn;}
 	
 	Identifier * getIdentifier(string nameIn);
-	Identifier * getOrMakeIdentifier(string nameIn, Type type);
+	
+	//you MUST be sure the same identifier doesn't already exist
+	Identifier * makeIdentifier(string nameIn);
+	
+	//Identifier * getOrMakeIdentifier(string nameIn);
 	
 	void clear();
 	

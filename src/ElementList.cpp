@@ -228,6 +228,23 @@ void ElementList::resolveIdentifiers()
 	}
 }
 
+DataElem * ElementList::execute()
+{
+	if (elems.size()!=1)
+	{
+		for (auto i=elems.begin(); i!=elems.end(); ++i)
+		{
+			delete (*i)->execute();
+		}
+		
+		return new VoidData();
+	}
+	else
+	{
+		return elems.back()->execute();
+	}
+}
+
 void ElementList::printToString(string& in, int depth)
 {
 	if (depth<0)

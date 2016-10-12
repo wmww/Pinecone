@@ -72,10 +72,15 @@ bool Type::isCreatable()
 	}
 	else
 	{
-		error.log("Type::isCreatable not implemented for type " + toString(type), ElementData(), INTERNAL_ERROR);
+		error.log("Type::isCreatable not implemented for type " + toString(type), INTERNAL_ERROR);
 	}
 	
 	return false;
+}
+
+bool Type::isVoid()
+{
+	return type==VOID;
 }
 
 Type Type::getDominant(Type a, Type b)
@@ -111,7 +116,7 @@ bool Type::operator==(const Type& other)
 {
 	/*if (type==NONE || other.type==NONE)
 	{
-		error.log("tried to compare a Type of type NONE, I think this is bad but I'm not really sure.", ElementData(), INTERNAL_ERROR);
+		error.log("tried to compare a Type of type NONE, I think this is bad but I'm not really sure.", INTERNAL_ERROR);
 		return false;
 	}
 	else */
