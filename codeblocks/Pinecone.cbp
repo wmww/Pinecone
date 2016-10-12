@@ -32,7 +32,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/CastElement.h" />
+		<Unit filename="../h/DataElem.h" />
 		<Unit filename="../h/Element.h" />
 		<Unit filename="../h/ElementData.h" />
 		<Unit filename="../h/ElementList.h" />
@@ -47,7 +49,9 @@
 		<Unit filename="../h/msclStringFuncs.h" />
 		<Unit filename="../pinecone_source/pinecone.pncn" />
 		<Unit filename="../pinecone_source/pinecone_concept.txt" />
+		<Unit filename="../src/Action.cpp" />
 		<Unit filename="../src/CastElement.cpp" />
+		<Unit filename="../src/DataElem.cpp" />
 		<Unit filename="../src/Element.cpp" />
 		<Unit filename="../src/ElementData.cpp" />
 		<Unit filename="../src/ElementList.cpp" />

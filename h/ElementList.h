@@ -21,6 +21,8 @@ public:
 	
 	string getReadableName() {return "element list";}
 	
+	Identifier * makeIdentifier(string name) {return table.makeIdentifier(name);}
+	
 	Type getReturnType();	
 	
 	void structureByOperators();
@@ -36,6 +38,8 @@ public:
 	void appendElement(Element * in);
 	
 	ElementData::Type getElemType() {return ElementData::SCOPE;}
+	
+	DataElem * execute();
 	
 	void clear();
 	

@@ -47,6 +47,8 @@ public:
 	
 	OpType getType() {return opType;}
 	
+	DataElem * execute();
+	
 private:
 	
 	OpType opType;

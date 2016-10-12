@@ -23,6 +23,8 @@ public:
 	
 	Type getReturnType() {return Type::INT;}
 	
+	DataElem * execute() {return new IntData(val);}
+	
 private:
 	int val=0;
 };
@@ -36,6 +38,8 @@ public:
 	
 	Type getReturnType() {return Type::DUB;}
 	
+	DataElem * execute() {return new DubData(val);}
+	
 private:
 	double val=0;
 };
@@ -48,6 +52,8 @@ public:
 	BoolLiteral(ElementData dataIn, bool in): LiteralElement(dataIn) {val=in;}
 	
 	Type getReturnType() {return Type::BOOL;}
+	
+	DataElem * execute() {return new BoolData(val);}
 	
 private:
 	bool val=0;

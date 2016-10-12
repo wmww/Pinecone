@@ -13,17 +13,24 @@ public:
 	
 	string getReadableName();
 	
-	void resolveIdentifiers(IdentifierTable& table);
+	void resolveIdentifiers(IdentifierTable& table) {resolveIdentifiers(table, Type(Type::VOID), Type(Type::VOID));}
+	
+	void resolveIdentifiers(IdentifierTable& table, Type leftType, Type rightType);
 	
 	ElementData::Type getElemType() {return ElementData::IDENTIFIER;}
 	
 	Type getReturnType();
 	
-	Identifier * getIdentifier() {return ptr;}
-	void setIdentifier(Identifier * in) {ptr=in;}
+	//Identifier * getIdentifier() {return ptr;}
+	//void setIdentifier(Identifier * in) {ptr=in;}
+	
+	DataElem * execute();
+	
+	DataElem * execute(DataElem * left, DataElem * right);
 	
 private:
-	Identifier * ptr=nullptr;
+	//Identifier * ptr=nullptr;
+	Action * action=nullptr; //the index of the action in the identifier
 	IdentifierElement(ElementData dataIn): Element(dataIn) {}
 	//IdentifierElement(ElementData data, Identifier * ptrIn): Element(data) {ptr=ptrIn;}
 };

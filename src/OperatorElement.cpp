@@ -42,64 +42,144 @@ OperatorElement * OperatorElement::makeNew(ElementData dataIn)
 
 void OperatorElement::resolveIdentifiers(IdentifierTable& table)
 {
-	if (leftInput)
-		leftInput->resolveIdentifiers(table);
-	
 	if (rightInput)
 		rightInput->resolveIdentifiers(table);
 	
 	if (opType==COLON)
 	{
-		if (leftInput && rightInput && leftInput->getElemType()==ElementData::IDENTIFIER)
+		if (leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
-			Identifier * id=((IdentifierElement *)(leftInput))->getIdentifier();
-			
-			if (id)
+			((IdentifierElement *)leftInput)->resolveIdentifiers(table, Type(Type::VOID), rightInput->getReturnType());
+			returnType=rightInput->getReturnType();
+		}
+		else
+		{
+			error.log("only an identifier can be assigned a value", data, SOURCE_ERROR);
+		}
+	}
+	else
+	{
+		if (leftInput)
+			leftInput->resolveIdentifiers(table);
+		
+		if (opType==PLUS || opType==MINUS)
+		{
+			if (leftInput && rightInput)
 			{
-				if (!id->getType().exactlyEquals(rightInput->getReturnType()))
-				{
-					rightInput=new CastElement(rightInput->getData(), id->getType(), rightInput);
-				}
-			}
-			else
-			{
-				Type rightType=rightInput->getReturnType();
+				returnType=Type::getDominant(leftInput->getReturnType(), rightInput->getReturnType());
 				
-				if (rightType.isCreatable())
-				{
-					Identifier * ptr=table.getOrMakeIdentifier(leftInput->getData().text, rightType);
-					
-					if (ptr)
-					{
-						((IdentifierElement *)(leftInput))->setIdentifier(ptr);
-					}
-					else
-					{
-						error.log("cannot create identifier '" + leftInput->getData().text + "'",
-									leftInput->getData(), SOURCE_ERROR);
-					}
-				}
-				else
-				{
-					error.log("cannot create identifier '" + leftInput->getData().text + "' due to invalid type " + rightType.toString(),
-								rightInput->getData(), SOURCE_ERROR);
-				}
+				if (!leftInput->getReturnType().exactlyEquals(returnType))
+					leftInput=new CastElement(leftInput->getData(), returnType, leftInput);
+				
+				if (!rightInput->getReturnType().exactlyEquals(returnType))
+					rightInput=new CastElement(rightInput->getData(), returnType, rightInput);
 			}
 		}
-		
-		returnType=leftInput->getReturnType();
 	}
-	else if (opType==PLUS || opType==MINUS)
+}
+
+DataElem * OperatorElement::execute()
+{
+	if (opType==COLON)
 	{
-		if (leftInput && rightInput)
+		if (leftInput && rightInput && leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
-			returnType=Type::getDominant(leftInput->getReturnType(), rightInput->getReturnType());
+			DataElem * right=rightInput->execute();
+			DataElem * left=new VoidData();
+			DataElem * out=((IdentifierElement *)leftInput)->execute(left, right);
+			delete right;
+			delete left;
+			return out;
+		}
+		else
+		{
+			error.log("can only assign an identifier an input", data, INTERNAL_ERROR);
+			return DataElem::makeNewOfType(returnType);
+		}
+	}
+	else
+	{
+		DataElem * leftIn, * rightIn;
+		
+		if (leftInput)
+			leftIn=leftInput->execute();
+		else
+			leftIn=new VoidData();
+		
+		if (rightInput)
+			rightIn=rightInput->execute();
+		else
+			rightIn=new VoidData();
+		
+		
+		switch (returnType.getType())
+		{
+			case Type::BOOL:
+			{
+				bool left=*((bool *)leftIn->getData());
+				bool right=*((bool *)rightIn->getData());
+				delete leftIn;
+				delete rightIn;
+				
+				switch (opType)
+				{
+					case PLUS:
+						return new BoolData(left || right);
+					
+					case MINUS:
+						return new BoolData(left!=right);
+						
+					default:
+						error.log("problem executing unimplemented type " + toString(opType), data, INTERNAL_ERROR);
+						return new BoolData();
+				}
+			}
 			
-			if (!leftInput->getReturnType().exactlyEquals(returnType))
-				leftInput=new CastElement(leftInput->getData(), returnType, leftInput);
+			case Type::INT:
+			{
+				int left=*((int *)leftIn->getData());
+				int right=*((int *)rightIn->getData());
+				delete leftIn;
+				delete rightIn;
+				
+				switch (opType)
+				{
+					case PLUS:
+						return new IntData(left+right);
+					
+					case MINUS:
+						return new IntData(left+right);
+						
+					default:
+						error.log("problem executing unimplemented type " + toString(opType), data, INTERNAL_ERROR);
+						return new IntData();
+				}
+			}
 			
-			if (!rightInput->getReturnType().exactlyEquals(returnType))
-				rightInput=new CastElement(rightInput->getData(), returnType, rightInput);
+			case Type::DUB:
+			{
+				double left=*((double *)leftIn->getData());
+				double right=*((double *)rightIn->getData());
+				delete leftIn;
+				delete rightIn;
+				
+				switch (opType)
+				{
+					case PLUS:
+						return new DubData(left || right);
+					
+					case MINUS:
+						return new DubData(left!=right);
+						
+					default:
+						error.log("problem executing unimplemented operator " + toString(opType), data, INTERNAL_ERROR);
+						return new DubData();
+				}
+			}
+			
+			default:
+				error.log(string() + "problem using unimplemented type " + returnType.toString(), data, INTERNAL_ERROR);
+				return DataElem::makeNewOfType(returnType);
 		}
 	}
 }
