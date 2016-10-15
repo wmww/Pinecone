@@ -16,7 +16,7 @@ using std::vector;
 using std::list;
 
 #include "msclStringFuncs.h"
-#include "IdentifierTable.h"
+#include "ActionTable.h"
 #include "ElementData.h"
 #include "ElementList.h"
 

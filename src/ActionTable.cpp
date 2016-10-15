@@ -1,5 +1,4 @@
-#include "../h/IdentifierTable.h"
-#include "../h/Identifier.h"
+#include "../h/ActionTable.h"
 #include "../h/ErrorHandler.h"
 
 void ActionTable::clear()
