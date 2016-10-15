@@ -13,46 +13,31 @@ IdentifierElement * IdentifierElement::makeNew(ElementData dataIn)
 string IdentifierElement::getReadableName()
 {
 	if (action)
-		return action->getName() + " (" + action->getInLeftType().toString() + "." + action->getReturnType().toString() + ": " + action->getInRightType().toString() + ")";
+		return action->getDescription() + " (" + action->getInLeftType().toString() + "." + action->getReturnType().toString() + ":" + action->getInRightType().toString() + ")";
 	else
 		return data.text + " [unresolved]";
 }
 
-void IdentifierElement::resolveIdentifiers(IdentifierTable& table, Type leftType, Type rightType)
+void IdentifierElement::resolveIdentifiers(ActionTable& table, Type leftType, Type rightType)
 {
-	Identifier * ptr=table.getIdentifier(data.text);
-	
-	if (!ptr)
-	{
-		if (rightType.isCreatable() && leftType.exactlyEquals(Type(Type::VOID)))
-		{
-			ptr=table.makeIdentifier(data.text);
-			ptr->addAction(new VarGetAction(DataElem::makeNewOfType(rightType), data.text));
-			action=new VarSetAction(DataElem::makeNewOfType(rightType), data.text);
-			ptr->addAction(action);
-		}
-		else
-		{
-			error.log("cannot create identifier " + data.text, data, SOURCE_ERROR);
-		}
-	}
-	else
-	{
-		for (auto i=ptr->getActions().begin(); i!=ptr->getActions().end(); ++i)
-		{
-			if (
-				leftType.exactlyEquals((*i)->getInLeftType()) &&
-				rightType.exactlyEquals((*i)->getInRightType()))
-			{
-				action=*i;
-				break;;
-			}
-		}
-	}
+	//Identifier * ptr=table.getIdentifier(data.text);
+	action=table.getBestAction(data, leftType, rightType);
 	
 	if (!action)
 	{
-		error.log(string() + "could not find proper overload for " + data.text, data, SOURCE_ERROR);
+		if (rightType.isCreatable() && leftType.exactlyEquals(Type(Type::VOID)))
+		{
+			void* value = rightType.createVoidPtr();
+			Action * getAction = new VarGetAction(value, rightType, data.text);
+			Action * setAction = new VarSetAction(value, rightType, data.text);
+			action = setAction;
+			table.addAction(getAction);
+			table.addAction(setAction);
+		}
+		else
+		{
+			error.log(string() + "could not find proper overload for " + data.text, data, SOURCE_ERROR);
+		}
 	}
 }
 
@@ -68,23 +53,12 @@ Type IdentifierElement::getReturnType()
 	}
 }
 
-DataElem * IdentifierElement::execute()
+void* IdentifierElement::execute()
 {
-	if (action && action->getInLeftType().isVoid() && action->getInRightType().isVoid())
-	{
-		DataElem * in=new VoidData();
-		DataElem * out=execute(in, in);
-		delete in;
-		return out;
-	}
-	else
-	{
-		error.log(string() + "bad call of " + __FUNCTION__, data, INTERNAL_ERROR);
-		return DataElem::makeNewOfType(getReturnType());
-	}
+	return execute(nullptr, nullptr);
 }
 
-DataElem * IdentifierElement::execute(DataElem * left, DataElem * right)
+void* IdentifierElement::execute(void* left, void* right)
 {
 	if (action)
 	{
@@ -92,7 +66,8 @@ DataElem * IdentifierElement::execute(DataElem * left, DataElem * right)
 	}
 	else
 	{
-		return DataElem::makeNewOfType(getReturnType());
+		error.log(string() + __FUNCTION__ + " called while action is null", data, INTERNAL_ERROR);
+		return nullptr;
 	}
 }
 

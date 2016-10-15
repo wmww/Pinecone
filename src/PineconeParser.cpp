@@ -12,23 +12,11 @@ PineconeParser::PineconeParser()
 
 void PineconeParser::cleanUp()
 {
-	/*
-	for (auto i=rawElementList.begin(); i!=rawElementList.end(); ++i)
-	{
-		delete *i;
-	}
-	
-	rawElementList.clear();
-	*/
-	
 	program.clear();
 }
 
 void PineconeParser::resolveProgram(bool printOutput)
 {
-	if (printOutput)
-		cout << "resolving..." << endl;
-	
 	initialProgramPopulation();
 	
 	if (printOutput)
@@ -43,26 +31,46 @@ void PineconeParser::resolveProgram(bool printOutput)
 	
 	if (printOutput)
 		cout << endl << program.printToBoxedString("identifiers resolved") << endl;
-	
-	//outCpp=inSource;
-	
-	if (printOutput)
-		cout << "resolving done" << endl;
 }
 
 void PineconeParser::populateStandardLibrary()
 {
-	Identifier * ptr;
+	//Identifier * ptr;
 	
-	ptr=program.makeIdentifier("print");
-	ptr->addAction(
-			new Action(Type(Type::VOID), Type(Type::VOID), Type(Type::DUB),
-					[](DataElem * left, DataElem * right)->DataElem *
-					{
-						cout << *((double *)right->getData()) << endl;
-						return new VoidData();
-					},
-			"standard library print")
+	program.addAction
+	(
+		new LambdaAction
+		(
+			Type(Type::VOID),
+			
+			[](void* left, void* right)->void*
+			{
+				cout << *(double*)right << endl;
+				return nullptr;
+			},
+			
+			Type(Type::VOID), Type(Type::DUB),
+			
+			"print"
+		)
+	);
+	
+	program.addAction
+	(
+		new LambdaAction
+		(
+			Type(Type::VOID),
+			
+			[](void* left, void* right)->void*
+			{
+				cout << *(int*)right << endl;
+				return nullptr;
+			},
+			
+			Type(Type::VOID), Type(Type::INT),
+			
+			"print"
+		)
 	);
 }
 
@@ -104,6 +112,11 @@ void PineconeParser::populateCharVectors()
 	operatorChars.push_back('.');
 	operatorChars.push_back('(');
 	operatorChars.push_back(')');
+	
+	
+	///comments
+	
+	singleLineComment='#';
 }
 
 void PineconeParser::initialProgramPopulation()
@@ -119,7 +132,7 @@ void PineconeParser::initialProgramPopulation()
 		
 		if (newType!=type || type==ElementData::OPERATOR)
 		{
-			if (!elemTxt.empty())
+			if (!elemTxt.empty() && type!=ElementData::COMMENT)
 			{
 				ElementData data=ElementData(elemTxt, inFileName, line, type);
 				Element * elem=makeElement(data);
@@ -148,6 +161,19 @@ void PineconeParser::initialProgramPopulation()
 ElementData::Type PineconeParser::getElementType(char c, ElementData::Type previousType)
 {
 	//if (previousType==COMMENT && c!='\n')
+	
+	if (previousType==ElementData::COMMENT)
+	{
+		if (c=='\n')
+			return ElementData::WHITESPACE;
+		else
+			return ElementData::COMMENT;
+	}
+	
+	if (c==singleLineComment)
+	{
+		return ElementData::COMMENT;
+	}
 	
 	for (auto i=whitespaceChars.begin(); i<whitespaceChars.end(); ++i)
 	{

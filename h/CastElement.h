@@ -13,7 +13,7 @@ public:
 	
 	string getReadableName() {return string() + "cast to " + type.toString();}
 	
-	void resolveIdentifiers(IdentifierTable& table) {if (input) input->resolveIdentifiers(table);}
+	void resolveIdentifiers(ActionTable& table) {if (input) input->resolveIdentifiers(table);}
 	
 	void printToString(string& in, int depth=0);
 	
@@ -21,11 +21,11 @@ public:
 	
 	Type getReturnType() {return type;}
 	
-	DataElem * execute();
+	void* execute();
 	
 private:
 	
-	DataElem * castToType(DataElem * ptr, Type type);
+	//void* castToType(void* ptr, Type typeIn, Type typeOut);
 	
 	Type type;
 	

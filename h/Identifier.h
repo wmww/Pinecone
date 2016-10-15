@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #include "Type.h"
 #include "Action.h"
 
@@ -38,4 +39,4 @@ protected:
 	vector<Action *> actions;
 	IdentifierTable * table;
 };
-
+*/

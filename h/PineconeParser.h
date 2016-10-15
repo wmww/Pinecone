@@ -35,7 +35,7 @@ public:
 	
 	void resolveProgram(bool printExtraOutput);
 	
-	void execute() {delete program.execute();}
+	void execute() {program.getReturnType().deleteVoidPtr(program.execute());}
 	
 	string resolveProgram(string input, string fileIn, bool printExtraOutput=true)
 	{
@@ -63,5 +63,6 @@ private:
 	string outCpp;
 	
 	vector<char> whitespaceChars, letterChars, digitChars, operatorChars;
+	char singleLineComment;
 };
 

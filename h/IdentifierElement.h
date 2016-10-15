@@ -13,9 +13,9 @@ public:
 	
 	string getReadableName();
 	
-	void resolveIdentifiers(IdentifierTable& table) {resolveIdentifiers(table, Type(Type::VOID), Type(Type::VOID));}
+	void resolveIdentifiers(ActionTable& table) {resolveIdentifiers(table, Type(Type::VOID), Type(Type::VOID));}
 	
-	void resolveIdentifiers(IdentifierTable& table, Type leftType, Type rightType);
+	void resolveIdentifiers(ActionTable& table, Type leftType, Type rightType);
 	
 	ElementData::Type getElemType() {return ElementData::IDENTIFIER;}
 	
@@ -24,9 +24,9 @@ public:
 	//Identifier * getIdentifier() {return ptr;}
 	//void setIdentifier(Identifier * in) {ptr=in;}
 	
-	DataElem * execute();
+	void* execute();
 	
-	DataElem * execute(DataElem * left, DataElem * right);
+	void* execute(void* left, void* right);
 	
 private:
 	//Identifier * ptr=nullptr;

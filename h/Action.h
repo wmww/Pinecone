@@ -4,36 +4,44 @@
 #include "DataElem.h"
 #include "functional"
 
+using std::to_string;
+using std::function;
+
 class Action
 {
 public:
 	
-	Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, std::function<DataElem *(DataElem *, DataElem *)> lambdaIn, string nameIn)
+	Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
 	{
-		name=nameIn;
+		text=textIn;
 		returnType=returnTypeIn;
 		inLeftType=inLeftTypeIn;
 		inRightType=inRightTypeIn;
-		lambda=lambdaIn;
 	}
 	
 	virtual ~Action() {}
 	
-	string getName() {return name;}
+	void setLambda(std::function<void*(void*, void*)> lambdaIn) {lambda=lambdaIn;}
+	void setDescription(string in) {description=in;}
+	
+	string getText() {return text;}
+	string getDescription() {return description;}
 	
 	Type& getReturnType() {return returnType;};
 	Type& getInLeftType() {return inLeftType;};
 	Type& getInRightType() {return inRightType;}
-	DataElem * execute(DataElem * inLeft, DataElem * inRight);
+	//void* execute(void* inLeft, void* inRight);
+	virtual void* execute(void* inLeft, void* inRight)=0;
 	
 protected:
 	
-	string name;
+	string text;
 	
 	Type returnType;
 	Type inLeftType;
 	Type inRightType;
-	std::function<DataElem *(DataElem *, DataElem *)> lambda;
+	string description;
+	std::function<void*(void*, void*)> lambda;
 	//virtual DataElem * privateExecute(DataElem * inLeft, DataElem * inRight)=0;
 };
 
@@ -42,21 +50,24 @@ class VarGetAction: public Action
 {
 public:
 	
-	VarGetAction(DataElem * in, string nameIn):
-		Action(in->getType(), Type(Type::VOID), Type(Type::VOID),
-				[this](DataElem*, DataElem*)
-				{
-					return data->clone();
-				}, "get '" + nameIn + "'")
+	VarGetAction(void* in, Type typeIn, string textIn):
+		Action(typeIn, Type(Type::VOID), Type(Type::VOID), textIn)
 	{
 		data=in;
+		
+		setDescription("get '" + textIn + "'");
 	}
 	
-	~VarGetAction() {delete data;}
+	void* execute(void* inLeft, void* inRight)
+	{
+		return returnType.cloneVoidPtr(data);
+	}
+	
+	~VarGetAction() {returnType.deleteVoidPtr(data);}
 	
 private:
 	
-	DataElem * data;
+	void* data;
 };
 
 //an action for setting a variable, will NOT delete the data element in destructor
@@ -64,19 +75,41 @@ class VarSetAction: public Action
 {
 public:
 	
-	VarSetAction(DataElem * in, string nameIn):
-		Action(Type(Type::VOID), Type(Type::VOID), in->getType(),
-				[this](DataElem* left, DataElem* right)
-				{
-					data->setData(right->getData());
-					return new VoidData();
-				}, "set '" + nameIn + "'")
+	VarSetAction(void* in, Type typeIn, string textIn):
+		Action(typeIn, Type(Type::VOID), typeIn, textIn)
 	{
 		data=in;
+		
+		setDescription("set '" + textIn + "'");
+	}
+	
+	void* execute(void* left, void* right)
+	{
+		returnType.setVoidPtr(data, right);
+		return returnType.cloneVoidPtr(data);
 	}
 	
 private:
 	
-	DataElem * data;
+	void* data;
+};
+
+class LambdaAction: public Action
+{
+public:
+	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
+		:Action(returnTypeIn, inLeftTypeIn, inRightTypeIn, textIn)
+	{
+		lambda=lambdaIn;
+		setDescription(text + " (lambda action)");
+	}
+	
+	void* execute(void* inLeft, void* inRight)
+	{
+		return lambda(inLeft, inRight);
+	}
+	
+private:
+	function<void*(void*,void*)> lambda;
 };
 
