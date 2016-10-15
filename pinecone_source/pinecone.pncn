@@ -1,9 +1,5 @@
-
-
-a: 2.5
-b: 3
-
-c: a-(b-2)
-
-print: c
-
+	a: 7.5          # init a as a Dub
+	b: 4            # init b as an Int
+	var: a+b        # init var as a Dub to value 11.5
+	var: var-(b-2)  # set var to 9.5
+	print: var      # print 9.5 to stdout
