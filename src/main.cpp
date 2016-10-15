@@ -19,15 +19,13 @@ int main(int argc, char ** argv)
 	
 	string widapLangSource=loadEntireFile(inputFilename, true);
 	
-	cout << "file contents:" << endl;
-	
-	cout << putStringInBox(widapLangSource, inputFilename) << endl;
+	cout << endl << putStringInBox(widapLangSource, inputFilename) << endl;
 	
 	PineconeParser parser;
 	
 	string cppSource=parser.resolveProgram(widapLangSource, inputFilename, true);
 	
-	cout << "executing program..." << endl << endl;
+	cout << endl << "executing program..." << endl << endl;
 	
 	parser.execute();
 	

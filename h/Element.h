@@ -19,7 +19,7 @@ public:
 	
 	virtual ~Element()=default;
 	
-	virtual void resolveIdentifiers(IdentifierTable& table) {}
+	virtual void resolveIdentifiers(ActionTable& table) {}
 	
 	virtual string getReadableName()
 	{
@@ -32,7 +32,7 @@ public:
 	
 	virtual Type getReturnType() {return Type::UNKNOWN;}
 	
-	virtual DataElem * execute()=0;
+	virtual void* execute()=0;
 	
 	virtual void printToString(string& in, int depth=-1);
 	string printToBoxedString(string name);

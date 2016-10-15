@@ -1,9 +1,9 @@
 
 
-a: 7
-bc: 32.7
+a: 2.5
+b: 3
 
-zz: bc
-out: a-(zz-bc)+a
-print: 2.7
+c: a-(b-2)
+
+print: c
 

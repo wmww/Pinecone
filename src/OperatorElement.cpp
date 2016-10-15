@@ -40,7 +40,7 @@ OperatorElement * OperatorElement::makeNew(ElementData dataIn)
 	}
 }
 
-void OperatorElement::resolveIdentifiers(IdentifierTable& table)
+void OperatorElement::resolveIdentifiers(ActionTable& table)
 {
 	if (rightInput)
 		rightInput->resolveIdentifiers(table);
@@ -78,109 +78,113 @@ void OperatorElement::resolveIdentifiers(IdentifierTable& table)
 	}
 }
 
-DataElem * OperatorElement::execute()
+void* OperatorElement::execute()
 {
 	if (opType==COLON)
 	{
 		if (leftInput && rightInput && leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
-			DataElem * right=rightInput->execute();
-			DataElem * left=new VoidData();
-			DataElem * out=((IdentifierElement *)leftInput)->execute(left, right);
-			delete right;
-			delete left;
+			void* right=rightInput->execute();
+			void* out=((IdentifierElement*)leftInput)->execute(nullptr, right);
+			rightInput->getReturnType().deleteVoidPtr(right);
 			return out;
 		}
 		else
 		{
 			error.log("can only assign an identifier an input", data, INTERNAL_ERROR);
-			return DataElem::makeNewOfType(returnType);
+			return nullptr;
 		}
 	}
 	else
 	{
-		DataElem * leftIn, * rightIn;
+		void* leftIn=nullptr;
+		void* rightIn=nullptr;
+		void* out=nullptr;
 		
 		if (leftInput)
 			leftIn=leftInput->execute();
-		else
-			leftIn=new VoidData();
 		
 		if (rightInput)
 			rightIn=rightInput->execute();
-		else
-			rightIn=new VoidData();
-		
 		
 		switch (returnType.getType())
 		{
 			case Type::BOOL:
 			{
-				bool left=*((bool *)leftIn->getData());
-				bool right=*((bool *)rightIn->getData());
-				delete leftIn;
-				delete rightIn;
+				bool left=*((bool *)leftIn);
+				bool right=*((bool *)rightIn);
 				
 				switch (opType)
 				{
 					case PLUS:
-						return new BoolData(left || right);
+						out=new bool(left || right);
+						break;
 					
 					case MINUS:
-						return new BoolData(left!=right);
+						out=new bool(left!=right);
+						break;
 						
 					default:
-						error.log("problem executing unimplemented type " + toString(opType), data, INTERNAL_ERROR);
-						return new BoolData();
+						error.log("problem executing unimplemented type " + toString(opType) + " with type " + getReturnType().toString(), data, INTERNAL_ERROR);
+						break;
 				}
 			}
+			break;
 			
 			case Type::INT:
 			{
-				int left=*((int *)leftIn->getData());
-				int right=*((int *)rightIn->getData());
-				delete leftIn;
-				delete rightIn;
+				int left=*((int *)leftIn);
+				int right=*((int *)rightIn);
 				
 				switch (opType)
 				{
 					case PLUS:
-						return new IntData(left+right);
-					
+						out=new int(left+right);
+						break;
+						
 					case MINUS:
-						return new IntData(left+right);
+						out=new int(left-right);
+						break;
 						
 					default:
-						error.log("problem executing unimplemented type " + toString(opType), data, INTERNAL_ERROR);
-						return new IntData();
+						error.log("problem executing unimplemented type " + toString(opType) + " with type " + getReturnType().toString(), data, INTERNAL_ERROR);
+						break;
+						
 				}
 			}
+			break;
 			
 			case Type::DUB:
 			{
-				double left=*((double *)leftIn->getData());
-				double right=*((double *)rightIn->getData());
-				delete leftIn;
-				delete rightIn;
+				double left=*((double *)leftIn);
+				double right=*((double *)rightIn);
 				
 				switch (opType)
 				{
 					case PLUS:
-						return new DubData(left || right);
+						out=new double(left+right);
+						break;
 					
 					case MINUS:
-						return new DubData(left!=right);
+						out=new double(left-right);
+						break;
 						
 					default:
-						error.log("problem executing unimplemented operator " + toString(opType), data, INTERNAL_ERROR);
-						return new DubData();
+						error.log("problem executing unimplemented operator " + toString(opType) + " with type " + getReturnType().toString(), data, INTERNAL_ERROR);
+						break;
 				}
 			}
+			break;
 			
 			default:
 				error.log(string() + "problem using unimplemented type " + returnType.toString(), data, INTERNAL_ERROR);
-				return DataElem::makeNewOfType(returnType);
+				break;
 		}
+		
+		leftInput->getReturnType().deleteVoidPtr(leftIn);
+		rightInput->getReturnType().deleteVoidPtr(rightIn);
+		
+		return out;
 	}
 }
 
@@ -188,10 +192,10 @@ string OperatorElement::toString(OpType in)
 {
 	switch (in)
 	{
-		case DOT: return "_._";
-		case PLUS: return "_+_";
-		case MINUS: return "_-_";
-		case COLON: return "_:_";
+		case DOT: return ".";
+		case PLUS: return "+";
+		case MINUS: return "-";
+		case COLON: return ":";
 		case OPEN: return "(...";
 		case CLOSE: return "...)";
 		default: return "UNKNOWN_OPERATOR";

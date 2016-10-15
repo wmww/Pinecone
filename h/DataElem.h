@@ -1,9 +1,10 @@
 #pragma once
-
+/*
 #include "Type.h"
 #include <vector>
 
 using std::vector;
+using std::to_string;
 
 class DataElem
 {
@@ -15,11 +16,13 @@ public:
 	
 	virtual Type getType()=0;
 	
-	virtual void * getData()=0;
+	virtual void* getData()=0;
 	
-	virtual void setData(void * in)=0;
+	virtual void setData(void* in)=0;
 	
 	virtual DataElem * clone()=0;
+	
+	virtual string toString()=0;
 };
 
 class StructData: public DataElem
@@ -33,13 +36,15 @@ public:
 	
 	Type getType() {return Type(Type::STRUCT);}
 	
-	void * getData() {return &subData;}
+	void* getData() {return &subData;}
 	
-	void setData(void * in);
+	void setData(void* in);
 	
 	DataElem * clone();
 	
 	void addSubData(DataElem * in) {subData.push_back(in);}
+	
+	string toString();
 	
 private:
 	
@@ -52,11 +57,13 @@ public:
 	
 	Type getType() {return Type(Type::VOID);}
 	
-	void * getData() {return nullptr;}
+	void* getData() {return nullptr;}
 	
-	void setData(void * in) {}
+	void setData(void* in) {}
 	
 	DataElem * clone() {return new VoidData();}
+	
+	string toString() {return "VOID";}
 };
 
 class BoolData: public DataElem
@@ -68,11 +75,13 @@ public:
 	
 	Type getType() {return Type(Type::BOOL);}
 	
-	void * getData() {return &data;}
+	void* getData() {return &data;}
 	
-	void setData(void * in) {data=*((bool*)in);}
+	void setData(void* in) {data=*((bool*)in);}
 	
 	DataElem * clone() {return new BoolData(data);}
+	
+	string toString() {return to_string(data);}
 	
 private:
 	
@@ -88,11 +97,13 @@ public:
 	
 	Type getType() {return Type(Type::INT);}
 	
-	void * getData() {return &data;}
+	void* getData() {return &data;}
 	
-	void setData(void * in) {data=*((int*)in);}
+	void setData(void* in) {data=*((int*)in);}
 	
 	DataElem * clone() {return new IntData(data);}
+	
+	string toString() {return to_string(data);}
 	
 private:
 	
@@ -108,14 +119,16 @@ public:
 	
 	Type getType() {return Type(Type::DUB);}
 	
-	void * getData() {return &data;}
+	void* getData() {return &data;}
 	
-	void setData(void * in) {data=*((double*)in);}
+	void setData(void* in) {data=*((double*)in);}
 	
 	DataElem * clone() {return new DubData(data);}
+	
+	string toString() {return to_string(data);}
 	
 private:
 	
 	double data;
 };
-
+*/

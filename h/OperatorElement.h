@@ -29,11 +29,11 @@ public:
 	
 	static string toString(OpType);
 	
-	string getReadableName() {return toString(opType);}
+	string getReadableName() {return toString(opType) + " (" + returnType.toString() + ")";}
 	
 	Type getReturnType() {return returnType;}
 	
-	void resolveIdentifiers(IdentifierTable& table);
+	void resolveIdentifiers(ActionTable& table);
 	
 	void printToString(string& in, int depth=0);
 	//using Element::printToString;
@@ -47,7 +47,7 @@ public:
 	
 	OpType getType() {return opType;}
 	
-	DataElem * execute();
+	void* execute();
 	
 private:
 	

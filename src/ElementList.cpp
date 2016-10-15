@@ -8,7 +8,7 @@ ElementList::ElementList(ElementData dataIn, ElementList * parent): Element(data
 {
 	if (parent)
 	{
-		table=IdentifierTable(&(parent->table));
+		table=ActionTable(&(parent->table));
 	}
 }
 
@@ -228,16 +228,16 @@ void ElementList::resolveIdentifiers()
 	}
 }
 
-DataElem * ElementList::execute()
+void* ElementList::execute()
 {
 	if (elems.size()!=1)
 	{
 		for (auto i=elems.begin(); i!=elems.end(); ++i)
 		{
-			delete (*i)->execute();
+			(*i)->getReturnType().deleteVoidPtr((*i)->execute());
 		}
 		
-		return new VoidData();
+		return nullptr;
 	}
 	else
 	{

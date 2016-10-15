@@ -161,3 +161,157 @@ bool Type::exactlyEquals(const Type& other)
 	}
 }
 
+void* Type::createVoidPtr()
+{
+	switch (type)
+	{
+		case BOOL: return new bool(false);
+		case INT: return new int(0);
+		case DUB: return new double(0.0);
+		case VOID: return nullptr;
+		
+		case STRUCT:
+		case UNKNOWN:
+		default:
+			error.log("tried to create uncreatable type " + toString(), INTERNAL_ERROR);
+			return nullptr;
+	}
+
+}
+
+void Type::deleteVoidPtr(void* ptr)
+{
+	if (ptr)
+	{
+		switch (type)
+		{
+			case BOOL: delete ((bool*)ptr); break;
+			case INT: delete ((int*)ptr); break;
+			case DUB: delete ((double*)ptr); break;
+			case VOID: break;
+			
+			case STRUCT:
+			case UNKNOWN:
+			default:
+				error.log("tried to delete undeletable type " + toString(), INTERNAL_ERROR);
+				break;
+		}
+	}
+}
+
+void Type::setVoidPtr(void* ptr, void* in)
+{
+	if (ptr)
+	{
+		switch (type)
+		{
+			case BOOL: *((bool*)ptr)=*((bool*)in); break;
+			case INT: *((int*)ptr)=*((int*)in); break;
+			case DUB: *((double*)ptr)=*((double*)in); break;
+			case VOID: break;
+			
+			case STRUCT:
+			case UNKNOWN:
+			default:
+				error.log("tried to delete undeletable type " + toString(), INTERNAL_ERROR);
+				break;
+		}
+	}
+}
+
+void* Type::cloneVoidPtr(void* ptr)
+{
+	if (ptr)
+	{
+		switch (type)
+		{
+			case BOOL: return new bool(*((bool*)ptr));
+			case INT: return new int(*((int*)ptr));
+			case DUB: return new double(*((double*)ptr));
+			case VOID: return nullptr;
+			
+			case STRUCT:
+			case UNKNOWN:
+			default:
+				error.log("tried to clone unclonable type " + toString(), INTERNAL_ERROR);
+				return nullptr;
+		}
+	}
+	else
+		return nullptr;
+}
+
+void* Type::castVoidPtr(void* ptr, Type typeOut)
+{
+	if (ptr)
+	{
+		if (type==BOOL)
+		{
+			bool var=*((bool*)ptr);
+			
+			if (typeOut==BOOL)
+				return new bool(var);
+			else if (typeOut==INT)
+				return new int(var?1:0);
+			else if (typeOut==DUB)
+				return new double(var?1.0:0.0);
+			else
+				return nullptr;
+		}
+		else if (type==INT)
+		{
+			int var=*((int*)ptr);
+			
+			if (typeOut==BOOL)
+				return new bool(var!=0);
+			else if (typeOut==INT)
+				return new int(var);
+			else if (typeOut==DUB)
+				return new double((double)var);
+			else
+				return nullptr;
+		}
+		else if (type==DUB)
+		{
+			double var=*((double *)ptr);
+			
+			if (typeOut==BOOL)
+				return new bool(var!=0);
+			else if (typeOut==INT)
+				return new int((int)var);
+			else if (typeOut==DUB)
+				return new double(var);
+			else
+				return nullptr;
+		}
+		else if (type==STRUCT)
+		{
+			return nullptr;
+			
+			/*//vector<DataElem *> var=*((vector<DataElem *>)ptr->getData());
+			
+			if (type==Type::BOOL)
+				return new BoolData(var!=0);
+			else if (type==Type::INT)
+				return new IntData((int)var);
+			else if (type==Type::DUB)
+				return new DubData(var);
+			else
+				return new VoidData();
+			
+			delete ptr;*/
+		}
+		else if (type==Type::VOID)
+		{
+			return nullptr;
+		}
+		else
+		{
+			error.log("unknown type " + toString() + " in CastElement::castToType", INTERNAL_ERROR);
+			return nullptr;
+		}
+	}
+	else
+		return nullptr;
+}
+

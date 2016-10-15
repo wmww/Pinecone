@@ -1,16 +1,14 @@
 #include "../h/Action.h"
 #include "../h/ErrorHandler.h"
 
-DataElem * Action::execute(DataElem * inLeft, DataElem * inRight)
+/*
+void* Action::execute(void* inLeft, void* inRight)
 {
-	if (inLeft->getType().exactlyEquals(getInLeftType()) && inRight->getType().exactlyEquals(getInRightType()))
-	{
-		return lambda(inLeft, inRight);		
-	}
-	else
-	{
-		error.log(string() + __FUNCTION__ + " sent incorrect types", INTERNAL_ERROR);
-		return new VoidData();
-	}
+	void* out=lambda(inLeft, inRight);		
+	
+	//error.log(text + " called, input and result: '" + inLeft->toString() + "'.'" + out->toString() + "':'" + inRight->toString() + "'", JSYK);
+	
+	return out;
 }
+*/
 

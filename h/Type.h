@@ -47,6 +47,12 @@ public:
 	bool operator==(const Type& other);
 	bool exactlyEquals(const Type& other);
 	
+	void* createVoidPtr();
+	void* cloneVoidPtr(void* ptr);
+	void* castVoidPtr(void* ptr, Type typeOut);
+	void setVoidPtr(void* ptr, void* in);
+	void deleteVoidPtr(void* ptr);
+	
 private:
 	
 	PrimitiveType type;

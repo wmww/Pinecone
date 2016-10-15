@@ -21,14 +21,14 @@ public:
 	
 	string getReadableName() {return "element list";}
 	
-	Identifier * makeIdentifier(string name) {return table.makeIdentifier(name);}
+	//Identifier * makeIdentifier(string name) {return table.makeIdentifier(name);}
 	
 	Type getReturnType();	
 	
 	void structureByOperators();
 	
 	void resolveIdentifiers();
-	void resolveIdentifiers(IdentifierTable& table) {resolveIdentifiers();}
+	void resolveIdentifiers(ActionTable& table) {resolveIdentifiers();}
 	
 	void absorbForOperators(vector<OperatorElement::OpType> operators);
 	
@@ -37,9 +37,11 @@ public:
 	
 	void appendElement(Element * in);
 	
+	void addAction(Action * in) {table.addAction(in);}
+	
 	ElementData::Type getElemType() {return ElementData::SCOPE;}
 	
-	DataElem * execute();
+	void* execute();
 	
 	void clear();
 	
@@ -47,6 +49,6 @@ private:
 	
 	list<Element *> elems;
 	
-	IdentifierTable table;
+	ActionTable table;
 };
 

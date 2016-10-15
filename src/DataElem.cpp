@@ -1,3 +1,4 @@
+/*
 #include "../h/DataElem.h"
 #include "../h/ErrorHandler.h"
 
@@ -39,7 +40,7 @@ StructData::~StructData()
 		delete *i;
 }
 
-void StructData::setData(void * in)
+void StructData::setData(void* in)
 {
 	vector<DataElem *> * ary=((vector<DataElem *> *)in);
 	subData.clear();
@@ -57,3 +58,25 @@ DataElem * StructData::clone()
 	return ptr;
 }
 
+string StructData::toString()
+{
+	string out="(";
+	
+	auto i=subData.begin();
+	
+	while (i!=subData.end())
+	{
+		out+=(*i)->toString();
+		++i;
+		if (i!=subData.end())
+			out+=", ";
+	}
+	
+	out+=")";
+	
+	return out;
+}
+
+
+
+*/
