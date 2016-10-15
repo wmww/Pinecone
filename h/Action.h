@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Type.h"
-#include "DataElem.h"
 #include "functional"
 
 using std::to_string;

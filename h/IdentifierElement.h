@@ -2,7 +2,7 @@
 
 #include "Element.h"
 #include "Type.h"
-#include "IdentifierTable.h"
+#include "ActionTable.h"
 
 class IdentifierElement: public Element
 {

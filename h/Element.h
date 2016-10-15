@@ -3,8 +3,7 @@
 #include <string>
 #include "ElementData.h"
 #include "Type.h"
-#include "IdentifierTable.h"
-#include "DataElem.h"
+#include "ActionTable.h"
 
 using std::string;
 

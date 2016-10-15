@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="PineconeDbg" prefix_auto="1" extension_auto="1" />
-				<Option object_output="/home/william/c++/Pinecone/.objs" />
+				<Option output="../PineconeDbg" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -16,8 +16,8 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="Pinecone" prefix_auto="1" extension_auto="1" />
-				<Option object_output="/home/william/c++/Pinecone/.objs" />
+				<Option output="../PineconeBin" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -30,18 +30,17 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="../h/Action.h" />
+		<Unit filename="../h/ActionTable.h" />
 		<Unit filename="../h/CastElement.h" />
-		<Unit filename="../h/DataElem.h" />
 		<Unit filename="../h/Element.h" />
 		<Unit filename="../h/ElementData.h" />
 		<Unit filename="../h/ElementList.h" />
 		<Unit filename="../h/ErrorHandler.h" />
-		<Unit filename="../h/Identifier.h" />
 		<Unit filename="../h/IdentifierElement.h" />
-		<Unit filename="../h/IdentifierTable.h" />
 		<Unit filename="../h/LiteralElement.h" />
 		<Unit filename="../h/OperatorElement.h" />
 		<Unit filename="../h/PineconeParser.h" />
@@ -50,15 +49,13 @@
 		<Unit filename="../pinecone_source/pinecone.pncn" />
 		<Unit filename="../pinecone_source/pinecone_concept.txt" />
 		<Unit filename="../src/Action.cpp" />
+		<Unit filename="../src/ActionTable.cpp" />
 		<Unit filename="../src/CastElement.cpp" />
-		<Unit filename="../src/DataElem.cpp" />
 		<Unit filename="../src/Element.cpp" />
 		<Unit filename="../src/ElementData.cpp" />
 		<Unit filename="../src/ElementList.cpp" />
 		<Unit filename="../src/ErrorHandler.cpp" />
-		<Unit filename="../src/Identifier.cpp" />
 		<Unit filename="../src/IdentifierElement.cpp" />
-		<Unit filename="../src/IdentifierTable.cpp" />
 		<Unit filename="../src/LiteralElement.cpp" />
 		<Unit filename="../src/OperatorElement.cpp" />
 		<Unit filename="../src/PineconeParser.cpp" />

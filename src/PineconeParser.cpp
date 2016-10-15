@@ -45,6 +45,24 @@ void PineconeParser::populateStandardLibrary()
 			
 			[](void* left, void* right)->void*
 			{
+				cout << *(bool*)right << endl;
+				return nullptr;
+			},
+			
+			Type(Type::VOID), Type(Type::BOOL),
+			
+			"print"
+		)
+	);
+	
+	program.addAction
+	(
+		new LambdaAction
+		(
+			Type(Type::VOID),
+			
+			[](void* left, void* right)->void*
+			{
 				cout << *(double*)right << endl;
 				return nullptr;
 			},
