@@ -7,13 +7,28 @@ using std::to_string;
 class LiteralElement: public Element
 {
 public:
-	LiteralElement(ElementData dataIn): Element(dataIn) {}
+	LiteralElement(void* valIn, Type typeIn, ElementData dataIn): Element(dataIn)
+	{
+		type=typeIn;
+		val=type.cloneVoidPtr(valIn);
+	}
 	
-	static LiteralElement * makeNew(ElementData dataIn);
+	static ElementPtr makeNew(ElementData dataIn);
+	
+	Type getReturnType() {return type;}
+	
+	string getReadableName() {return data.toString() + " (Int literal)";}
+	
+	ActionPtr resolveActions(ActionTablePtr table);
 	
 	ElementData::Type getElemType() {return ElementData::LITERAL;}
+	
+private:
+	Type type;
+	void* val;
 };
 
+/*
 class IntLiteral: public LiteralElement
 {
 public:
@@ -60,3 +75,4 @@ private:
 };
 
 
+*/

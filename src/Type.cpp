@@ -83,6 +83,30 @@ bool Type::isVoid()
 	return type==VOID;
 }
 
+size_t Type::getSize()
+{
+	switch (type)
+	{
+		case VOID: return 0;
+		case BOOL: return sizeof(bool);
+		case INT: return sizeof(int);
+		case DUB: return sizeof(double);
+		
+		case STRUCT:
+		{
+			size_t sum=0;
+			for (unsigned i=0; i<types.size(); ++i)
+				sum+=types[i].getSize();
+			return sum;
+		}
+			
+		case UNKNOWN:
+		default:
+			error.log("tried to get size of " + toString(), INTERNAL_ERROR);
+			return 0;
+	}
+}
+
 Type Type::getDominant(Type a, Type b)
 {
 	if ((a.getType()==STRUCT) != (b.getType()==STRUCT))

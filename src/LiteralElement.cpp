@@ -3,7 +3,7 @@
 #include "../h/ErrorHandler.h"
 #include "../h/Type.h"
 
-LiteralElement * LiteralElement::makeNew(ElementData dataIn)
+ElementPtr LiteralElement::makeNew(ElementData dataIn)
 {
 	string& in=dataIn.text;
 	
@@ -66,11 +66,13 @@ LiteralElement * LiteralElement::makeNew(ElementData dataIn)
 		
 		if (type==Type::BOOL)
 		{
-			return new BoolLiteral(dataIn, val!=0);
+			bool out=(val!=0);
+			return ElementPtr(new LiteralElement(&out, Type(Type::BOOL), dataIn));
 		}
 		else
 		{
-			return new IntLiteral(dataIn, val);
+			int out=val;
+			return ElementPtr(new LiteralElement(&out, Type(Type::INT), dataIn));
 		}
 	}
 	else if (type==Type::DUB) //floating point
@@ -111,7 +113,8 @@ LiteralElement * LiteralElement::makeNew(ElementData dataIn)
 			}
 		}
 		
-		return new DubLiteral(dataIn, val);
+		double out=val;
+		return ElementPtr(new LiteralElement(&out, Type(Type::DUB), dataIn));
 	}
 	else
 	{
@@ -120,3 +123,7 @@ LiteralElement * LiteralElement::makeNew(ElementData dataIn)
 	}
 }
 
+ActionPtr LiteralElement::resolveActions(ActionTablePtr table)
+{
+	return ActionPtr(new LiteralGetAction(type.cloneVoidPtr(val), type, data.text));
+}

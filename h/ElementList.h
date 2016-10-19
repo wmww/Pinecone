@@ -6,6 +6,7 @@
 
 using std::list;
 using std::vector;
+using std::unique_ptr;
 
 #include "OperatorElement.h"
 
@@ -15,7 +16,7 @@ class ElementList: public Element
 {
 public:
 	
-	ElementList(ElementData dataIn, ElementList * parent=nullptr);
+	ElementList(ElementData dataIn, StackFrame * frame);
 	
 	~ElementList() {clear();}
 	
@@ -23,21 +24,21 @@ public:
 	
 	//Identifier * makeIdentifier(string name) {return table.makeIdentifier(name);}
 	
-	Type getReturnType();	
+	Type getReturnType();
 	
 	void structureByOperators();
 	
-	void resolveIdentifiers();
-	void resolveIdentifiers(ActionTable& table) {resolveIdentifiers();}
+	ActionPtr resolveActions();
+	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions();}
 	
-	void absorbForOperators(vector<OperatorElement::OpType> operators);
+	void absorbForOperators(vector<OperatorType> operators);
 	
 	void printToString(string& in, int depth);
 	using Element::printToString;
 	
-	void appendElement(Element * in);
+	void appendElement(ElementPtr in);
 	
-	void addAction(Action * in) {table.addAction(in);}
+	ActionTablePtr getActionTable() {return table;}
 	
 	ElementData::Type getElemType() {return ElementData::SCOPE;}
 	
@@ -47,8 +48,8 @@ public:
 	
 private:
 	
-	list<Element *> elems;
+	list<ElementPtr> elems;
 	
-	ActionTable table;
+	ActionTablePtr table;
 };
 

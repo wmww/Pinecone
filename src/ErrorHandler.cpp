@@ -28,6 +28,10 @@ string ErrorHandler::priorityToStr(ErrorPriority in)
 		return "internal error";
 		break;
 		
+	case RUNTIME_ERROR:
+		return "runtime error";
+		break;
+		
 	default:
 		return "unknown priority level";
 		break;

@@ -3,25 +3,19 @@
 
 void ActionTable::clear()
 {
-	for (auto i=actions.begin(); i!=actions.end(); ++i)
-	{
-		delete *i;
-	}
-	
 	actions.clear();
 }
 
-Action * ActionTable::getBestAction(ElementData data, Type leftIn, Type rightIn)
+ActionPtr ActionTable::getBestAction(ElementData data, Type leftIn, Type rightIn)
 {
-	list<Action *> matches;
+	list<ActionPtr> matches;
 	
 	addActionsToList(matches, data.text);
 	
 	return resolveOverload(matches, leftIn, rightIn);
 }
 
-
-void ActionTable::addActionsToList(list<Action *>& matches, string& text)
+void ActionTable::addActionsToList(list<ActionPtr>& matches, string& text)
 {
 	for (auto i=actions.begin(); i!=actions.end(); ++i)
 	{
@@ -33,10 +27,33 @@ void ActionTable::addActionsToList(list<Action *>& matches, string& text)
 		parent->addActionsToList(matches, text);
 }
 
-Action * ActionTable::resolveOverload(list<Action *>& in, Type leftIn, Type rightIn)
+ActionPtr ActionTable::getBestAction(OperatorType opType, Type leftIn, Type rightIn)
 {
-	//Action * closeMatch=nullptr;
-	Action * exactMatch=nullptr;
+	if (opType<0 || opType>OP_TYPE_OVERRIDEABLE_LAST)
+	{
+		error.log(string() + __FUNCTION__ + " sent invalid opType", INTERNAL_ERROR);
+		return nullptr;
+	}
+	
+	list<ActionPtr> matches;
+	
+	addActionsToList(matches, opType);
+	
+	return resolveOverload(matches, leftIn, rightIn);
+}
+
+void ActionTable::addActionsToList(list<ActionPtr>& in, OperatorType opType)
+{
+	in.insert(in.end(), operators[opType].begin(), operators[opType].end());
+	
+	if (parent)
+		parent->addActionsToList(in, opType);
+}
+
+ActionPtr ActionTable::resolveOverload(list<ActionPtr>& in, Type leftIn, Type rightIn)
+{
+	//ActionPtr closeMatch=nullptr;
+	ActionPtr exactMatch=nullptr;
 	
 	for (auto i=in.begin(); i!=in.end(); ++i)
 	{

@@ -4,53 +4,67 @@
 #include "../h/IdentifierElement.h"
 #include "../h/CastElement.h"
 
-OperatorElement::~OperatorElement()
-{
-	if (leftInput)
-		delete leftInput;
-	
-	if (rightInput)
-		delete rightInput;
-}
-
-OperatorElement * OperatorElement::makeNew(ElementData dataIn)
+ElementPtr OperatorElement::makeNew(ElementData dataIn)
 {
 	if (dataIn.text==".")
-		return new OperatorElement(dataIn, DOT);
+		return ElementPtr(new OperatorElement(dataIn, OP_DOT));
 	
 	if (dataIn.text==":")
-		return new OperatorElement(dataIn, COLON);
+		return ElementPtr(new OperatorElement(dataIn, OP_COLON));
 	
 	else if (dataIn.text=="+")
-		return new OperatorElement(dataIn, PLUS);
+		return ElementPtr(new OperatorElement(dataIn, OP_PLUS));
 		
 	else if (dataIn.text=="-")
-		return new OperatorElement(dataIn, MINUS);
+		return ElementPtr(new OperatorElement(dataIn, OP_MINUS));
 	
 	else if (dataIn.text=="(")
-		return new OperatorElement(dataIn, OPEN);
+		return ElementPtr(new OperatorElement(dataIn, OP_OPEN));
 	
 	else if (dataIn.text==")")
-		return new OperatorElement(dataIn, CLOSE);
+		return ElementPtr(new OperatorElement(dataIn, OP_CLOSE));
 	
 	else
 	{
 		error.log("unknown operator '" + dataIn.text + "'", dataIn, SOURCE_ERROR);
-		return nullptr;
+		return ElementPtr(nullptr);
 	}
 }
 
-void OperatorElement::resolveIdentifiers(ActionTable& table)
+ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 {
+	ActionPtr leftAction, rightAction;
+	
+	if (leftInput)
+		leftAction=leftInput->resolveActions(table);
+	else
+		leftAction=ActionPtr(new VoidAction());
+	
 	if (rightInput)
-		rightInput->resolveIdentifiers(table);
+		rightAction=rightInput->resolveActions(table);
+	else
+		rightAction=ActionPtr(new VoidAction());
+	
+	ActionPtr out=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
+	
+	if (!out)
+	{
+		error.log("couldn't find overload for " + toString(opType) + " that takes " + leftAction->getReturnType().toString() + " and " + rightAction->getReturnType().toString(), data, SOURCE_ERROR);
+		return ActionPtr(new VoidAction());
+	}
+	else
+	{
+		return out;
+	}
+	
+	/*if (rightInput)
+		rightInput->resolveActions(table);
 	
 	if (opType==COLON)
 	{
 		if (leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
-			((IdentifierElement *)leftInput)->resolveIdentifiers(table, Type(Type::VOID), rightInput->getReturnType());
-			returnType=rightInput->getReturnType();
+			((IdentifierElement *)&(*leftInput))->resolveActions(table, Type(Type::VOID), rightInput->getReturnType());
 		}
 		else
 		{
@@ -60,26 +74,44 @@ void OperatorElement::resolveIdentifiers(ActionTable& table)
 	else
 	{
 		if (leftInput)
-			leftInput->resolveIdentifiers(table);
-		
-		if (opType==PLUS || opType==MINUS)
-		{
-			if (leftInput && rightInput)
-			{
-				returnType=Type::getDominant(leftInput->getReturnType(), rightInput->getReturnType());
-				
-				if (!leftInput->getReturnType().exactlyEquals(returnType))
-					leftInput=new CastElement(leftInput->getData(), returnType, leftInput);
-				
-				if (!rightInput->getReturnType().exactlyEquals(returnType))
-					rightInput=new CastElement(rightInput->getData(), returnType, rightInput);
-			}
-		}
+			leftInput->resolveActions(table);
 	}
+	
+	action=table->getBestAction(data, leftInput?leftInput->getReturnType():Type(), rightInput?rightInput->getReturnType():Type());
+	
+	if (!action)
+	{
+		error.log(string() + "could not find proper overload for " + data.text, data, SOURCE_ERROR);
+	}
+	else
+	{
+		if (leftInput && !leftInput->getReturnType().exactlyEquals(action->getReturnType()))
+			leftInput=new CastElement(leftInput->getData(), action->getReturnType(), leftInput);
+		
+		if (rightInput && !rightInput->getReturnType().exactlyEquals(action->getReturnType()))
+			rightInput=new CastElement(rightInput->getData(), action->getReturnType(), rightInput);
+	}*/
+	
 }
 
+/*
 void* OperatorElement::execute()
 {
+	if (action)
+	{
+		void* leftData=leftInput?leftInput->execute():nullptr;
+		void* rightDate=rightInput?rightInput->execute():nullptr;
+		void* out=action->execute(leftData, rightDate);
+		if (leftInput) leftInput->getReturnType().deleteVoidPtr(leftData);
+		if (rightInput) rightInput->getReturnType().deleteVoidPtr(rightDate);
+		return out;
+	}
+	else
+	{
+		error.log(string() + __FUNCTION__ + " called while action is null", data, INTERNAL_ERROR);
+		return nullptr;
+	}
+	
 	if (opType==COLON)
 	{
 		if (leftInput && rightInput && leftInput->getElemType()==ElementData::IDENTIFIER)
@@ -187,17 +219,18 @@ void* OperatorElement::execute()
 		return out;
 	}
 }
+*/
 
-string OperatorElement::toString(OpType in)
+string OperatorElement::toString(OperatorType in)
 {
 	switch (in)
 	{
-		case DOT: return ".";
-		case PLUS: return "+";
-		case MINUS: return "-";
-		case COLON: return ":";
-		case OPEN: return "(...";
-		case CLOSE: return "...)";
+		case OP_DOT: return ".";
+		case OP_PLUS: return "+";
+		case OP_MINUS: return "-";
+		case OP_COLON: return ":";
+		case OP_OPEN: return "(...";
+		case OP_CLOSE: return "...)";
 		default: return "UNKNOWN_OPERATOR";
 	}
 }

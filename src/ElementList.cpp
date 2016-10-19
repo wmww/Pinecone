@@ -3,28 +3,23 @@
 #include "../h/OperatorElement.h"
 #include "../h/LiteralElement.h"
 #include "../h/ErrorHandler.h"
+#include "../h/ListAction.h"
 
-ElementList::ElementList(ElementData dataIn, ElementList * parent): Element(dataIn)
+ElementList::ElementList(ElementData dataIn, StackFrame * frame): Element(dataIn)
 {
-	if (parent)
-	{
-		table=ActionTable(&(parent->table));
-	}
+	table=std::unique_ptr<ActionTable>(new ActionTable(frame));
 }
 
-void ElementList::appendElement(Element * in)
+void ElementList::appendElement(ElementPtr in)
 {
 	elems.push_back(in);
 }
 
 void ElementList::clear()
 {
-	for (auto i=elems.begin(); i!=elems.end(); ++i)
-		delete (*i);
-	
 	elems.clear();
 	
-	table.clear();
+	table->clear();
 }
 
 Type ElementList::getReturnType()
@@ -47,18 +42,17 @@ void ElementList::structureByOperators()
 	{
 		if ((*i)->getElemType()==ElementData::OPERATOR)
 		{
-			OperatorElement::OpType type=((OperatorElement *)(*i))->getType();
+			OperatorType type=((OperatorElement *)&(**i))->getType();
 			
-			if (type==OperatorElement::CLOSE)
+			if (type==OP_CLOSE)
 			{
 				error.log("extra closing parentheses", (*i)->getData(), SOURCE_ERROR);
 			}
 			
-			else if (type==OperatorElement::OPEN)
+			else if (type==OP_OPEN)
 			{
 				int openNum=1;
 				
-				delete *i;
 				i=elems.erase(i);
 				
 				auto j=i;
@@ -73,12 +67,12 @@ void ElementList::structureByOperators()
 					
 					if ((*j)->getElemType()==ElementData::OPERATOR)
 					{
-						OperatorElement::OpType type=((OperatorElement *)(*j))->getType();
-						if (type==OperatorElement::OPEN)
+						OperatorType type=((OperatorElement *)&(**j))->getType();
+						if (type==OP_OPEN)
 						{
 							++openNum;
 						}
-						else if (type==OperatorElement::CLOSE)
+						else if (type==OP_CLOSE)
 						{
 							--openNum;
 							
@@ -86,7 +80,6 @@ void ElementList::structureByOperators()
 							{
 								if (j==i)
 									++i;
-								delete *j;
 								j=elems.erase(j);
 								break;
 							}
@@ -96,7 +89,7 @@ void ElementList::structureByOperators()
 					++j;
 				}
 				
-				ElementList * subList=new ElementList((*i)->getData(), this);
+				shared_ptr<ElementList> subList(new ElementList((*i)->getData(), table->getStackFrame()));
 				
 				auto k=i;
 				
@@ -113,7 +106,7 @@ void ElementList::structureByOperators()
 				subList->structureByOperators();
 			}
 			
-			else if (type==OperatorElement::DOT)
+			else if (type==OP_DOT)
 			{
 				auto j=i;
 				
@@ -165,26 +158,26 @@ void ElementList::structureByOperators()
 		}
 	}
 	
-	vector<OperatorElement::OpType> opTypes;
+	vector<OperatorType> opTypes;
 	
-	opTypes.push_back(OperatorElement::PLUS);
-	opTypes.push_back(OperatorElement::MINUS);
+	opTypes.push_back(OP_PLUS);
+	opTypes.push_back(OP_MINUS);
 	absorbForOperators(opTypes);
 	opTypes.clear();
 	
-	opTypes.push_back(OperatorElement::COLON);
+	opTypes.push_back(OP_COLON);
 	absorbForOperators(opTypes);
 	opTypes.clear();
 	
 }
 
-void ElementList::absorbForOperators(vector<OperatorElement::OpType> operators)
+void ElementList::absorbForOperators(vector<OperatorType> operators)
 {
 	for (auto i=elems.begin(); i!=elems.end(); ++i)
 	{
 		if ((*i)->getElemType()==ElementData::OPERATOR)
 		{
-			OperatorElement::OpType type=((OperatorElement *)(*i))->getType();
+			OperatorType type=((OperatorElement *)&(**i))->getType();
 			
 			for (auto l=operators.begin(); l!=operators.end(); ++l)
 			{
@@ -206,8 +199,8 @@ void ElementList::absorbForOperators(vector<OperatorElement::OpType> operators)
 					{
 						--j;
 						
-						((OperatorElement *)(*i))->setLeftInput(*j);
-						((OperatorElement *)(*i))->setRightInput(*k);
+						((OperatorElement *)&(**i))->setLeftInput(*j);
+						((OperatorElement *)&(**i))->setRightInput(*k);
 						
 						elems.erase(j);
 						elems.erase(k);
@@ -220,14 +213,19 @@ void ElementList::absorbForOperators(vector<OperatorElement::OpType> operators)
 	}
 }
 
-void ElementList::resolveIdentifiers()
+ActionPtr ElementList::resolveActions()
 {
+	list<ActionPtr> data;
+	
 	for (auto i=elems.begin(); i!=elems.end(); ++i)
 	{
-		(*i)->resolveIdentifiers(table);
+		data.push_back((*i)->resolveActions(table));
 	}
+	
+	return ActionPtr(new ListAction(data));
 }
 
+/*
 void* ElementList::execute()
 {
 	if (elems.size()!=1)
@@ -244,6 +242,7 @@ void* ElementList::execute()
 		return elems.back()->execute();
 	}
 }
+*/
 
 void ElementList::printToString(string& in, int depth)
 {

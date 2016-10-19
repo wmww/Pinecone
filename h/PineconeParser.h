@@ -19,6 +19,8 @@ using std::list;
 #include "ActionTable.h"
 #include "ElementData.h"
 #include "ElementList.h"
+#include "FunctionAction.h"
+#include "StackFrame.h"
 
 class Element;
 
@@ -35,7 +37,9 @@ public:
 	
 	void resolveProgram(bool printExtraOutput);
 	
-	void execute() {program.getReturnType().deleteVoidPtr(program.execute());}
+	ActionTablePtr getGlobalActionTable();
+	
+	void execute();
 	
 	string resolveProgram(string input, string fileIn, bool printExtraOutput=true)
 	{
@@ -52,11 +56,11 @@ private:
 	void populateCharVectors();
 	void initialProgramPopulation();
 	ElementData::Type getElementType(char c, ElementData::Type previousType);
-	Element * makeElement(ElementData data);
+	ElementPtr makeElement(ElementData data);
 	
 private:
 	
-	ElementList program={ElementData("", "UNKNOWN_FILE", 0, ElementData::SCOPE)};
+	StackFrame globalFrame;
 	
 	string inFileName;
 	string inSource;
