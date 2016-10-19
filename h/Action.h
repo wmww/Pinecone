@@ -1,10 +1,14 @@
 #pragma once
 
 #include "Type.h"
-#include "functional"
+#include <functional>
+#include <memory>
 
+using std::shared_ptr;
 using std::to_string;
 using std::function;
+
+extern unsigned char * stackPtr;
 
 class Action
 {
@@ -20,11 +24,10 @@ public:
 	
 	virtual ~Action() {}
 	
-	void setLambda(std::function<void*(void*, void*)> lambdaIn) {lambda=lambdaIn;}
 	void setDescription(string in) {description=in;}
 	
 	string getText() {return text;}
-	string getDescription() {return description;}
+	virtual string getDescription() {return description;}
 	
 	Type& getReturnType() {return returnType;};
 	Type& getInLeftType() {return inLeftType;};
@@ -40,8 +43,23 @@ protected:
 	Type inLeftType;
 	Type inRightType;
 	string description;
-	std::function<void*(void*, void*)> lambda;
 	//virtual DataElem * privateExecute(DataElem * inLeft, DataElem * inRight)=0;
+};
+
+typedef shared_ptr<Action> ActionPtr;
+
+class VoidAction: public Action
+{
+public:
+	VoidAction(): Action(Type(Type::VOID), Type(Type::VOID), Type(Type::VOID), "Void")
+	{
+		setDescription("Void");
+	}
+	
+	void* execute(void* inLeft, void* inRight)
+	{
+		return nullptr;
+	}
 };
 
 //an action for getting a variable, will delete the data element in destructor
@@ -49,24 +67,22 @@ class VarGetAction: public Action
 {
 public:
 	
-	VarGetAction(void* in, Type typeIn, string textIn):
+	VarGetAction(size_t in, Type typeIn, string textIn):
 		Action(typeIn, Type(Type::VOID), Type(Type::VOID), textIn)
 	{
-		data=in;
+		offset=in;
 		
 		setDescription("get '" + textIn + "'");
 	}
 	
 	void* execute(void* inLeft, void* inRight)
 	{
-		return returnType.cloneVoidPtr(data);
+		return returnType.cloneVoidPtr(stackPtr+offset);
 	}
-	
-	~VarGetAction() {returnType.deleteVoidPtr(data);}
 	
 private:
 	
-	void* data;
+	size_t offset;
 };
 
 //an action for setting a variable, will NOT delete the data element in destructor
@@ -74,17 +90,44 @@ class VarSetAction: public Action
 {
 public:
 	
-	VarSetAction(void* in, Type typeIn, string textIn):
+	VarSetAction(size_t in, Type typeIn, string textIn):
 		Action(typeIn, Type(Type::VOID), typeIn, textIn)
 	{
-		data=in;
+		offset=in;
 		
 		setDescription("set '" + textIn + "'");
 	}
 	
 	void* execute(void* left, void* right)
 	{
-		returnType.setVoidPtr(data, right);
+		returnType.setVoidPtr(stackPtr+offset, right);
+		return returnType.cloneVoidPtr(stackPtr+offset);
+	}
+	
+private:
+	
+	size_t offset;
+};
+
+class LiteralGetAction: public Action
+{
+public:
+	
+	LiteralGetAction(void* in, Type typeIn, string textIn):
+		Action(typeIn, Type(Type::VOID), Type(Type::VOID), textIn)
+	{
+		data=returnType.cloneVoidPtr(in);
+		
+		setDescription(textIn + " (" + typeIn.toString() + " literal)");
+	}
+	
+	~LiteralGetAction()
+	{
+		returnType.deleteVoidPtr(data);
+	}
+	
+	void* execute(void* inLeft, void* inRight)
+	{
 		return returnType.cloneVoidPtr(data);
 	}
 	

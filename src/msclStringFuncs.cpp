@@ -39,6 +39,7 @@ string loadEntireFile(string inName, bool printOutput)
 
 string putStringInBox(string in, string boxName, int maxWidth)
 {
+	const int tabWidth=4;
 	int width=0;
 	int xPos=0;
 	
@@ -57,6 +58,10 @@ string putStringInBox(string in, string boxName, int maxWidth)
 		{
 			width=max(width, xPos);
 			xPos=0;
+		}
+		else if (*i=='\t')
+		{
+			xPos+=tabWidth-(xPos%tabWidth);
 		}
 		else
 		{
@@ -118,7 +123,16 @@ string putStringInBox(string in, string boxName, int maxWidth)
 			}
 		}
 		
-		if (*i!='\n')
+		if (*i=='\t')
+		{
+			int spaces=tabWidth-(xPos%tabWidth);
+			for (int j=0; j<spaces; ++j)
+			{
+				out+=" ";
+				xPos++;
+			}
+		}
+		else if (*i!='\n')
 		{
 			out+=*i;
 			xPos++;

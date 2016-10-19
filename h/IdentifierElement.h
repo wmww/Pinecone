@@ -9,13 +9,13 @@ class IdentifierElement: public Element
 public:
 	
 	//table can be null, in which case it just won't look up anything
-	static IdentifierElement * makeNew(ElementData data);
+	static ElementPtr makeNew(ElementData data);
 	
 	string getReadableName();
 	
-	void resolveIdentifiers(ActionTable& table) {resolveIdentifiers(table, Type(Type::VOID), Type(Type::VOID));}
+	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions(table, Type(Type::VOID), Type(Type::VOID));}
 	
-	void resolveIdentifiers(ActionTable& table, Type leftType, Type rightType);
+	ActionPtr resolveActions(ActionTablePtr table, Type leftType, Type rightType);
 	
 	ElementData::Type getElemType() {return ElementData::IDENTIFIER;}
 	
@@ -29,8 +29,11 @@ public:
 	void* execute(void* left, void* right);
 	
 private:
+	
+	Type returnType;
+	
 	//Identifier * ptr=nullptr;
-	Action * action=nullptr; //the index of the action in the identifier
+	//ActionPtr action=nullptr; //the index of the action in the identifier
 	IdentifierElement(ElementData dataIn): Element(dataIn) {}
 	//IdentifierElement(ElementData data, Identifier * ptrIn): Element(data) {ptr=ptrIn;}
 };

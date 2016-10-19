@@ -37,6 +37,8 @@ public:
 	bool isCreatable();
 	bool isVoid();
 	
+	size_t getSize();
+	
 	Type() {type=UNKNOWN;}
 	Type(PrimitiveType typeIn) {type=typeIn;}
 	Type(vector<Type>& typesIn);

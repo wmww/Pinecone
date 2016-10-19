@@ -1,6 +1,8 @@
 #include "../h/CastElement.h"
 #include "../h/ErrorHandler.h"
 
+/*
+
 void CastElement::printToString(string& in, int depth)
 {
 	printIndentationToString(in, depth);
@@ -27,4 +29,6 @@ void* CastElement::execute()
 	
 	return out;
 }
+
+*/
 

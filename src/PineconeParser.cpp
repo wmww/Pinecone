@@ -12,82 +12,107 @@ PineconeParser::PineconeParser()
 
 void PineconeParser::cleanUp()
 {
-	program.clear();
+	globalFrame.clear();
 }
 
 void PineconeParser::resolveProgram(bool printOutput)
 {
 	initialProgramPopulation();
 	
-	if (printOutput)
-		cout << endl << program.printToBoxedString("unstructured element list") << endl;
-	
-	program.structureByOperators();
-	
-	if (printOutput)
-		cout << endl << program.printToBoxedString("structured by operators") << endl;
-	
-	program.resolveIdentifiers();
-	
-	if (printOutput)
-		cout << endl << program.printToBoxedString("identifiers resolved") << endl;
+	globalFrame.resolve(printOutput);
+}
+
+ActionTablePtr PineconeParser::getGlobalActionTable()
+{
+	return globalFrame.getElementList().getActionTable();
 }
 
 void PineconeParser::populateStandardLibrary()
 {
+	ActionTablePtr t=getGlobalActionTable();
+	
 	//Identifier * ptr;
 	
-	program.addAction
+	t->addAction
 	(
-		new LambdaAction
+		ActionPtr
 		(
-			Type(Type::VOID),
-			
-			[](void* left, void* right)->void*
-			{
-				cout << *(bool*)right << endl;
-				return nullptr;
-			},
-			
-			Type(Type::VOID), Type(Type::BOOL),
-			
-			"print"
+			new LambdaAction
+			(
+				Type(Type::DUB),
+				
+				[](void* left, void* right)->void*
+				{
+					return new double((*((double*)left))+(*((double*)right)));
+				},
+				
+				Type(Type::DUB), Type(Type::DUB),
+				
+				"+"
+			)
 		)
 	);
 	
-	program.addAction
+	t->addAction
 	(
-		new LambdaAction
+		ActionPtr
 		(
-			Type(Type::VOID),
-			
-			[](void* left, void* right)->void*
-			{
-				cout << *(double*)right << endl;
-				return nullptr;
-			},
-			
-			Type(Type::VOID), Type(Type::DUB),
-			
-			"print"
+			new LambdaAction
+			(
+				Type(Type::VOID),
+				
+				[](void* left, void* right)->void*
+				{
+					cout << *(bool*)right << endl;
+					return nullptr;
+				},
+				
+				Type(Type::VOID), Type(Type::BOOL),
+				
+				"print"
+			)
 		)
 	);
 	
-	program.addAction
+	t->addAction
 	(
-		new LambdaAction
+		ActionPtr
 		(
-			Type(Type::VOID),
-			
-			[](void* left, void* right)->void*
-			{
-				cout << *(int*)right << endl;
-				return nullptr;
-			},
-			
-			Type(Type::VOID), Type(Type::INT),
-			
-			"print"
+			new LambdaAction
+			(
+				Type(Type::VOID),
+				
+				[](void* left, void* right)->void*
+				{
+					cout << *(double*)right << endl;
+					return nullptr;
+				},
+				
+				Type(Type::VOID), Type(Type::DUB),
+				
+				"print"
+			)
+		)
+	);
+	
+	t->addAction
+	(
+		ActionPtr
+		(
+			new LambdaAction
+			(
+				Type(Type::VOID),
+				
+				[](void* left, void* right)->void*
+				{
+					cout << *(int*)right << endl;
+					return nullptr;
+				},
+				
+				Type(Type::VOID), Type(Type::INT),
+				
+				"print"
+			)
 		)
 	);
 }
@@ -153,10 +178,10 @@ void PineconeParser::initialProgramPopulation()
 			if (!elemTxt.empty() && type!=ElementData::COMMENT)
 			{
 				ElementData data=ElementData(elemTxt, inFileName, line, type);
-				Element * elem=makeElement(data);
+				ElementPtr elem=makeElement(data);
 				
 				if (elem)
-					program.appendElement(elem);
+					globalFrame.appendElement(elem);
 				else
 				{
 					error.log("could not resolve '" + elemTxt + "' into an element", data, INTERNAL_ERROR);
@@ -234,7 +259,7 @@ ElementData::Type PineconeParser::getElementType(char c, ElementData::Type previ
 	return ElementData::UNKNOWN;
 }
 
-Element * PineconeParser::makeElement(ElementData data)
+ElementPtr PineconeParser::makeElement(ElementData data)
 {
 	switch (data.type)
 	{
@@ -248,6 +273,11 @@ Element * PineconeParser::makeElement(ElementData data)
 	}
 	
 	return nullptr;
+}
+
+void PineconeParser::execute()
+{
+	globalFrame.execute();
 }
 
 /*string PineconeParser::unresolvedToString()

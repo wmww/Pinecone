@@ -1,58 +1,55 @@
 
 #include "../h/IdentifierElement.h"
 #include "../h/ErrorHandler.h"
+#include "../h/StackFrame.h"
 
 #include <string>
 using std::to_string;
 
-IdentifierElement * IdentifierElement::makeNew(ElementData dataIn)
+ElementPtr IdentifierElement::makeNew(ElementData dataIn)
 {
-	return new IdentifierElement(dataIn);
+	return ElementPtr(new IdentifierElement(dataIn));
 }
 
 string IdentifierElement::getReadableName()
 {
-	if (action)
-		return action->getDescription() + " (" + action->getInLeftType().toString() + "." + action->getReturnType().toString() + ":" + action->getInRightType().toString() + ")";
-	else
-		return data.text + " [unresolved]";
+	return data.text;
 }
 
-void IdentifierElement::resolveIdentifiers(ActionTable& table, Type leftType, Type rightType)
+ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, Type leftType, Type rightType)
 {
-	//Identifier * ptr=table.getIdentifier(data.text);
-	action=table.getBestAction(data, leftType, rightType);
+	ActionPtr out=table->getBestAction(data, leftType, rightType);
 	
-	if (!action)
+	if (!out)
 	{
 		if (rightType.isCreatable() && leftType.exactlyEquals(Type(Type::VOID)))
 		{
-			void* value = rightType.createVoidPtr();
-			Action * getAction = new VarGetAction(value, rightType, data.text);
-			Action * setAction = new VarSetAction(value, rightType, data.text);
-			action = setAction;
-			table.addAction(getAction);
-			table.addAction(setAction);
+			size_t offset=table->getStackFrame()->getSize();
+			table->getStackFrame()->addMember(rightType);
+			
+			ActionPtr getAction(new VarGetAction(offset, rightType, data.text));
+			ActionPtr setAction(new VarSetAction(offset, rightType, data.text));
+			out = setAction;
+			table->addAction(getAction);
+			table->addAction(setAction);
 		}
 		else
 		{
 			error.log(string() + "could not find proper overload for " + data.text, data, SOURCE_ERROR);
 		}
 	}
+	
+	returnType=out->getReturnType();
+	
+	return out;
 }
 
 Type IdentifierElement::getReturnType()
 {
-	if (action)
-	{
-		return action->getReturnType();
-	}
-	else
-	{
-		return Type();
-	}
+	return returnType;
 }
 
+/*
 void* IdentifierElement::execute()
 {
 	return execute(nullptr, nullptr);
@@ -70,4 +67,4 @@ void* IdentifierElement::execute(void* left, void* right)
 		return nullptr;
 	}
 }
-
+*/

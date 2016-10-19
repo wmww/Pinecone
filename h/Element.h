@@ -3,6 +3,7 @@
 #include <string>
 #include "ElementData.h"
 #include "Type.h"
+#include "Action.h"
 #include "ActionTable.h"
 
 using std::string;
@@ -11,6 +12,8 @@ class Element
 {
 public:
 	
+	Element(const Element&)=delete;
+	
 	Element(ElementData dataIn)
 	{
 		data=dataIn;
@@ -18,7 +21,7 @@ public:
 	
 	virtual ~Element()=default;
 	
-	virtual void resolveIdentifiers(ActionTable& table) {}
+	virtual ActionPtr resolveActions(ActionTablePtr table)=0;
 	
 	virtual string getReadableName()
 	{
@@ -31,7 +34,7 @@ public:
 	
 	virtual Type getReturnType() {return Type::UNKNOWN;}
 	
-	virtual void* execute()=0;
+	//virtual void* execute()=0;
 	
 	virtual void printToString(string& in, int depth=-1);
 	string printToBoxedString(string name);
@@ -42,4 +45,6 @@ protected:
 	
 	ElementData data;
 };
+
+typedef std::shared_ptr<Element> ElementPtr;
 

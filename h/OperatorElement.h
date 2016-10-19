@@ -13,50 +13,41 @@ public:
 		3. add it to makeNew				OperatorElement.cpp				so the right source code character will be matched with the enum
 		4. add it to populateCharVectors	PineconeParser.cpp				so it can be detected in the first place
 	**/
-	enum OpType
-	{
-		DOT,
-		PLUS,
-		MINUS,
-		COLON,
-		OPEN,
-		CLOSE
-	};
 	
-	OperatorElement(ElementData dataIn, OpType typeIn): Element(dataIn) {opType=typeIn;}
+	OperatorElement(ElementData dataIn, OperatorType typeIn): Element(dataIn) {opType=typeIn;}
 	
-	~OperatorElement();
+	static string toString(OperatorType);
 	
-	static string toString(OpType);
+	string getReadableName() {return toString(opType) + " (" + getReturnType().toString() + ")";}
 	
-	string getReadableName() {return toString(opType) + " (" + returnType.toString() + ")";}
+	Type getReturnType() {return action?action->getReturnType():Type();}
 	
-	Type getReturnType() {return returnType;}
-	
-	void resolveIdentifiers(ActionTable& table);
+	ActionPtr resolveActions(ActionTablePtr table);
 	
 	void printToString(string& in, int depth=0);
 	//using Element::printToString;
 	
-	static OperatorElement * makeNew(ElementData dataIn);
+	static ElementPtr makeNew(ElementData dataIn);
 	
-	void setLeftInput(Element * in) {leftInput=in;}
-	void setRightInput(Element * in) {rightInput=in;}
+	void setLeftInput(ElementPtr in) {leftInput=in;}
+	void setRightInput(ElementPtr in) {rightInput=in;}
 	
 	ElementData::Type getElemType() {return ElementData::OPERATOR;}
 	
-	OpType getType() {return opType;}
+	OperatorType getType() {return opType;}
 	
 	void* execute();
 	
 private:
 	
-	OpType opType;
+	OperatorType opType;
 	
-	Type returnType;
+	ActionPtr action;
 	
-	Element * leftInput=nullptr;
-	Element * rightInput=nullptr;
+	//Type returnType;
+	
+	ElementPtr leftInput=nullptr;
+	ElementPtr rightInput=nullptr;
 };
 
 

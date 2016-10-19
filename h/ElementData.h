@@ -3,6 +3,20 @@
 #include <string>
 using std::string;
 
+enum OperatorType
+{
+	OP_DOT,
+	OP_PLUS,
+	OP_MINUS,
+	OP_COLON,
+	
+	//used for making arrays of all ovveridable operators
+	OP_TYPE_OVERRIDEABLE_LAST,
+	
+	OP_OPEN,
+	OP_CLOSE,
+};
+
 struct ElementData
 {
 	enum Type
@@ -27,8 +41,8 @@ struct ElementData
 	
 	ElementData()
 	{
-		text="UNKNOWN_TEXT";
-		file="UNKNOWN_FILE";
+		text="";
+		file="";
 		line=-1;
 		type=UNKNOWN;
 	}

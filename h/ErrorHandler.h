@@ -10,7 +10,8 @@ enum ErrorPriority
 	SOURCE_ERROR,
 	SOURCE_WARNING,
 	JSYK,
-	INTERNAL_ERROR
+	INTERNAL_ERROR,
+	RUNTIME_ERROR
 };
 
 class ErrorHandler
