@@ -23,7 +23,14 @@ string ListAction::getDescription()
 	{
 		out+="\n\t";
 		
-		string str=(*i)->getDescription();
+		string str;
+		
+		if (*i)
+			str=(*i)->getDescription();
+		else
+			str="[null action]";
+		
+		error.log(str, JSYK);
 		
 		for (unsigned j=0; j<str.size(); ++j)
 		{

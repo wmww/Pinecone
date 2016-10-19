@@ -28,6 +28,7 @@ public:
 	
 	string getText() {return text;}
 	virtual string getDescription() {return description;}
+	string toString() {return returnType.toString() + " <- " + inLeftType.toString() + "." + text + ":" + inRightType.toString();}
 	
 	Type& getReturnType() {return returnType;};
 	Type& getInLeftType() {return inLeftType;};
