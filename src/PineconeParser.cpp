@@ -7,7 +7,7 @@
 PineconeParser::PineconeParser()
 {
 	populateCharVectors();
-	populateStandardLibrary();
+	populatePineconeStdLib(getGlobalActionTable());
 }
 
 void PineconeParser::cleanUp()
@@ -25,96 +25,6 @@ void PineconeParser::resolveProgram(bool printOutput)
 ActionTablePtr PineconeParser::getGlobalActionTable()
 {
 	return globalFrame.getElementList().getActionTable();
-}
-
-void PineconeParser::populateStandardLibrary()
-{
-	ActionTablePtr t=getGlobalActionTable();
-	
-	//Identifier * ptr;
-	
-	t->addAction
-	(
-		ActionPtr
-		(
-			new LambdaAction
-			(
-				Type(Type::DUB),
-				
-				[](void* left, void* right)->void*
-				{
-					return new double((*((double*)left))+(*((double*)right)));
-				},
-				
-				Type(Type::DUB), Type(Type::DUB),
-				
-				"+"
-			)
-		)
-	);
-	
-	t->addAction
-	(
-		ActionPtr
-		(
-			new LambdaAction
-			(
-				Type(Type::VOID),
-				
-				[](void* left, void* right)->void*
-				{
-					cout << *(bool*)right << endl;
-					return nullptr;
-				},
-				
-				Type(Type::VOID), Type(Type::BOOL),
-				
-				"print"
-			)
-		)
-	);
-	
-	t->addAction
-	(
-		ActionPtr
-		(
-			new LambdaAction
-			(
-				Type(Type::VOID),
-				
-				[](void* left, void* right)->void*
-				{
-					cout << *(double*)right << endl;
-					return nullptr;
-				},
-				
-				Type(Type::VOID), Type(Type::DUB),
-				
-				"print"
-			)
-		)
-	);
-	
-	t->addAction
-	(
-		ActionPtr
-		(
-			new LambdaAction
-			(
-				Type(Type::VOID),
-				
-				[](void* left, void* right)->void*
-				{
-					cout << *(int*)right << endl;
-					return nullptr;
-				},
-				
-				Type(Type::VOID), Type(Type::INT),
-				
-				"print"
-			)
-		)
-	);
 }
 
 void PineconeParser::populateCharVectors()

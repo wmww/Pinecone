@@ -19,7 +19,7 @@ int main(int argc, char ** argv)
 	
 	string widapLangSource=loadEntireFile(inputFilename, true);
 	
-	cout << endl << putStringInBox(widapLangSource, inputFilename) << endl;
+	cout << endl << putStringInBox(widapLangSource, false, inputFilename) << endl;
 	
 	PineconeParser parser;
 	

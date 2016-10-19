@@ -5,14 +5,14 @@ using std::string;
 
 enum OperatorType
 {
-	OP_DOT,
 	OP_PLUS,
 	OP_MINUS,
-	OP_COLON,
 	
 	//used for making arrays of all ovveridable operators
 	OP_TYPE_OVERRIDEABLE_LAST,
 	
+	OP_DOT,
+	OP_COLON,
 	OP_OPEN,
 	OP_CLOSE,
 };

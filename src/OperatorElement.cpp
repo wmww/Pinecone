@@ -3,6 +3,7 @@
 #include "../h/ErrorHandler.h"
 #include "../h/IdentifierElement.h"
 #include "../h/CastElement.h"
+#include "../h/BranchAction.h"
 
 ElementPtr OperatorElement::makeNew(ElementData dataIn)
 {
@@ -33,27 +34,49 @@ ElementPtr OperatorElement::makeNew(ElementData dataIn)
 
 ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 {
-	ActionPtr leftAction, rightAction;
+	error.log("resolving " + getReadableName(), data, JSYK);
 	
-	if (leftInput)
-		leftAction=leftInput->resolveActions(table);
-	else
-		leftAction=ActionPtr(new VoidAction());
+	ActionPtr leftAction, rightAction, out;
 	
 	if (rightInput)
 		rightAction=rightInput->resolveActions(table);
 	else
 		rightAction=ActionPtr(new VoidAction());
 	
-	ActionPtr out=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
+	if (opType==OP_COLON)
+	{
+		if (leftInput && leftInput->getElemType()==ElementData::IDENTIFIER)
+		{
+			out=((IdentifierElement *)&(*leftInput))->resolveActions(table, Type(Type::VOID), rightInput->getReturnType());
+		}
+		else
+		{
+			error.log("only an identifier can be assigned a value", data, SOURCE_ERROR);
+		}
+	}
+	else
+	{
+		if (leftInput)
+			leftAction=leftInput->resolveActions(table);
+		else
+			leftAction=ActionPtr(new VoidAction());
+			
+		ActionPtr action=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
+		
+		if (action)
+		{
+			out=ActionPtr(new BranchAction(leftAction, action, rightAction));
+		}
+	}
 	
 	if (!out)
 	{
-		error.log("couldn't find overload for " + toString(opType) + " that takes " + leftAction->getReturnType().toString() + " and " + rightAction->getReturnType().toString(), data, SOURCE_ERROR);
+		error.log("could not resolve " + leftAction->getReturnType().toString() + toString(opType) + rightAction->getReturnType().toString(), data, SOURCE_ERROR);
 		return ActionPtr(new VoidAction());
 	}
 	else
 	{
+		error.log("got back [" + out->getDescription() + "]", data, JSYK);
 		return out;
 	}
 	

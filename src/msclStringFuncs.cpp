@@ -37,20 +37,27 @@ string loadEntireFile(string inName, bool printOutput)
 	}
 }
 
-string putStringInBox(string in, string boxName, int maxWidth)
+string putStringInBox(string in, bool showLineNums, string boxName, int maxWidth)
 {
 	const int tabWidth=4;
 	int width=0;
 	int xPos=0;
+	int yStart=0;
+	int yPos;
 	
 	if (!boxName.empty())
 		width=boxName.size()+4;
 	
 	while (in.size()>0 && in[0]=='\n')
+	{
 		in.erase(in.begin());
+		yStart++;
+	}
 	
 	while (in.back()=='\n')
 		in.pop_back();
+	
+	yPos=yStart;
 	
 	for (auto i=in.begin(); i<=in.end(); ++i)
 	{
@@ -58,6 +65,7 @@ string putStringInBox(string in, string boxName, int maxWidth)
 		{
 			width=max(width, xPos);
 			xPos=0;
+			yPos++;
 		}
 		else if (*i=='\t')
 		{

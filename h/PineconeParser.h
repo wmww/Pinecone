@@ -24,6 +24,8 @@ using std::list;
 
 class Element;
 
+void populatePineconeStdLib(ActionTablePtr t);
+
 class PineconeParser
 {
 public:
@@ -52,7 +54,6 @@ public:
 private:
 	
 	void cleanUp();
-	void populateStandardLibrary();
 	void populateCharVectors();
 	void initialProgramPopulation();
 	ElementData::Type getElementType(char c, ElementData::Type previousType);
