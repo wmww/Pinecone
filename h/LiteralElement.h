@@ -17,7 +17,7 @@ public:
 	
 	Type getReturnType() {return type;}
 	
-	string getReadableName() {return data.toString() + " (Int literal)";}
+	string getReadableName() {return data.text + " (Int literal)";}
 	
 	ActionPtr resolveActions(ActionTablePtr table);
 	

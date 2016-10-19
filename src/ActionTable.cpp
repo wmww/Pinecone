@@ -1,5 +1,6 @@
 #include "../h/ActionTable.h"
 #include "../h/ErrorHandler.h"
+#include "../h/OperatorElement.h"
 
 void ActionTable::clear()
 {
@@ -48,6 +49,44 @@ void ActionTable::addActionsToList(list<ActionPtr>& in, OperatorType opType)
 	
 	if (parent)
 		parent->addActionsToList(in, opType);
+}
+
+string ActionTable::toString()
+{
+	string out;
+	
+	out+="operators:\n";
+	
+	for (int i=0; i<OP_TYPE_OVERRIDEABLE_LAST; ++i)
+	{
+		out+="\t";
+		out+=OperatorElement::toString((OperatorType)i);
+		out+="\n";
+		
+		for (auto j=operators[i].begin(); j!=operators[i].end(); ++j)
+		{
+			out+="\t\t";
+			if (*j)
+				out+=(*j)->getDescription();
+			else
+				out+="fucking null operator";
+			out+="\n";
+		}
+	}
+	
+	out+="\nother:\n";
+	
+	for (auto i=actions.begin(); i!=actions.end(); ++i)
+	{
+		out+="\t";
+		if (*i)
+			out+=(*i)->getReturnType().toString() + " <- " + (*i)->getInLeftType().toString() + "." + (*i)->getText() + ":" + (*i)->getInRightType().toString();
+		else
+			out+="fucking null operator";
+		out+="\n";
+	}
+	
+	return out;
 }
 
 ActionPtr ActionTable::resolveOverload(list<ActionPtr>& in, Type leftIn, Type rightIn)

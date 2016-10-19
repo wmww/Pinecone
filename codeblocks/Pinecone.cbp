@@ -66,6 +66,7 @@
 		<Unit filename="../src/LiteralElement.cpp" />
 		<Unit filename="../src/OperatorElement.cpp" />
 		<Unit filename="../src/PineconeParser.cpp" />
+		<Unit filename="../src/PineconeStdLib.cpp" />
 		<Unit filename="../src/StackFrame.cpp" />
 		<Unit filename="../src/Type.cpp" />
 		<Unit filename="../src/main.cpp" />

@@ -13,7 +13,7 @@ ElementPtr IdentifierElement::makeNew(ElementData dataIn)
 
 string IdentifierElement::getReadableName()
 {
-	return data.text;
+	return data.text + " (identifier)";
 }
 
 ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, Type leftType, Type rightType)

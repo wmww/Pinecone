@@ -10,4 +10,4 @@ using std::to_string;
 string loadEntireFile(string inName, bool printOutput=true);
 
 //puts the contents of a string into a well formatted box with character wrapping
-string putStringInBox(string in, string boxName="", int maxWidth=80);
+string putStringInBox(string in, bool showLineNums=false, string boxName="", int maxWidth=80);

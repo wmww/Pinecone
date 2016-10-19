@@ -21,7 +21,7 @@ string Element::printToBoxedString(string name)
 {
 	string data;
 	printToString(data);
-	return putStringInBox(data, name);
+	return putStringInBox(data, true, name);
 }
 
 

@@ -30,6 +30,8 @@ public:
 	
 	StackFrame* getStackFrame() {return stackFrame;}
 	
+	string toString();
+	
 	//Identifier * getOrMakeIdentifier(string nameIn);
 	
 	void clear();

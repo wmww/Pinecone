@@ -18,9 +18,11 @@ public:
 	
 	static string toString(OperatorType);
 	
-	string getReadableName() {return toString(opType) + " (" + getReturnType().toString() + ")";}
+	//string getReadableName() {return toString(opType) + " (" + getReturnType().toString() + ")";}
+	string getReadableName() {return toString(opType);}
 	
-	Type getReturnType() {return action?action->getReturnType():Type();}
+	//Type getReturnType() {return action?action->getReturnType():Type();}
+	Type getReturnType() {return returnType;}
 	
 	ActionPtr resolveActions(ActionTablePtr table);
 	
@@ -42,9 +44,9 @@ private:
 	
 	OperatorType opType;
 	
-	ActionPtr action;
+	//ActionPtr action;
 	
-	//Type returnType;
+	Type returnType;
 	
 	ElementPtr leftInput=nullptr;
 	ElementPtr rightInput=nullptr;
