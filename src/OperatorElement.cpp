@@ -47,7 +47,13 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	{
 		if (leftInput && leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
-			out=((IdentifierElement *)&(*leftInput))->resolveActions(table, Type(Type::VOID), rightInput->getReturnType());
+			ActionPtr action=((IdentifierElement *)&(*leftInput))->resolveActions(table, Type(Type::VOID), rightInput->getReturnType());
+			
+			if (action)
+			{
+				out=ActionPtr(new BranchAction(ActionPtr(new VoidAction()), action, rightAction));
+				error.log("created branch action " + out->getDescription(), data, JSYK);
+			}
 		}
 		else
 		{
@@ -66,6 +72,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		if (action)
 		{
 			out=ActionPtr(new BranchAction(leftAction, action, rightAction));
+			error.log("created branch action " + out->getDescription(), data, JSYK);
 		}
 	}
 	
@@ -76,7 +83,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	}
 	else
 	{
-		error.log("got back [" + out->getDescription() + "]", data, JSYK);
+		error.log("got back " + out->getDescription() + "", data, JSYK);
 		return out;
 	}
 	

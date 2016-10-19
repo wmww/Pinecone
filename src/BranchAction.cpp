@@ -31,11 +31,15 @@ BranchAction::BranchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr 
 
 string BranchAction::getDescription()
 {
-	return "(" + leftInput->getDescription() + ").(" + action->getDescription() + "):(" + rightInput->getDescription() + ")";
+	if (leftInput && action && rightInput)
+		return "[" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
+	else
+		return "[branch with null element]";
 }
 
 void* BranchAction::execute(void* inLeft, void* inRight)
 {
+	
 	void* leftData=leftInput->execute(nullptr, nullptr);
 	void* rightData=rightInput->execute(nullptr, nullptr);
 	void* outData=action->execute(leftData, rightData);

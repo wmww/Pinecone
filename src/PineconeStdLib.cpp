@@ -12,24 +12,41 @@ ActionTablePtr table;
 #define Bool_PNCN Type(Type::BOOL)
 #define Void_PNCN Type(Type::VOID)
 
-#define CONC(a,b) a##_##b
+#define CONCAT(a,b) a##_##b
 
-#define getPncnType(typeIn) CONC(typeIn, PNCN)
-#define getCppType(typeIn) CONC(typeIn, CPP)
+#define getPncnType(typeIn) CONCAT(typeIn, PNCN)
+#define getCppType(typeIn) CONCAT(typeIn, CPP)
 
-
-#define lambdaHeader [](void* leftIn, void* rightIn)->void*
+#define LAMBDA_HEADER [](void* leftIn, void* rightIn)->void*
 
 #define retrn out=
 
+#define GET_PTR_VAL(typeIn, varInName) =*((getCppType(typeIn)*)varInName)
+
+#define DO_INSTANTIATE(typeIn, varOutName, setVal) getCppType(typeIn) varOutName setVal;
+#define DONT_INSTANTIATE(typeIn, varOutName, setVal) ;
+
+#define DO_RETURN_VAL(typeIn, varName) return getPncnType(typeIn).cloneVoidPtr(&varName);
+#define DONT_RETURN_VAL(typeIn, varName) return nullptr;
+
+#define INSTANTIATE_Dub DO_INSTANTIATE
+#define INSTANTIATE_Int DO_INSTANTIATE
+#define INSTANTIATE_Bool DO_INSTANTIATE
+#define INSTANTIATE_Void DONT_INSTANTIATE
+
+#define RETURN_Dub DO_RETURN_VAL
+#define RETURN_Int DO_RETURN_VAL
+#define RETURN_Bool DO_RETURN_VAL
+#define RETURN_Void DONT_RETURN_VAL
+
 #define func(nameText, returnType, leftType, rightType, lambdaBody)		\
-addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(rightType), lambdaHeader\
+addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(rightType), LAMBDA_HEADER\
 {																		\
-	getCppType(leftType) left=*((getCppType(leftType)*)leftIn);			\
-	getCppType(rightType) right=*((getCppType(rightType)*)rightIn);		\
-	getCppType(returnType) out;											\
+	CONCAT(INSTANTIATE, leftType)(leftType, left, GET_PTR_VAL(leftType, leftIn))				\
+	CONCAT(INSTANTIATE, rightType)(rightType, right, GET_PTR_VAL(rightType, rightIn))			\
+	CONCAT(INSTANTIATE, returnType)(returnType, out, )			\
 	lambdaBody;															\
-	return getPncnType(returnType).cloneVoidPtr(&out);					\
+	CONCAT(RETURN, returnType)(returnType, out)					\
 })																		\
 
 void addAction(Action* in)
@@ -37,23 +54,33 @@ void addAction(Action* in)
 	table->addAction(ActionPtr(in));
 }
 
+void addAction(Action* in, OperatorType opType)
+{
+	table->addAction(ActionPtr(in), opType);
+}
+
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
 	addAction(new LambdaAction(returnType, lambda, leftType, rightType, text));
+}
+
+void addAction(OperatorType opType, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
+{
+	addAction(new LambdaAction(returnType, lambda, leftType, rightType, OperatorElement::toString(opType)), opType);
 }
 
 void populatePineconeStdLib(ActionTablePtr t)
 {
 	table=t;
 	
-	func("+", Dub, Dub, Dub,
+	func(OP_PLUS, Dub, Dub, Dub,
 		retrn left+right);
 	
-	func("+", Int, Int, Int,
+	func(OP_PLUS, Int, Int, Int,
 		retrn left+right);
 	
-	func("+", Dub, Dub, Int,
-		retrn left+right);
+	//func(OP_PLUS, Dub, Dub, Int,
+	//	retrn left+right);
 		
 	func("print", Void, Void, Bool,
 		cout << right);
@@ -88,7 +115,7 @@ void populatePineconeStdLib(ActionTablePtr t)
 	
 	//t->addAction()
 	
-	cout << "standard library:" << endl << table->toString() << endl;
+	cout << endl << putStringInBox(table->toString(), false, "standard library") << endl;
 	
 	table=nullptr;
 }

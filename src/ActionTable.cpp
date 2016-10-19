@@ -7,6 +7,17 @@ void ActionTable::clear()
 	actions.clear();
 }
 
+void ActionTable::addAction(ActionPtr in, OperatorType opType)
+{
+	if (opType<0 || opType>OP_TYPE_OVERRIDEABLE_LAST)
+	{
+		error.log(string() + __FUNCTION__ + " sent invalid opType", INTERNAL_ERROR);
+		return;
+	}
+	
+	operators[opType].push_back(in);
+}
+
 ActionPtr ActionTable::getBestAction(ElementData data, Type leftIn, Type rightIn)
 {
 	list<ActionPtr> matches;
@@ -59,15 +70,11 @@ string ActionTable::toString()
 	
 	for (int i=0; i<OP_TYPE_OVERRIDEABLE_LAST; ++i)
 	{
-		out+="\t";
-		out+=OperatorElement::toString((OperatorType)i);
-		out+="\n";
-		
 		for (auto j=operators[i].begin(); j!=operators[i].end(); ++j)
 		{
-			out+="\t\t";
+			out+="\t";
 			if (*j)
-				out+=(*j)->getDescription();
+				out+=(*j)->toString();
 			else
 				out+="fucking null operator";
 			out+="\n";
@@ -80,9 +87,9 @@ string ActionTable::toString()
 	{
 		out+="\t";
 		if (*i)
-			out+=(*i)->getReturnType().toString() + " <- " + (*i)->getInLeftType().toString() + "." + (*i)->getText() + ":" + (*i)->getInRightType().toString();
+			out+=(*i)->toString();
 		else
-			out+="fucking null operator";
+			out+="null operator";
 		out+="\n";
 	}
 	
