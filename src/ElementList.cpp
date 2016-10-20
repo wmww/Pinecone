@@ -30,14 +30,7 @@ void ElementList::clear()
 
 Type ElementList::getReturnType()
 {
-	if (elems.size()==1)
-	{
-		return (*elems.begin())->getReturnType();
-	}
-	else
-	{
-		return Type();
-	}
+	return elems.back()->getReturnType();
 }
 
 void ElementList::structureByOperators()

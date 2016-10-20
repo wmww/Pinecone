@@ -1,8 +1,13 @@
 #include "../h/ListAction.h"
 #include "../h/ErrorHandler.h"
 
-ListAction::ListAction(list<ActionPtr>& actionsIn): Action(Type(Type::VOID), Type(Type::VOID), Type(Type::VOID), "LIST")
+ListAction::ListAction(list<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():Type()), Type(Type::VOID), Type(Type::VOID), "LIST")
 {
+	if (actionsIn.size()<=0)
+	{
+		error.log("ListAction created with empty list", INTERNAL_ERROR);
+	}
+	
 	actions=actionsIn;
 	
 	for (auto i=actions.begin(); i!=actions.end(); ++i)
@@ -50,11 +55,13 @@ string ListAction::getDescription()
 	
 void* ListAction::execute(void* inLeft, void* inRight)
 {
-	for (auto i=actions.begin(); i!=actions.end(); ++i)
+	auto i=actions.begin();
+	
+	for (; i!=std::prev(actions.end()); ++i)
 	{
 		(*i)->getReturnType().deleteVoidPtr((*i)->execute(nullptr, nullptr));
 	}
 	
-	return nullptr;
+	return (*i)->execute(nullptr, nullptr);
 }
 
