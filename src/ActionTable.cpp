@@ -36,7 +36,9 @@ void ActionTable::addActionsToList(list<ActionPtr>& matches, string& text)
 	}
 	
 	if (parent)
+	{
 		parent->addActionsToList(matches, text);
+	}
 }
 
 ActionPtr ActionTable::getBestAction(OperatorType opType, Type leftIn, Type rightIn)

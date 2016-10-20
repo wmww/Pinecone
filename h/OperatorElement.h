@@ -19,7 +19,7 @@ public:
 	static string toString(OperatorType);
 	
 	//string getReadableName() {return toString(opType) + " (" + getReturnType().toString() + ")";}
-	string getReadableName() {return toString(opType);}
+	string getReadableName();
 	
 	//Type getReturnType() {return action?action->getReturnType():Type();}
 	Type getReturnType() {return returnType;}

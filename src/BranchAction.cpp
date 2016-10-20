@@ -32,7 +32,8 @@ BranchAction::BranchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr 
 string BranchAction::getDescription()
 {
 	if (leftInput && action && rightInput)
-		return "[" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
+		//return getReturnType().toString() + " <- [" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
+		return getReturnType().toString() + " <- " + leftInput->getDescription() + "." + action->getDescription() + ":" + rightInput->getDescription();
 	else
 		return "[branch with null element]";
 }

@@ -4,10 +4,16 @@
 #include "../h/LiteralElement.h"
 #include "../h/ErrorHandler.h"
 #include "../h/ListAction.h"
+#include "../h/StackFrame.h"
 
-ElementList::ElementList(ElementData dataIn, StackFrame * frame): Element(dataIn)
+ElementList::ElementList(ElementData dataIn, ElementList& parentList): Element(dataIn)
 {
-	table=std::unique_ptr<ActionTable>(new ActionTable(frame));
+	table=std::unique_ptr<ActionTable>(new ActionTable(parentList.getActionTable()));
+}
+
+ElementList::ElementList(ElementData dataIn, StackFrame& frame): Element(dataIn)
+{
+	table=std::unique_ptr<ActionTable>(new ActionTable(&frame));
 }
 
 void ElementList::appendElement(ElementPtr in)
@@ -89,7 +95,7 @@ void ElementList::structureByOperators()
 					++j;
 				}
 				
-				shared_ptr<ElementList> subList(new ElementList((*i)->getData(), table->getStackFrame()));
+				shared_ptr<ElementList> subList(new ElementList((*i)->getData(), *this));
 				
 				auto k=i;
 				

@@ -1,11 +1,10 @@
 
 #include "../h/FunctionAction.h"
 #include "../h/ErrorHandler.h"
+#include "../h/StackFrame.h"
 
 #include <cstring> //for memcpy
 using std::memcpy;
-
-unsigned char * stackPtr=nullptr;
 
 FunctionAction::FunctionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn):
 	Action(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn, textIn)

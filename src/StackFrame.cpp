@@ -2,6 +2,8 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
+unsigned char * stackPtr=nullptr;
+
 void StackFrame::clear()
 {
 	elements.clear();
@@ -24,7 +26,9 @@ void StackFrame::resolve(bool printOutput)
 	if (printOutput)
 		cout << endl << elements.printToBoxedString("structured by operators") << endl;
 	
-	actions=elements.resolveActions();
+	ActionPtr ptr=elements.resolveActions();
+	
+	actions=ActionPtr(new FunctionAction(ptr, Type(Type::VOID), Type(Type::VOID), frameSize, "global function"));
 	
 	cout << "printing action tree..." << endl;
 	
