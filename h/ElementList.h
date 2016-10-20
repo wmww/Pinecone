@@ -16,7 +16,8 @@ class ElementList: public Element
 {
 public:
 	
-	ElementList(ElementData dataIn, StackFrame * frame);
+	ElementList(ElementData dataIn, ElementList& parentList);
+	ElementList(ElementData dataIn, StackFrame& frame);
 	
 	~ElementList() {clear();}
 	

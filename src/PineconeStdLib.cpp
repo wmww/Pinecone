@@ -79,17 +79,20 @@ void populatePineconeStdLib(ActionTablePtr t)
 	func(OP_PLUS, Int, Int, Int,
 		retrn left+right);
 	
-	//func(OP_PLUS, Dub, Dub, Int,
-	//	retrn left+right);
+	func(OP_MINUS, Dub, Dub, Dub,
+		retrn left-right);
+	
+	func(OP_MINUS, Int, Int, Int,
+		retrn left-right);
 		
 	func("print", Void, Void, Bool,
-		cout << right);
+		cout << (right?"tru":"fls") << endl);
 	
 	func("print", Void, Void, Int,
-		cout << right);
+		cout << right << endl);
 	
 	func("print", Void, Void, Dub,
-		cout << right);
+		cout << right << endl);
 	
 	
 	/*t->addAction

@@ -19,7 +19,7 @@ public:
 	
 	ElementData::Type getElemType() {return ElementData::IDENTIFIER;}
 	
-	Type getReturnType();
+	//Type getReturnType();
 	
 	//Identifier * getIdentifier() {return ptr;}
 	//void setIdentifier(Identifier * in) {ptr=in;}
@@ -30,7 +30,7 @@ public:
 	
 private:
 	
-	Type returnType;
+	//Type returnType;
 	
 	//Identifier * ptr=nullptr;
 	//ActionPtr action=nullptr; //the index of the action in the identifier

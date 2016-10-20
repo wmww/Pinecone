@@ -17,7 +17,7 @@ class ActionTable
 {
 public:
 	//should only be called within this class except for creating the root
-	ActionTable(ActionTable * parentIn) {parent=parentIn; stackFrame=parent->getStackFrame();}
+	ActionTable(shared_ptr<ActionTable> parentIn) {parent=parentIn; stackFrame=parent->getStackFrame();}
 	ActionTable(StackFrame * stackFrameIn) {parent=nullptr; stackFrame=stackFrameIn;}
 	
 	~ActionTable() {clear();}
@@ -41,7 +41,7 @@ private:
 	void addActionsToList(list<ActionPtr>& in, OperatorType opType);
 	ActionPtr resolveOverload(list<ActionPtr>& in, Type leftIn, Type rightIn);
 	
-	ActionTable * parent=nullptr;
+	shared_ptr<ActionTable> parent;
 	list<ActionPtr> actions;
 	list<ActionPtr> operators[OP_TYPE_OVERRIDEABLE_LAST];
 	

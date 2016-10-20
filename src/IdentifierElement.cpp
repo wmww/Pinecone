@@ -35,19 +35,19 @@ ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, Type leftType,
 		}
 		else
 		{
-			error.log(string() + "could not find proper overload for " + data.text, data, SOURCE_ERROR);
+			error.log(string() + "could not find proper overload for " + leftType.toString() + "." + data.text + ":" + rightType.toString(), data, SOURCE_ERROR);
 		}
 	}
 	
-	returnType=out->getReturnType();
+	//returnType=out->getReturnType();
 	
 	return out;
 }
 
-Type IdentifierElement::getReturnType()
+/*Type IdentifierElement::getReturnType()
 {
 	return returnType;
-}
+}*/
 
 /*
 void* IdentifierElement::execute()

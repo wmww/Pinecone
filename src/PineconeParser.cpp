@@ -190,22 +190,3 @@ void PineconeParser::execute()
 	globalFrame.execute();
 }
 
-/*string PineconeParser::unresolvedToString()
-{
-	string out;
-	
-	//out+="|";
-	
-	for (auto i=unresolved.begin(); i!=unresolved.end(); ++i)
-	{
-		out+="\n";
-		out+=(*i).toString();
-		//out+="|";
-	}
-	
-	out+="\n";
-	
-	return out;
-}*/
-
-

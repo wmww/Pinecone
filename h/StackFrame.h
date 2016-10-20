@@ -6,6 +6,8 @@ using std::vector;
 #include "Type.h"
 #include "ElementList.h"
 
+extern unsigned char * stackPtr;
+
 class StackFrame
 {
 public:
@@ -27,8 +29,8 @@ public:
 	
 private:
 	
-	ElementList elements={ElementData("", "UNKNOWN_FILE", 0, ElementData::SCOPE), this};
-	ActionPtr actions=nullptr;
+	ElementList elements={ElementData("", "UNKNOWN_FILE", 0, ElementData::SCOPE), *this};
+	ActionPtr actions; //must always be functionAction
 	vector<Type> members;
 	size_t frameSize=0;
 };

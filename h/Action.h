@@ -8,8 +8,6 @@ using std::shared_ptr;
 using std::to_string;
 using std::function;
 
-extern unsigned char * stackPtr;
-
 class Action
 {
 public:
@@ -76,10 +74,7 @@ public:
 		setDescription("get '" + textIn + "'");
 	}
 	
-	void* execute(void* inLeft, void* inRight)
-	{
-		return returnType.cloneVoidPtr(stackPtr+offset);
-	}
+	void* execute(void* inLeft, void* inRight);
 	
 private:
 	
@@ -99,11 +94,7 @@ public:
 		setDescription("set '" + textIn + "'");
 	}
 	
-	void* execute(void* left, void* right)
-	{
-		returnType.setVoidPtr(stackPtr+offset, right);
-		return returnType.cloneVoidPtr(stackPtr+offset);
-	}
+	void* execute(void* left, void* right);
 	
 private:
 	
@@ -119,7 +110,7 @@ public:
 	{
 		data=returnType.cloneVoidPtr(in);
 		
-		setDescription(textIn + " (" + typeIn.toString() + " literal)");
+		setDescription(textIn);// + " (" + typeIn.toString() + " literal)");
 	}
 	
 	~LiteralGetAction()
@@ -144,7 +135,7 @@ public:
 		:Action(returnTypeIn, inLeftTypeIn, inRightTypeIn, textIn)
 	{
 		lambda=lambdaIn;
-		setDescription(text + " (lambda action)");
+		setDescription(text);// + " (lambda action)");
 	}
 	
 	void* execute(void* inLeft, void* inRight)
