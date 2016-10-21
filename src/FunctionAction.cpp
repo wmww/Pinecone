@@ -12,7 +12,7 @@ FunctionAction::FunctionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRig
 	dataSize=dataSizeIn;
 	action=actionIn;
 	
-	if (action->getInLeftType().getType()!=Type::VOID || action->getInRightType().getType()!=Type::VOID)
+	if (action->getInLeftType()!=Void || action->getInRightType()!=Void)
 	{
 		error.log(action->getText() + " put into function even though its inputs are not void", INTERNAL_ERROR);
 	}
@@ -29,10 +29,10 @@ void* FunctionAction::execute(void* inLeft, void* inRight)
 	stackPtr=new unsigned char[dataSize];
 	
 	if (inLeft)
-		memcpy(stackPtr, inLeft, getInLeftType().getSize());
+		memcpy(stackPtr, inLeft, getInLeftType()->getSize());
 	
 	if (inRight)
-		memcpy(stackPtr+getInLeftType().getSize(), inRight, getInRightType().getSize());
+		memcpy(stackPtr+getInLeftType()->getSize(), inRight, getInRightType()->getSize());
 	
 	void* out=action->execute(nullptr, nullptr);
 	

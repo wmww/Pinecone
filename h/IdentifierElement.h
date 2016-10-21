@@ -13,7 +13,7 @@ public:
 	
 	string getReadableName();
 	
-	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions(table, Type(Type::VOID), Type(Type::VOID));}
+	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions(table, Void, Void);}
 	
 	ActionPtr resolveActions(ActionTablePtr table, Type leftType, Type rightType);
 	

@@ -50,7 +50,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	{
 		if (leftInput && leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
-			ActionPtr action=((IdentifierElement *)&(*leftInput))->resolveActions(table, Type(Type::VOID), rightAction->getReturnType());
+			ActionPtr action=((IdentifierElement *)&(*leftInput))->resolveActions(table, Void, rightAction->getReturnType());
 			
 			if (action)
 			{
@@ -79,7 +79,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	
 	if (!out)
 	{
-		error.log("could not resolve " + leftAction->getReturnType().toString() + toString(opType) + rightAction->getReturnType().toString(), data, SOURCE_ERROR);
+		error.log("could not resolve " + leftAction->getReturnType()->toString() + toString(opType) + rightAction->getReturnType()->toString(), data, SOURCE_ERROR);
 		return ActionPtr(new VoidAction());
 	}
 	else

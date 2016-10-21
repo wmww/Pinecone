@@ -12,7 +12,7 @@ ElementPtr LiteralElement::makeNew(ElementData dataIn)
 	
 	//bool floatingPoint=false;
 	
-	Type::PrimitiveType type=Type::UNKNOWN;
+	Type type=UnknownType;
 	
 	if (in.empty())
 	{
@@ -21,35 +21,35 @@ ElementPtr LiteralElement::makeNew(ElementData dataIn)
 	
 	if ((in[0]>='0' && in[0]<='9') || in[0]=='.')
 	{
-		type=Type::INT;
+		type=Int;
 		
 		for (auto i=in.begin(); i!=in.end(); ++i)
 		{
 			if (*i=='.' || *i=='_')
 			{
-				type=Type::DUB;
+				type=Dub;
 				break;
 			}
 		}
 		
 		if (in.back()=='d' || in.back()=='f')
 		{
-			type=Type::DUB;
+			type=Dub;
 			in.pop_back();
 		}
 		else if (in.back()=='i')
 		{
-			type=Type::INT;
+			type=Int;
 			in.pop_back();
 		}
 		else if (in.back()=='b')
 		{
-			type=Type::BOOL;
+			type=Bool;
 			in.pop_back();
 		}
 	}
 	
-	if (type==Type::INT || type==Type::BOOL)
+	if (type==Int || type==Int)
 	{
 		int val=0;
 		
@@ -64,18 +64,18 @@ ElementPtr LiteralElement::makeNew(ElementData dataIn)
 			val=val*10+(*i-'0');
 		}
 		
-		if (type==Type::BOOL)
+		if (type==Bool)
 		{
 			bool out=(val!=0);
-			return ElementPtr(new LiteralElement(&out, Type(Type::BOOL), dataIn));
+			return ElementPtr(new LiteralElement(&out, type, dataIn));
 		}
 		else
 		{
 			int out=val;
-			return ElementPtr(new LiteralElement(&out, Type(Type::INT), dataIn));
+			return ElementPtr(new LiteralElement(&out, type, dataIn));
 		}
 	}
-	else if (type==Type::DUB) //floating point
+	else if (type==Dub) //floating point
 	{
 		double val=0;
 		int pointPos=0;
@@ -114,16 +114,16 @@ ElementPtr LiteralElement::makeNew(ElementData dataIn)
 		}
 		
 		double out=val;
-		return ElementPtr(new LiteralElement(&out, Type(Type::DUB), dataIn));
+		return ElementPtr(new LiteralElement(&out, type, dataIn));
 	}
 	else
 	{
-		error.log("tried to make literal with invalid type of " + Type::toString(type), dataIn, INTERNAL_ERROR);
+		error.log("tried to make literal with invalid type of " + type->toString(), dataIn, INTERNAL_ERROR);
 		return nullptr;
 	}
 }
 
 ActionPtr LiteralElement::resolveActions(ActionTablePtr table)
 {
-	return ActionPtr(new LiteralGetAction(type.cloneVoidPtr(val), type, data.text));
+	return ActionPtr(new LiteralGetAction(type->cloneVoidPtr(val), type, data.text));
 }

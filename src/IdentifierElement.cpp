@@ -22,7 +22,7 @@ ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, Type leftType,
 	
 	if (!out)
 	{
-		if (rightType.isCreatable() && leftType.exactlyEquals(Type(Type::VOID)))
+		if (rightType->isCreatable() && leftType->matches(Void))
 		{
 			size_t offset=table->getStackFrame()->getSize();
 			table->getStackFrame()->addMember(rightType);
@@ -35,7 +35,7 @@ ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, Type leftType,
 		}
 		else
 		{
-			error.log(string() + "could not find proper overload for " + leftType.toString() + "." + data.text + ":" + rightType.toString(), data, SOURCE_ERROR);
+			error.log(string() + "could not find proper overload for " + leftType->getName() + "." + data.text + ":" + rightType->getName(), data, SOURCE_ERROR);
 		}
 	}
 	

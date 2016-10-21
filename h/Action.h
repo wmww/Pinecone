@@ -26,7 +26,7 @@ public:
 	
 	string getText() {return text;}
 	virtual string getDescription() {return description;}
-	string toString() {return returnType.toString() + " <- " + inLeftType.toString() + "." + text + ":" + inRightType.toString();}
+	string toString() {return returnType->toString() + " <- " + inLeftType->toString() + "." + text + ":" + inRightType->toString();}
 	
 	Type& getReturnType() {return returnType;};
 	Type& getInLeftType() {return inLeftType;};
@@ -50,7 +50,7 @@ typedef shared_ptr<Action> ActionPtr;
 class VoidAction: public Action
 {
 public:
-	VoidAction(): Action(Type(Type::VOID), Type(Type::VOID), Type(Type::VOID), "Void")
+	VoidAction(): Action(Void, Void, Void, "Void")
 	{
 		setDescription("Void");
 	}
@@ -67,7 +67,7 @@ class VarGetAction: public Action
 public:
 	
 	VarGetAction(size_t in, Type typeIn, string textIn):
-		Action(typeIn, Type(Type::VOID), Type(Type::VOID), textIn)
+		Action(typeIn, Void, Void, textIn)
 	{
 		offset=in;
 		
@@ -87,7 +87,7 @@ class VarSetAction: public Action
 public:
 	
 	VarSetAction(size_t in, Type typeIn, string textIn):
-		Action(typeIn, Type(Type::VOID), typeIn, textIn)
+		Action(typeIn, Void, typeIn, textIn)
 	{
 		offset=in;
 		
@@ -106,21 +106,21 @@ class LiteralGetAction: public Action
 public:
 	
 	LiteralGetAction(void* in, Type typeIn, string textIn):
-		Action(typeIn, Type(Type::VOID), Type(Type::VOID), textIn)
+		Action(typeIn, Void, Void, textIn)
 	{
-		data=returnType.cloneVoidPtr(in);
+		data=returnType->cloneVoidPtr(in);
 		
 		setDescription(textIn);// + " (" + typeIn.toString() + " literal)");
 	}
 	
 	~LiteralGetAction()
 	{
-		returnType.deleteVoidPtr(data);
+		returnType->deleteVoidPtr(data);
 	}
 	
 	void* execute(void* inLeft, void* inRight)
 	{
-		return returnType.cloneVoidPtr(data);
+		return returnType->cloneVoidPtr(data);
 	}
 	
 private:
