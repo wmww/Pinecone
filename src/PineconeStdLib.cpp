@@ -7,10 +7,10 @@ ActionTablePtr table;
 #define Bool_CPP bool
 #define Void_CPP char
 
-#define Dub_PNCN Type(Type::DUB)
-#define Int_PNCN Type(Type::INT)
-#define Bool_PNCN Type(Type::BOOL)
-#define Void_PNCN Type(Type::VOID)
+#define Dub_PNCN Dub
+#define Int_PNCN Int
+#define Bool_PNCN Bool
+#define Void_PNCN Void
 
 #define CONCAT(a,b) a##_##b
 
@@ -26,7 +26,7 @@ ActionTablePtr table;
 #define DO_INSTANTIATE(typeIn, varOutName, setVal) getCppType(typeIn) varOutName setVal;
 #define DONT_INSTANTIATE(typeIn, varOutName, setVal) ;
 
-#define DO_RETURN_VAL(typeIn, varName) return getPncnType(typeIn).cloneVoidPtr(&varName);
+#define DO_RETURN_VAL(typeIn, varName) return getPncnType(typeIn)->cloneVoidPtr(&varName);
 #define DONT_RETURN_VAL(typeIn, varName) return nullptr;
 
 #define INSTANTIATE_Dub DO_INSTANTIATE

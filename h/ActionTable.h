@@ -28,6 +28,11 @@ public:
 	void addAction(ActionPtr in) {actions.push_back(in);}
 	void addAction(ActionPtr in, OperatorType opType);
 	
+	Type getType(string name);
+	
+	void addType(TypeBase::PrimitiveType typeIn, string nameIn);
+	void addType(list<Type> typesIn, string nameIn);
+	
 	StackFrame* getStackFrame() {return stackFrame;}
 	
 	string toString();
@@ -44,6 +49,7 @@ private:
 	shared_ptr<ActionTable> parent;
 	list<ActionPtr> actions;
 	list<ActionPtr> operators[OP_TYPE_OVERRIDEABLE_LAST];
+	list<Type> types;
 	
 	StackFrame* stackFrame;
 };

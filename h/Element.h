@@ -32,7 +32,7 @@ public:
 	
 	virtual ElementData::Type getElemType()=0;
 	
-	virtual Type getReturnType() {return Type::UNKNOWN;}
+	virtual Type getReturnType() {return UnknownType;}
 	
 	//virtual void* execute()=0;
 	

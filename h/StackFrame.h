@@ -21,7 +21,7 @@ public:
 	
 	void execute();
 	
-	void addMember(Type in) {members.push_back(in); frameSize+=in.getSize();}
+	void addMember(Type in) {members.push_back(in); frameSize+=in->getSize();}
 	
 	size_t getSize() {return frameSize;}
 	

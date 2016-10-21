@@ -115,7 +115,7 @@ void ElementList::structureByOperators()
 				{
 					if ((*j)->getElemType()==ElementData::LITERAL)
 					{
-						if ((*j)->getReturnType()==Type(Type::INT))
+						if ((*j)->getReturnType()==Int)
 						{
 							ElementData data0=(*i)->getData();
 							ElementData data1=(*j)->getData();
@@ -134,7 +134,7 @@ void ElementList::structureByOperators()
 								
 								if ((*j)->getElemType()==ElementData::LITERAL)
 								{
-									if ((*j)->getReturnType()==Type(Type::INT))
+									if ((*j)->getReturnType()==Int)
 									{
 										data0=(*j)->getData();
 										data1=(*i)->getData();

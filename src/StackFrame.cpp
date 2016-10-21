@@ -28,7 +28,7 @@ void StackFrame::resolve(bool printOutput)
 	
 	ActionPtr ptr=elements.resolveActions();
 	
-	actions=ActionPtr(new FunctionAction(ptr, Type(Type::VOID), Type(Type::VOID), frameSize, "global function"));
+	actions=ActionPtr(new FunctionAction(ptr, Void, Void, frameSize, "global function"));
 	
 	cout << "printing action tree..." << endl;
 	
@@ -44,7 +44,7 @@ void StackFrame::resolve(bool printOutput)
 void StackFrame::execute()
 {
 	if (actions)
-		actions->getReturnType().deleteVoidPtr(actions->execute(nullptr, nullptr));
+		actions->getReturnType()->deleteVoidPtr(actions->execute(nullptr, nullptr));
 	else
 		error.log("cannot execute stack frame because actions is null", RUNTIME_ERROR);
 }

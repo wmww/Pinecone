@@ -56,12 +56,40 @@ ActionPtr ActionTable::getBestAction(OperatorType opType, Type leftIn, Type righ
 	return resolveOverload(matches, leftIn, rightIn);
 }
 
+Type ActionTable::getType(string name)
+{
+	for (auto i=types.begin(); i!=types.end(); ++i)
+	{
+		if ((*i)->getName()==name)
+			return *i;
+	}
+	
+	if (parent)
+	{
+		return parent->getType(name);
+	}
+	else
+	{
+		return Type(nullptr);
+	}
+}
+
 void ActionTable::addActionsToList(list<ActionPtr>& in, OperatorType opType)
 {
 	in.insert(in.end(), operators[opType].begin(), operators[opType].end());
 	
 	if (parent)
 		parent->addActionsToList(in, opType);
+}
+
+void ActionTable::addType(TypeBase::PrimitiveType typeIn, string nameIn)
+{
+	
+}
+
+void ActionTable::addType(list<Type> typesIn, string nameIn)
+{
+	
 }
 
 string ActionTable::toString()
@@ -105,7 +133,7 @@ ActionPtr ActionTable::resolveOverload(list<ActionPtr>& in, Type leftIn, Type ri
 	
 	for (auto i=in.begin(); i!=in.end(); ++i)
 	{
-		if (leftIn.exactlyEquals((*i)->getInLeftType()) && rightIn.exactlyEquals((*i)->getInRightType()))
+		if (leftIn==(*i)->getInLeftType() && rightIn==(*i)->getInRightType())
 		{
 			exactMatch=*i;
 			break;

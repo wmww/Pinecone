@@ -1,7 +1,7 @@
 #include "../h/ListAction.h"
 #include "../h/ErrorHandler.h"
 
-ListAction::ListAction(list<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():Type()), Type(Type::VOID), Type(Type::VOID), "LIST")
+ListAction::ListAction(list<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void, "LIST")
 {
 	if (actionsIn.size()<=0)
 	{
@@ -12,7 +12,7 @@ ListAction::ListAction(list<ActionPtr>& actionsIn): Action((actionsIn.size()>0?a
 	
 	for (auto i=actions.begin(); i!=actions.end(); ++i)
 	{
-		if ((*i)->getInLeftType().getType()!=Type::VOID || (*i)->getInRightType().getType()!=Type::VOID)
+		if (!(*i)->getInLeftType()->matches(Void) || !(*i)->getInRightType()->matches(Void))
 		{
 			error.log((*i)->getDescription() + " put into action list even though its inputs are not void", INTERNAL_ERROR);
 		}
@@ -59,7 +59,7 @@ void* ListAction::execute(void* inLeft, void* inRight)
 	
 	for (; i!=std::prev(actions.end()); ++i)
 	{
-		(*i)->getReturnType().deleteVoidPtr((*i)->execute(nullptr, nullptr));
+		(*i)->getReturnType()->deleteVoidPtr((*i)->execute(nullptr, nullptr));
 	}
 	
 	return (*i)->execute(nullptr, nullptr);

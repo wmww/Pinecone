@@ -10,7 +10,7 @@ public:
 	LiteralElement(void* valIn, Type typeIn, ElementData dataIn): Element(dataIn)
 	{
 		type=typeIn;
-		val=type.cloneVoidPtr(valIn);
+		val=type->cloneVoidPtr(valIn);
 	}
 	
 	static ElementPtr makeNew(ElementData dataIn);

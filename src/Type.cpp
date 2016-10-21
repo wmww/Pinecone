@@ -1,13 +1,20 @@
 #include "../h/Type.h"
 #include "../h/ErrorHandler.h"
 
-Type::Type(vector<Type>& typesIn)
+const Type UnknownType = Type(new TypeBase(TypeBase::UNKNOWN, "UNKNOWN_TYPE"));
+const Type Void = Type(new TypeBase(TypeBase::VOID, "Void"));
+const Type Bool = Type(new TypeBase(TypeBase::BOOL, "Bool"));
+const Type Int = Type(new TypeBase(TypeBase::INT, "Int"));
+const Type Dub = Type(new TypeBase(TypeBase::DUB, "Dub"));
+
+TypeBase::TypeBase(vector<shared_ptr<TypeBase>>& typesIn, string nameIn)
 {
+	name=nameIn;
 	type=STRUCT;
 	types.insert(types.end(), std::make_move_iterator(typesIn.begin()), std::make_move_iterator(typesIn.end()));
 }
 
-string Type::toString(PrimitiveType in)
+string TypeBase::toString(PrimitiveType in)
 {
 	switch (in)
 	{
@@ -22,7 +29,7 @@ string Type::toString(PrimitiveType in)
 	}
 }
 
-string Type::toString()
+string TypeBase::toString()
 {
 	if (type==STRUCT)
 	{
@@ -35,7 +42,7 @@ string Type::toString()
 		
 		for (unsigned i=0; i<types.size(); ++i)
 		{
-			out+=types[i].toString();
+			out+=types[i]->toString();
 			if (i<types.size()-1)
 				out+=", ";
 		}
@@ -50,7 +57,7 @@ string Type::toString()
 	}
 }
 
-bool Type::isCreatable()
+bool TypeBase::isCreatable()
 {
 	if (type==INT || type==DUB || type==BOOL)
 	{
@@ -60,7 +67,7 @@ bool Type::isCreatable()
 	{
 		for (auto i=types.begin(); i!=types.end(); ++i)
 		{
-			if (!(*i).isCreatable())
+			if (!(*i)->isCreatable())
 				return false;
 			
 			return true;
@@ -78,12 +85,12 @@ bool Type::isCreatable()
 	return false;
 }
 
-bool Type::isVoid()
+bool TypeBase::isVoid()
 {
 	return type==VOID;
 }
 
-size_t Type::getSize()
+size_t TypeBase::getSize()
 {
 	switch (type)
 	{
@@ -96,7 +103,7 @@ size_t Type::getSize()
 		{
 			size_t sum=0;
 			for (unsigned i=0; i<types.size(); ++i)
-				sum+=types[i].getSize();
+				sum+=types[i]->getSize();
 			return sum;
 		}
 			
@@ -106,8 +113,8 @@ size_t Type::getSize()
 			return 0;
 	}
 }
-
-Type Type::getDominant(Type a, Type b)
+/*
+Type TypeBase::getDominant(Type a, Type b)
 {
 	if ((a.getType()==STRUCT) != (b.getType()==STRUCT))
 	{
@@ -135,15 +142,11 @@ Type Type::getDominant(Type a, Type b)
 		return Type(std::min(a.getType(), b.getType()));
 	}
 }
+*/
 
-bool Type::operator==(const Type& other)
+/*
+bool TypeBase::operator==(const Type& other)
 {
-	/*if (type==NONE || other.type==NONE)
-	{
-		error.log("tried to compare a Type of type NONE, I think this is bad but I'm not really sure.", INTERNAL_ERROR);
-		return false;
-	}
-	else */
 	if (type==UNKNOWN || other.type==UNKNOWN)
 	{
 		return true;
@@ -164,7 +167,7 @@ bool Type::operator==(const Type& other)
 	}
 }
 
-bool Type::exactlyEquals(const Type& other)
+bool TypeBase::exactlyEquals(const Type& other)
 {
 	if (type==STRUCT && other.type==STRUCT)
 	{
@@ -184,8 +187,30 @@ bool Type::exactlyEquals(const Type& other)
 		return type==other.type;
 	}
 }
+*/
 
-void* Type::createVoidPtr()
+bool TypeBase::matches(Type other)
+{
+	if (type==STRUCT && other->type==STRUCT)
+	{
+		if (types.size()!=other->types.size())
+			return false;
+		
+		for (unsigned i=0; i<types.size(); ++i)
+		{
+			if (!(types[i]->matches(other->types[i])))
+				return false;
+		}
+		
+		return true;
+	}
+	else
+	{
+		return type==other->type;
+	}
+}
+
+void* TypeBase::createVoidPtr()
 {
 	switch (type)
 	{
@@ -203,7 +228,7 @@ void* Type::createVoidPtr()
 
 }
 
-void Type::deleteVoidPtr(void* ptr)
+void TypeBase::deleteVoidPtr(void* ptr)
 {
 	if (ptr)
 	{
@@ -223,7 +248,7 @@ void Type::deleteVoidPtr(void* ptr)
 	}
 }
 
-void Type::setVoidPtr(void* ptr, void* in)
+void TypeBase::setVoidPtr(void* ptr, void* in)
 {
 	if (ptr)
 	{
@@ -243,7 +268,7 @@ void Type::setVoidPtr(void* ptr, void* in)
 	}
 }
 
-void* Type::cloneVoidPtr(void* ptr)
+void* TypeBase::cloneVoidPtr(void* ptr)
 {
 	if (ptr)
 	{
@@ -265,7 +290,7 @@ void* Type::cloneVoidPtr(void* ptr)
 		return nullptr;
 }
 
-void* Type::castVoidPtr(void* ptr, Type typeOut)
+void* TypeBase::castVoidPtr(void* ptr, Type typeOut)
 {
 	if (ptr)
 	{
@@ -273,11 +298,11 @@ void* Type::castVoidPtr(void* ptr, Type typeOut)
 		{
 			bool var=*((bool*)ptr);
 			
-			if (typeOut==BOOL)
+			if (typeOut->matches(Bool))
 				return new bool(var);
-			else if (typeOut==INT)
+			else if (typeOut->matches(Int))
 				return new int(var?1:0);
-			else if (typeOut==DUB)
+			else if (typeOut->matches(Dub))
 				return new double(var?1.0:0.0);
 			else
 				return nullptr;
@@ -286,11 +311,11 @@ void* Type::castVoidPtr(void* ptr, Type typeOut)
 		{
 			int var=*((int*)ptr);
 			
-			if (typeOut==BOOL)
+			if (typeOut->matches(Bool))
 				return new bool(var!=0);
-			else if (typeOut==INT)
+			else if (typeOut->matches(Int))
 				return new int(var);
-			else if (typeOut==DUB)
+			else if (typeOut->matches(Dub))
 				return new double((double)var);
 			else
 				return nullptr;
@@ -299,11 +324,11 @@ void* Type::castVoidPtr(void* ptr, Type typeOut)
 		{
 			double var=*((double *)ptr);
 			
-			if (typeOut==BOOL)
+			if (typeOut->matches(Bool))
 				return new bool(var!=0);
-			else if (typeOut==INT)
+			else if (typeOut->matches(Int))
 				return new int((int)var);
-			else if (typeOut==DUB)
+			else if (typeOut->matches(Bool))
 				return new double(var);
 			else
 				return nullptr;
@@ -325,7 +350,7 @@ void* Type::castVoidPtr(void* ptr, Type typeOut)
 			
 			delete ptr;*/
 		}
-		else if (type==Type::VOID)
+		else if (type==VOID)
 		{
 			return nullptr;
 		}
