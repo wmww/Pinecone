@@ -19,7 +19,9 @@ Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string 
 
 string Action::toString()
 {
-	return returnType->getName() + " <- " + inLeftType->getName() + " " + text + " " + inRightType->getName();
+	return text;
+	
+	//return returnType->getName() + " <- " + inLeftType->getName() + " " + text + " " + inRightType->getName();
 }
 
 void* VarGetAction::execute(void* inLeft, void* inRight)

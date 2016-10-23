@@ -26,9 +26,11 @@ void StackFrame::resolve(bool printOutput)
 	if (printOutput)
 		cout << endl << elements.printToBoxedString("structured by operators") << endl;
 	
+	error.log("1", JSYK);
 	ActionPtr ptr=elements.resolveActions();
+	error.log("2", JSYK);
 	
-	actions=ActionPtr(new FunctionAction(ptr, Void, Void, frameSize, "global function"));
+	actions=ActionPtr(new FunctionAction(ptr, Void, Void, frameSize, "global"));
 	
 	if (printOutput)
 	{
