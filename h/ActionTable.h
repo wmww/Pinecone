@@ -17,21 +17,22 @@ class ActionTable
 {
 public:
 	//should only be called within this class except for creating the root
-	ActionTable(shared_ptr<ActionTable> parentIn) {parent=parentIn; stackFrame=parent->getStackFrame();}
-	ActionTable(StackFrame * stackFrameIn) {parent=nullptr; stackFrame=stackFrameIn;}
+	ActionTable(shared_ptr<ActionTable> parentIn);
+	ActionTable(StackFrame * stackFrameIn);
 	
 	~ActionTable() {clear();}
 	
 	ActionPtr getBestAction(ElementData data, Type leftIn, Type rightIn);
 	ActionPtr getBestAction(OperatorType opType, Type leftIn, Type rightIn);
 	
-	void addAction(ActionPtr in) {actions.push_back(in);}
+	void addAction(ActionPtr in);
 	void addAction(ActionPtr in, OperatorType opType);
 	
 	Type getType(string name);
 	
+	void addType(Type typeIn);
 	void addType(TypeBase::PrimitiveType typeIn, string nameIn);
-	void addType(list<Type> typesIn, string nameIn);
+	void addType(vector<Type> typesIn, string nameIn);
 	
 	StackFrame* getStackFrame() {return stackFrame;}
 	

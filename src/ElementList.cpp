@@ -6,6 +6,9 @@
 #include "../h/ListAction.h"
 #include "../h/StackFrame.h"
 
+using std::prev;
+using std::next;
+
 ElementList::ElementList(ElementData dataIn, ElementList& parentList): Element(dataIn)
 {
 	table=std::unique_ptr<ActionTable>(new ActionTable(parentList.getActionTable()));
@@ -28,15 +31,9 @@ void ElementList::clear()
 	table->clear();
 }
 
-Type ElementList::getReturnType()
-{
-	return elems.back()->getReturnType();
-}
-
 void ElementList::structureByOperators()
 {
-	//parentheses
-	
+	//parentheses and . as part of Dub literal
 	for (auto i=elems.begin(); i!=elems.end(); ++i)
 	{
 		if ((*i)->getElemType()==ElementData::OPERATOR)
@@ -115,7 +112,7 @@ void ElementList::structureByOperators()
 				{
 					if ((*j)->getElemType()==ElementData::LITERAL)
 					{
-						if ((*j)->getReturnType()==Int)
+						if (((LiteralElement*)&(**j))->getType()==Int)
 						{
 							ElementData data0=(*i)->getData();
 							ElementData data1=(*j)->getData();
@@ -134,7 +131,7 @@ void ElementList::structureByOperators()
 								
 								if ((*j)->getElemType()==ElementData::LITERAL)
 								{
-									if ((*j)->getReturnType()==Int)
+									if (((LiteralElement*)&(**j))->getType()==Int)
 									{
 										data0=(*j)->getData();
 										data1=(*i)->getData();
@@ -159,56 +156,88 @@ void ElementList::structureByOperators()
 	
 	vector<OperatorType> opTypes;
 	
+	opTypes.push_back(OP_COLON);
+	absorbForOperators(opTypes, true, false, true);
+	opTypes.clear();
+	
 	opTypes.push_back(OP_PLUS);
 	opTypes.push_back(OP_MINUS);
-	absorbForOperators(opTypes);
+	absorbForOperators(opTypes, true, true, false);
 	opTypes.clear();
 	
 	opTypes.push_back(OP_COLON);
-	absorbForOperators(opTypes);
+	absorbForOperators(opTypes, false, true, true);
 	opTypes.clear();
 	
 }
 
-void ElementList::absorbForOperators(vector<OperatorType> operators)
+void ElementList::absorbForOperators(vector<OperatorType> operators, bool absorbLeft, bool absorbRight, bool backwords)
 {
-	for (auto i=elems.begin(); i!=elems.end(); ++i)
+	if (!absorbLeft && !absorbRight)
+	{
+		error.log(string() + "called " + __FUNCTION__ + " with both absorbLeft and absorbRight false, which is kinda pointless", INTERNAL_ERROR);
+		return;
+	}
+	
+	if (elems.empty())
+		return;
+	
+	auto i=backwords?prev(elems.end()):elems.begin();
+	
+	while (true)
 	{
 		if ((*i)->getElemType()==ElementData::OPERATOR)
 		{
+			
 			OperatorType type=((OperatorElement *)&(**i))->getType();
 			
 			for (auto l=operators.begin(); l!=operators.end(); ++l)
 			{
 				if (type==*l)
 				{
-					auto j=i, k=i;
+					auto j=i;
 					
-					++k;
+					if (absorbLeft)
+					{
+						if (j!=elems.begin())
+						{
+							j--;
+							
+							((OperatorElement *)&(**i))->setLeftInput(*j);
+							
+							elems.erase(j);
+						}
+						//else the scope starts with this operator, and thus it cant have a left input
+					}
 					
-					if (j==elems.begin())
+					j=i;
+					
+					if (absorbRight)
 					{
-						error.log("scope started with " + OperatorElement::toString(type), (*i)->getData(), SOURCE_ERROR);
-					}
-					else if (k==elems.end())
-					{
-						error.log("scope ended with " + OperatorElement::toString(type), (*i)->getData(), SOURCE_ERROR);
-					}
-					else
-					{
-						--j;
+						j++;
 						
-						((OperatorElement *)&(**i))->setLeftInput(*j);
-						((OperatorElement *)&(**i))->setRightInput(*k);
-						
-						elems.erase(j);
-						elems.erase(k);
+						if (j!=elems.end())
+						{
+							((OperatorElement *)&(**i))->setRightInput(*j);
+							
+							elems.erase(j);
+						}
+						//else the scope ends with this operator, and thus it cant have a left input
 					}
 					
 					break;
 				}
 			}
 		}
+		
+		if (i==(backwords?elems.begin():prev(elems.end())))
+			break;
+		
+		if (backwords)
+			--i;
+		else
+			++i;
+			
 	}
 }
 

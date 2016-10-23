@@ -18,6 +18,12 @@ string IdentifierElement::getReadableName()
 
 ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, Type leftType, Type rightType)
 {
+	if (!leftType || !rightType)
+	{
+		error.log("IdentifierElement::resolveActions sent null type", data, INTERNAL_ERROR);
+	}
+	
+	
 	ActionPtr out=table->getBestAction(data, leftType, rightType);
 	
 	if (!out)
@@ -36,35 +42,9 @@ ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, Type leftType,
 		else
 		{
 			error.log(string() + "could not find proper overload for " + leftType->getName() + "." + data.text + ":" + rightType->getName(), data, SOURCE_ERROR);
+			out=voidAction;
 		}
 	}
 	
-	//returnType=out->getReturnType();
-	
 	return out;
 }
-
-/*Type IdentifierElement::getReturnType()
-{
-	return returnType;
-}*/
-
-/*
-void* IdentifierElement::execute()
-{
-	return execute(nullptr, nullptr);
-}
-
-void* IdentifierElement::execute(void* left, void* right)
-{
-	if (action)
-	{
-		return action->execute(left, right);
-	}
-	else
-	{
-		error.log(string() + __FUNCTION__ + " called while action is null", data, INTERNAL_ERROR);
-		return nullptr;
-	}
-}
-*/

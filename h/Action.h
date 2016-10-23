@@ -12,13 +12,7 @@ class Action
 {
 public:
 	
-	Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
-	{
-		text=textIn;
-		returnType=returnTypeIn;
-		inLeftType=inLeftTypeIn;
-		inRightType=inRightTypeIn;
-	}
+	Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
 	
 	virtual ~Action() {}
 	
@@ -26,10 +20,10 @@ public:
 	
 	string getText() {return text;}
 	virtual string getDescription() {return description;}
-	string toString() {return returnType->toString() + " <- " + inLeftType->toString() + "." + text + ":" + inRightType->toString();}
+	string toString();
 	
-	Type& getReturnType() {return returnType;};
-	Type& getInLeftType() {return inLeftType;};
+	Type& getReturnType() {return returnType;}
+	Type& getInLeftType() {return inLeftType;}
 	Type& getInRightType() {return inRightType;}
 	//void* execute(void* inLeft, void* inRight);
 	virtual void* execute(void* inLeft, void* inRight)=0;
@@ -60,6 +54,8 @@ public:
 		return nullptr;
 	}
 };
+
+extern ActionPtr voidAction;
 
 //an action for getting a variable, will delete the data element in destructor
 class VarGetAction: public Action

@@ -30,8 +30,6 @@ void StackFrame::resolve(bool printOutput)
 	
 	actions=ActionPtr(new FunctionAction(ptr, Void, Void, frameSize, "global function"));
 	
-	cout << "printing action tree..." << endl;
-	
 	if (printOutput)
 	{
 		if (actions)

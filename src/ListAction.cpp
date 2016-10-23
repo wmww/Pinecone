@@ -35,8 +35,6 @@ string ListAction::getDescription()
 		else
 			str="[null action]";
 		
-		error.log(str, JSYK);
-		
 		for (unsigned j=0; j<str.size(); ++j)
 		{
 			out+=str[j];

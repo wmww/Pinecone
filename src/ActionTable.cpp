@@ -2,9 +2,38 @@
 #include "../h/ErrorHandler.h"
 #include "../h/OperatorElement.h"
 
+ActionTable::ActionTable(shared_ptr<ActionTable> parentIn)
+{
+	parent=parentIn;
+	stackFrame=parent->getStackFrame();
+}
+
+ActionTable::ActionTable(StackFrame * stackFrameIn)
+{
+	parent=nullptr;
+	stackFrame=stackFrameIn;
+	
+	//types.push_back(Void);
+	//types.push_back(Bool);
+	//types.push_back(Int);
+	//types.push_back(Dub);
+}
+
 void ActionTable::clear()
 {
 	actions.clear();
+}
+
+void ActionTable::addAction(ActionPtr in)
+{
+	Type ptr=getType(in->getText());
+	
+	if (!ptr || in->getReturnType()==ptr)
+		actions.push_back(in);
+	else
+	{
+		error.log("cannot create a function called " + in->getText() + " that does not return the type of the same name", SOURCE_ERROR);
+	}
 }
 
 void ActionTable::addAction(ActionPtr in, OperatorType opType)
@@ -82,21 +111,61 @@ void ActionTable::addActionsToList(list<ActionPtr>& in, OperatorType opType)
 		parent->addActionsToList(in, opType);
 }
 
-void ActionTable::addType(TypeBase::PrimitiveType typeIn, string nameIn)
+void ActionTable::addType(Type typeIn)
 {
+	Type preExisting=getType(typeIn->getName());
 	
+	if (preExisting)
+	{
+		error.log("type " + typeIn->getName() + " can not be created as it is already type " + preExisting->toString(), SOURCE_ERROR);
+		return;
+	}
+	
+	types.push_back(Type(typeIn));
 }
 
-void ActionTable::addType(list<Type> typesIn, string nameIn)
+void ActionTable::addType(TypeBase::PrimitiveType typeIn, string nameIn)
 {
+	Type preExisting=getType(nameIn);
 	
+	if (preExisting)
+	{
+		error.log("type " + nameIn + " can not be created as it is already type " + preExisting->toString(), SOURCE_ERROR);
+		return;
+	}
+	
+	types.push_back(Type(new TypeBase(typeIn, nameIn)));
+}
+
+void ActionTable::addType(vector<Type> typesIn, string nameIn)
+{
+	Type preExisting=getType(nameIn);
+	
+	if (preExisting)
+	{
+		error.log("type " + nameIn + " can not be created as it is already type " + preExisting->toString(), SOURCE_ERROR);
+		return;
+	}
+	
+	types.push_back(Type(new TypeBase(typesIn, nameIn)));
 }
 
 string ActionTable::toString()
 {
 	string out;
 	
-	out+="operators:\n";
+	out+="types:\n";
+	for (auto i=types.begin(); i!=types.end(); ++i)
+	{
+		out+="\t";
+		if (*i)
+			out+=(*i)->getName() + " (" + (*i)->toString() + ")";
+		else
+			out+="null type";
+		out+="\n";
+	}
+	
+	out+="\noperators:\n";
 	
 	for (int i=0; i<OP_TYPE_OVERRIDEABLE_LAST; ++i)
 	{
@@ -106,7 +175,7 @@ string ActionTable::toString()
 			if (*j)
 				out+=(*j)->toString();
 			else
-				out+="fucking null operator";
+				out+="null operator";
 			out+="\n";
 		}
 	}

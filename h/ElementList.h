@@ -25,14 +25,12 @@ public:
 	
 	//Identifier * makeIdentifier(string name) {return table.makeIdentifier(name);}
 	
-	Type getReturnType();
-	
 	void structureByOperators();
 	
 	ActionPtr resolveActions();
 	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions();}
 	
-	void absorbForOperators(vector<OperatorType> operators);
+	void absorbForOperators(vector<OperatorType> operators, bool absorbLeft, bool absorbRight, bool backwords);
 	
 	void printToString(string& in, int depth);
 	using Element::printToString;

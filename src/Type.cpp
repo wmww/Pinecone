@@ -20,11 +20,11 @@ string TypeBase::toString(PrimitiveType in)
 	{
 		//case NONE: return "NO_TYPE";
 		case UNKNOWN: return "UNKNOWN_TYPE";
-		case VOID: return "Void";
+		case VOID: return "VOID";
 		case STRUCT: return "STRUCT";
-		case BOOL: return "Bool";
-		case INT: return "Int";
-		case DUB: return "Dub";
+		case BOOL: return "BOOL";
+		case INT: return "INT";
+		case DUB: return "DUB";
 		default: return "ERROR_GETTING_TYPE";
 	}
 }
@@ -113,6 +113,7 @@ size_t TypeBase::getSize()
 			return 0;
 	}
 }
+
 /*
 Type TypeBase::getDominant(Type a, Type b)
 {
