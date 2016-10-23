@@ -78,11 +78,13 @@ void populatePineconeStdLib(ActionTablePtr t)
 	
 	///operators
 	
+	func(OP_PLUS, Int, Int, Int,
+		retrn left+right);
+	
 	func(OP_PLUS, Dub, Dub, Dub,
 		retrn left+right);
 	
-	func(OP_PLUS, Int, Int, Int,
-		retrn left+right);
+	
 	
 	func(OP_MINUS, Dub, Dub, Dub,
 		retrn left-right);
@@ -113,13 +115,10 @@ void populatePineconeStdLib(ActionTablePtr t)
 	
 	///casting
 	
-	func("Bool", Bool, Void, Bool, 
-		retrn right);
-	
-	func("Int", Int, Void, Int, 
-		retrn right);
-	
 	func("Dub", Dub, Void, Int,
+		retrn right);
+	
+	func("Int", Int, Void, Dub, 
 		retrn right);
 	
 	

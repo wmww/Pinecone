@@ -25,6 +25,8 @@ public:
 	ActionPtr getBestAction(ElementData data, Type leftIn, Type rightIn);
 	ActionPtr getBestAction(OperatorType opType, Type leftIn, Type rightIn);
 	
+	ActionPtr makeBranchAction(ElementData data, OperatorType opType, ActionPtr left, ActionPtr right);
+	
 	void addAction(ActionPtr in);
 	void addAction(ActionPtr in, OperatorType opType);
 	
@@ -43,11 +45,12 @@ public:
 	void clear();
 	
 private:
-	void addActionsToList(list<ActionPtr>& in, string& text);
-	void addActionsToList(list<ActionPtr>& in, OperatorType opType);
-	ActionPtr resolveOverload(list<ActionPtr>& in, Type leftIn, Type rightIn);
+	void addActionsToList(vector<ActionPtr>& in, string& text);
+	void addActionsToList(vector<ActionPtr>& in, OperatorType opType);
+	ActionPtr resolveOverload(vector<ActionPtr>& in, Type leftIn, Type rightIn);
 	
 	shared_ptr<ActionTable> parent;
+	list<ActionPtr> converters;
 	list<ActionPtr> actions;
 	list<ActionPtr> operators[OP_TYPE_OVERRIDEABLE_LAST];
 	list<Type> types;

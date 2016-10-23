@@ -72,6 +72,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		else
 			leftAction=voidAction;
 			
+		/*ActionPtr action=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
 		ActionPtr action=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
 		
 		if (!action)
@@ -80,6 +81,9 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		}
 		
 		out=ActionPtr(new BranchAction(leftAction, action, rightAction));
+		*/
+		
+		out=table->makeBranchAction(data, opType, leftAction, rightAction);
 	}
 	
 	if (!out)
