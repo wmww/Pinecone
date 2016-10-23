@@ -73,6 +73,11 @@ void populatePineconeStdLib(ActionTablePtr t)
 {
 	table=t;
 	
+	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
+	voidAction=ActionPtr(new VoidAction());
+	
+	///operators
+	
 	func(OP_PLUS, Dub, Dub, Dub,
 		retrn left+right);
 	
@@ -84,7 +89,47 @@ void populatePineconeStdLib(ActionTablePtr t)
 	
 	func(OP_MINUS, Int, Int, Int,
 		retrn left-right);
+	
+	
+	///basic types
+	
+	table->addType(Void);
+	table->addType(Bool);
+	table->addType(Int);
+	table->addType(Dub);
+	
+	
+	///initalizers
+	
+	func("Bool", Bool, Void, Void, 
+		retrn false);
+	
+	func("Int", Int, Void, Void, 
+		retrn 0);
+	
+	func("Dub", Dub, Void, Void, 
+		retrn 0.0);
 		
+	
+	///casting
+	
+	func("Bool", Bool, Void, Bool, 
+		retrn right);
+	
+	func("Int", Int, Void, Int, 
+		retrn right);
+	
+	func("Dub", Dub, Void, Int,
+		retrn right);
+	
+	
+	///mscl functions
+	
+	//print
+	
+	func("print", Void, Void, Void,
+		cout << endl);
+	
 	func("print", Void, Void, Bool,
 		cout << (right?"tru":"fls") << endl);
 	

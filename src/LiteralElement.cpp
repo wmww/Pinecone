@@ -125,5 +125,11 @@ ElementPtr LiteralElement::makeNew(ElementData dataIn)
 
 ActionPtr LiteralElement::resolveActions(ActionTablePtr table)
 {
-	return ActionPtr(new LiteralGetAction(type->cloneVoidPtr(val), type, data.text));
+	if (type && val)
+		return ActionPtr(new LiteralGetAction(type->cloneVoidPtr(val), type, data.text));
+	else
+	{
+		error.log(string() + "called " + __FUNCTION__ + " on a LiteralElement that was not properly created", data, INTERNAL_ERROR);
+		return voidAction;
+	}
 }

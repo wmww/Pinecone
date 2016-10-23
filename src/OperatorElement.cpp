@@ -39,12 +39,12 @@ string OperatorElement::getReadableName()
 
 ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 {
-	ActionPtr leftAction, rightAction, out;
+	ActionPtr leftAction, rightAction, out=nullptr;
 	
 	if (rightInput)
 		rightAction=rightInput->resolveActions(table);
 	else
-		rightAction=ActionPtr(new VoidAction());
+		rightAction=voidAction;
 	
 	if (opType==OP_COLON)
 	{
@@ -52,10 +52,13 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		{
 			ActionPtr action=((IdentifierElement *)&(*leftInput))->resolveActions(table, Void, rightAction->getReturnType());
 			
-			if (action)
+			if (!action)
 			{
-				out=ActionPtr(new BranchAction(ActionPtr(new VoidAction()), action, rightAction));
+				error.log("Element::resolveActions returned a nullptr, this should never happen, use a VoidAction", data, INTERNAL_ERROR);
+				action=voidAction;
 			}
+			
+			out=ActionPtr(new BranchAction(voidAction, action, rightAction));
 		}
 		else
 		{
@@ -67,20 +70,22 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		if (leftInput)
 			leftAction=leftInput->resolveActions(table);
 		else
-			leftAction=ActionPtr(new VoidAction());
+			leftAction=voidAction;
 			
 		ActionPtr action=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
 		
-		if (action)
+		if (!action)
 		{
-			out=ActionPtr(new BranchAction(leftAction, action, rightAction));
+			action=voidAction;
 		}
+		
+		out=ActionPtr(new BranchAction(leftAction, action, rightAction));
 	}
 	
 	if (!out)
 	{
-		error.log("could not resolve " + leftAction->getReturnType()->toString() + toString(opType) + rightAction->getReturnType()->toString(), data, SOURCE_ERROR);
-		return ActionPtr(new VoidAction());
+		error.log("could not resolve " + leftAction->getReturnType()->getName() + toString(opType) + rightAction->getReturnType()->getName(), data, SOURCE_ERROR);
+		return voidAction;
 	}
 	else
 	{

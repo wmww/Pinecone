@@ -19,8 +19,6 @@ public:
 	
 	ElementData::Type getElemType() {return ElementData::IDENTIFIER;}
 	
-	//Type getReturnType();
-	
 	//Identifier * getIdentifier() {return ptr;}
 	//void setIdentifier(Identifier * in) {ptr=in;}
 	

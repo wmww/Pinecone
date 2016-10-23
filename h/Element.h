@@ -32,8 +32,6 @@ public:
 	
 	virtual ElementData::Type getElemType()=0;
 	
-	virtual Type getReturnType() {return UnknownType;}
-	
 	//virtual void* execute()=0;
 	
 	virtual void printToString(string& in, int depth=-1);

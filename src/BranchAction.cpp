@@ -4,16 +4,25 @@
 BranchAction::BranchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr rightInputIn)
 		:Action(actionIn->getReturnType(), Void, Void, "BRANCH")
 {
+	if (!actionIn)
+		error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
+	
+	if (!leftInputIn)
+		error.log(string() + "branch action created sent null leftInput", INTERNAL_ERROR);
+	
+	if (!rightInputIn)
+		error.log(string() + "branch action created sent null rightInput", INTERNAL_ERROR);
+	
 	action=actionIn;
 	leftInput=leftInputIn;
 	rightInput=rightInputIn;
 	
-	if (leftInput->getInLeftType()!=Void || leftInput->getInRightType()!=Void)
+	if (!leftInput->getInLeftType()->matches(Void) || !leftInput->getInRightType()->matches(Void))
 	{
 		error.log(leftInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 	}
 	
-	if (rightInput->getInLeftType()!=Void || rightInput->getInRightType()!=Void)
+	if (!rightInput->getInLeftType()->matches(Void) || !rightInput->getInRightType()->matches(Void))
 	{
 		error.log(rightInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 	}
@@ -40,7 +49,6 @@ string BranchAction::getDescription()
 
 void* BranchAction::execute(void* inLeft, void* inRight)
 {
-	
 	void* leftData=leftInput->execute(nullptr, nullptr);
 	void* rightData=rightInput->execute(nullptr, nullptr);
 	void* outData=action->execute(leftData, rightData);
