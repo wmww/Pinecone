@@ -120,6 +120,8 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 	
 	ActionPtr action=nullptr;
 	
+	//look for exact match
+	
 	for (auto i=matches.begin(); i!=matches.end(); ++i)
 	{
 		if (leftType==(*i)->getInLeftType() && rightType==(*i)->getInRightType())
@@ -129,23 +131,17 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 		}
 	}
 	
+	//look for match that requires casting
+	
 	if (!action)
 	{
 		vector<ActionPtr> leftConverters;
 		vector<ActionPtr> rightConverters;
 		
-		for (auto i=converters.begin(); i!=converters.end(); ++i)
-		{
-			if ((*i)->getInLeftType()==Void && (*i)->getInRightType()==leftType)
-			{
-				leftConverters.push_back(*i);
-			}
-			
-			if ((*i)->getInLeftType()==Void && (*i)->getInRightType()==rightType)
-			{
-				rightConverters.push_back(*i);
-			}
-		}
+		getAllConvertersForType(leftConverters, leftType);
+		getAllConvertersForType(rightConverters, rightType);
+		
+		vector<vector<ActionPtr>> actionsBranches;
 		
 		for (auto i=matches.begin(); i!=matches.end(); ++i)
 		{
@@ -185,21 +181,64 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 			
 			if (!failed)
 			{
-				if (rightMatch)
-					right=ActionPtr(new RightBranchAction(rightMatch, right));
+				vector<ActionPtr> ptrs(3);
 				
 				if (leftMatch)
-					left=ActionPtr(new RightBranchAction(leftMatch, left));
+					ptrs[0]=ActionPtr(new RightBranchAction(leftMatch, left));
+				else
+					ptrs[0]=left;
 				
-				return ActionPtr(new BranchAction(left, *i, right));
+				ptrs[1]=*i;
+				
+				if (rightMatch)
+					ptrs[2]=ActionPtr(new RightBranchAction(rightMatch, right));
+				else
+					ptrs[2]=right;
+				
+				actionsBranches.push_back(ptrs);
 			}
 		}
 		
-		return voidAction;
+		if (actionsBranches.empty())
+		{
+			return voidAction;
+		}
+		else
+		{
+			auto best=actionsBranches.begin();
+			
+			/*for (auto i=std::next(actionsBranches.begin()); i!=actionsBranches.end(); i++)
+			{
+				TypeBase::DOM_LEVEL leftDm=(*i)[0]->getReturnType().getDominance((*best)[0]->getReturnType())
+				TypeBase::DOM_LEVEL rightDm=(*i)[2]->getReturnType().getDominance((*best)[2]->getReturnType())
+				
+				if ()
+			}*/
+			
+			return ActionPtr(new BranchAction((*best)[0], (*best)[1], (*best)[2])); 
+		}
 	}
 	else
 	{
 		return ActionPtr(new BranchAction(left, action, right));
+	}
+}
+
+void ActionTable::getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type)
+{
+	if (type->getName().empty() && type->getType()==TypeBase::STRUCT)
+	{
+		
+	}
+	else
+	{
+		for (auto i=converters.begin(); i!=converters.end(); ++i)
+		{
+			if ((*i)->getInLeftType()==Void && (*i)->getInRightType()==type)
+			{
+				convertersOut.push_back(*i);
+			}
+		}
 	}
 }
 

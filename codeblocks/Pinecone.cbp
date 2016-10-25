@@ -45,6 +45,7 @@
 		<Unit filename="../h/IdentifierElement.h" />
 		<Unit filename="../h/ListAction.h" />
 		<Unit filename="../h/LiteralElement.h" />
+		<Unit filename="../h/MakeTupleAction.h" />
 		<Unit filename="../h/OperatorElement.h" />
 		<Unit filename="../h/PineconeParser.h" />
 		<Unit filename="../h/StackFrame.h" />
@@ -64,6 +65,7 @@
 		<Unit filename="../src/IdentifierElement.cpp" />
 		<Unit filename="../src/ListAction.cpp" />
 		<Unit filename="../src/LiteralElement.cpp" />
+		<Unit filename="../src/MakeTupleAction.cpp" />
 		<Unit filename="../src/OperatorElement.cpp" />
 		<Unit filename="../src/PineconeParser.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />

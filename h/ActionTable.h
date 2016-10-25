@@ -48,6 +48,7 @@ private:
 	void addActionsToList(vector<ActionPtr>& in, string& text);
 	void addActionsToList(vector<ActionPtr>& in, OperatorType opType);
 	ActionPtr resolveOverload(vector<ActionPtr>& in, Type leftIn, Type rightIn);
+	void getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type);
 	
 	shared_ptr<ActionTable> parent;
 	list<ActionPtr> converters;
