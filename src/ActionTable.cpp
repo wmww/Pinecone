@@ -203,19 +203,26 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 		{
 			return voidAction;
 		}
-		else
+		else if (actionsBranches.size()==1)
 		{
-			auto best=actionsBranches.begin();
+			return ActionPtr(new BranchAction((*actionsBranches.begin())[0], (*actionsBranches.begin())[1], (*actionsBranches.begin())[2]));
+		}
+		{
+			error.log(string() + "no overload found for " + leftType->getName() + " -> " + OperatorElement::toString(opType) + " <- " + rightType->getName(), data, SOURCE_ERROR);
 			
-			/*for (auto i=std::next(actionsBranches.begin()); i!=actionsBranches.end(); i++)
+			return voidAction;
+			
+			/*auto best=actionsBranches.begin();
+			
+			for (auto i=std::next(actionsBranches.begin()); i!=actionsBranches.end(); i++)
 			{
 				TypeBase::DOM_LEVEL leftDm=(*i)[0]->getReturnType().getDominance((*best)[0]->getReturnType())
 				TypeBase::DOM_LEVEL rightDm=(*i)[2]->getReturnType().getDominance((*best)[2]->getReturnType())
 				
 				if ()
-			}*/
+			}
 			
-			return ActionPtr(new BranchAction((*best)[0], (*best)[1], (*best)[2])); 
+			return ActionPtr(new BranchAction((*best)[0], (*best)[1], (*best)[2])); */
 		}
 	}
 	else
@@ -228,7 +235,7 @@ void ActionTable::getAllConvertersForType(vector<ActionPtr>& convertersOut, Type
 {
 	if (type->getName().empty() && type->getType()==TypeBase::TUPLE)
 	{
-		
+		error.log("recursive tuple converter search not yet implemented in ActionTable::getAllConvertersForType", INTERNAL_ERROR);
 	}
 	else
 	{
