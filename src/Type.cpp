@@ -7,7 +7,7 @@ const Type Bool = Type(new TypeBase(TypeBase::BOOL, "Bool"));
 const Type Int = Type(new TypeBase(TypeBase::INT, "Int"));
 const Type Dub = Type(new TypeBase(TypeBase::DUB, "Dub"));
 
-TypeBase::TypeBase(vector<shared_ptr<TypeBase>>& typesIn, string nameIn)
+TypeBase::TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn)
 {
 	name=nameIn;
 	type=STRUCT;

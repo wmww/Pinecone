@@ -61,7 +61,7 @@ public:
 	void deleteVoidPtr(void* ptr);
 	
 	TypeBase(PrimitiveType typeIn, string nameIn) {type=typeIn; name=nameIn;}
-	TypeBase(vector<shared_ptr<TypeBase>>& typesIn, string nameIn);
+	TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn);
 private:
 	
 	friend ActionTable;
