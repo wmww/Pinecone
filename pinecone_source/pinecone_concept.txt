@@ -100,7 +100,25 @@ func: (a: Int, b: Int):
 	)
 }
 
+in: {Int, Int}
+funcs: {Dub, Dub}, {Int, Bool}
+out: error? #1?
 
+in: {Int, Int}
+funcs: {Dub, Int}, {Int, Dub}
+out: error because tie
+
+in: {Int, Int}
+funcs: {Int, Bool}, {Dub, Bool}
+out: #1
+
+in: {Int, Dub}
+funcs: {Int, Int}, {Dub, Dub}
+out: #2
+
+in: {Bool, Bool}
+funcs: {Int, Int}, {Dub, Dub}
+out: error because tie (only cares if more or less complex, not how much)
 
 
 
