@@ -9,6 +9,9 @@ using std::vector;
 #include <memory>
 using std::shared_ptr;
 
+#include <cstring>
+using std::memcpy;
+
 class ActionTable;
 
 class TypeBase
@@ -32,7 +35,7 @@ public:
 		DUB,
 		INT,
 		BOOL,
-		STRUCT,
+		TUPLE,
 	};
 	
 	static string toString(PrimitiveType in);
@@ -54,11 +57,11 @@ public:
 	
 	bool matches(shared_ptr<TypeBase> other);
 	
-	void* createVoidPtr();
-	void* cloneVoidPtr(void* ptr);
-	void* castVoidPtr(void* ptr, shared_ptr<TypeBase> typeOut);
-	void setVoidPtr(void* ptr, void* in);
-	void deleteVoidPtr(void* ptr);
+	//void* createVoidPtr();
+	//void* cloneVoidPtr(void* ptr);
+	//void* castVoidPtr(void* ptr, shared_ptr<TypeBase> typeOut);
+	//void setVoidPtr(void* ptr, void* in);
+	//void deleteVoidPtr(void* ptr);
 	
 	TypeBase(PrimitiveType typeIn, string nameIn) {type=typeIn; name=nameIn;}
 	TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn);

@@ -104,19 +104,22 @@ public:
 	LiteralGetAction(void* in, Type typeIn, string textIn):
 		Action(typeIn, Void, Void, textIn)
 	{
-		data=returnType->cloneVoidPtr(in);
+		data=malloc(returnType->getSize());
+		memcpy(data, in, returnType->getSize());
 		
 		setDescription(textIn);// + " (" + typeIn.toString() + " literal)");
 	}
 	
 	~LiteralGetAction()
 	{
-		returnType->deleteVoidPtr(data);
+		free(data);
 	}
 	
 	void* execute(void* inLeft, void* inRight)
 	{
-		return returnType->cloneVoidPtr(data);
+		void* out=malloc(returnType->getSize());
+		memcpy(out, data, returnType->getSize());
+		return out;
 	}
 	
 private:

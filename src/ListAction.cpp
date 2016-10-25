@@ -57,7 +57,7 @@ void* ListAction::execute(void* inLeft, void* inRight)
 	
 	for (; i!=std::prev(actions.end()); ++i)
 	{
-		(*i)->getReturnType()->deleteVoidPtr((*i)->execute(nullptr, nullptr));
+		free((*i)->execute(nullptr, nullptr));
 	}
 	
 	return (*i)->execute(nullptr, nullptr);

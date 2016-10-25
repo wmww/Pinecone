@@ -26,12 +26,19 @@ string Action::toString()
 
 void* VarGetAction::execute(void* inLeft, void* inRight)
 {
-	return returnType->cloneVoidPtr(stackPtr+offset);
+	void* out=malloc(returnType->getSize());
+	memcpy(out, stackPtr+offset, returnType->getSize());
+	return out;
 }
 
 void* VarSetAction::execute(void* left, void* right)
 {
-	returnType->setVoidPtr(stackPtr+offset, right);
-	return returnType->cloneVoidPtr(stackPtr+offset);
+	//copy data on to the stack location of the var
+	memcpy(stackPtr+offset, right, inRightType->getSize());
+	
+	//return a new copy of the data
+	void* out=malloc(returnType->getSize());
+	memcpy(out, stackPtr+offset, inRightType->getSize());
+	return out;
 }
 
