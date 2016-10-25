@@ -45,7 +45,7 @@ string BranchAction::getDescription()
 	if (leftInput && action && rightInput)
 	{
 		//return getReturnType()->toString() + " <- [" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
-		return " (" + leftInput->getDescription() + " " + action->getDescription() + " " + rightInput->getDescription() + ") ";
+		return "(" + leftInput->getDescription() + " -> " + action->getDescription() + " <- " + rightInput->getDescription() + ")";
 		//return getReturnType()->getName() + " <- " + leftInput->getDescription() + "." + action->getDescription() + ":" + rightInput->getDescription();
 	}
 	else
@@ -93,7 +93,7 @@ string RightBranchAction::getDescription()
 	if (action && rightInput)
 	{
 		//return getReturnType()->toString() + " <- [" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
-		return " (" + action->getDescription() + " " + rightInput->getDescription() + ") ";
+		return "(" + action->getDescription() + " <- " + rightInput->getDescription() + ")";
 		//return getReturnType()->getName() + " <- " + leftInput->getDescription() + "." + action->getDescription() + ":" + rightInput->getDescription();
 	}
 	else
@@ -140,7 +140,7 @@ string LeftBranchAction::getDescription()
 	if (leftInput && action)
 	{
 		//return getReturnType()->toString() + " <- [" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
-		return " (" + leftInput->getDescription() + " " + action->getDescription() + ") ";
+		return "(" + leftInput->getDescription() + " -> " + action->getDescription() + ")";
 		//return getReturnType()->getName() + " <- " + leftInput->getDescription() + "." + action->getDescription() + ":" + rightInput->getDescription();
 	}
 	else

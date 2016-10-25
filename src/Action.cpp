@@ -1,5 +1,5 @@
 #include "../h/Action.h"
-#include "../h/StackFrame.h"
+
 #include "../h/ErrorHandler.h"
 
 ActionPtr voidAction;
@@ -24,21 +24,15 @@ string Action::toString()
 	//return returnType->getName() + " <- " + inLeftType->getName() + " " + text + " " + inRightType->getName();
 }
 
-void* VarGetAction::execute(void* inLeft, void* inRight)
+LambdaAction::LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
+	:Action(returnTypeIn, inLeftTypeIn, inRightTypeIn, textIn)
 {
-	void* out=malloc(returnType->getSize());
-	memcpy(out, stackPtr+offset, returnType->getSize());
-	return out;
+	lambda=lambdaIn;
+	setDescription(text);// + " (lambda action)");
 }
 
-void* VarSetAction::execute(void* left, void* right)
+void* LambdaAction::execute(void* inLeft, void* inRight)
 {
-	//copy data on to the stack location of the var
-	memcpy(stackPtr+offset, right, inRightType->getSize());
-	
-	//return a new copy of the data
-	void* out=malloc(returnType->getSize());
-	memcpy(out, stackPtr+offset, inRightType->getSize());
-	return out;
+	return lambda(inLeft, inRight);
 }
 

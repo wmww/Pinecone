@@ -73,7 +73,7 @@ string MakeTupleAction::getDescription()
 	
 	return out;
 }
-	
+
 void* MakeTupleAction::execute(void* inLeft, void* inRight)
 {
 	void* out=malloc(getReturnType()->getSize());
