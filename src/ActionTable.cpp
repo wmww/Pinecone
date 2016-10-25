@@ -226,7 +226,7 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 
 void ActionTable::getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type)
 {
-	if (type->getName().empty() && type->getType()==TypeBase::STRUCT)
+	if (type->getName().empty() && type->getType()==TypeBase::TUPLE)
 	{
 		
 	}
@@ -349,7 +349,7 @@ string ActionTable::toString()
 		out+="\n";
 	}
 	
-	out+="\nregular functions:\n";
+	out+="\nnormal functions:\n";
 	
 	for (auto i=actions.begin(); i!=actions.end(); ++i)
 	{

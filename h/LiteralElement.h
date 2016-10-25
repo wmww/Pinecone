@@ -10,7 +10,8 @@ public:
 	LiteralElement(void* valIn, Type typeIn, ElementData dataIn): Element(dataIn)
 	{
 		type=typeIn;
-		val=type->cloneVoidPtr(valIn);
+		val=malloc(type->getSize());
+		memcpy(val, valIn, type->getSize());
 	}
 	
 	static ElementPtr makeNew(ElementData dataIn);

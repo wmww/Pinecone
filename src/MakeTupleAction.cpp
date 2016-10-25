@@ -76,14 +76,14 @@ string MakeTupleAction::getDescription()
 	
 void* MakeTupleAction::execute(void* inLeft, void* inRight)
 {
-	void* out=getReturnType()->createVoidPtr();
+	void* out=malloc(getReturnType()->getSize());
 	size_t offset=0;
 	
 	for (auto i=sourceActions.begin(); i!=sourceActions.end(); ++i)
 	{
 		void* val=(*i)->execute(nullptr, nullptr);
-		(*i)->getReturnType()->setVoidPtr((char*)out+offset, val);
-		(*i)->getReturnType()->deleteVoidPtr(val);
+		memcpy((char*)out+offset, val, (*i)->getReturnType()->getSize());
+		free(val);
 		offset+=(*i)->getReturnType()->getSize();
 	}
 	

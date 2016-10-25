@@ -57,8 +57,8 @@ void* BranchAction::execute(void* inLeft, void* inRight)
 	void* leftData=leftInput->execute(nullptr, nullptr);
 	void* rightData=rightInput->execute(nullptr, nullptr);
 	void* outData=action->execute(leftData, rightData);
-	leftInput->getReturnType()->deleteVoidPtr(leftData);
-	rightInput->getReturnType()->deleteVoidPtr(rightData);
+	free(leftData);
+	free(rightData);
 	return outData;
 }
 
@@ -104,7 +104,7 @@ void* RightBranchAction::execute(void* inLeft, void* inRight)
 {
 	void* rightData=rightInput->execute(nullptr, nullptr);
 	void* outData=action->execute(nullptr, rightData);
-	rightInput->getReturnType()->deleteVoidPtr(rightData);
+	free(rightData);
 	return outData;
 }
 
@@ -151,7 +151,7 @@ void* LeftBranchAction::execute(void* inLeft, void* inRight)
 {
 	void* leftData=leftInput->execute(nullptr, nullptr);
 	void* outData=action->execute(leftData, nullptr);
-	leftInput->getReturnType()->deleteVoidPtr(leftData);
+	free(leftData);
 	return outData;
 }
 

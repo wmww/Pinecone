@@ -10,7 +10,7 @@ const Type Dub = Type(new TypeBase(TypeBase::DUB, "Dub"));
 TypeBase::TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn)
 {
 	name=nameIn;
-	type=STRUCT;
+	type=TUPLE;
 	types.insert(types.end(), std::make_move_iterator(typesIn.begin()), std::make_move_iterator(typesIn.end()));
 }
 
@@ -21,7 +21,7 @@ string TypeBase::toString(PrimitiveType in)
 		//case NONE: return "NO_TYPE";
 		case UNKNOWN: return "UNKNOWN_TYPE";
 		case VOID: return "VOID";
-		case STRUCT: return "STRUCT";
+		case TUPLE: return "TUPLE";
 		case BOOL: return "BOOL";
 		case INT: return "INT";
 		case DUB: return "DUB";
@@ -31,10 +31,10 @@ string TypeBase::toString(PrimitiveType in)
 
 string TypeBase::toString()
 {
-	if (type==STRUCT)
+	if (type==TUPLE)
 	{
 		if (types.empty())
-			return "EMPTY_STRUCT";
+			return "EMPTY_TUPLE";
 		
 		string out;
 		
@@ -63,7 +63,7 @@ bool TypeBase::isCreatable()
 	{
 		return true;
 	}
-	else if (type==STRUCT)
+	else if (type==TUPLE)
 	{
 		for (auto i=types.begin(); i!=types.end(); ++i)
 		{
@@ -99,7 +99,7 @@ size_t TypeBase::getSize()
 		case INT: return sizeof(int);
 		case DUB: return sizeof(double);
 		
-		case STRUCT:
+		case TUPLE:
 		{
 			size_t sum=0;
 			for (unsigned i=0; i<types.size(); ++i)
@@ -117,11 +117,11 @@ size_t TypeBase::getSize()
 /*
 Type TypeBase::getDominant(Type a, Type b)
 {
-	if ((a.getType()==STRUCT) != (b.getType()==STRUCT))
+	if ((a.getType()==TUPLE) != (b.getType()==TUPLE))
 	{
 		return Type();
 	}
-	else if (a.getType()==STRUCT)
+	else if (a.getType()==TUPLE)
 	{
 		vector<Type> av=a.getTypes();
 		vector<Type> bv=b.getTypes();
@@ -152,7 +152,7 @@ bool TypeBase::operator==(const Type& other)
 	{
 		return true;
 	}
-	else if (type==STRUCT && other.type==STRUCT)
+	else if (type==TUPLE && other.type==TUPLE)
 	{
 		for (unsigned i=0; i<types.size(); ++i)
 		{
@@ -170,7 +170,7 @@ bool TypeBase::operator==(const Type& other)
 
 bool TypeBase::exactlyEquals(const Type& other)
 {
-	if (type==STRUCT && other.type==STRUCT)
+	if (type==TUPLE && other.type==TUPLE)
 	{
 		if (types.size()!=other.types.size())
 			return false;
@@ -192,7 +192,7 @@ bool TypeBase::exactlyEquals(const Type& other)
 
 bool TypeBase::matches(Type other)
 {
-	if (type==STRUCT && other->type==STRUCT)
+	if (type==TUPLE && other->type==TUPLE)
 	{
 		if (types.size()!=other->types.size())
 			return false;
@@ -210,7 +210,7 @@ bool TypeBase::matches(Type other)
 		return type==other->type;
 	}
 }
-
+/*
 void* TypeBase::createVoidPtr()
 {
 	switch (type)
@@ -220,17 +220,20 @@ void* TypeBase::createVoidPtr()
 		case DUB: return new double(0.0);
 		case VOID: return nullptr;
 		
-		case STRUCT:
+		case TUPLE:
 		case UNKNOWN:
 		default:
 			error.log("tried to create uncreatable type " + toString(), INTERNAL_ERROR);
 			return nullptr;
 	}
-
+	
+	return malloc(getSize());
 }
 
 void TypeBase::deleteVoidPtr(void* ptr)
 {
+	free(ptr);
+	
 	if (ptr)
 	{
 		switch (type)
@@ -240,7 +243,7 @@ void TypeBase::deleteVoidPtr(void* ptr)
 			case DUB: delete ((double*)ptr); break;
 			case VOID: break;
 			
-			case STRUCT:
+			case TUPLE:
 			case UNKNOWN:
 			default:
 				error.log("tried to delete undeletable type " + toString(), INTERNAL_ERROR);
@@ -249,28 +252,35 @@ void TypeBase::deleteVoidPtr(void* ptr)
 	}
 }
 
-void TypeBase::setVoidPtr(void* ptr, void* in)
+void TypeBase::setVoidPtr(void* ptr, void* val)
 {
+	memcpy(ptr, val, getSize());
+	
+	
 	if (ptr)
 	{
 		switch (type)
 		{
-			case BOOL: *((bool*)ptr)=*((bool*)in); break;
-			case INT: *((int*)ptr)=*((int*)in); break;
-			case DUB: *((double*)ptr)=*((double*)in); break;
+			case BOOL: *((bool*)ptr)=*((bool*)val); break;
+			case INT: *((int*)ptr)=*((int*)val); break;
+			case DUB: *((double*)ptr)=*((double*)val); break;
 			case VOID: break;
 			
-			case STRUCT:
+			case TUPLE:
 			case UNKNOWN:
 			default:
-				error.log("tried to delete undeletable type " + toString(), INTERNAL_ERROR);
+				error.log("tried to set unsetable type " + toString(), INTERNAL_ERROR);
 				break;
 		}
 	}
 }
 
-void* TypeBase::cloneVoidPtr(void* ptr)
+void* TypeBase::cloneVoidPtr(void* val)
 {
+	void* ptr=createVoidPtr();
+	setVoidPtr(ptr, val);
+	return ptr;
+	
 	if (ptr)
 	{
 		switch (type)
@@ -280,7 +290,7 @@ void* TypeBase::cloneVoidPtr(void* ptr)
 			case DUB: return new double(*((double*)ptr));
 			case VOID: return nullptr;
 			
-			case STRUCT:
+			case TUPLE:
 			case UNKNOWN:
 			default:
 				error.log("tried to clone unclonable type " + toString(), INTERNAL_ERROR);
@@ -291,16 +301,23 @@ void* TypeBase::cloneVoidPtr(void* ptr)
 		return nullptr;
 }
 
-void* TypeBase::castVoidPtr(void* ptr, Type typeOut)
+void* TypeBase::castVoidPtr(void* val, Type typeOut)
 {
-	if (ptr)
+	if (type==VOID || !val)
 	{
+		return nullptr;
+	}
+	else
+	{
+		void* ptr=typeOut->createVoidPtr();
+		
+		
 		if (type==BOOL)
 		{
-			bool var=*((bool*)ptr);
+			bool var=*((bool*)val);
 			
 			if (typeOut->matches(Bool))
-				return new bool(var);
+				return new bool(ptr)=false;
 			else if (typeOut->matches(Int))
 				return new int(var?1:0);
 			else if (typeOut->matches(Dub))
@@ -310,7 +327,7 @@ void* TypeBase::castVoidPtr(void* ptr, Type typeOut)
 		}
 		else if (type==INT)
 		{
-			int var=*((int*)ptr);
+			int var=*((int*)val);
 			
 			if (typeOut->matches(Bool))
 				return new bool(var!=0);
@@ -323,7 +340,7 @@ void* TypeBase::castVoidPtr(void* ptr, Type typeOut)
 		}
 		else if (type==DUB)
 		{
-			double var=*((double *)ptr);
+			double var=*((double *)val);
 			
 			if (typeOut->matches(Bool))
 				return new bool(var!=0);
@@ -334,11 +351,11 @@ void* TypeBase::castVoidPtr(void* ptr, Type typeOut)
 			else
 				return nullptr;
 		}
-		else if (type==STRUCT)
+		else if (type==TUPLE)
 		{
-			return nullptr;
+			ptr=nullptr;
 			
-			/*//vector<DataElem *> var=*((vector<DataElem *>)ptr->getData());
+			//vector<DataElem *> var=*((vector<DataElem *>)val->getData());
 			
 			if (type==Type::BOOL)
 				return new BoolData(var!=0);
@@ -349,19 +366,16 @@ void* TypeBase::castVoidPtr(void* ptr, Type typeOut)
 			else
 				return new VoidData();
 			
-			delete ptr;*/
-		}
-		else if (type==VOID)
-		{
-			return nullptr;
+			delete val;
 		}
 		else
 		{
 			error.log("unknown type " + toString() + " in CastElement::castToType", INTERNAL_ERROR);
-			return nullptr;
+			typeOut->deleteVoidPtr(ptr);
+			ptr=nullptr;
 		}
+		
+		return ptr;
 	}
-	else
-		return nullptr;
-}
+}*/
 

@@ -26,9 +26,7 @@ void StackFrame::resolve(bool printOutput)
 	if (printOutput)
 		cout << endl << elements.printToBoxedString("structured by operators") << endl;
 	
-	error.log("1", JSYK);
 	ActionPtr ptr=elements.resolveActions();
-	error.log("2", JSYK);
 	
 	actions=ActionPtr(new FunctionAction(ptr, Void, Void, frameSize, "global"));
 	
@@ -44,7 +42,7 @@ void StackFrame::resolve(bool printOutput)
 void StackFrame::execute()
 {
 	if (actions)
-		actions->getReturnType()->deleteVoidPtr(actions->execute(nullptr, nullptr));
+		free(actions->execute(nullptr, nullptr));
 	else
 		error.log("cannot execute stack frame because actions is null", RUNTIME_ERROR);
 }

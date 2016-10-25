@@ -26,7 +26,7 @@ ActionTablePtr table;
 #define DO_INSTANTIATE(typeIn, varOutName, setVal) getCppType(typeIn) varOutName setVal;
 #define DONT_INSTANTIATE(typeIn, varOutName, setVal) ;
 
-#define DO_RETURN_VAL(typeIn, varName) return getPncnType(typeIn)->cloneVoidPtr(&varName);
+#define DO_RETURN_VAL(typeIn, varName) void* outPtr=malloc(getPncnType(typeIn)->getSize()); memcpy(outPtr, &varName, getPncnType(typeIn)->getSize()); return outPtr;
 #define DONT_RETURN_VAL(typeIn, varName) return nullptr;
 
 #define INSTANTIATE_Dub DO_INSTANTIATE
