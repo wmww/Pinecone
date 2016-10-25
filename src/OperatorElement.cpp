@@ -58,7 +58,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 				action=voidAction;
 			}
 			
-			out=ActionPtr(new BranchAction(voidAction, action, rightAction));
+			out=ActionPtr(new RightBranchAction(action, rightAction));
 		}
 		else
 		{

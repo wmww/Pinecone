@@ -50,6 +50,7 @@
 		<Unit filename="../h/PineconeParser.h" />
 		<Unit filename="../h/StackFrame.h" />
 		<Unit filename="../h/Type.h" />
+		<Unit filename="../h/VarAction.h" />
 		<Unit filename="../h/msclStringFuncs.h" />
 		<Unit filename="../pinecone_source/pinecone.pncn" />
 		<Unit filename="../pinecone_source/pinecone_concept.txt" />
@@ -71,6 +72,7 @@
 		<Unit filename="../src/PineconeStdLib.cpp" />
 		<Unit filename="../src/StackFrame.cpp" />
 		<Unit filename="../src/Type.cpp" />
+		<Unit filename="../src/VarAction.cpp" />
 		<Unit filename="../src/main.cpp" />
 		<Unit filename="../src/msclStringFuncs.cpp" />
 		<Extensions>
