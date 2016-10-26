@@ -50,15 +50,12 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	{
 		if (leftInput && leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
-			ActionPtr action=((IdentifierElement *)&(*leftInput))->resolveActions(table, Void, rightAction->getReturnType());
+			out=((IdentifierElement *)&(*leftInput))->resolveActions(table, voidAction, rightAction);
 			
-			if (!action)
+			if (out==voidAction)
 			{
-				error.log("Element::resolveActions returned a nullptr, this should never happen, use a VoidAction", data, INTERNAL_ERROR);
-				action=voidAction;
+				error.log("Element::resolveActions returned voidAction", data, INTERNAL_ERROR);
 			}
-			
-			out=ActionPtr(new RightBranchAction(action, rightAction));
 		}
 		else
 		{

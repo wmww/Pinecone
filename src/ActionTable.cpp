@@ -14,11 +14,6 @@ ActionTable::ActionTable(StackFrame * stackFrameIn)
 {
 	parent=nullptr;
 	stackFrame=stackFrameIn;
-	
-	//types.push_back(Void);
-	//types.push_back(Bool);
-	//types.push_back(Int);
-	//types.push_back(Dub);
 }
 
 void ActionTable::clear()
@@ -65,15 +60,6 @@ void ActionTable::addAction(ActionPtr in, OperatorType opType)
 	operators[opType].push_back(in);
 }
 
-ActionPtr ActionTable::getBestAction(ElementData data, Type leftIn, Type rightIn)
-{
-	vector<ActionPtr> matches;
-	
-	addActionsToList(matches, data.text);
-	
-	return resolveOverload(matches, leftIn, rightIn);
-}
-
 void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
 {
 	for (auto i=actions.begin(); i!=actions.end(); ++i)
@@ -88,19 +74,15 @@ void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
 	}
 }
 
-ActionPtr ActionTable::getBestAction(OperatorType opType, Type leftIn, Type rightIn)
+ActionPtr ActionTable::makeBranchAction(ElementData data, ActionPtr left, ActionPtr right)
 {
-	if (opType<0 || opType>OP_TYPE_OVERRIDEABLE_LAST)
-	{
-		error.log(string() + __FUNCTION__ + " sent invalid opType", INTERNAL_ERROR);
-		return nullptr;
-	}
-	
 	vector<ActionPtr> matches;
 	
-	addActionsToList(matches, opType);
+	addActionsToList(matches, data.text);
 	
-	return resolveOverload(matches, leftIn, rightIn);
+	ActionPtr out=makeBranchAction(matches, left, right);
+	
+	return out;
 }
 
 ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, ActionPtr left, ActionPtr right)
@@ -108,15 +90,22 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 	if (opType<0 || opType>OP_TYPE_OVERRIDEABLE_LAST)
 	{
 		error.log(string() + __FUNCTION__ + " sent invalid opType '" + OperatorElement::toString(opType) + "'", INTERNAL_ERROR);
-		return nullptr;
+		return voidAction;
 	}
-	
-	Type leftType=left->getReturnType();
-	Type rightType=right->getReturnType();
 	
 	vector<ActionPtr> matches;
 	
 	addActionsToList(matches, opType);
+	
+	ActionPtr out=makeBranchAction(matches, left, right);
+	
+	return out;
+}
+
+ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr left, ActionPtr right)
+{
+	Type leftType=left->getReturnType();
+	Type rightType=right->getReturnType();
 	
 	ActionPtr action=nullptr;
 	
@@ -208,8 +197,6 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 			return ActionPtr(new BranchAction((*actionsBranches.begin())[0], (*actionsBranches.begin())[1], (*actionsBranches.begin())[2]));
 		}
 		{
-			error.log(string() + "no overload found for " + leftType->getName() + " -> " + OperatorElement::toString(opType) + " <- " + rightType->getName(), data, SOURCE_ERROR);
-			
 			return voidAction;
 			
 			/*auto best=actionsBranches.begin();
@@ -227,7 +214,28 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, A
 	}
 	else
 	{
-		return ActionPtr(new BranchAction(left, action, right));
+		if (left->getReturnType()->isVoid())
+		{
+			if (right->getReturnType()->isVoid())
+			{
+				return action;
+			}
+			else
+			{
+				return ActionPtr(new RightBranchAction(action, right));
+			}
+		}
+		else
+		{
+			if (right->getReturnType()->isVoid())
+			{
+				return ActionPtr(new LeftBranchAction(left, action));
+			}
+			else
+			{
+				return ActionPtr(new BranchAction(left, action, right));
+			}
+		}
 	}
 }
 
@@ -369,23 +377,5 @@ string ActionTable::toString()
 	}
 	
 	return out;
-}
-
-ActionPtr ActionTable::resolveOverload(vector<ActionPtr>& in, Type leftIn, Type rightIn)
-{
-	//ActionPtr closeMatch=nullptr;
-	ActionPtr exactMatch=nullptr;
-	
-	for (auto i=in.begin(); i!=in.end(); ++i)
-	{
-		if (leftIn==(*i)->getInLeftType() && rightIn==(*i)->getInRightType())
-		{
-			exactMatch=*i;
-			break;
-		}
-		//else if ()
-	}
-	
-	return exactMatch;
 }
 

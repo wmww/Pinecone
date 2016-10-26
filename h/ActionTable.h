@@ -22,9 +22,7 @@ public:
 	
 	~ActionTable() {clear();}
 	
-	ActionPtr getBestAction(ElementData data, Type leftIn, Type rightIn);
-	ActionPtr getBestAction(OperatorType opType, Type leftIn, Type rightIn);
-	
+	ActionPtr makeBranchAction(ElementData data, ActionPtr left, ActionPtr right);
 	ActionPtr makeBranchAction(ElementData data, OperatorType opType, ActionPtr left, ActionPtr right);
 	
 	void addAction(ActionPtr in);
@@ -40,14 +38,12 @@ public:
 	
 	string toString();
 	
-	//Identifier * getOrMakeIdentifier(string nameIn);
-	
 	void clear();
 	
 private:
 	void addActionsToList(vector<ActionPtr>& in, string& text);
 	void addActionsToList(vector<ActionPtr>& in, OperatorType opType);
-	ActionPtr resolveOverload(vector<ActionPtr>& in, Type leftIn, Type rightIn);
+	ActionPtr makeBranchAction(vector<ActionPtr>& matches, ActionPtr left, ActionPtr right);
 	void getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type);
 	
 	shared_ptr<ActionTable> parent;

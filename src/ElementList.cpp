@@ -243,14 +243,25 @@ void ElementList::absorbForOperators(vector<OperatorType> operators, bool absorb
 
 ActionPtr ElementList::resolveActions()
 {
-	list<ActionPtr> data;
-	
-	for (auto i=elems.begin(); i!=elems.end(); ++i)
+	if (elems.empty())
 	{
-		data.push_back((*i)->resolveActions(table));
+		return voidAction;
 	}
-	
-	return ActionPtr(new ListAction(data));
+	else if (elems.size()==1)
+	{
+		return (*elems.begin())->resolveActions(table);
+	}
+	else
+	{
+		list<ActionPtr> data;
+		
+		for (auto i=elems.begin(); i!=elems.end(); ++i)
+		{
+			data.push_back((*i)->resolveActions(table));
+		}
+		
+		return ActionPtr(new ListAction(data));
+	}
 }
 
 /*
