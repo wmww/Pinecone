@@ -1,6 +1,5 @@
-a: 7.6
-b: 4
-c: Dub
-c: (Dub: 1)+4.9
-print: c
 
+a: 5.6
+b: 3 + (Int: a)
+print: b
+print: c
