@@ -46,7 +46,7 @@ class VoidAction: public Action
 public:
 	VoidAction(): Action(Void, Void, Void, "Void")
 	{
-		setDescription("Void");
+		setDescription("Void Action");
 	}
 	
 	void* execute(void* inLeft, void* inRight)

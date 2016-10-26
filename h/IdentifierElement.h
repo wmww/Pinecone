@@ -13,9 +13,9 @@ public:
 	
 	string getReadableName();
 	
-	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions(table, Void, Void);}
+	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions(table, voidAction, voidAction);}
 	
-	ActionPtr resolveActions(ActionTablePtr table, Type leftType, Type rightType);
+	ActionPtr resolveActions(ActionTablePtr table, ActionPtr leftAction, ActionPtr rightAction);
 	
 	ElementData::Type getElemType() {return ElementData::IDENTIFIER;}
 	
