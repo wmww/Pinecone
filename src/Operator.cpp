@@ -12,6 +12,7 @@ Operator opGreater=OperatorBase::create(">", true, true, false);
 Operator opLess=OperatorBase::create("<", true, true, false);
 Operator opColon=OperatorBase::create(":", true, true, false);
 Operator opDot=OperatorBase::create(".", true, true, false);
+Operator opComma=OperatorBase::create(",", true, true, false);
 Operator opIf=OperatorBase::create("?", true, true, false);
 Operator opLoop=OperatorBase::create("@", true, true, false);
 Operator opOpenPeren=OperatorBase::create("(", false, false, false);
@@ -32,3 +33,4 @@ void getOperators(vector<Operator>& out, string text, ElementData data)
 	if (!text.empty())
 		error.log("unknown operator '" + text + "'", data, SOURCE_ERROR);
 }
+

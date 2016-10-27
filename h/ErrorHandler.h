@@ -25,7 +25,11 @@ public:
 	
 	void msg(string in);
 	
+	bool getIfErrorLogged() {return errorHasBeenLogged;}
+	
 private:
+	
+	bool errorHasBeenLogged=false;
 };
 
 extern ErrorHandler error;

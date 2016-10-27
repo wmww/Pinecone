@@ -11,9 +11,15 @@ a>5?
 print
 
 i: 0
-i<10000000@
+i<10@
 (
-	((Dub: (i/100000))=((Dub: i)/100000.0))?
+	(Dub: i/2)=((Dub: i)/2.0)?
 		print: i
     i: i+1
 )
+
+tuple: 1+1.0
+
+print
+
+print: tuple
