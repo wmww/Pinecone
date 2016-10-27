@@ -30,8 +30,6 @@ public:
 	ActionPtr resolveActions();
 	ActionPtr resolveActions(ActionTablePtr table) {return resolveActions();}
 	
-	void absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords);
-	
 	void printToString(string& in, int depth);
 	using Element::printToString;
 	
@@ -46,6 +44,12 @@ public:
 	void clear();
 	
 private:
+	
+	void absorbePeren();
+	
+	void absorbeDotInDub();
+	
+	void absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords);
 	
 	list<ElementPtr> elems;
 	

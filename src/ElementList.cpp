@@ -33,7 +33,33 @@ void ElementList::clear()
 
 void ElementList::structureByOperators()
 {
-	//parentheses and . as part of Dub literal
+	absorbePeren();
+	
+	absorbeDotInDub();
+	
+	vector<Operator> ops;
+	
+	ops.push_back(opColon);
+	absorbForOperators(ops, true, false, true);
+	ops.clear();
+	
+	ops.push_back(opPlus);
+	ops.push_back(opMinus);
+	absorbForOperators(ops, true, true, false);
+	ops.clear();
+	
+	ops.push_back(opEqual);
+	absorbForOperators(ops, true, true, false);
+	ops.clear();
+	
+	ops.push_back(opColon);
+	absorbForOperators(ops, false, true, true);
+	ops.clear();
+	
+}
+
+void ElementList::absorbePeren()
+{
 	for (auto i=elems.begin(); i!=elems.end(); ++i)
 	{
 		if ((*i)->getElemType()==ElementData::OPERATOR)
@@ -101,50 +127,56 @@ void ElementList::structureByOperators()
 				
 				subList->structureByOperators();
 			}
+		}
+	}
+}
+
+void ElementList::absorbeDotInDub()
+{
+	for (auto i=elems.begin(); i!=elems.end(); ++i)
+	{
+		if ((*i)->getElemType()==ElementData::OPERATOR && ((OperatorElement *)&(**i))->getOp()==opDot)
+		{
+			auto j=i;
 			
-			else if (op==opDot)
+			++j;
+			
+			if (j!=elems.end())
 			{
-				auto j=i;
-				
-				++j;
-				
-				if (j!=elems.end())
+				if ((*j)->getElemType()==ElementData::LITERAL)
 				{
-					if ((*j)->getElemType()==ElementData::LITERAL)
+					if (((LiteralElement*)&(**j))->getType()==Int)
 					{
-						if (((LiteralElement*)&(**j))->getType()==Int)
+						ElementData data0=(*i)->getData();
+						ElementData data1=(*j)->getData();
+						
+						elems.insert(i, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
+						
+						i=elems.erase(i);
+						i=elems.erase(i);
+						
+						--i;
+						
+						if (i!=elems.begin())
 						{
-							ElementData data0=(*i)->getData();
-							ElementData data1=(*j)->getData();
+							j=i;
+							--j;
 							
-							elems.insert(i, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
-							
-							i=elems.erase(i);
-							i=elems.erase(i);
-							
-							--i;
-							
-							if (i!=elems.begin())
+							if ((*j)->getElemType()==ElementData::LITERAL)
 							{
-								j=i;
-								--j;
-								
-								if ((*j)->getElemType()==ElementData::LITERAL)
+								if (((LiteralElement*)&(**j))->getType()==Int)
 								{
-									if (((LiteralElement*)&(**j))->getType()==Int)
-									{
-										data0=(*j)->getData();
-										data1=(*i)->getData();
-										
-										elems.insert(j, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
-										
-										j=elems.erase(j);
-										j=elems.erase(j);
-										
-										--j;
-										
-										i=j;
-									}
+									data0=(*j)->getData();
+									data1=(*i)->getData();
+									
+									elems.insert(j, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
+									
+									j=elems.erase(j);
+									j=elems.erase(j);
+									
+									--j;
+									
+									i=j;
 								}
 							}
 						}
@@ -153,26 +185,6 @@ void ElementList::structureByOperators()
 			}
 		}
 	}
-	
-	vector<Operator> ops;
-	
-	ops.push_back(opColon);
-	absorbForOperators(ops, true, false, true);
-	ops.clear();
-	
-	ops.push_back(opPlus);
-	ops.push_back(opMinus);
-	absorbForOperators(ops, true, true, false);
-	ops.clear();
-	
-	ops.push_back(opEqual);
-	absorbForOperators(ops, true, true, false);
-	ops.clear();
-	
-	ops.push_back(opColon);
-	absorbForOperators(ops, false, true, true);
-	ops.clear();
-	
 }
 
 void ElementList::absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords)
@@ -267,25 +279,6 @@ ActionPtr ElementList::resolveActions()
 		return ActionPtr(new ListAction(data));
 	}
 }
-
-/*
-void* ElementList::execute()
-{
-	if (elems.size()!=1)
-	{
-		for (auto i=elems.begin(); i!=elems.end(); ++i)
-		{
-			(*i)->getReturnType().deleteVoidPtr((*i)->execute());
-		}
-		
-		return nullptr;
-	}
-	else
-	{
-		return elems.back()->execute();
-	}
-}
-*/
 
 void ElementList::printToString(string& in, int depth)
 {
