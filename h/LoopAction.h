@@ -2,11 +2,11 @@
 
 #include "Action.h"
 
-class IfAction: public Action
+class LoopAction: public Action
 {
 public:
 	
-	IfAction(ActionPtr conditionIn, ActionPtr ifActionIn);
+	LoopAction(ActionPtr conditionIn, ActionPtr loopActionIn);
 	
 	string getDescription();
 	
@@ -15,7 +15,8 @@ public:
 private:
 	
 	ActionPtr condition;
-	ActionPtr ifAction;
+	ActionPtr loopAction;
 };
+
 
 

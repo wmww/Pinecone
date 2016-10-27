@@ -8,3 +8,12 @@ c?
 
 a=b?
 	print: 2
+
+i: 0
+
+i=0@
+(
+	print: i
+	i: i+1
+)
+
