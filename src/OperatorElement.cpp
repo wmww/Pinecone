@@ -30,15 +30,15 @@ string OperatorElement::getReadableName()
 
 ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 {
-	ActionPtr leftAction, rightAction, out=nullptr;
-	
-	if (rightInput)
-		rightAction=rightInput->resolveActions(table);
-	else
-		rightAction=voidAction;
+	ActionPtr out=nullptr;
 	
 	if (op==opColon)
 	{
+		ActionPtr rightAction=voidAction;
+		
+		if (rightInput)
+			rightAction=rightInput->resolveActions(table);
+		
 		if (leftInput && leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
 			out=((IdentifierElement *)&(*leftInput))->resolveActions(table, voidAction, rightAction);
@@ -53,12 +53,25 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 			error.log("only an identifier can be assigned a value", data, SOURCE_ERROR);
 		}
 	}
-	else
+	else if (op==opIf)
 	{
+		ActionPtr leftAction=voidAction;
+		
 		if (leftInput)
 			leftAction=leftInput->resolveActions(table);
-		else
-			leftAction=voidAction;
+		
+		leftAction=table->addConverter(leftAction, Bool);
+	}
+	else
+	{
+		ActionPtr leftAction=voidAction;
+		ActionPtr rightAction=voidAction;
+		
+		if (leftInput)
+			leftAction=leftInput->resolveActions(table);
+		
+		if (rightInput)
+			rightAction=rightInput->resolveActions(table);
 			
 		/*ActionPtr action=table->getBestAction(op, leftAction->getReturnType(), rightAction->getReturnType());
 		ActionPtr action=table->getBestAction(op, leftAction->getReturnType(), rightAction->getReturnType());
@@ -72,11 +85,14 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		*/
 		
 		out=table->makeBranchAction(data, op, leftAction, rightAction);
+		
+		if (!out)
+			error.log("could not resolve " + leftAction->getReturnType()->getName() + op->getText() + rightAction->getReturnType()->getName(), data, SOURCE_ERROR);
 	}
 	
 	if (!out)
 	{
-		error.log("could not resolve " + leftAction->getReturnType()->getName() + op->getText() + rightAction->getReturnType()->getName(), data, SOURCE_ERROR);
+		error.log("could not resolve " + op->getText(), data, SOURCE_ERROR);
 		return voidAction;
 	}
 	else
@@ -85,22 +101,6 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	}
 	
 }
-
-/*
-string OperatorElement::toString(OperatorType in)
-{
-	switch (in)
-	{
-		case OP_DOT: return ".";
-		case OP_PLUS: return "+";
-		case OP_MINUS: return "-";
-		case OP_COLON: return ":";
-		case OP_OPEN: return "(...";
-		case OP_CLOSE: return "...)";
-		default: return "UNKNOWN_OPERATOR";
-	}
-}
-*/
 
 void OperatorElement::printToString(string& in, int depth)
 {
