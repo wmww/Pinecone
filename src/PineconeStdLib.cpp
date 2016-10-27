@@ -40,15 +40,15 @@ ActionTablePtr table;
 #define RETURN_Bool DO_RETURN_VAL
 #define RETURN_Void DONT_RETURN_VAL
 
-#define func(nameText, returnType, leftType, rightType, lambdaBody)		\
+#define func(nameText, returnType, leftType, rightType, lambdaBody)							\
 addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(rightType), LAMBDA_HEADER\
-{																		\
-	CONCAT(INSTANTIATE, leftType)(leftType, left, GET_PTR_VAL(leftType, leftIn))				\
-	CONCAT(INSTANTIATE, rightType)(rightType, right, GET_PTR_VAL(rightType, rightIn))			\
-	CONCAT(INSTANTIATE, returnType)(returnType, out, )			\
-	lambdaBody;															\
-	CONCAT(RETURN, returnType)(returnType, out)					\
-})																		\
+{																							\
+	CONCAT(INSTANTIATE, leftType)(leftType, left, GET_PTR_VAL(leftType, leftIn))			\
+	CONCAT(INSTANTIATE, rightType)(rightType, right, GET_PTR_VAL(rightType, rightIn))		\
+	CONCAT(INSTANTIATE, returnType)(returnType, out, )										\
+	lambdaBody;																				\
+	CONCAT(RETURN, returnType)(returnType, out)												\
+})																							\
 
 ActionPtr voidAction;
 

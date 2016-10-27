@@ -1,5 +1,6 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/PineconeParser.h"
+#include "../h/ErrorHandler.h"
 
 #include <iostream>
 
@@ -25,9 +26,16 @@ int main(int argc, char ** argv)
 	
 	string cppSource=parser.resolveProgram(widapLangSource, inputFilename, true);
 	
-	cout << endl << "executing program..." << endl << endl;
-	
-	parser.execute();
+	if (error.getIfErrorLogged())
+	{
+		cout << endl << "execution abouted due to previous error" << endl << endl;
+	}
+	else
+	{
+		cout << endl << "executing program..." << endl << endl;
+		
+		parser.execute();
+	}
 	
 	cout << endl << "all done" << endl;
 	

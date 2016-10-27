@@ -40,12 +40,18 @@ string ErrorHandler::priorityToStr(ErrorPriority in)
 
 void ErrorHandler::log(string msg, ErrorPriority priority)
 {
+	if (priority==SOURCE_ERROR || priority==INTERNAL_ERROR)
+		errorHasBeenLogged=true;
+	
 	//cout << data.file << ":" << ((data.line<0)?" ":std::to_string(data.line)+": ") << priorityToStr(priority) << ": " << msg << endl;
 	cout << priorityToStr(priority) << ": " << msg << endl;
 }
 
 void ErrorHandler::log(string msg, ElementData data, ErrorPriority priority)
 {
+	if (priority==SOURCE_ERROR || priority==INTERNAL_ERROR)
+		errorHasBeenLogged=true;
+	
 	//cout << data.file << ":" << ((data.line<0)?" ":std::to_string(data.line)+": ") << priorityToStr(priority) << ": " << msg << endl;
 	cout << data.file << ": " << data.line << ": " << priorityToStr(priority) << ": " << msg << endl;
 }

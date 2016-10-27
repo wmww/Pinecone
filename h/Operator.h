@@ -58,6 +58,7 @@ extern Operator opGreater;
 extern Operator opLess;
 extern Operator opColon;
 extern Operator opDot;
+extern Operator opComma;
 extern Operator opIf;
 extern Operator opLoop;
 extern Operator opOpenPeren;
