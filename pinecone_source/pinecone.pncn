@@ -1,18 +1,18 @@
-a: 5
-b: 1 + (Int: a)
-print: b
-c: tru
+a: 7.6					# init a as a Dub
+b: Int					# init b as an Int with default value 0
+b: (Int: a)-(b-3)		# convert a to an Int (truncate) and add it to b minus 3
 
-c?
-	print: 1
+b<12?					# if b is less then 12 (true)
+	print: b			# print 10
 
-a=b?
-	print: 2
+a>5?					# if a is greater then 5 (false)
+	print: a			# condition failed so don't execute This
 
-i: 0
-i<6@
-(
-	print: i
-	i: i+1
-)
+print					# print blank line
 
+i: 0					# init i as Int to 0
+i<24@					# while i is less then 24
+(						# series of statements enclosed in parentheses (not curly braces)
+	print: i			# print i
+	i: i+1				# increment i
+)						# when done, the numbers 0-23 will be printed, each on a new line
