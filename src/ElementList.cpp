@@ -165,6 +165,10 @@ void ElementList::structureByOperators()
 	absorbForOperators(ops, true, true, false);
 	ops.clear();
 	
+	ops.push_back(opEqual);
+	absorbForOperators(ops, true, true, false);
+	ops.clear();
+	
 	ops.push_back(opColon);
 	absorbForOperators(ops, false, true, true);
 	ops.clear();

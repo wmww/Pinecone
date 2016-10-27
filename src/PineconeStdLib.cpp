@@ -107,7 +107,14 @@ void populatePineconeStdLib(ActionTablePtr t)
 		retrn left-right);
 	
 	// =
-	//func(OP_EQUALS)
+	func(opEqual, Bool, Bool, Bool,
+		retrn left==right);
+	
+	func(opEqual, Bool, Int, Int,
+		retrn left==right);
+	
+	func(opEqual, Bool, Dub, Dub,
+		retrn left==right);
 	
 	///basic types
 	

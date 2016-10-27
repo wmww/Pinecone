@@ -67,7 +67,7 @@ private:
 	string inSource;
 	string outCpp;
 	
-	vector<char> whitespaceChars, letterChars, digitChars, operatorChars;
+	vector<char> whitespaceChars, letterChars, digitChars;
 	char singleLineComment;
 };
 
