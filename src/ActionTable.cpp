@@ -22,8 +22,7 @@ void ActionTable::clear()
 	converters.clear();
 	types.clear();
 	
-	for (int i=0; i<OP_TYPE_OVERRIDEABLE_LAST; i++)
-		operators[i].clear();
+	operators.clear();
 }
 
 void ActionTable::addAction(ActionPtr in)
@@ -49,15 +48,9 @@ void ActionTable::addAction(ActionPtr in)
 	}
 }
 
-void ActionTable::addAction(ActionPtr in, OperatorType opType)
+void ActionTable::addAction(ActionPtr in, Operator op)
 {
-	if (opType<0 || opType>OP_TYPE_OVERRIDEABLE_LAST)
-	{
-		error.log(string() + __FUNCTION__ + " sent invalid opType", INTERNAL_ERROR);
-		return;
-	}
-	
-	operators[opType].push_back(in);
+	operators.push_back(in);
 }
 
 void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
@@ -85,17 +78,11 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, ActionPtr left, Action
 	return out;
 }
 
-ActionPtr ActionTable::makeBranchAction(ElementData data, OperatorType opType, ActionPtr left, ActionPtr right)
+ActionPtr ActionTable::makeBranchAction(ElementData data, Operator op, ActionPtr left, ActionPtr right)
 {
-	if (opType<0 || opType>OP_TYPE_OVERRIDEABLE_LAST)
-	{
-		error.log(string() + __FUNCTION__ + " sent invalid opType '" + OperatorElement::toString(opType) + "'", INTERNAL_ERROR);
-		return voidAction;
-	}
-	
 	vector<ActionPtr> matches;
 	
-	addActionsToList(matches, opType);
+	addActionsToList(matches, op);
 	
 	ActionPtr out=makeBranchAction(matches, left, right);
 	
@@ -275,12 +262,16 @@ Type ActionTable::getType(string name)
 	}
 }
 
-void ActionTable::addActionsToList(vector<ActionPtr>& in, OperatorType opType)
+void ActionTable::addActionsToList(vector<ActionPtr>& in, Operator op)
 {
-	in.insert(in.end(), operators[opType].begin(), operators[opType].end());
+	for (auto i=operators.begin(); i!=operators.end(); ++i)
+	{
+		if ((*i)->getText()==op->getText())
+			in.push_back(*i);
+	}
 	
 	if (parent)
-		parent->addActionsToList(in, opType);
+		parent->addActionsToList(in, op);
 }
 
 void ActionTable::addType(Type typeIn)
@@ -339,17 +330,14 @@ string ActionTable::toString()
 	
 	out+="\noperators:\n";
 	
-	for (int i=0; i<OP_TYPE_OVERRIDEABLE_LAST; ++i)
+	for (auto j=operators.begin(); j!=operators.end(); ++j)
 	{
-		for (auto j=operators[i].begin(); j!=operators[i].end(); ++j)
-		{
-			out+="\t";
-			if (*j)
-				out+=(*j)->toString();
-			else
-				out+="null operator";
-			out+="\n";
-		}
+		out+="\t";
+		if (*j)
+			out+=(*j)->toString();
+		else
+			out+="null operator";
+		out+="\n";
 	}
 	
 	out+="\nconverters:\n";

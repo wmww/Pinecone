@@ -38,14 +38,14 @@ void ElementList::structureByOperators()
 	{
 		if ((*i)->getElemType()==ElementData::OPERATOR)
 		{
-			OperatorType type=((OperatorElement *)&(**i))->getType();
+			Operator op=((OperatorElement *)&(**i))->getOp();
 			
-			if (type==OP_CLOSE)
+			if (op==opClosePeren)
 			{
 				error.log("extra closing parentheses", (*i)->getData(), SOURCE_ERROR);
 			}
 			
-			else if (type==OP_OPEN)
+			else if (op==opOpenPeren)
 			{
 				int openNum=1;
 				
@@ -63,12 +63,12 @@ void ElementList::structureByOperators()
 					
 					if ((*j)->getElemType()==ElementData::OPERATOR)
 					{
-						OperatorType type=((OperatorElement *)&(**j))->getType();
-						if (type==OP_OPEN)
+						Operator op=((OperatorElement *)&(**j))->getOp();
+						if (op==opOpenPeren)
 						{
 							++openNum;
 						}
-						else if (type==OP_CLOSE)
+						else if (op==opClosePeren)
 						{
 							--openNum;
 							
@@ -102,7 +102,7 @@ void ElementList::structureByOperators()
 				subList->structureByOperators();
 			}
 			
-			else if (type==OP_DOT)
+			else if (op==opDot)
 			{
 				auto j=i;
 				
@@ -154,24 +154,24 @@ void ElementList::structureByOperators()
 		}
 	}
 	
-	vector<OperatorType> opTypes;
+	vector<Operator> ops;
 	
-	opTypes.push_back(OP_COLON);
-	absorbForOperators(opTypes, true, false, true);
-	opTypes.clear();
+	ops.push_back(opColon);
+	absorbForOperators(ops, true, false, true);
+	ops.clear();
 	
-	opTypes.push_back(OP_PLUS);
-	opTypes.push_back(OP_MINUS);
-	absorbForOperators(opTypes, true, true, false);
-	opTypes.clear();
+	ops.push_back(opPlus);
+	ops.push_back(opMinus);
+	absorbForOperators(ops, true, true, false);
+	ops.clear();
 	
-	opTypes.push_back(OP_COLON);
-	absorbForOperators(opTypes, false, true, true);
-	opTypes.clear();
+	ops.push_back(opColon);
+	absorbForOperators(ops, false, true, true);
+	ops.clear();
 	
 }
 
-void ElementList::absorbForOperators(vector<OperatorType> operators, bool absorbLeft, bool absorbRight, bool backwords)
+void ElementList::absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords)
 {
 	if (!absorbLeft && !absorbRight)
 	{
@@ -189,11 +189,11 @@ void ElementList::absorbForOperators(vector<OperatorType> operators, bool absorb
 		if ((*i)->getElemType()==ElementData::OPERATOR)
 		{
 			
-			OperatorType type=((OperatorElement *)&(**i))->getType();
+			Operator op=((OperatorElement *)&(**i))->getOp();
 			
 			for (auto l=operators.begin(); l!=operators.end(); ++l)
 			{
-				if (type==*l)
+				if (op==*l)
 				{
 					auto j=i;
 					

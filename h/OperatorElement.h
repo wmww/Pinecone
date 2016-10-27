@@ -6,18 +6,7 @@ class OperatorElement: public Element
 {
 public:
 	
-	///steps to adding a new operator
-	/**
-		1. add to the enum					below
-		2. add it to toString				OperatorElement.cpp				so the enum will return a useful string
-		3. add it to makeNew				OperatorElement.cpp				so the right source code character will be matched with the enum
-		4. add it to populateCharVectors	PineconeParser.cpp				so it can be detected in the first place
-	**/
-	
-	OperatorElement(ElementData dataIn, OperatorType typeIn): Element(dataIn) {opType=typeIn;}
-	
-	static string toString(OperatorType);
-	
+	OperatorElement(ElementData dataIn, Operator opIn): Element(dataIn) {op=opIn;}
 	
 	string getReadableName();
 	
@@ -33,13 +22,13 @@ public:
 	
 	ElementData::Type getElemType() {return ElementData::OPERATOR;}
 	
-	OperatorType getType() {return opType;}
+	Operator getOp() {return op;}
 	
 	void* execute();
 	
 private:
 	
-	OperatorType opType;
+	Operator op;
 	
 	ElementPtr leftInput=nullptr;
 	ElementPtr rightInput=nullptr;

@@ -41,6 +41,8 @@ protected:
 
 typedef shared_ptr<Action> ActionPtr;
 
+extern ActionPtr voidAction;
+
 class VoidAction: public Action
 {
 public:
@@ -54,8 +56,6 @@ public:
 		return nullptr;
 	}
 };
-
-extern ActionPtr voidAction;
 
 class LambdaAction: public Action
 {

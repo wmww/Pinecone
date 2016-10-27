@@ -4,7 +4,7 @@
 #include "Type.h"
 #include "Action.h"
 #include "ElementData.h"
-//#include "OperatorElement.h"
+#include "Operator.h"
 //#include "StackFrame.h"
 
 #include <list>
@@ -23,10 +23,10 @@ public:
 	~ActionTable() {clear();}
 	
 	ActionPtr makeBranchAction(ElementData data, ActionPtr left, ActionPtr right);
-	ActionPtr makeBranchAction(ElementData data, OperatorType opType, ActionPtr left, ActionPtr right);
+	ActionPtr makeBranchAction(ElementData data, Operator op, ActionPtr left, ActionPtr right);
 	
 	void addAction(ActionPtr in);
-	void addAction(ActionPtr in, OperatorType opType);
+	void addAction(ActionPtr in, Operator op);
 	
 	Type getType(string name);
 	
@@ -42,14 +42,14 @@ public:
 	
 private:
 	void addActionsToList(vector<ActionPtr>& in, string& text);
-	void addActionsToList(vector<ActionPtr>& in, OperatorType opType);
+	void addActionsToList(vector<ActionPtr>& in, Operator op);
 	ActionPtr makeBranchAction(vector<ActionPtr>& matches, ActionPtr left, ActionPtr right);
 	void getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type);
 	
 	shared_ptr<ActionTable> parent;
 	list<ActionPtr> converters;
 	list<ActionPtr> actions;
-	list<ActionPtr> operators[OP_TYPE_OVERRIDEABLE_LAST];
+	list<ActionPtr> operators;
 	list<Type> types;
 	
 	StackFrame* stackFrame;

@@ -5,36 +5,27 @@
 #include "../h/CastElement.h"
 #include "../h/BranchAction.h"
 
+
 ElementPtr OperatorElement::makeNew(ElementData dataIn)
 {
-	if (dataIn.text==".")
-		return ElementPtr(new OperatorElement(dataIn, OP_DOT));
+	vector<Operator> ops;
 	
-	if (dataIn.text==":")
-		return ElementPtr(new OperatorElement(dataIn, OP_COLON));
+	getOperators(ops, dataIn.text, dataIn);
 	
-	else if (dataIn.text=="+")
-		return ElementPtr(new OperatorElement(dataIn, OP_PLUS));
-		
-	else if (dataIn.text=="-")
-		return ElementPtr(new OperatorElement(dataIn, OP_MINUS));
-	
-	else if (dataIn.text=="(")
-		return ElementPtr(new OperatorElement(dataIn, OP_OPEN));
-	
-	else if (dataIn.text==")")
-		return ElementPtr(new OperatorElement(dataIn, OP_CLOSE));
-	
+	if (ops.size()==1)
+	{
+		return ElementPtr(new OperatorElement(dataIn, ops[0]));
+	}
 	else
 	{
-		error.log("unknown operator '" + dataIn.text + "'", dataIn, SOURCE_ERROR);
+		error.log("operator error for '" + dataIn.text + "', number of returned operators is " + to_string(ops.size()), dataIn, SOURCE_ERROR);
 		return ElementPtr(nullptr);
 	}
 }
 
 string OperatorElement::getReadableName()
 {
-	return toString(opType);
+	return op->getText();
 }
 
 ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
@@ -46,7 +37,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	else
 		rightAction=voidAction;
 	
-	if (opType==OP_COLON)
+	if (op==opColon)
 	{
 		if (leftInput && leftInput->getElemType()==ElementData::IDENTIFIER)
 		{
@@ -69,8 +60,8 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		else
 			leftAction=voidAction;
 			
-		/*ActionPtr action=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
-		ActionPtr action=table->getBestAction(opType, leftAction->getReturnType(), rightAction->getReturnType());
+		/*ActionPtr action=table->getBestAction(op, leftAction->getReturnType(), rightAction->getReturnType());
+		ActionPtr action=table->getBestAction(op, leftAction->getReturnType(), rightAction->getReturnType());
 		
 		if (!action)
 		{
@@ -80,12 +71,12 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		out=ActionPtr(new BranchAction(leftAction, action, rightAction));
 		*/
 		
-		out=table->makeBranchAction(data, opType, leftAction, rightAction);
+		out=table->makeBranchAction(data, op, leftAction, rightAction);
 	}
 	
 	if (!out)
 	{
-		error.log("could not resolve " + leftAction->getReturnType()->getName() + toString(opType) + rightAction->getReturnType()->getName(), data, SOURCE_ERROR);
+		error.log("could not resolve " + leftAction->getReturnType()->getName() + op->getText() + rightAction->getReturnType()->getName(), data, SOURCE_ERROR);
 		return voidAction;
 	}
 	else
@@ -95,6 +86,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	
 }
 
+/*
 string OperatorElement::toString(OperatorType in)
 {
 	switch (in)
@@ -108,6 +100,7 @@ string OperatorElement::toString(OperatorType in)
 		default: return "UNKNOWN_OPERATOR";
 	}
 }
+*/
 
 void OperatorElement::printToString(string& in, int depth)
 {

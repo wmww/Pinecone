@@ -3,6 +3,7 @@
 #include <string>
 using std::string;
 
+/*
 enum OperatorType
 {
 	OP_PLUS,
@@ -15,7 +16,11 @@ enum OperatorType
 	OP_COLON,
 	OP_OPEN,
 	OP_CLOSE,
+	
+	//used for making arrays of all operators
+	OP_TYPE_LAST
 };
+*/
 
 struct ElementData
 {
