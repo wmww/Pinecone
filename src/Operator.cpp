@@ -6,6 +6,8 @@ vector<shared_ptr<OperatorBase>> OperatorBase::operators;
 Operator opPlus=OperatorBase::create("+", true, true, true);
 Operator opMinus=OperatorBase::create("-", true, true, true);
 Operator opEqual=OperatorBase::create("=", true, true, false);
+Operator opGreater=OperatorBase::create(">", true, true, false);
+Operator opLess=OperatorBase::create("<", true, true, false);
 Operator opColon=OperatorBase::create(":", true, true, false);
 Operator opDot=OperatorBase::create(".", true, true, false);
 Operator opIf=OperatorBase::create("?", true, true, false);
