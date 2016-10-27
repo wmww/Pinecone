@@ -17,18 +17,11 @@ class OperatorBase
 {
 public:
 	
-	OperatorBase(string textIn, bool leftIn, bool rightIn, bool overridableIn)
+	static shared_ptr<OperatorBase> create(string textIn, bool leftIn, bool rightIn, bool overridableIn)
 	{
-		text=textIn;
-		takesLeftInput=leftIn;
-		takesRightInput=rightIn;
-		overridable=overridableIn;
-		operators.push_back(shared_ptr<OperatorBase>(this));
-	}
-	
-	~OperatorBase()
-	{
-		std::cout << text << std::endl;
+		shared_ptr<OperatorBase> ptr(new OperatorBase(textIn, leftIn, rightIn, overridableIn));
+		operators.push_back(ptr);
+		return ptr;
 	}
 	
 	string getText() {return text;}
@@ -39,6 +32,14 @@ public:
 	static vector<shared_ptr<OperatorBase>> operators;
 	
 private:
+	
+	OperatorBase(string textIn, bool leftIn, bool rightIn, bool overridableIn)
+	{
+		text=textIn;
+		takesLeftInput=leftIn;
+		takesRightInput=rightIn;
+		overridable=overridableIn;
+	}
 	
 	string text;
 	bool takesLeftInput;
