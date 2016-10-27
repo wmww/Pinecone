@@ -49,6 +49,8 @@ void ElementList::structureByOperators()
 	ops.clear();
 	
 	ops.push_back(opEqual);
+	ops.push_back(opGreater);
+	ops.push_back(opLess);
 	absorbForOperators(ops, true, true, false);
 	ops.clear();
 	

@@ -116,6 +116,26 @@ void populatePineconeStdLib(ActionTablePtr t)
 	func(opEqual, Bool, Dub, Dub,
 		retrn left==right);
 	
+	// >
+	func(opGreater, Bool, Bool, Bool,
+		retrn !left && right);
+	
+	func(opGreater, Bool, Int, Int,
+		retrn left>right);
+	
+	func(opGreater, Bool, Dub, Dub,
+		retrn left>right);
+	
+	// <
+	func(opLess, Bool, Bool, Bool,
+		retrn left && !right);
+	
+	func(opLess, Bool, Int, Int,
+		retrn left<right);
+	
+	func(opLess, Bool, Dub, Dub,
+		retrn left<right);
+	
 	///basic types
 	
 	table->addType(Void);
@@ -138,11 +158,17 @@ void populatePineconeStdLib(ActionTablePtr t)
 	
 	///casting
 	
-	func("Dub", Dub, Void, Int,
-		retrn right);
+	//to bool
+	func("Bool", Bool, Void, Int, retrn right!=0);
+	func("Bool", Bool, Void, Dub, retrn right!=0);
 	
-	func("Int", Int, Void, Dub, 
-		retrn right);
+	//to Int
+	func("Int", Int, Void, Bool, retrn (right?1:0));
+	func("Int", Int, Void, Dub, retrn (int)right);
+	
+	//to Dub
+	func("Dub", Dub, Void, Bool, retrn (right?1:0));
+	func("Dub", Dub, Void, Int, retrn (double)right);
 	
 	
 	///mscl functions
