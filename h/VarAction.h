@@ -31,13 +31,13 @@ private:
 	size_t offset;
 };
 
-class LiteralGetAction: public Action
+class ConstGetAction: public Action
 {
 public:
 	
-	LiteralGetAction(void* in, Type typeIn, string textIn);
+	ConstGetAction(void* in, Type typeIn, string textIn);
 	
-	~LiteralGetAction();
+	~ConstGetAction();
 	
 	void* execute(void* inLeft, void* inRight);
 	
@@ -45,5 +45,4 @@ private:
 	
 	void* data;
 };
-
 

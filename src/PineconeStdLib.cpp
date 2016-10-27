@@ -1,4 +1,5 @@
 #include "../h/PineconeParser.h"
+#include "../h/Operator.h"
 
 ActionTablePtr table;
 
@@ -49,14 +50,16 @@ addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(
 	CONCAT(RETURN, returnType)(returnType, out)					\
 })																		\
 
+ActionPtr voidAction;
+
 void addAction(Action* in)
 {
 	table->addAction(ActionPtr(in));
 }
 
-void addAction(Action* in, OperatorType opType)
+void addAction(Action* in, Operator op)
 {
-	table->addAction(ActionPtr(in), opType);
+	table->addAction(ActionPtr(in), op);
 }
 
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
@@ -64,9 +67,9 @@ void addAction(string text, Type returnType, Type leftType, Type rightType, func
 	addAction(new LambdaAction(returnType, lambda, leftType, rightType, text));
 }
 
-void addAction(OperatorType opType, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
+void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	addAction(new LambdaAction(returnType, lambda, leftType, rightType, OperatorElement::toString(opType)), opType);
+	addAction(new LambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
 }
 
 void populatePineconeStdLib(ActionTablePtr t)
@@ -76,22 +79,35 @@ void populatePineconeStdLib(ActionTablePtr t)
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
 	voidAction=ActionPtr(new VoidAction());
 	
+	
+	///constansts
+	
+	table->addAction(voidAction);
+	
+	bool trueVal=true;
+	table->addAction(ActionPtr(new ConstGetAction(&trueVal, Bool, "tru")));
+	
+	bool falseVal=false;
+	table->addAction(ActionPtr(new ConstGetAction(&falseVal, Bool, "fls")));
+	
+	
 	///operators
 	
-	func(OP_PLUS, Int, Int, Int,
+	// +
+	func(opPlus, Int, Int, Int,
+		retrn left+right);
+	func(opPlus, Dub, Dub, Dub,
 		retrn left+right);
 	
-	func(OP_PLUS, Dub, Dub, Dub,
-		retrn left+right);
-	
-	
-	
-	func(OP_MINUS, Dub, Dub, Dub,
+	// -
+	func(opMinus, Int, Int, Int,
 		retrn left-right);
 	
-	func(OP_MINUS, Int, Int, Int,
+	func(opMinus, Dub, Dub, Dub,
 		retrn left-right);
 	
+	// =
+	//func(OP_EQUALS)
 	
 	///basic types
 	

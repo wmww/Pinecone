@@ -36,7 +36,7 @@ void* VarSetAction::execute(void* left, void* right)
 	return out;
 }
 
-LiteralGetAction::LiteralGetAction(void* in, Type typeIn, string textIn):
+ConstGetAction::ConstGetAction(void* in, Type typeIn, string textIn):
 	Action(typeIn, Void, Void, textIn)
 {
 	data=malloc(returnType->getSize());
@@ -45,12 +45,12 @@ LiteralGetAction::LiteralGetAction(void* in, Type typeIn, string textIn):
 	setDescription(textIn);// + " (" + typeIn.toString() + " literal)");
 }
 
-LiteralGetAction::~LiteralGetAction()
+ConstGetAction::~ConstGetAction()
 {
 	free(data);
 }
 
-void* LiteralGetAction::execute(void* inLeft, void* inRight)
+void* ConstGetAction::execute(void* inLeft, void* inRight)
 {
 	void* out=malloc(returnType->getSize());
 	memcpy(out, data, returnType->getSize());

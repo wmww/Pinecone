@@ -21,3 +21,4 @@ string ElementData::toString()
 	return text+" ("+toString(type)+")";
 }
 
+

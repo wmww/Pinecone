@@ -2,8 +2,6 @@
 
 #include "../h/ErrorHandler.h"
 
-ActionPtr voidAction;
-
 Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
 {
 	text=textIn;
