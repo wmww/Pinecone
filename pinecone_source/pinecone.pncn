@@ -1,5 +1,10 @@
 a: 5
-b: 0 + (Int: a)
+b: 1 + (Int: a)
 print: b
 c: tru
-print: a=b
+
+c?
+	print: 1
+
+a=b?
+	print: 2
