@@ -9,6 +9,7 @@ Operator opEqual=OperatorBase::create("=", true, true, false);
 Operator opColon=OperatorBase::create(":", true, true, false);
 Operator opDot=OperatorBase::create(".", true, true, false);
 Operator opIf=OperatorBase::create("?", true, true, false);
+Operator opLoop=OperatorBase::create("@", true, true, false);
 Operator opOpenPeren=OperatorBase::create("(", false, false, false);
 Operator opClosePeren=OperatorBase::create(")", false, false, false);
 

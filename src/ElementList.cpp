@@ -59,6 +59,10 @@ void ElementList::structureByOperators()
 	ops.push_back(opIf);
 	absorbForOperators(ops, true, true, false);
 	ops.clear();
+	
+	ops.push_back(opLoop);
+	absorbForOperators(ops, true, true, false);
+	ops.clear();
 }
 
 void ElementList::absorbePeren()

@@ -5,6 +5,7 @@
 #include "../h/CastElement.h"
 #include "../h/BranchAction.h"
 #include "../h/IfAction.h"
+#include "../h/LoopAction.h"
 
 
 ElementPtr OperatorElement::makeNew(ElementData dataIn)
@@ -56,20 +57,38 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 	}
 	else if (op==opIf)
 	{
-		ActionPtr rightAction=voidAction;
 		ActionPtr leftAction=voidAction;
-		
-		if (rightInput)
-			rightAction=rightInput->resolveActions(table);
+		ActionPtr rightAction=voidAction;
 		
 		if (leftInput)
 			leftAction=leftInput->resolveActions(table);
+		
+		if (rightInput)
+			rightAction=rightInput->resolveActions(table);
 		
 		leftAction=table->addConverter(leftAction, Bool);
 		
 		if (leftAction!=voidAction)
 		{
-			out=ActionPtr(new IfAction(leftAction, rightAction, "?"));
+			out=ActionPtr(new IfAction(leftAction, rightAction));
+		}
+	}
+	else if (op==opLoop)
+	{
+		ActionPtr leftAction=voidAction;
+		ActionPtr rightAction=voidAction;
+		
+		if (leftInput)
+			leftAction=leftInput->resolveActions(table);
+		
+		if (rightInput)
+			rightAction=rightInput->resolveActions(table);
+		
+		leftAction=table->addConverter(leftAction, Bool);
+		
+		if (leftAction!=voidAction)
+		{
+			out=ActionPtr(new LoopAction(leftAction, rightAction));
 		}
 	}
 	else

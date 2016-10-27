@@ -1,8 +1,8 @@
 #include "../h/IfAction.h"
 #include "../h/ErrorHandler.h"
 
-IfAction::IfAction(ActionPtr conditionIn, ActionPtr ifActionIn, string textIn)
-	:Action(Void, Void, Void, textIn)
+IfAction::IfAction(ActionPtr conditionIn, ActionPtr ifActionIn)
+	:Action(Void, Void, Void, "IF")
 {
 	condition=conditionIn;
 	ifAction=ifActionIn;
@@ -25,7 +25,7 @@ IfAction::IfAction(ActionPtr conditionIn, ActionPtr ifActionIn, string textIn)
 
 string IfAction::getDescription()
 {
-	return "if " + condition->getDescription() + " then " + condition->getDescription();
+	return "if " + condition->getDescription() + " then " + ifAction->getDescription();
 }
 
 void* IfAction::execute(void* inLeft, void* inRight)
