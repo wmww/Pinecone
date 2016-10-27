@@ -43,6 +43,7 @@
 		<Unit filename="../h/ErrorHandler.h" />
 		<Unit filename="../h/FunctionAction.h" />
 		<Unit filename="../h/IdentifierElement.h" />
+		<Unit filename="../h/IfAction.h" />
 		<Unit filename="../h/ListAction.h" />
 		<Unit filename="../h/LiteralElement.h" />
 		<Unit filename="../h/MakeTupleAction.h" />
@@ -65,6 +66,7 @@
 		<Unit filename="../src/ErrorHandler.cpp" />
 		<Unit filename="../src/FunctionAction.cpp" />
 		<Unit filename="../src/IdentifierElement.cpp" />
+		<Unit filename="../src/IfAction.cpp" />
 		<Unit filename="../src/ListAction.cpp" />
 		<Unit filename="../src/LiteralElement.cpp" />
 		<Unit filename="../src/MakeTupleAction.cpp" />
