@@ -54,6 +54,7 @@ extern Operator opMinus;
 extern Operator opEqual;
 extern Operator opColon;
 extern Operator opDot;
+extern Operator opIf;
 extern Operator opOpenPeren;
 extern Operator opClosePeren;
 
