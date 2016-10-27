@@ -56,6 +56,9 @@ void ElementList::structureByOperators()
 	absorbForOperators(ops, false, true, true);
 	ops.clear();
 	
+	ops.push_back(opIf);
+	absorbForOperators(ops, true, true, false);
+	ops.clear();
 }
 
 void ElementList::absorbePeren()
@@ -204,7 +207,6 @@ void ElementList::absorbForOperators(vector<Operator> operators, bool absorbLeft
 	{
 		if ((*i)->getElemType()==ElementData::OPERATOR)
 		{
-			
 			Operator op=((OperatorElement *)&(**i))->getOp();
 			
 			for (auto l=operators.begin(); l!=operators.end(); ++l)
@@ -238,7 +240,7 @@ void ElementList::absorbForOperators(vector<Operator> operators, bool absorbLeft
 							
 							elems.erase(j);
 						}
-						//else the scope ends with this operator, and thus it cant have a left input
+						//else the scope ends with this operator, and thus it cant have a right input
 					}
 					
 					break;

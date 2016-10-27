@@ -22,6 +22,15 @@ public:
 	
 	~ActionTable() {clear();}
 	
+	ActionPtr addConverter(ActionPtr action, Type type)
+	{
+		vector<Type> types;
+		types.push_back(type);
+		return addConverter(action, types);
+	}
+	
+	ActionPtr addConverter(ActionPtr action, vector<Type>& types);
+	
 	ActionPtr makeBranchAction(ElementData data, ActionPtr left, ActionPtr right);
 	ActionPtr makeBranchAction(ElementData data, Operator op, ActionPtr left, ActionPtr right);
 	

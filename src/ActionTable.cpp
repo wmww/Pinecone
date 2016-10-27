@@ -67,6 +67,34 @@ void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
 	}
 }
 
+ActionPtr ActionTable::addConverter(ActionPtr action, vector<Type>& types)
+{
+	for (auto i=types.begin(); i!=types.end(); i++)
+	{
+		if (action->getReturnType()==(*i))
+		{
+			return action;
+		}
+	}
+	
+	vector<ActionPtr> typeConverters;
+	
+	getAllConvertersForType(typeConverters, action->getReturnType());
+	
+	for (auto i=types.begin(); i!=types.end(); i++)
+	{
+		for (auto j=typeConverters.begin(); j!=typeConverters.end(); j++)
+		{
+			if ((*j)->getReturnType()==(*i))
+			{
+				return ActionPtr(new RightBranchAction(*j, action));
+			}
+		}
+	}
+	
+	return voidAction;
+}
+
 ActionPtr ActionTable::makeBranchAction(ElementData data, ActionPtr left, ActionPtr right)
 {
 	vector<ActionPtr> matches;
