@@ -3,6 +3,7 @@
 #include "../h/IdentifierElement.h"
 #include "../h/OperatorElement.h"
 #include "../h/ErrorHandler.h"
+#include "../h/Operator.h"
 
 PineconeParser::PineconeParser()
 {
@@ -52,19 +53,6 @@ void PineconeParser::populateCharVectors()
 	
 	for (char c='0'; c<='9'; ++c)
 		digitChars.push_back(c);
-	
-	
-	///operators
-	
-	operatorChars.push_back('+');
-	operatorChars.push_back('-');
-	//operatorChars.push_back('*');
-	//operatorChars.push_back('/');
-	//operatorChars.push_back('=');
-	operatorChars.push_back(':');
-	operatorChars.push_back('.');
-	operatorChars.push_back('(');
-	operatorChars.push_back(')');
 	
 	
 	///comments
@@ -136,9 +124,9 @@ ElementData::Type PineconeParser::getElementType(char c, ElementData::Type previ
 		}
 	}
 	
-	for (auto i=operatorChars.begin(); i<operatorChars.end(); ++i)
+	for (auto i=OperatorBase::operators.begin(); i<OperatorBase::operators.end(); ++i)
 	{
-		if (*i==c)
+		if ((*i)->getText()[0]==c)
 		{
 			return ElementData::OPERATOR;
 		}

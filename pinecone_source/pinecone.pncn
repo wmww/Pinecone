@@ -1,7 +1,6 @@
 
-a: 5.6
-b: 3 + (Int: a)
+a: 5
+b: 0 + (Int: a)
 print: b
 c: tru
-c: fls
-print: c
+print: a=b

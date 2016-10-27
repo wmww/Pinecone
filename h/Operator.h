@@ -51,6 +51,7 @@ typedef shared_ptr<OperatorBase> Operator;
 
 extern Operator opPlus;
 extern Operator opMinus;
+extern Operator opEqual;
 extern Operator opColon;
 extern Operator opDot;
 extern Operator opOpenPeren;
