@@ -22,33 +22,36 @@ Pinecone will be similar in capabilities to modern object oriented compiled lang
 * Program control is done with operators instead of keywords (? instead of if)
 
 ## Current State
-What I have currently working:
+the features that are currently functional are as follows:
 * A few primitive data types (Bool Int and Dub)
 * some operators (+, -, :, =, >, <, etc.)
+* comments with the # symbol
 * The if statement (no then yet because tuples are not ready)
 * The while loop
 * the print function
 
+__here is an example of a working Pinecone program:__
 
-	a: 7.6              # init a as a Dub
-	b: Int              # init b as an Int with default value 0
-	b: (Int: a)-(b-3    # convert a to an Int (truncate) and add it to b minus 3
+```
+a: 7.6              # init a as a Dub
+b: Int              # init b as an Int with default value 0
+b: (Int: a)-(b-3)   # convert a to an Int (truncate) and add it to b minus 3
 
-	b<12?               # if b is less then 12 (true)
-	    print: b        # print 10
+b<12?               # if b is less then 12 (true)
+    print: b        # print 10
 
-	a>5?                # if a is greater then 5 (false)
-	    print: a        # condition failed so don't execute This
+a>5?                # if a is greater then 5 (false)
+    print: a        # condition failed so don't execute This
 
-	print               # print blank line
+print               # print blank line
 
-	i: 0                # init i as Int to 0
-	i<24@               # while i is less then 24
-	(                   # series of statements enclosed in parentheses (not curly braces)
-	    print: i        # print i
-	    i: i+1          # increment i
-	)                   # when done, the numbers 0-23 will be printed, each on a new line
-
+i: 0                # init i as Int to 0
+i<24@               # while i is less then 24
+(                   # series of statements enclosed in parentheses (not curly braces)
+    print: i        # print i
+    i: i+1          # increment i
+)                   # when done, the numbers 0-23 will be printed, each on a new line
+```
 And that is just about a complete demonstration of currently implemented features.
 
 ## What's next
