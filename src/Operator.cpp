@@ -3,12 +3,12 @@
 
 vector<shared_ptr<OperatorBase>> OperatorBase::operators;
 
-Operator opPlus(new OperatorBase("+", true, true, true));
-Operator opMinus(new OperatorBase("-", true, true, true));
-Operator opColon(new OperatorBase(":", true, true, false));
-Operator opDot(new OperatorBase(".", true, true, false));
-Operator opOpenPeren(new OperatorBase("(", false, false, false));
-Operator opClosePeren(new OperatorBase(")", false, false, false));
+Operator opPlus=OperatorBase::create("+", true, true, true);
+Operator opMinus=OperatorBase::create("-", true, true, true);
+Operator opColon=OperatorBase::create(":", true, true, false);
+Operator opDot=OperatorBase::create(".", true, true, false);
+Operator opOpenPeren=OperatorBase::create("(", false, false, false);
+Operator opClosePeren=OperatorBase::create(")", false, false, false);
 
 void getOperators(vector<Operator>& out, string text, ElementData data)
 {
