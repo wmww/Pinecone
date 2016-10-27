@@ -94,27 +94,25 @@ void populatePineconeStdLib(ActionTablePtr t)
 	///operators
 	
 	// +
-	func(opPlus, Int, Int, Int,
-		retrn left+right);
-	func(opPlus, Dub, Dub, Dub,
-		retrn left+right);
+	func(opPlus, Int, Int, Int, retrn left+right);
+	func(opPlus, Dub, Dub, Dub, retrn left+right);
 	
 	// -
-	func(opMinus, Int, Int, Int,
-		retrn left-right);
+	func(opMinus, Int, Int, Int, retrn left-right);
+	func(opMinus, Dub, Dub, Dub, retrn left-right);
 	
-	func(opMinus, Dub, Dub, Dub,
-		retrn left-right);
+	// *
+	func(opMultiply, Int, Int, Int, retrn left*right);
+	func(opMultiply, Dub, Dub, Dub, retrn left*right);
+	
+	// /
+	func(opDivide, Int, Int, Int, retrn left/right);
+	func(opDivide, Dub, Dub, Dub, retrn left/right);
 	
 	// =
-	func(opEqual, Bool, Bool, Bool,
-		retrn left==right);
-	
-	func(opEqual, Bool, Int, Int,
-		retrn left==right);
-	
-	func(opEqual, Bool, Dub, Dub,
-		retrn left==right);
+	func(opEqual, Bool, Bool, Bool, retrn left==right);
+	func(opEqual, Bool, Int, Int, retrn left==right);
+	func(opEqual, Bool, Dub, Dub, retrn left==right);
 	
 	// >
 	func(opGreater, Bool, Bool, Bool,

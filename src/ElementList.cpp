@@ -43,6 +43,11 @@ void ElementList::structureByOperators()
 	absorbForOperators(ops, true, false, true);
 	ops.clear();
 	
+	ops.push_back(opMultiply);
+	ops.push_back(opDivide);
+	absorbForOperators(ops, true, true, false);
+	ops.clear();
+	
 	ops.push_back(opPlus);
 	ops.push_back(opMinus);
 	absorbForOperators(ops, true, true, false);

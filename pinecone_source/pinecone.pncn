@@ -1,18 +1,19 @@
-a: 7.6              # init a as a Dub
-b: Int              # init b as an Int with default value 0
-b: (Int: a)-(b-3)   # convert a to an Int (truncate) and add it to b minus 3
+a: 7.6
+b: Int
+b: (Int: a)-(b-3)
 
-b<12?               # if b is less then 12 (true)
-    print: b        # print 10
+b<12?
+    print: b
 
-a>5?                # if a is greater then 5 (false)
-    print: a        # condition failed so don't execute This
+a>5?
+    print: a
 
-print               # print blank line
+print
 
-i: 0                # init i as Int to 0
-i<24@               # while i is less then 24
-(                   # series of statements enclosed in parentheses (not curly braces)
-    print: i        # print i
-    i: i+1          # increment i
-)                   # when done, the numbers 0-23
+i: 0
+i<10000000@
+(
+	((Dub: (i/100000))=((Dub: i)/100000.0))?
+		print: i
+    i: i+1
+)
