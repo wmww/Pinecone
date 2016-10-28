@@ -52,6 +52,7 @@
 		<Unit filename="../h/OperatorElement.h" />
 		<Unit filename="../h/PineconeParser.h" />
 		<Unit filename="../h/StackFrame.h" />
+		<Unit filename="../h/TupleElement.h" />
 		<Unit filename="../h/Type.h" />
 		<Unit filename="../h/VarAction.h" />
 		<Unit filename="../h/msclStringFuncs.h" />
@@ -77,6 +78,7 @@
 		<Unit filename="../src/PineconeParser.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />
 		<Unit filename="../src/StackFrame.cpp" />
+		<Unit filename="../src/TupleElement.cpp" />
 		<Unit filename="../src/Type.cpp" />
 		<Unit filename="../src/VarAction.cpp" />
 		<Unit filename="../src/main.cpp" />

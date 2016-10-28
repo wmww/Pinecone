@@ -201,6 +201,67 @@ void ElementList::absorbeDotInDub()
 	}
 }
 
+void ElementList::absorbeComma()
+{
+	for (auto i=elems.begin(); i!=elems.end(); ++i)
+	{
+		if ((*i)->getElemType()==ElementData::OPERATOR && ((OperatorElement *)&(**i))->getOp()==opComma)
+		{
+			if (i==elems.begin())
+			{
+				dsgfdgfsgdf
+			}
+			
+			auto j=i;
+			
+			--j;
+			
+			if (j!=elems.end())
+			{
+				if ((*j)->getElemType()==ElementData::LITERAL)
+				{
+					if (((LiteralElement*)&(**j))->getType()==Int)
+					{
+						ElementData data0=(*i)->getData();
+						ElementData data1=(*j)->getData();
+						
+						elems.insert(i, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
+						
+						i=elems.erase(i);
+						i=elems.erase(i);
+						
+						--i;
+						
+						if (i!=elems.begin())
+						{
+							j=i;
+							--j;
+							
+							if ((*j)->getElemType()==ElementData::LITERAL)
+							{
+								if (((LiteralElement*)&(**j))->getType()==Int)
+								{
+									data0=(*j)->getData();
+									data1=(*i)->getData();
+									
+									elems.insert(j, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
+									
+									j=elems.erase(j);
+									j=elems.erase(j);
+									
+									--j;
+									
+									i=j;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void ElementList::absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords)
 {
 	if (!absorbLeft && !absorbRight)

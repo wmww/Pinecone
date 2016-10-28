@@ -33,6 +33,7 @@ struct ElementData
 		COMMENT,
 		SCOPE,
 		CAST,
+		TUPLE,
 		UNKNOWN
 	};
 	
