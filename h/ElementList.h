@@ -46,9 +46,8 @@ public:
 private:
 	
 	void absorbePeren();
-	
 	void absorbeDotInDub();
-	
+	void absorbeComma();
 	void absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords);
 	
 	list<ElementPtr> elems;

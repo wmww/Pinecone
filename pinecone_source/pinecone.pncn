@@ -18,7 +18,7 @@ i<10@
     i: i+1
 )
 
-tuple: 1+1.0
+tuple: 1, 1.0
 
 print
 
