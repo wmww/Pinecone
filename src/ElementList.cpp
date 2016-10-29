@@ -201,7 +201,7 @@ void ElementList::absorbeDotInDub()
 	}
 }
 
-void ElementList::absorbeComma()
+/*void ElementList::absorbeComma()
 {
 	for (auto i=elems.begin(); i!=elems.end(); ++i)
 	{
@@ -260,7 +260,7 @@ void ElementList::absorbeComma()
 			}
 		}
 	}
-}
+}*/
 
 void ElementList::absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords)
 {
