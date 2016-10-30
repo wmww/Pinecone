@@ -181,7 +181,7 @@ void populatePineconeStdLib(ActionTablePtr t)
 	types.push_back(Dub);
 	
 	addAction(
-		"printTpl", Void, Void, Type(new TypeBase(types, "")),
+		"print", Void, Void, Type(new TypeBase(types, "")),
 		LAMBDA_HEADER
 		{
 			cout << "(" << *((int*)rightIn) << ", " << *((double*)((int*)rightIn+1)) << ")" << endl;

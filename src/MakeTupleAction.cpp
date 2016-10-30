@@ -44,7 +44,9 @@ MakeTupleAction::MakeTupleAction(vector<ActionPtr>& sourceActionsIn):
 
 string MakeTupleAction::getDescription()
 {
-	string out;
+	return "[tuple of type " + getReturnType()->toString() + "]";
+	
+	/*string out;
 	out+="\n{";
 	
 	for (auto i=sourceActions.begin(); i!=sourceActions.end(); ++i)
@@ -71,7 +73,7 @@ string MakeTupleAction::getDescription()
 	
 	out+="}\n";
 	
-	return out;
+	return out;*/
 }
 
 void* MakeTupleAction::execute(void* inLeft, void* inRight)
