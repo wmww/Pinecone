@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Element.h"
+
 #include <list>
 #include <vector>
-
 using std::list;
 using std::vector;
 
@@ -15,10 +15,8 @@ class TupleElement: public Element
 {
 public:
 	
-	TupleElement(ElementData dataIn, ElementList& parentList);
-	ElementList(ElementData dataIn, StackFrame& frame);
-	
-	~ElementList() {clear();}
+	TupleElement(ElementData data): Element(data) {}
+	~TupleElement() {elems.clear();}
 	
 	string getReadableName() {return "tuple";}
 	
@@ -29,13 +27,7 @@ public:
 	
 	void appendElement(ElementPtr in);
 	
-	ActionTablePtr getActionTable() {return table;}
-	
 	ElementData::Type getElemType() {return ElementData::TUPLE;}
-	
-	void* execute();
-	
-	void clear();
 	
 private:
 	

@@ -33,7 +33,7 @@ string OperatorElement::getReadableName()
 ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 {
 	ActionPtr out=nullptr;
-	
+	 
 	if (op==opColon)
 	{
 		ActionPtr rightAction=voidAction;

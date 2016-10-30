@@ -101,9 +101,21 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, ActionPtr left, Action
 	
 	addActionsToList(matches, data.text);
 	
-	ActionPtr out=makeBranchAction(matches, left, right);
-	
-	return out;
+	if (matches.empty())
+	{
+		return voidAction;
+	}
+	else
+	{
+		ActionPtr out=makeBranchAction(matches, left, right);
+		
+		if (out==voidAction)
+		{
+			error.log("no overload found for " + data.text, SOURCE_ERROR);
+		}
+		
+		return out;
+	}
 }
 
 ActionPtr ActionTable::makeBranchAction(ElementData data, Operator op, ActionPtr left, ActionPtr right)
@@ -256,11 +268,11 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 
 void ActionTable::getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type)
 {
-	if (type->getName().empty() && type->getType()==TypeBase::TUPLE)
+	/*if (type->getName().empty() && type->getType()==TypeBase::TUPLE)
 	{
 		error.log("recursive tuple converter search not yet implemented in ActionTable::getAllConvertersForType", INTERNAL_ERROR);
 	}
-	else
+	else*/
 	{
 		for (auto i=converters.begin(); i!=converters.end(); ++i)
 		{
