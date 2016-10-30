@@ -29,12 +29,12 @@ BranchAction::BranchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr 
 		error.log(rightInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 	}
 	
-	if (leftInput->getReturnType()!=action->getInLeftType())
+	if (!leftInput->getReturnType()->matches(action->getInLeftType()))
 	{
 		error.log(leftInput->getDescription() + " return type is not the same as the left input of " + action->getDescription(), INTERNAL_ERROR);
 	}
 	
-	if (rightInput->getReturnType()!=action->getInRightType())
+	if (!rightInput->getReturnType()->matches(action->getInRightType()))
 	{
 		error.log(rightInput->getDescription() + " return type is not the same as the right input of " + action->getDescription(), INTERNAL_ERROR);
 	}
@@ -82,7 +82,7 @@ RightBranchAction::RightBranchAction(ActionPtr actionIn, ActionPtr rightInputIn)
 		error.log(rightInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 	}
 	
-	if (rightInput->getReturnType()!=action->getInRightType())
+	if (!rightInput->getReturnType()->matches(action->getInRightType()))
 	{
 		error.log(rightInput->getDescription() + " return type is not the same as the right input of " + action->getDescription(), INTERNAL_ERROR);
 	}
@@ -129,7 +129,7 @@ LeftBranchAction::LeftBranchAction(ActionPtr leftInputIn, ActionPtr actionIn)
 		error.log(leftInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 	}
 	
-	if (leftInput->getReturnType()!=action->getInLeftType())
+	if (!leftInput->getReturnType()->matches(action->getInLeftType()))
 	{
 		error.log(leftInput->getDescription() + " return type is not the same as the left input of " + action->getDescription(), INTERNAL_ERROR);
 	}

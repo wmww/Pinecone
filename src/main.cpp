@@ -28,16 +28,16 @@ int main(int argc, char ** argv)
 	
 	if (error.getIfErrorLogged())
 	{
-		cout << endl << "execution abouted due to previous error" << endl << endl;
+		cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl << endl;
 	}
 	else
 	{
 		cout << endl << "executing program..." << endl << endl;
 		
 		parser.execute();
+		
+		cout << endl << "all done" << endl;
 	}
-	
-	cout << endl << "all done" << endl;
 	
 	string outputFilename;
 	

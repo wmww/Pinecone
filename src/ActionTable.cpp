@@ -140,7 +140,7 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 	
 	for (auto i=matches.begin(); i!=matches.end(); ++i)
 	{
-		if (leftType==(*i)->getInLeftType() && rightType==(*i)->getInRightType())
+		if (leftType->matches((*i)->getInLeftType()) && rightType->matches((*i)->getInRightType()))
 		{
 			action=*i;
 			break;
@@ -268,11 +268,11 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 
 void ActionTable::getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type)
 {
-	/*if (type->getName().empty() && type->getType()==TypeBase::TUPLE)
+	if (type->getName().empty() && type->getType()==TypeBase::TUPLE)
 	{
 		error.log("recursive tuple converter search not yet implemented in ActionTable::getAllConvertersForType", INTERNAL_ERROR);
 	}
-	else*/
+	else
 	{
 		for (auto i=converters.begin(); i!=converters.end(); ++i)
 		{
