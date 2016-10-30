@@ -52,24 +52,14 @@ addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(
 
 ActionPtr voidAction;
 
-void addAction(Action* in)
-{
-	table->addAction(ActionPtr(in));
-}
-
-void addAction(Action* in, Operator op)
-{
-	table->addAction(ActionPtr(in), op);
-}
-
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	addAction(new LambdaAction(returnType, lambda, leftType, rightType, text));
+	table->addAction(ActionPtr(new LambdaAction(returnType, lambda, leftType, rightType, text)));
 }
 
 void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	addAction(new LambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
+	table->addAction(ActionPtr(new LambdaAction(returnType, lambda, leftType, rightType, op->getText())), op);
 }
 
 void populatePineconeStdLib(ActionTablePtr t)
@@ -134,6 +124,7 @@ void populatePineconeStdLib(ActionTablePtr t)
 	func(opLess, Bool, Dub, Dub,
 		retrn left<right);
 	
+	
 	///basic types
 	
 	table->addType(Void);
@@ -184,6 +175,19 @@ void populatePineconeStdLib(ActionTablePtr t)
 	
 	func("print", Void, Void, Dub,
 		cout << right << endl);
+	
+	vector<Type> types;
+	types.push_back(Int);
+	types.push_back(Dub);
+	
+	addAction(
+		"printTpl", Void, Void, Type(new TypeBase(types, "")),
+		LAMBDA_HEADER
+		{
+			cout << "(" << *((int*)rightIn) << ", " << *((double*)((int*)rightIn+1)) << ")" << endl;
+			return nullptr;
+		}
+	);
 	
 	
 	/*t->addAction

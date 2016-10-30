@@ -5,6 +5,7 @@
 #include "../h/ErrorHandler.h"
 #include "../h/ListAction.h"
 #include "../h/StackFrame.h"
+#include "../h/TupleElement.h"
 
 using std::prev;
 using std::next;
@@ -58,6 +59,8 @@ void ElementList::structureByOperators()
 	ops.push_back(opLess);
 	absorbForOperators(ops, true, true, false);
 	ops.clear();
+	
+	absorbeComma();
 	
 	ops.push_back(opColon);
 	absorbForOperators(ops, false, true, true);
@@ -201,7 +204,7 @@ void ElementList::absorbeDotInDub()
 	}
 }
 
-/*void ElementList::absorbeComma()
+void ElementList::absorbeComma()
 {
 	for (auto i=elems.begin(); i!=elems.end(); ++i)
 	{
@@ -209,58 +212,46 @@ void ElementList::absorbeDotInDub()
 		{
 			if (i==elems.begin())
 			{
-				dsgfdgfsgdf
+				error.log("scope started with ','", data, SOURCE_ERROR);
 			}
-			
-			auto j=i;
-			
-			--j;
-			
-			if (j!=elems.end())
+			else
 			{
-				if ((*j)->getElemType()==ElementData::LITERAL)
+				i--;
+				
+				auto start=i;
+				
+				shared_ptr<TupleElement> tuple=shared_ptr<TupleElement>(new TupleElement((*i)->getData()));
+				
+				while (true)
 				{
-					if (((LiteralElement*)&(**j))->getType()==Int)
+					tuple->appendElement(*i);
+					
+					i++;
+					
+					if (i!=elems.end() && (*i)->getElemType()==ElementData::OPERATOR && ((OperatorElement *)&(**i))->getOp()==opComma)
 					{
-						ElementData data0=(*i)->getData();
-						ElementData data1=(*j)->getData();
+						i++;
 						
-						elems.insert(i, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
-						
-						i=elems.erase(i);
-						i=elems.erase(i);
-						
-						--i;
-						
-						if (i!=elems.begin())
+						if (i==elems.end())
 						{
-							j=i;
-							--j;
-							
-							if ((*j)->getElemType()==ElementData::LITERAL)
-							{
-								if (((LiteralElement*)&(**j))->getType()==Int)
-								{
-									data0=(*j)->getData();
-									data1=(*i)->getData();
-									
-									elems.insert(j, LiteralElement::makeNew(ElementData(data0.text+data1.text, data0.file, data0.line, ElementData::LITERAL)));
-									
-									j=elems.erase(j);
-									j=elems.erase(j);
-									
-									--j;
-									
-									i=j;
-								}
-							}
+							error.log("scope ended with ','", data, SOURCE_ERROR);
+							return;
 						}
+					}
+					else
+					{
+						while (start!=i)
+							start=elems.erase(start);
+						
+						elems.insert(i, tuple);
+						
+						break;
 					}
 				}
 			}
 		}
 	}
-}*/
+}
 
 void ElementList::absorbForOperators(vector<Operator> operators, bool absorbLeft, bool absorbRight, bool backwords)
 {
@@ -336,6 +327,7 @@ ActionPtr ElementList::resolveActions()
 	if (elems.empty())
 	{
 		return voidAction;
+		error.log("empty element list", data, INTERNAL_ERROR);
 	}
 	else if (elems.size()==1)
 	{
