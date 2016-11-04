@@ -1,6 +1,4 @@
 
-tuple: (4, 7.9)
-
 tuple: (6, 8.4)
 
 print: tuple
