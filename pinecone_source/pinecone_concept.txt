@@ -122,3 +122,15 @@ out: error because tie (only cares if more or less complex, not how much)
 
 
 
+max: {a: Int, b: Int}:
+	~a>b?a|b
+
+i: 0..8@
+(
+	
+)
+
+(i=0; i<b; ++i)
+{
+	
+}

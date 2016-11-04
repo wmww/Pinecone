@@ -3,29 +3,34 @@
 
 ActionTablePtr table;
 
-#define Dub_CPP double
-#define Int_CPP int
-#define Bool_CPP bool
-#define Void_CPP char
-
-#define Dub_PNCN Dub
-#define Int_PNCN Int
-#define Bool_PNCN Bool
-#define Void_PNCN Void
-
 #define CONCAT(a,b) a##_##b
+#define GET_TYPES_Tuple(t0, t1) t0, t1
 
-#define getPncnType(typeIn) CONCAT(typeIn, PNCN)
-#define getCppType(typeIn) CONCAT(typeIn, CPP)
+#define getPncnType(typeIn) CONCAT(PNCN, typeIn)
+#define getCppType(typeIn) CONCAT(CPP, typeIn)
+
+#define CPP_Dub double
+#define CPP_Int int
+#define CPP_Bool bool
+#define CPP_Void char
+
+#define PNCN_Dub Dub
+#define PNCN_Int Int
+#define PNCN_Bool Bool
+#define PNCN_Void Void
+#define PNCN_Tuple(t1, t2) Type(new TypeBase(vector<Type>({PNCN##_##t1, PNCN##_##t2}), ""))
 
 #define LAMBDA_HEADER [](void* leftIn, void* rightIn)->void*
 
 #define retrn out=
 
-#define GET_PTR_VAL(typeIn, varInName) =*((getCppType(typeIn)*)varInName)
+#define GET_PTR_VAL(typeIn, varInName) =*((getCppType(typeIn)*)(varInName))
 
-#define DO_INSTANTIATE(typeIn, varOutName, setVal) getCppType(typeIn) varOutName setVal;
-#define DONT_INSTANTIATE(typeIn, varOutName, setVal) ;
+#define DO_INSTANTIATE(typeIn, varOutName, valIn) getCppType(typeIn) varOutName GET_PTR_VAL(typeIn, valIn);
+#define DONT_INSTANTIATE(typeIn, varOutName, valIn) ;
+#define INSTANTIATE_CPP_TUPLE(t0, t1, varOutName, valIn)\
+	DO_INSTANTIATE(t0, CONCAT(varOutName, 0), valIn)\
+	DO_INSTANTIATE(t1, CONCAT(varOutName, 1), ((char *)valIn)+sizeof(getCppType(t0)))\
 
 #define DO_RETURN_VAL(typeIn, varName) void* outPtr=malloc(getPncnType(typeIn)->getSize()); memcpy(outPtr, &varName, getPncnType(typeIn)->getSize()); return outPtr;
 #define DONT_RETURN_VAL(typeIn, varName) return nullptr;
@@ -34,6 +39,9 @@ ActionTablePtr table;
 #define INSTANTIATE_Int DO_INSTANTIATE
 #define INSTANTIATE_Bool DO_INSTANTIATE
 #define INSTANTIATE_Void DONT_INSTANTIATE
+#define INSTANTIATE_Tuple__(typeIn, varOutName, valIn) INSTANTIATE_CPP_TUPLE(typeIn, varOutName, valIn)
+#define INSTANTIATE_Tuple_(typeIn, varOutName, valIn) INSTANTIATE_Tuple__(GET_TYPES##_##typeIn, varOutName, valIn)
+#define INSTANTIATE_Tuple(t1, t2) INSTANTIATE_Tuple_
 
 #define RETURN_Dub DO_RETURN_VAL
 #define RETURN_Int DO_RETURN_VAL
@@ -43,9 +51,9 @@ ActionTablePtr table;
 #define func(nameText, returnType, leftType, rightType, lambdaBody)							\
 addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(rightType), LAMBDA_HEADER\
 {																							\
-	CONCAT(INSTANTIATE, leftType)(leftType, left, GET_PTR_VAL(leftType, leftIn))			\
-	CONCAT(INSTANTIATE, rightType)(rightType, right, GET_PTR_VAL(rightType, rightIn))		\
-	CONCAT(INSTANTIATE, returnType)(returnType, out, )										\
+	INSTANTIATE##_##leftType(leftType, left, leftIn)									\
+	INSTANTIATE##_##rightType(rightType, right, rightIn)								\
+	INSTANTIATE##_##returnType(returnType, out, nullptr)								\
 	lambdaBody;																				\
 	CONCAT(RETURN, returnType)(returnType, out)												\
 })																							\
@@ -176,18 +184,18 @@ void populatePineconeStdLib(ActionTablePtr t)
 	func("print", Void, Void, Dub,
 		cout << right << endl);
 	
-	vector<Type> types;
-	types.push_back(Int);
-	types.push_back(Dub);
-	
-	addAction(
-		"print", Void, Void, Type(new TypeBase(types, "")),
+	/*addAction(
+		"print", Void, Void, Type(new TypeBase(vector<Type>({Int, Dub}), "")),
 		LAMBDA_HEADER
 		{
 			cout << "(" << *((int*)rightIn) << ", " << *((double*)((int*)rightIn+1)) << ")" << endl;
 			return nullptr;
 		}
-	);
+	);*/
+	
+	func("print", Void, Void, Tuple(Int, Dub),
+		cout<< "(" << right_0 << ", " << right_1 << ")" << endl);
+		//cout << "(" << *((int*)rightIn) << ", " << *((double*)((int*)rightIn+1)) << ")" << endl);
 	
 	
 	/*t->addAction
