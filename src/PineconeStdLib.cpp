@@ -83,10 +83,10 @@ void populatePineconeStdLib(ActionTablePtr t)
 	table->addAction(voidAction);
 	
 	bool trueVal=true;
-	table->addAction(ActionPtr(new ConstGetAction(&trueVal, Bool, "tru")));
+	table->addAction(constGetAction(&trueVal, Bool, "tru"));
 	
 	bool falseVal=false;
-	table->addAction(ActionPtr(new ConstGetAction(&falseVal, Bool, "fls")));
+	table->addAction(constGetAction(&falseVal, Bool, "fls"));
 	
 	
 	///operators

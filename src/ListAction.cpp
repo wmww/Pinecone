@@ -1,65 +1,82 @@
 #include "../h/ListAction.h"
 #include "../h/ErrorHandler.h"
 
-ListAction::ListAction(list<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void, "LIST")
+using std::list;
+
+class ListAction: public Action
 {
-	if (actionsIn.size()<=0)
-	{
-		error.log("ListAction created with empty list", INTERNAL_ERROR);
-	}
+public:
 	
-	actions=actionsIn;
-	
-	for (auto i=actions.begin(); i!=actions.end(); ++i)
+	ListAction(list<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void, "LIST")
 	{
-		if (!(*i)->getInLeftType()->matches(Void) || !(*i)->getInRightType()->matches(Void))
+		if (actionsIn.size()<=0)
 		{
-			error.log((*i)->getDescription() + " put into action list even though its inputs are not void", INTERNAL_ERROR);
+			error.log("ListAction created with empty list", INTERNAL_ERROR);
+		}
+		
+		actions=actionsIn;
+		
+		for (auto i=actions.begin(); i!=actions.end(); ++i)
+		{
+			if (!(*i)->getInLeftType()->matches(Void) || !(*i)->getInRightType()->matches(Void))
+			{
+				error.log((*i)->getDescription() + " put into action list even though its inputs are not void", INTERNAL_ERROR);
+			}
 		}
 	}
-}
 
-string ListAction::getDescription()
-{
-	string out;
-	out+="\n{";
-	
-	for (auto i=actions.begin(); i!=actions.end(); ++i)
+	string getDescription()
 	{
-		out+="\n\t";
+		string out;
+		out+="\n{";
 		
-		string str;
-		
-		if (*i)
-			str=(*i)->getDescription();
-		else
-			str="[null action]";
-		
-		for (unsigned j=0; j<str.size(); ++j)
+		for (auto i=actions.begin(); i!=actions.end(); ++i)
 		{
-			out+=str[j];
+			out+="\n\t";
 			
-			if (str[j]=='\n')
-				out+='\t';
+			string str;
+			
+			if (*i)
+				str=(*i)->getDescription();
+			else
+				str="[null action]";
+			
+			for (unsigned j=0; j<str.size(); ++j)
+			{
+				out+=str[j];
+				
+				if (str[j]=='\n')
+					out+='\t';
+			}
+			
+			out+="\n";
 		}
 		
-		out+="\n";
+		out+="}\n";
+		
+		return out;
 	}
-	
-	out+="}\n";
-	
-	return out;
-}
-	
-void* ListAction::execute(void* inLeft, void* inRight)
-{
-	auto i=actions.begin();
-	
-	for (; i!=std::prev(actions.end()); ++i)
+		
+	void* execute(void* inLeft, void* inRight)
 	{
-		free((*i)->execute(nullptr, nullptr));
+		auto i=actions.begin();
+		
+		for (; i!=std::prev(actions.end()); ++i)
+		{
+			free((*i)->execute(nullptr, nullptr));
+		}
+		
+		return (*i)->execute(nullptr, nullptr);
 	}
-	
-	return (*i)->execute(nullptr, nullptr);
-}
 
+
+	
+private:
+	list<ActionPtr> actions;
+};
+
+
+ActionPtr listAction(list<ActionPtr>& actionsIn)
+{
+	return ActionPtr(new ListAction(actionsIn));
+}

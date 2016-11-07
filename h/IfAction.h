@@ -2,20 +2,6 @@
 
 #include "Action.h"
 
-class IfAction: public Action
-{
-public:
-	
-	IfAction(ActionPtr conditionIn, ActionPtr ifActionIn);
-	
-	string getDescription();
-	
-	void* execute(void* inLeft, void* inRight);
-	
-private:
-	
-	ActionPtr condition;
-	ActionPtr ifAction;
-};
+ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn);
 
 

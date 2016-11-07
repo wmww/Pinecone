@@ -28,7 +28,7 @@ ActionPtr TupleElement::resolveActions(ActionTablePtr table)
 			actions.push_back((*i)->resolveActions(table));
 		}
 		
-		return ActionPtr(new MakeTupleAction(actions));
+		return makeTupleAction(actions);
 	}
 }
 
