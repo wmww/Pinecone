@@ -99,6 +99,7 @@ Token::Type CharClassifier::getTokenType(CharClassifier::Type type, Token::Type 
 		return Token::COMMENT;
 		
 	case WHITESPACE:
+	case NEWLINE:
 		return Token::WHITESPACE;
 		
 	case OPERATOR:
@@ -136,7 +137,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 		{
 			if (!tokenTxt.empty() && type!=Token::COMMENT)
 			{
-				Token token=Token(tokenTxt, filename, line, charPos, type);
+				tokens.push_back(Token(tokenTxt, filename, line, charPos, type));
 			}
 			tokenTxt="";
 		}
