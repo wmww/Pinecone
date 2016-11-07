@@ -32,7 +32,7 @@ ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, ActionPtr left
 			
 			ActionPtr getAction(new VarGetAction(offset, type, data.text));
 			ActionPtr setAction(new VarSetAction(offset, type, data.text));
-			out = ActionPtr(new RightBranchAction(setAction, rightAction));
+			out = branchAction(voidAction, setAction, rightAction);
 			table->addAction(getAction);
 			table->addAction(setAction);
 		}
