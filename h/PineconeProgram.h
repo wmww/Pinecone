@@ -56,9 +56,6 @@ public:
 private:
 	
 	void cleanUp();
-	void populateCharVectors();
-	void initialProgramPopulation();
-	ElementData::Type getElementType(char c, ElementData::Type previousType);
 	ElementPtr makeElement(ElementData data);
 	
 private:
