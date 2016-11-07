@@ -22,7 +22,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	
 	//globalFrame.resolve(printOutput);
 	
-	lexString(inSource, tokens);
+	lexString(inSource, inFileName, tokens);
 	
 	if (printOutput)
 	{
