@@ -6,39 +6,53 @@
 #include <cstring> //for memcpy
 using std::memcpy;
 
-FunctionAction::FunctionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn):
-	Action(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn, textIn)
+class FunctionAction: public Action
 {
-	dataSize=dataSizeIn;
-	action=actionIn;
+public:
 	
-	if (action->getInLeftType()!=Void || action->getInRightType()!=Void)
+	FunctionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn):
+		Action(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn, textIn)
 	{
-		error.log(action->getText() + " put into function even though its inputs are not void", INTERNAL_ERROR);
+		dataSize=dataSizeIn;
+		action=actionIn;
+		
+		if (action->getInLeftType()!=Void || action->getInRightType()!=Void)
+		{
+			error.log(action->getText() + " put into function even though its inputs are not void", INTERNAL_ERROR);
+		}
 	}
-}
 
-string FunctionAction::getDescription()
+	string getDescription()
+	{
+		return getText() + action->getDescription();
+	}
+
+	void* execute(void* inLeft, void* inRight)
+	{
+		unsigned char * oldStackPtr=stackPtr;
+		stackPtr=new unsigned char[dataSize];
+		
+		if (inLeft)
+			memcpy(stackPtr, inLeft, getInLeftType()->getSize());
+		
+		if (inRight)
+			memcpy(stackPtr+getInLeftType()->getSize(), inRight, getInRightType()->getSize());
+		
+		void* out=action->execute(nullptr, nullptr);
+		
+		delete[] stackPtr;
+		stackPtr=oldStackPtr;
+		
+		return out;
+	}
+	
+private:
+	
+	int dataSize;
+	ActionPtr action;
+};
+
+ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn)
 {
-	return getText() + action->getDescription();
+	return ActionPtr(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, dataSizeIn, textIn));
 }
-
-void* FunctionAction::execute(void* inLeft, void* inRight)
-{
-	unsigned char * oldStackPtr=stackPtr;
-	stackPtr=new unsigned char[dataSize];
-	
-	if (inLeft)
-		memcpy(stackPtr, inLeft, getInLeftType()->getSize());
-	
-	if (inRight)
-		memcpy(stackPtr+getInLeftType()->getSize(), inRight, getInRightType()->getSize());
-	
-	void* out=action->execute(nullptr, nullptr);
-	
-	delete[] stackPtr;
-	stackPtr=oldStackPtr;
-	
-	return out;
-}
-

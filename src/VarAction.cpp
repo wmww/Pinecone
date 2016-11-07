@@ -2,58 +2,100 @@
 #include "../h/ErrorHandler.h"
 #include "../h/StackFrame.h"
 
-VarGetAction::VarGetAction(size_t in, Type typeIn, string textIn):
-	Action(typeIn, Void, Void, textIn)
+class VarGetAction: public Action
 {
-	offset=in;
+public:
 	
-	setDescription("get " + typeIn->getName() + " '" + textIn + "'");
-}
+	VarGetAction(size_t in, Type typeIn, string textIn):
+		Action(typeIn, Void, Void, textIn)
+	{
+		offset=in;
+		
+		setDescription("get " + typeIn->getName() + " '" + textIn + "'");
+	}
 
-void* VarGetAction::execute(void* inLeft, void* inRight)
-{
-	void* out=malloc(returnType->getSize());
-	memcpy(out, stackPtr+offset, returnType->getSize());
-	return out;
-}
-
-VarSetAction::VarSetAction(size_t in, Type typeIn, string textIn):
-	Action(typeIn, Void, typeIn, textIn)
-{
-	offset=in;
+	void* execute(void* inLeft, void* inRight)
+	{
+		void* out=malloc(returnType->getSize());
+		memcpy(out, stackPtr+offset, returnType->getSize());
+		return out;
+	}
 	
-	setDescription("set " + typeIn->getName() + " '" + textIn + "'");
-}
-
-void* VarSetAction::execute(void* left, void* right)
-{
-	//copy data on to the stack location of the var
-	memcpy(stackPtr+offset, right, inRightType->getSize());
+private:
 	
-	//return a new copy of the data
-	void* out=malloc(returnType->getSize());
-	memcpy(out, stackPtr+offset, inRightType->getSize());
-	return out;
-}
+	size_t offset;
+};
 
-ConstGetAction::ConstGetAction(void* in, Type typeIn, string textIn):
-	Action(typeIn, Void, Void, textIn)
+//an action for setting a variable, will NOT delete the data element in destructor
+class VarSetAction: public Action
 {
-	data=malloc(returnType->getSize());
-	memcpy(data, in, returnType->getSize());
+public:
 	
-	setDescription(textIn);// + " (" + typeIn.toString() + " literal)");
-}
+	VarSetAction(size_t in, Type typeIn, string textIn):
+		Action(typeIn, Void, typeIn, textIn)
+	{
+		offset=in;
+		
+		setDescription("set " + typeIn->getName() + " '" + textIn + "'");
+	}
 
-ConstGetAction::~ConstGetAction()
+	void* execute(void* left, void* right)
+	{
+		//copy data on to the stack location of the var
+		memcpy(stackPtr+offset, right, inRightType->getSize());
+		
+		//return a new copy of the data
+		void* out=malloc(returnType->getSize());
+		memcpy(out, stackPtr+offset, inRightType->getSize());
+		return out;
+	}
+	
+private:
+	
+	size_t offset;
+};
+
+class ConstGetAction: public Action
 {
-	free(data);
-}
+public:
+	
+	ConstGetAction(void* in, Type typeIn, string textIn):
+		Action(typeIn, Void, Void, textIn)
+	{
+		data=malloc(returnType->getSize());
+		memcpy(data, in, returnType->getSize());
+		
+		setDescription(textIn);// + " (" + typeIn.toString() + " literal)");
+	}
 
-void* ConstGetAction::execute(void* inLeft, void* inRight)
+	~ConstGetAction()
+	{
+		free(data);
+	}
+
+	void* execute(void* inLeft, void* inRight)
+	{
+		void* out=malloc(returnType->getSize());
+		memcpy(out, data, returnType->getSize());
+		return out;
+	}
+	
+private:
+	
+	void* data;
+};
+
+ActionPtr varGetAction(size_t in, Type typeIn, string textIn)
 {
-	void* out=malloc(returnType->getSize());
-	memcpy(out, data, returnType->getSize());
-	return out;
+	return ActionPtr(new VarGetAction(in, typeIn, textIn));
 }
 
+ActionPtr varSetAction(size_t in, Type typeIn, string textIn)
+{
+	return ActionPtr(new VarSetAction(in, typeIn, textIn));
+}
+
+ActionPtr constGetAction(void* in, Type typeIn, string textIn)
+{
+	return ActionPtr(new ConstGetAction(in, typeIn, textIn));
+}

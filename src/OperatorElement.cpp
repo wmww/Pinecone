@@ -70,7 +70,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		
 		if (leftAction!=voidAction)
 		{
-			out=ActionPtr(new IfAction(leftAction, rightAction));
+			out=ifAction(leftAction, rightAction);
 		}
 	}
 	else if (op==opLoop)
@@ -88,7 +88,7 @@ ActionPtr OperatorElement::resolveActions(ActionTablePtr table)
 		
 		if (leftAction!=voidAction)
 		{
-			out=ActionPtr(new LoopAction(leftAction, rightAction));
+			out=loopAction(leftAction, rightAction);
 		}
 	}
 	else

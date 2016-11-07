@@ -342,7 +342,7 @@ ActionPtr ElementList::resolveActions()
 			data.push_back((*i)->resolveActions(table));
 		}
 		
-		return ActionPtr(new ListAction(data));
+		return listAction(data);
 	}
 }
 

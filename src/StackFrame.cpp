@@ -28,7 +28,7 @@ void StackFrame::resolve(bool printOutput)
 	
 	ActionPtr ptr=elements.resolveActions();
 	
-	actions=ActionPtr(new FunctionAction(ptr, Void, Void, frameSize, "global"));
+	actions=functionAction(ptr, Void, Void, frameSize, "global");
 	
 	if (printOutput)
 	{

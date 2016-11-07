@@ -30,8 +30,8 @@ ActionPtr IdentifierElement::resolveActions(ActionTablePtr table, ActionPtr left
 			size_t offset=table->getStackFrame()->getSize();
 			table->getStackFrame()->addMember(type);
 			
-			ActionPtr getAction(new VarGetAction(offset, type, data.text));
-			ActionPtr setAction(new VarSetAction(offset, type, data.text));
+			ActionPtr getAction=varGetAction(offset, type, data.text);
+			ActionPtr setAction=varSetAction(offset, type, data.text);
 			out = branchAction(voidAction, setAction, rightAction);
 			table->addAction(getAction);
 			table->addAction(setAction);
