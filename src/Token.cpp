@@ -21,7 +21,7 @@ string stringFromTokens(vector<Token>& tokens)
 	
 	for (unsigned i=0; i<tokens.size(); ++i)
 	{
-		out+=tokens[i].getText() + " [" + Token::typeToString(tokens[i].getType()) + "]";
+		out+=tokens[i].getText() + "[" + Token::typeToString(tokens[i].getType()) + "]";
 		if (i<tokens.size()-1)
 			out+="\n";
 	}
