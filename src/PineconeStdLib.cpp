@@ -62,12 +62,12 @@ ActionPtr voidAction;
 
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	table->addAction(ActionPtr(new LambdaAction(returnType, lambda, leftType, rightType, text)));
+	table->addAction(lambdaAction(returnType, lambda, leftType, rightType, text));
 }
 
 void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	table->addAction(ActionPtr(new LambdaAction(returnType, lambda, leftType, rightType, op->getText())), op);
+	table->addAction(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
 }
 
 void populatePineconeStdLib(ActionTablePtr t)
@@ -75,7 +75,7 @@ void populatePineconeStdLib(ActionTablePtr t)
 	table=t;
 	
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
-	voidAction=ActionPtr(new VoidAction());
+	voidAction=createNewVoidAction();
 	
 	
 	///constansts
