@@ -193,8 +193,8 @@ void populatePineconeStdLib(ActionTablePtr t)
 		}
 	);*/
 	
-	func("print", Void, Void, Tuple(Int, Dub),
-		cout<< "(" << right_0 << ", " << right_1 << ")" << endl);
+	//func("print", Void, Void, Tuple(Int, Dub),
+	//	cout<< "(" << right_0 << ", " << right_1 << ")" << endl);
 		//cout << "(" << *((int*)rightIn) << ", " << *((double*)((int*)rightIn+1)) << ")" << endl);
 	
 	
