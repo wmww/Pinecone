@@ -22,23 +22,12 @@ public:
 		UNKNOWN
 	};
 	
-	Token::Type getTokenType(char c, Token::Type previousType);
+	static Token::Type getTokenType(CharClassifier::Type type, Token::Type previousType);
+	
+	CharClassifier::Type get(char c);
 	
 private:
 	void setUp();
-	
-	CharClassifier::Type get(char c)
-	{
-		if (!hasSetUp)
-			setUp();
-		
-		auto i=hm.find(c);
-		
-		if (i==hm.end())
-			return UNKNOWN;
-		else
-			return i->second;
-	}
 	
 private:
 	unordered_map<char, CharClassifier::Type> hm;
@@ -80,10 +69,21 @@ void CharClassifier::setUp()
 	hasSetUp=true;
 }
 
-Token::Type CharClassifier::getTokenType(char c, Token::Type previousType)
+CharClassifier::Type CharClassifier::get(char c)
 {
-	CharClassifier::Type type=get(c);
+	if (!hasSetUp)
+		setUp();
 	
+	auto i=hm.find(c);
+	
+	if (i==hm.end())
+		return UNKNOWN;
+	else
+		return i->second;
+}
+
+Token::Type CharClassifier::getTokenType(CharClassifier::Type type, Token::Type previousType)
+{
 	if (previousType==Token::COMMENT)
 	{
 		if (type==NEWLINE)
@@ -92,33 +92,72 @@ Token::Type CharClassifier::getTokenType(char c, Token::Type previousType)
 			return Token::COMMENT;
 	}
 	
-	if (type==SINGLE_LINE_COMMENT)
+	switch (type)
 	{
+		
+	case SINGLE_LINE_COMMENT:
 		return Token::COMMENT;
-	}
-	
-	if (type==WHITESPACE)
+		
+	case WHITESPACE:
 		return Token::WHITESPACE;
-	
-	if (type==OPERATOR)
+		
+	case OPERATOR:
 		return Token::OPERATOR;
-	
-	if (type==DIGIT || type==LETTER)
-	{
+		
+	case LETTER:
+	case DIGIT:
 		if (previousType==Token::IDENTIFIER || previousType==Token::LITERAL)
 			return previousType;
 		else if (type==DIGIT)
 			return Token::LITERAL;
 		else
 			return Token::IDENTIFIER;
+		
+	default:
+		return Token::UNKNOWN;
+		
 	}
-	
-	return Token::UNKNOWN;
 }
 
-void lexString(string text, vector<Token>& tokens)
+void lexString(string text, string filename, vector<Token>& tokens)
 {
+	string tokenTxt;
+	int line=1;
+	int charPos=1;
 	
+	Token::Type type=Token::WHITESPACE;
+	
+	for (unsigned i=0; i<text.size(); i++)
+	{
+		CharClassifier::Type charType=charClassifier.get(text[i]);
+		Token::Type newType=CharClassifier::getTokenType(charType, type);
+		
+		if (newType!=type || type==Token::OPERATOR)
+		{
+			if (!tokenTxt.empty() && type!=Token::COMMENT)
+			{
+				Token token=Token(tokenTxt, filename, line, charPos, type);
+			}
+			tokenTxt="";
+		}
+		
+		if (newType!=Token::WHITESPACE)
+		{
+			tokenTxt+=text[i];
+		}
+		
+		type=newType;
+		
+		if (charType==CharClassifier::NEWLINE)
+		{
+			line++;
+			charPos=1;
+		}
+		else
+		{
+			charPos++;
+		}
+	}
 }
 
 

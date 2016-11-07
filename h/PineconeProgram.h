@@ -25,7 +25,7 @@ using std::list;
 class Element;
 
 void populatePineconeStdLib(ActionTablePtr t);
-void lexString(string text, vector<Token>& tokens);
+void lexString(string text, string filename, vector<Token>& tokens);
 ActionPtr parseTokens(vector<Token>& tokens);
 
 class PineconeProgram
