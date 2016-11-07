@@ -1,7 +1,10 @@
+#pragma once
 
 #include <string>
-
 using std::string;
+
+#include <vector>
+using std::vector;
 
 //represents a single token such as an Int literal, an operator, or an identifier
 //is immutable
@@ -46,6 +49,8 @@ public:
 	int getCharPos() {return charPos;}
 	Token::Type getType() {return tokenType;}
 	
+	static string typeToString(Token::Type in);
+	
 private:
 	
 	string text;
@@ -57,3 +62,5 @@ private:
 	static string toString(Type);
 	string toString();
 };
+
+string stringFromTokens(vector<Token>& tokens);

@@ -24,6 +24,11 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	
 	lexString(inSource, tokens);
 	
+	if (printOutput)
+	{
+		cout << putStringInBox(stringFromTokens(tokens), false, "lexer output") << endl;
+	}
+	
 	astRoot=parseTokens(tokens);
 }
 
