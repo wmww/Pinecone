@@ -4,7 +4,6 @@
 #include "ElementData.h"
 #include "Type.h"
 #include "Action.h"
-#include "VarAction.h"
 #include "ActionTable.h"
 
 using std::string;

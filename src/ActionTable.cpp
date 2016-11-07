@@ -1,7 +1,6 @@
 #include "../h/ActionTable.h"
 #include "../h/ErrorHandler.h"
 #include "../h/OperatorElement.h"
-#include "../h/BranchAction.h"
 #include "../h/Action.h"
 
 ActionTable::ActionTable(shared_ptr<ActionTable> parentIn)

@@ -1,6 +1,6 @@
-#include "../h/Action.h"
+#include "../../h/Action.h"
 
-#include "../h/ErrorHandler.h"
+#include "../../h/ErrorHandler.h"
 
 Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
 {

@@ -1,6 +1,6 @@
-#include "../h/VarAction.h"
-#include "../h/ErrorHandler.h"
-#include "../h/StackFrame.h"
+#include "../../h/Action.h"
+#include "../../h/ErrorHandler.h"
+#include "../../h/StackFrame.h"
 
 class VarGetAction: public Action
 {

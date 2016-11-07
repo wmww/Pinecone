@@ -1,5 +1,5 @@
-#include "../h/IfAction.h"
-#include "../h/ErrorHandler.h"
+#include "../../h/Action.h"
+#include "../../h/ErrorHandler.h"
 
 class IfAction: public Action
 {

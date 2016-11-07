@@ -35,7 +35,6 @@
 		</Compiler>
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/ActionTable.h" />
-		<Unit filename="../h/BranchAction.h" />
 		<Unit filename="../h/CastElement.h" />
 		<Unit filename="../h/Element.h" />
 		<Unit filename="../h/ElementData.h" />
@@ -43,11 +42,7 @@
 		<Unit filename="../h/ErrorHandler.h" />
 		<Unit filename="../h/FunctionAction.h" />
 		<Unit filename="../h/IdentifierElement.h" />
-		<Unit filename="../h/IfAction.h" />
-		<Unit filename="../h/ListAction.h" />
 		<Unit filename="../h/LiteralElement.h" />
-		<Unit filename="../h/LoopAction.h" />
-		<Unit filename="../h/MakeTupleAction.h" />
 		<Unit filename="../h/Operator.h" />
 		<Unit filename="../h/OperatorElement.h" />
 		<Unit filename="../h/PineconeParser.h" />
@@ -55,25 +50,25 @@
 		<Unit filename="../h/Token.h" />
 		<Unit filename="../h/TupleElement.h" />
 		<Unit filename="../h/Type.h" />
-		<Unit filename="../h/VarAction.h" />
 		<Unit filename="../h/msclStringFuncs.h" />
 		<Unit filename="../pinecone_source/pinecone.pncn" />
 		<Unit filename="../pinecone_source/pinecone_concept.txt" />
-		<Unit filename="../src/Action.cpp" />
 		<Unit filename="../src/ActionTable.cpp" />
-		<Unit filename="../src/BranchAction.cpp" />
+		<Unit filename="../src/Actions/Action.cpp" />
+		<Unit filename="../src/Actions/BranchAction.cpp" />
+		<Unit filename="../src/Actions/FunctionAction.cpp" />
+		<Unit filename="../src/Actions/IfAction.cpp" />
+		<Unit filename="../src/Actions/ListAction.cpp" />
+		<Unit filename="../src/Actions/LoopAction.cpp" />
+		<Unit filename="../src/Actions/MakeTupleAction.cpp" />
+		<Unit filename="../src/Actions/VarAction.cpp" />
 		<Unit filename="../src/CastElement.cpp" />
 		<Unit filename="../src/Element.cpp" />
 		<Unit filename="../src/ElementData.cpp" />
 		<Unit filename="../src/ElementList.cpp" />
 		<Unit filename="../src/ErrorHandler.cpp" />
-		<Unit filename="../src/FunctionAction.cpp" />
 		<Unit filename="../src/IdentifierElement.cpp" />
-		<Unit filename="../src/IfAction.cpp" />
-		<Unit filename="../src/ListAction.cpp" />
 		<Unit filename="../src/LiteralElement.cpp" />
-		<Unit filename="../src/LoopAction.cpp" />
-		<Unit filename="../src/MakeTupleAction.cpp" />
 		<Unit filename="../src/Operator.cpp" />
 		<Unit filename="../src/OperatorElement.cpp" />
 		<Unit filename="../src/PineconeParser.cpp" />
@@ -82,7 +77,6 @@
 		<Unit filename="../src/Token.cpp" />
 		<Unit filename="../src/TupleElement.cpp" />
 		<Unit filename="../src/Type.cpp" />
-		<Unit filename="../src/VarAction.cpp" />
 		<Unit filename="../src/main.cpp" />
 		<Unit filename="../src/msclStringFuncs.cpp" />
 		<Extensions>
