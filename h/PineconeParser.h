@@ -19,7 +19,6 @@ using std::list;
 #include "ActionTable.h"
 #include "ElementData.h"
 #include "ElementList.h"
-#include "FunctionAction.h"
 #include "StackFrame.h"
 
 class Element;

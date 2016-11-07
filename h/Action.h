@@ -3,6 +3,7 @@
 #include "Type.h"
 #include <functional>
 #include <memory>
+#include <list>
 
 using std::shared_ptr;
 using std::to_string;
@@ -44,5 +45,21 @@ typedef shared_ptr<Action> ActionPtr;
 extern ActionPtr voidAction;
 
 ActionPtr lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
-
 ActionPtr createNewVoidAction();
+
+ActionPtr branchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr rightInputIn);
+
+ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn);
+
+ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn);
+
+ActionPtr listAction(std::list<ActionPtr>& actionsIn);
+
+ActionPtr loopAction(ActionPtr conditionIn, ActionPtr loopActionIn);
+
+ActionPtr makeTupleAction(std::vector<ActionPtr>& sourceActionsIn);
+
+ActionPtr varGetAction(size_t in, Type typeIn, string textIn);
+ActionPtr varSetAction(size_t in, Type typeIn, string textIn);
+ActionPtr constGetAction(void* in, Type typeIn, string textIn);
+

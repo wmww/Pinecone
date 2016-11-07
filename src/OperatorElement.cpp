@@ -3,9 +3,6 @@
 #include "../h/ErrorHandler.h"
 #include "../h/IdentifierElement.h"
 #include "../h/CastElement.h"
-#include "../h/BranchAction.h"
-#include "../h/IfAction.h"
-#include "../h/LoopAction.h"
 
 
 ElementPtr OperatorElement::makeNew(ElementData dataIn)

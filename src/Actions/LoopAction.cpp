@@ -1,5 +1,5 @@
-#include "../h/LoopAction.h"
-#include "../h/ErrorHandler.h"
+#include "../../h/Action.h"
+#include "../../h/ErrorHandler.h"
 
 class LoopAction: public Action
 {
