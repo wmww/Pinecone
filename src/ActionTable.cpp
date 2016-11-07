@@ -87,7 +87,7 @@ ActionPtr ActionTable::addConverter(ActionPtr action, vector<Type>& types)
 		{
 			if ((*j)->getReturnType()==(*i))
 			{
-				return ActionPtr(new RightBranchAction(*j, action));
+				return branchAction(voidAction, *j, action);
 			}
 		}
 	}
@@ -200,14 +200,14 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 				vector<ActionPtr> ptrs(3);
 				
 				if (leftMatch)
-					ptrs[0]=ActionPtr(new RightBranchAction(leftMatch, left));
+					ptrs[0]=branchAction(voidAction, leftMatch, left);
 				else
 					ptrs[0]=left;
 				
 				ptrs[1]=*i;
 				
 				if (rightMatch)
-					ptrs[2]=ActionPtr(new RightBranchAction(rightMatch, right));
+					ptrs[2]=branchAction(voidAction, rightMatch, right);
 				else
 					ptrs[2]=right;
 				
@@ -221,7 +221,7 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 		}
 		else if (actionsBranches.size()==1)
 		{
-			return ActionPtr(new BranchAction((*actionsBranches.begin())[0], (*actionsBranches.begin())[1], (*actionsBranches.begin())[2]));
+			return branchAction((*actionsBranches.begin())[0], (*actionsBranches.begin())[1], (*actionsBranches.begin())[2]);
 		}
 		{
 			return voidAction;
@@ -241,28 +241,7 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 	}
 	else
 	{
-		if (left->getReturnType()->isVoid())
-		{
-			if (right->getReturnType()->isVoid())
-			{
-				return action;
-			}
-			else
-			{
-				return ActionPtr(new RightBranchAction(action, right));
-			}
-		}
-		else
-		{
-			if (right->getReturnType()->isVoid())
-			{
-				return ActionPtr(new LeftBranchAction(left, action));
-			}
-			else
-			{
-				return ActionPtr(new BranchAction(left, action, right));
-			}
-		}
+		return branchAction(left, action, right);
 	}
 }
 
