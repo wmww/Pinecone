@@ -43,28 +43,6 @@ typedef shared_ptr<Action> ActionPtr;
 
 extern ActionPtr voidAction;
 
-class VoidAction: public Action
-{
-public:
-	VoidAction(): Action(Void, Void, Void, "Void")
-	{
-		setDescription("Void Action");
-	}
-	
-	void* execute(void* inLeft, void* inRight)
-	{
-		return nullptr;
-	}
-};
+ActionPtr lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
 
-class LambdaAction: public Action
-{
-public:
-	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
-	
-	void* execute(void* inLeft, void* inRight);
-	
-private:
-	function<void*(void*,void*)> lambda;
-};
-
+ActionPtr createNewVoidAction();
