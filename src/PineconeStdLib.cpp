@@ -1,4 +1,4 @@
-#include "../h/PineconeParser.h"
+#include "../h/PineconeProgram.h"
 #include "../h/Operator.h"
 
 ActionTablePtr table;

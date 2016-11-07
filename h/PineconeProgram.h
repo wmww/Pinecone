@@ -20,17 +20,20 @@ using std::list;
 #include "ElementData.h"
 #include "ElementList.h"
 #include "StackFrame.h"
+#include "Token.h"
 
 class Element;
 
 void populatePineconeStdLib(ActionTablePtr t);
+void lexString(string text, vector<Token>& tokens);
+ActionPtr parseTokens(vector<Token>& tokens);
 
-class PineconeParser
+class PineconeProgram
 {
 public:
 	
-	PineconeParser();
-	~PineconeParser() {cleanUp();}
+	PineconeProgram();
+	~PineconeProgram() {cleanUp();}
 	
 	void setInFileName(std::string in) {inFileName=in;}
 	void setSource(std::string in) {inSource=in;}
@@ -65,6 +68,12 @@ private:
 	string inFileName;
 	string inSource;
 	string outCpp;
+	
+	//a list of all the tokens in the program
+	vector<Token> tokens;
+	
+	//root of the abstract syntax tree
+	ActionPtr astRoot=createNewVoidAction();
 	
 	vector<char> whitespaceChars, letterChars, digitChars;
 	char singleLineComment;

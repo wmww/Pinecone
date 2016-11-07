@@ -1,4 +1,8 @@
 
+#include <string>
+
+using std::string;
+
 //represents a single token such as an Int literal, an operator, or an identifier
 //is immutable
 class Token
@@ -27,13 +31,13 @@ public:
 		tokenType=tokenTypeIn;
 	}
 	
-	ElementData()
+	Token()
 	{
 		text="";
 		file="";
 		line=-1;
 		charPos=-1;
-		type=UNKNOWN;
+		tokenType=UNKNOWN;
 	}
 	
 	string getText() {return text;}
@@ -47,7 +51,7 @@ private:
 	string text;
 	string file;
 	int line;
-	int charPos
+	int charPos;
 	Type tokenType;
 	
 	static string toString(Type);

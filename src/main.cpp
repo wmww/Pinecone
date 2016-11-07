@@ -1,5 +1,5 @@
 #include "../h/msclStringFuncs.h"
-#include "../h/PineconeParser.h"
+#include "../h/PineconeProgram.h"
 #include "../h/ErrorHandler.h"
 
 #include <iostream>
@@ -22,7 +22,7 @@ int main(int argc, char ** argv)
 	
 	cout << endl << putStringInBox(widapLangSource, false, inputFilename) << endl;
 	
-	PineconeParser parser;
+	PineconeProgram parser;
 	
 	string cppSource=parser.resolveProgram(widapLangSource, inputFilename, true);
 	
