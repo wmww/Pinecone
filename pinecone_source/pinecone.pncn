@@ -1,4 +1,3 @@
 
-tuple: (6, 8.4)
 
-print: tuple
+print: 12
