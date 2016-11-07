@@ -1,34 +1,38 @@
-#include "../h/PineconeParser.h"
+#include "../h/PineconeProgram.h"
 #include "../h/LiteralElement.h"
 #include "../h/IdentifierElement.h"
 #include "../h/OperatorElement.h"
 #include "../h/ErrorHandler.h"
 #include "../h/Operator.h"
 
-PineconeParser::PineconeParser()
+PineconeProgram::PineconeProgram()
 {
 	populateCharVectors();
 	populatePineconeStdLib(getGlobalActionTable());
 }
 
-void PineconeParser::cleanUp()
+void PineconeProgram::cleanUp()
 {
 	globalFrame.clear();
 }
 
-void PineconeParser::resolveProgram(bool printOutput)
+void PineconeProgram::resolveProgram(bool printOutput)
 {
-	initialProgramPopulation();
+	//initialProgramPopulation();
 	
-	globalFrame.resolve(printOutput);
+	//globalFrame.resolve(printOutput);
+	
+	lexString(inSource, tokens);
+	
+	astRoot=parseTokens(tokens);
 }
 
-ActionTablePtr PineconeParser::getGlobalActionTable()
+ActionTablePtr PineconeProgram::getGlobalActionTable()
 {
 	return globalFrame.getElementList().getActionTable();
 }
 
-void PineconeParser::populateCharVectors()
+void PineconeProgram::populateCharVectors()
 {
 	///whitespace
 	
@@ -60,7 +64,7 @@ void PineconeParser::populateCharVectors()
 	singleLineComment='#';
 }
 
-void PineconeParser::initialProgramPopulation()
+void PineconeProgram::initialProgramPopulation()
 {
 	string elemTxt;
 	int line=1;
@@ -99,7 +103,7 @@ void PineconeParser::initialProgramPopulation()
 	}
 }
 
-ElementData::Type PineconeParser::getElementType(char c, ElementData::Type previousType)
+ElementData::Type PineconeProgram::getElementType(char c, ElementData::Type previousType)
 {
 	//if (previousType==COMMENT && c!='\n')
 	
@@ -157,7 +161,7 @@ ElementData::Type PineconeParser::getElementType(char c, ElementData::Type previ
 	return ElementData::UNKNOWN;
 }
 
-ElementPtr PineconeParser::makeElement(ElementData data)
+ElementPtr PineconeProgram::makeElement(ElementData data)
 {
 	switch (data.type)
 	{
@@ -173,8 +177,8 @@ ElementPtr PineconeParser::makeElement(ElementData data)
 	return nullptr;
 }
 
-void PineconeParser::execute()
+void PineconeProgram::execute()
 {
-	globalFrame.execute();
+	free(astRoot->execute(nullptr, nullptr));
 }
 

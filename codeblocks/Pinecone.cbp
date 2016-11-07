@@ -45,7 +45,7 @@
 		<Unit filename="../h/LiteralElement.h" />
 		<Unit filename="../h/Operator.h" />
 		<Unit filename="../h/OperatorElement.h" />
-		<Unit filename="../h/PineconeParser.h" />
+		<Unit filename="../h/PineconeProgram.h" />
 		<Unit filename="../h/StackFrame.h" />
 		<Unit filename="../h/Token.h" />
 		<Unit filename="../h/TupleElement.h" />
@@ -68,10 +68,12 @@
 		<Unit filename="../src/ElementList.cpp" />
 		<Unit filename="../src/ErrorHandler.cpp" />
 		<Unit filename="../src/IdentifierElement.cpp" />
+		<Unit filename="../src/Lexer.cpp" />
 		<Unit filename="../src/LiteralElement.cpp" />
 		<Unit filename="../src/Operator.cpp" />
 		<Unit filename="../src/OperatorElement.cpp" />
-		<Unit filename="../src/PineconeParser.cpp" />
+		<Unit filename="../src/Parser.cpp" />
+		<Unit filename="../src/PineconeProgram.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />
 		<Unit filename="../src/StackFrame.cpp" />
 		<Unit filename="../src/Token.cpp" />
