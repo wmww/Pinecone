@@ -133,11 +133,28 @@ void lexString(string text, string filename, vector<Token>& tokens)
 		CharClassifier::Type charType=charClassifier.get(text[i]);
 		Token::Type newType=CharClassifier::getTokenType(charType, type);
 		
-		if (newType!=type || type==Token::OPERATOR)
+		if (newType!=type)
 		{
-			if (!tokenTxt.empty() && type!=Token::COMMENT)
+			if (!tokenTxt.empty())
 			{
-				tokens.push_back(Token(tokenTxt, filename, line, charPos, type));
+				if (type==Token::OPERATOR)
+				{
+					vector<Operator> ops;
+					getOperators(tokenTxt, ops);
+					
+					for (auto op: ops)
+					{
+						tokens.push_back(Token(tokenTxt, filename, line, charPos, type, op));
+					}
+				}
+				else if (type==Token::COMMENT)
+				{
+					// do nothing
+				}
+				else
+				{
+					tokens.push_back(Token(tokenTxt, filename, line, charPos, type));
+				}
 			}
 			tokenTxt="";
 		}

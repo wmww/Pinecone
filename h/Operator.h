@@ -70,5 +70,5 @@ extern Operator opLoop;
 extern Operator opOpenPeren;
 extern Operator opClosePeren;
 
-void getOperators(vector<Operator>& out, string text);
+void getOperators(string text, vector<Operator>& out);
 
