@@ -9,7 +9,7 @@ ElementPtr OperatorElement::makeNew(ElementData dataIn)
 {
 	vector<Operator> ops;
 	
-	getOperators(ops, dataIn.text, dataIn);
+	getOperators(ops, dataIn.text);
 	
 	if (ops.size()==1)
 	{

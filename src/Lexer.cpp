@@ -59,7 +59,7 @@ void CharClassifier::setUp()
 	
 	for (auto i=OperatorBase::operators.begin(); i!=OperatorBase::operators.end(); ++i)
 	{
-		string str=(*i)->getText();
+		string str=(*i).first;
 		for (unsigned j=0; j<str.size(); j++)
 		{
 			hm[str[j]]=OPERATOR;
