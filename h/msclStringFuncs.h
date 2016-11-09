@@ -61,11 +61,23 @@ string padString(const string& in, int size, int alignment=1, string pad=" ", st
 //		returns: a string with a box around the content (must be displayed in monospace obviously)
 string lineListToBoxedString(const vector<string>& in, string boxName="", int lineNum=-1, int maxWidth=80);
 
-//load entire file and return its contents, returns an empty string if there is an error such as file not found
+//	puts the contents of a string into a well formatted
+//		in: the input string
+//		showLineNums: if to show line numbers
+//		boxName: the name that will appear at the top of the box
+//		maxWidth: the maximum width of the contents of the box (with borders it may be a bit wider), if any line is longer it will be chopped
+//		returns: the boxed string
+string putStringInBox(const string& in, bool showLineNums=false, string boxName="", int maxWidth=80);
+
+//	puts the contents of a string into a table, with tabs being verticle seporators and newlines being horizontle ones
+//		in: the input string
+//		tableName: the name that will apear at the top of the table
+//		returns: a string that looks like a table
+string putStringInTable(const string& in, string tableName);
+
+//	load entire file and return its contents
+//		inName: the path to the file to open
+//		printOutput: if to print status several times to stdout
+//		returns: the contents of the file, or an empty string if there is an error
 string loadEntireFile(string inName, bool printOutput=true);
 
-//puts the contents of a string into a well formatted box with character wrapping
-string putStringInBox(string in, bool showLineNums=false, string boxName="", int maxWidth=80);
-
-//puts the contents of a string into a table, with tabs being verticle seporators and newlines being horizontle ones
-string putStringInTable(string in, bool showLineNums, bool showOuterLines, bool showInnerLines, string tableName);
