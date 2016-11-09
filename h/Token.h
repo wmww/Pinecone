@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Operator.h"
+
 #include <string>
 using std::string;
 
@@ -48,6 +50,7 @@ public:
 	int getLine() {return line;}
 	int getCharPos() {return charPos;}
 	Token::Type getType() {return tokenType;}
+	Operator getOperator() {return op;}
 	
 	static string typeToString(Token::Type in);
 	
@@ -58,6 +61,7 @@ private:
 	int line;
 	int charPos;
 	Type tokenType;
+	Operator op;
 	
 	static string toString(Type);
 	string toString();

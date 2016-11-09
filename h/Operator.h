@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ElementData.h"
+class Token;
 
 #include <memory>
 using std::shared_ptr;
@@ -11,6 +11,9 @@ using std::string;
 #include <vector>
 using std::vector;
 
+#include <unordered_map>
+using std::unordered_map;
+
 #include <iostream>
 
 class OperatorBase
@@ -20,7 +23,8 @@ public:
 	static shared_ptr<OperatorBase> create(string textIn, bool leftIn, bool rightIn, bool overridableIn)
 	{
 		shared_ptr<OperatorBase> ptr(new OperatorBase(textIn, leftIn, rightIn, overridableIn));
-		operators.push_back(ptr);
+		operators[textIn]=ptr;
+		//operators.push_back(ptr);
 		return ptr;
 	}
 	
@@ -29,7 +33,9 @@ public:
 	bool getTakesRightInput() {return takesRightInput;}
 	bool getOverridable() {return overridable;}
 	
-	static vector<shared_ptr<OperatorBase>> operators;
+	//static vector<shared_ptr<OperatorBase>> operators;
+	
+	static unordered_map<string, shared_ptr<OperatorBase>> operators;
 	
 private:
 	
@@ -64,5 +70,5 @@ extern Operator opLoop;
 extern Operator opOpenPeren;
 extern Operator opClosePeren;
 
-void getOperators(vector<Operator>& out, string text, ElementData data);
+void getOperators(vector<Operator>& out, string text);
 

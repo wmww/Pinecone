@@ -5,7 +5,15 @@
 #include <vector>
 using std::vector;
 
-ActionPtr parseTokens(vector<Token>& tokens)
+ActionPtr parseTokens(const vector<Token>& tokens)
 {
 	return voidAction;
 }
+
+//	recursivly parse tokens and return action
+//		tokens: the tokens to parse
+//		left: left most token to parse (inclusinve)
+//		right: right most token to parse (inclusive)
+//		lr: if to parse left to right, right to left parsing is used if false
+//		returns: pointer to action for that section of tokens
+ActionPtr parseTokens(const vector<Token>& tokens, int left, int right, bool lr);

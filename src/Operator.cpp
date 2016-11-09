@@ -1,7 +1,7 @@
 #include "../h/Operator.h"
 #include "../h/ErrorHandler.h"
 
-vector<shared_ptr<OperatorBase>> OperatorBase::operators;
+unordered_map<string, shared_ptr<OperatorBase>> OperatorBase::operators;
 
 Operator opPlus=OperatorBase::create("+", true, true, true);
 Operator opMinus=OperatorBase::create("-", true, true, true);
@@ -18,9 +18,22 @@ Operator opLoop=OperatorBase::create("@", true, true, false);
 Operator opOpenPeren=OperatorBase::create("(", false, false, false);
 Operator opClosePeren=OperatorBase::create(")", false, false, false);
 
-void getOperators(vector<Operator>& out, string text, ElementData data)
+void getOperators(vector<Operator>& out, string text)
 {
-	for (auto i=OperatorBase::operators.begin(); i!=OperatorBase::operators.end(); i++)
+	auto i=OperatorBase::operators.find(text);
+	
+	if (i==OperatorBase::operators.end())
+	{
+		error.log("unknown operator '" + text + "'", SOURCE_ERROR);
+		return;
+	}
+	else
+	{
+		out.push_back(i->second);
+		return;
+	}
+	
+	/*for (auto i=OperatorBase::operators.begin(); i!=OperatorBase::operators.end(); i++)
 	{
 		if (text==(*i)->getText())
 		{
@@ -31,6 +44,7 @@ void getOperators(vector<Operator>& out, string text, ElementData data)
 	
 	//in the future, as more operators are found the text string will become shorter and shorter
 	if (!text.empty())
-		error.log("unknown operator '" + text + "'", data, SOURCE_ERROR);
+		error.log("unknown operator '" + text + "'", SOURCE_ERROR);
+		*/
 }
 
