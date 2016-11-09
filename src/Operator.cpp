@@ -18,7 +18,7 @@ Operator opLoop=OperatorBase::create("@", true, true, false);
 Operator opOpenPeren=OperatorBase::create("(", false, false, false);
 Operator opClosePeren=OperatorBase::create(")", false, false, false);
 
-void getOperators(vector<Operator>& out, string text)
+void getOperators(string text, vector<Operator>& out)
 {
 	auto i=OperatorBase::operators.find(text);
 	

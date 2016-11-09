@@ -27,13 +27,14 @@ public:
 		UNKNOWN
 	};
 	
-	Token(string textIn, string fileIn, int lineIn, int charPosIn, Type tokenTypeIn)
+	Token(string textIn, string fileIn, int lineIn, int charPosIn, Type tokenTypeIn, Operator opIn=Operator(nullptr))
 	{
 		text=textIn;
 		file=fileIn;
 		line=lineIn;
 		charPos=charPosIn;
 		tokenType=tokenTypeIn;
+		op=opIn;
 	}
 	
 	Token()
