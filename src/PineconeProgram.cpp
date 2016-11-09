@@ -25,7 +25,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	
 	if (printOutput)
 	{
-		cout << putStringInBox(stringFromTokens(tokens), false, "lexer output") << endl;
+		cout << putStringInTable("Name\tType\n"+stringFromTokens(tokens), false, true, false, "lexer output") << endl;
 	}
 	
 	astRoot=parseTokens(tokens);
