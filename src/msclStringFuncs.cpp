@@ -33,12 +33,12 @@ int searchInString(const string& in, int startPos, const string& pattern)
 
 void sliceStringBy(const string& in, const string& pattern, vector<string>& out)
 {
-	unsigned start=0;
+	int start=0;
 	
 	if (pattern.size()<1)
 		return;
 	
-	while (start<in.size())
+	while (start<int(in.size()))
 	{
 		int end=searchInString(in, start, pattern);
 		
@@ -153,25 +153,162 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 {
 	string out;
 	
-	boxName=boxName;
+	auto first=in.begin();
+	auto last=in.end();
+	last--;
 	
-	int maxSize=boxName.size()+2;
+	while(*first=="" && first!=last)
+	{
+		first++;
+		if (lineNum>=0)
+			lineNum++;
+	}
+	
+	while (*last=="" && first!=last)
+	{
+		last--;
+	}
+	
+	//the extra width of the padding on the right and left (not the virt lines)
+	int extraWidth=(lineNum<0)?4:10;
+	
+	//the size of the contents (not the container)
+	int size=boxName.size()-extraWidth+6;
 	
 	for (auto i: in)
 	{
-		maxSize=max(maxSize, int(i.size()));
+		size=max(size, int(i.size()));
 	}
 	
-	maxSize=min(maxWidth, maxSize);
+	size=min(maxWidth, size);
 	
-	out+="  _"+padString(boxName, maxSize+2, 0, "_", "[ ", " ]")+"_  ";
+	out+="  _"+padString(boxName, size+extraWidth-2, 0, "_", "[ ", " ]")+"_  ";
 	
-	for (auto i: in)
+	out+="\n |"+padString("", size+extraWidth, 1, " ")+"| ";
+	
+	auto i=first;
+	
+	while (true)
 	{
-		out+="\n |  "+padString(i, maxSize, 1)+"  | ";
+		if (lineNum<0)
+		{
+			out+="\n |  ";
+		}
+		else
+		{
+			out+="\n |"+padString(to_string(lineNum), 4, -1)+"    ";
+			lineNum++;
+		}
+		
+		out+=padString(*i, size, 1)+"  | ";
+		
+		if (i==last)
+			break;
+			
+		i++;
 	}
 	
-	out+="\n |__"+padString("", maxSize, 1, "_")+"__| ";
+	out+="\n |"+padString("", size+extraWidth, 1, "_")+"| ";
+	
+	return out;
+}
+
+string putStringInBox(const string& in, bool showLineNums, string boxName, int maxWidth)
+{
+	vector<string> lines;
+	
+	sliceStringBy(in, "\n", lines);
+	
+	tabsToSpaces(lines);
+	
+	string out=lineListToBoxedString(lines, boxName, showLineNums?1:-1, maxWidth);
+	
+	return out;
+}
+
+string putStringInTable(const string& in, string tableName)
+{
+	vector<string> lineStrs;
+	
+	sliceStringBy(in, "\n", lineStrs);
+	
+	vector<vector<string>> table;
+	vector<int> widths;
+	//vector<string> lines;
+	
+	for (auto i: lineStrs)
+	{
+		table.push_back(vector<string>());
+		
+		sliceStringBy(i, "\t", table.back());
+		
+		for (unsigned j=0; j<table.back().size(); j++)
+		{
+			if (j>=widths.size())
+				widths.push_back(0);
+			
+			widths[j]=max(widths[j], int(table.back()[j].size()));
+		}
+	}
+	
+	//make sure each row in the table has the same number of cells
+	for (auto i: lineStrs)
+	{
+		for (int j=0; j<int(widths.size())-int(table.back().size()); j++)
+			table.back().push_back("");
+	}
+	
+	int totalWidth=0;
+	
+	for (auto i: widths)
+		totalWidth+=i;
+	
+	string out;
+	
+	out+="  _"+padString(tableName, totalWidth+2+(table.back().size()-1)*5, 0, "_", "[ ", " ]")+"_  ";
+	
+	for (auto i: table)
+	{
+		out+="\n |";
+		
+		for (unsigned j=0; j<i.size(); j++)
+		{
+			if (j>0)
+				out+="|";
+			
+			out+=padString("", widths[j]+4, 1, " ");
+		}
+		
+		//out+="  | \n |  "+padString("", totalWidth+(table.back().size()-1)*5, 1, " ")+"  | ";
+		
+		out+="| ";
+		
+		out+="\n |  ";
+		
+		for (unsigned j=0; j<i.size(); j++)
+		{
+			if (j>0)
+				out+="  |  ";
+			
+			int alignment=(j==i.size()-1)?(1):((j==0)?(-1):0);
+			
+			out+=padString(i[j], widths[j], alignment);
+		}
+		
+		out+="  | ";
+	}
+	
+	out+="\n |";
+	
+	for (unsigned j=0; j<table.back().size(); j++)
+	{
+		if (j>0)
+			out+="|";
+		
+		out+=padString("", widths[j]+4, 1, "_");
+	}
+	
+	out+="|";
 	
 	return out;
 }
@@ -208,184 +345,3 @@ string loadEntireFile(string inName, bool printOutput)
 	}
 }
 
-string putStringInBox(string in, bool showLineNums, string boxName, int maxWidth)
-{
-	vector<string> lines;
-	
-	sliceStringBy(in, "\n", lines);
-	
-	tabsToSpaces(lines);
-	
-	string out=lineListToBoxedString(lines, boxName, showLineNums?0:-1);
-	
-	return out;
-}
-
-string putStringInTable(string in, bool showLineNums, bool showOuterLines, bool showInnerLines, string tableName)
-{
-	vector<string> lineStrs;
-	
-	sliceStringBy(in, "\n", lineStrs);
-	
-	vector<vector<string>> table;
-	vector<int> widths;
-	vector<string> lines;
-	
-	for (auto i: lineStrs)
-	{
-		table.push_back(vector<string>());
-		
-		sliceStringBy(i, "\t", table.back());
-		
-		for (unsigned j=0; j<table.back().size(); j++)
-		{
-			if (j>=widths.size())
-				widths.push_back(0);
-			
-			widths[j]=max(widths[j], int(table.back()[j].size()));
-		}
-		
-		for (int j=0; j<int(widths.size())-int(table.back().size()); j++)
-			table.back().push_back("");
-	}
-	
-	for (auto i: table)
-	{
-		lines.push_back("");
-		
-		for (unsigned j=0; j<i.size(); j++)
-		{
-			lines.back()+=padString(i[j], widths[j]);
-			if (j<i.size()-1)
-				lines.back()+="  |  ";
-		}
-	}
-	
-	string out=lineListToBoxedString(lines, tableName);
-	
-	return out;
-	
-	/*int colPos=0;
-	int colWidth=0;
-	char outerVirtLine=showOuterLines?'|':' ';
-	
-	vector<int> cols({0});
-	
-	for (unsigned i=0; i<in.size(); i++)
-	{
-		if (in[i]=='\t')
-		{
-			colPos++;
-			while (cols.size()<(unsigned)colPos+1)
-				cols.push_back(0);
-			colWidth=0;
-		}
-		else if (in[i]=='\n')
-		{
-			colPos=0;
-			colWidth=0;
-		}
-		else
-		{
-			colWidth++;
-			cols[colPos]=max(cols[colPos], colWidth);
-		}
-	}
-	
-	colPos=0;
-	colWidth=0;
-	
-	int totalWidth=0;
-	
-	for (unsigned i=0; i<cols.size(); i++)
-		totalWidth+=cols[i];
-	
-	string out;
-	
-	//out+=getBoxNameLine(tableName, showOuterLines, 12);
-	
-	out=out + " " + outerVirtLine + "  ";
-	
-	for (int i=0; i<totalWidth; ++i)
-		out+=" ";
-	
-	out=out + "  " + outerVirtLine + " \n " + outerVirtLine + "  ";
-	
-	for (unsigned i=0; i<in.size(); i++)
-	{
-		if (in[i]=='\t' || in[i]=='\n')
-		{
-			for (int j=colWidth; j<cols[colPos]; j++)
-				out+=" ";
-		}
-		
-		if (in[i]=='\t')
-		{
-			if (showInnerLines)
-				out+="|";
-			else
-				out+=" ";
-			
-			colPos++;
-			colWidth=0;
-		}
-		else if (in[i]=='\n')
-		{
-			colPos=0;
-			colWidth=0;
-			out=out + outerVirtLine + "\n " + outerVirtLine;
-		}
-		else
-		{
-			colWidth++;
-			out+=in[i];
-		}
-	}
-	
-	out+="\n |__";
-	
-	for (int i=0; i<totalWidth; ++i)
-		out+="_";
-	
-	out+="__| \n";
-	
-	return out;*/
-}
-
-string getBoxNameLine(string name, bool showLine, int width)
-{
-	if (name=="" && !showLine)
-		return "";
-	
-	string out;
-	
-	char lineChar=showLine?'_':' ';
-	
-	out+="  ";
-	out+=lineChar;
-	out+=lineChar;
-	
-	if (name.empty())
-	{
-		for (int i=0; i<width; ++i)
-			out+=lineChar;
-	}
-	else
-	{
-		for (int i=0; i<floor((width-4-(int)name.size())/2.0); i++)
-			out+=lineChar;
-		
-		out+="[ ";
-		out+=name;
-		out+=" ]";
-		
-		for (int i=0; i<ceil((width-4-(int)name.size())/2.0); ++i)
-			out+=lineChar;
-	}
-	
-	out+=lineChar;
-	out+=lineChar;
-	out+="  \n";
-	
-	return out;
-}
