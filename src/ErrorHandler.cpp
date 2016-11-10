@@ -53,11 +53,18 @@ void ErrorHandler::log(string msg, ElementData data, ErrorPriority priority)
 		errorHasBeenLogged=true;
 	
 	//cout << data.file << ":" << ((data.line<0)?" ":std::to_string(data.line)+": ") << priorityToStr(priority) << ": " << msg << endl;
-	cout << data.file << ": " << data.line << ": " << priorityToStr(priority) << ": " << msg << endl;
+	cout << data.file << ":" << data.line << ": " << priorityToStr(priority) << ": " << msg << endl;
+}
+
+void ErrorHandler::log(string msg, ErrorPriority priority, Token token)
+{
+	if (priority==SOURCE_ERROR || priority==INTERNAL_ERROR)
+		errorHasBeenLogged=true;
+	
+	cout << token->getFile() << ":" << token->getLine() << ":" << token->getCharPos() << ": " << priorityToStr(priority) << ": " << msg << endl;
 }
 
 void ErrorHandler::msg(string in)
 {
 	cout << "message: " << in << endl;
 }
-

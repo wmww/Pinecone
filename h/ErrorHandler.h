@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ElementData.h"
+#include "Token.h"
 
 #include <string>
 using std::string;
@@ -22,6 +23,7 @@ public:
 	
 	void log(string msg, ErrorPriority priority);
 	void log(string msg, ElementData data, ErrorPriority priority);
+	void log(string msg, ErrorPriority priority, Token token);
 	
 	void msg(string in);
 	

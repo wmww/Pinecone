@@ -1,6 +1,11 @@
 #include "../h/Token.h"
 
-string Token::typeToString(Token::Type in)
+Token makeToken(string textIn, string fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn)
+{
+	return Token(new TokenData(textIn, fileIn, lineIn, charPosIn, tokenTypeIn, opIn));
+}
+
+string TokenData::typeToString(TokenData::Type in)
 {
 	switch (in)
 	{
@@ -21,19 +26,19 @@ string stringFromTokens(vector<Token>& tokens)
 	
 	for (unsigned i=0; i<tokens.size(); ++i)
 	{
-		out+=tokens[i].getText() + "\t";
-		if (tokens[i].getType()==Token::OPERATOR)
+		out+=tokens[i]->getText() + "\t";
+		if (tokens[i]->getType()==TokenData::OPERATOR)
 		{
-			if (tokens[i].getOperator())
+			if (tokens[i]->getOp())
 			{
-				out+=tokens[i].getOperator()->getText()+" ";
+				out+=tokens[i]->getOp()->getText()+" ";
 			}
 			else
 			{
 				out+="unknown ";
 			}
 		}
-		out+=Token::typeToString(tokens[i].getType());
+		out+=TokenData::typeToString(tokens[i]->getType());
 		if (i<tokens.size()-1)
 			out+="\n";
 	}
