@@ -23,9 +23,9 @@ class OperatorData
 public:
 	
 	// this is the only way to make an operator, and should only be called when setting up all the global operators at the top of Operator.cpp
-	static shared_ptr<OperatorData> create(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool leftParseLRIn, bool rightParseLRIn, bool overloadableIn)
+	static shared_ptr<OperatorData> create(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool overloadableIn)
 	{
-		shared_ptr<OperatorData> ptr(new OperatorData(textIn, leftPrecedenceIn, rightPrecedenceIn, leftParseLRIn, rightParseLRIn, overloadableIn));
+		shared_ptr<OperatorData> ptr(new OperatorData(textIn, leftPrecedenceIn, rightPrecedenceIn, overloadableIn));
 		operators[textIn]=ptr;
 		
 		for (auto i=precedenceLevels.begin();; i++)
@@ -68,26 +68,21 @@ public:
 	
 private:
 	
-	OperatorData(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool leftParseLRIn, bool rightParseLRIn, bool overloadableIn)
+	OperatorData(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool overloadableIn)
 	{
 		text=textIn;
 		leftPrecedence=leftPrecedenceIn;
 		rightPrecedence=rightPrecedenceIn;
-		leftParseLR=leftParseLRIn;
-		rightParseLR=rightParseLRIn;
 		overloadable=overloadableIn;
 	}
 	
 	// the text of the operator, generally 1 or 2 characters
 	string text;
 	
-	// the precedence of left and right inputs, if this is -1 then the operator does not take an input on that side
+	// the precedence of left and right inputs, if this is 0 then the operator does not take an input on that side
+	// if even then precedence level is parced left to right. if odd then right to left
 	int leftPrecedence;
 	int rightPrecedence;
-	
-	// if to parse the left or right input left to right (right to left if false)
-	bool leftParseLR;
-	bool rightParseLR;
 	
 	// if this operator can be overloaded
 	bool overloadable;
@@ -95,20 +90,20 @@ private:
 
 typedef shared_ptr<OperatorData> Operator;
 
-extern Operator opPlus;
-extern Operator opMinus;
-extern Operator opMultiply;
-extern Operator opDivide;
-extern Operator opEqual;
-extern Operator opGreater;
-extern Operator opLess;
-extern Operator opColon;
-extern Operator opDot;
-extern Operator opComma;
-extern Operator opIf;
-extern Operator opLoop;
-extern Operator opOpenPeren;
-extern Operator opClosePeren;
+const extern Operator opPlus;
+const extern Operator opMinus;
+const extern Operator opMultiply;
+const extern Operator opDivide;
+const extern Operator opEqual;
+const extern Operator opGreater;
+const extern Operator opLess;
+const extern Operator opColon;
+const extern Operator opDot;
+const extern Operator opComma;
+const extern Operator opIf;
+const extern Operator opLoop;
+const extern Operator opOpenPeren;
+const extern Operator opClosePeren;
 
 void getOperators(string text, vector<Operator>& out);
 
