@@ -57,7 +57,7 @@ void CharClassifier::setUp()
 	
 	hm['#']=SINGLE_LINE_COMMENT;
 	
-	for (auto i=OperatorBase::operators.begin(); i!=OperatorBase::operators.end(); ++i)
+	for (auto i=OperatorData::operators.begin(); i!=OperatorData::operators.end(); ++i)
 	{
 		string str=(*i).first;
 		for (unsigned j=0; j<str.size(); j++)
