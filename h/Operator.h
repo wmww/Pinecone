@@ -1,6 +1,6 @@
 #pragma once
 
-class Token;
+class TokenData;
 
 #include <memory>
 using std::shared_ptr;

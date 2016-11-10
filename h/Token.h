@@ -10,7 +10,7 @@ using std::vector;
 
 //represents a single token such as an Int literal, an operator, or an identifier
 //is immutable
-class Token
+class TokenData
 {
 public:
 	
@@ -27,7 +27,7 @@ public:
 		UNKNOWN
 	};
 	
-	Token(string textIn, string fileIn, int lineIn, int charPosIn, Type tokenTypeIn, Operator opIn=Operator(nullptr))
+	TokenData(string textIn, string fileIn, int lineIn, int charPosIn, Type tokenTypeIn, Operator opIn=Operator(nullptr))
 	{
 		text=textIn;
 		file=fileIn;
@@ -37,23 +37,14 @@ public:
 		op=opIn;
 	}
 	
-	Token()
-	{
-		text="";
-		file="";
-		line=-1;
-		charPos=-1;
-		tokenType=UNKNOWN;
-	}
+	string getText() const {return text;}
+	string getFile() const {return file;}
+	int getLine() const {return line;}
+	int getCharPos() const {return charPos;}
+	TokenData::Type getType() const {return tokenType;}
+	Operator getOp() const {return op;}
 	
-	string getText() {return text;}
-	string getFile() {return file;}
-	int getLine() {return line;}
-	int getCharPos() {return charPos;}
-	Token::Type getType() {return tokenType;}
-	Operator getOperator() {return op;}
-	
-	static string typeToString(Token::Type in);
+	static string typeToString(TokenData::Type in);
 	
 private:
 	
@@ -67,5 +58,9 @@ private:
 	static string toString(Type);
 	string toString();
 };
+
+typedef shared_ptr<TokenData> Token;
+
+Token makeToken(string textIn, string fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn=Operator(nullptr));
 
 string stringFromTokens(vector<Token>& tokens);

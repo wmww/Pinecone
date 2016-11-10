@@ -22,7 +22,7 @@ public:
 		UNKNOWN
 	};
 	
-	static Token::Type getTokenType(CharClassifier::Type type, Token::Type previousType);
+	static TokenData::Type getTokenType(CharClassifier::Type type, TokenData::Type previousType);
 	
 	CharClassifier::Type get(char c);
 	
@@ -82,40 +82,40 @@ CharClassifier::Type CharClassifier::get(char c)
 		return i->second;
 }
 
-Token::Type CharClassifier::getTokenType(CharClassifier::Type type, Token::Type previousType)
+TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, TokenData::Type previousType)
 {
-	if (previousType==Token::COMMENT)
+	if (previousType==TokenData::COMMENT)
 	{
 		if (type==NEWLINE)
-			return Token::WHITESPACE;
+			return TokenData::WHITESPACE;
 		else
-			return Token::COMMENT;
+			return TokenData::COMMENT;
 	}
 	
 	switch (type)
 	{
 		
 	case SINGLE_LINE_COMMENT:
-		return Token::COMMENT;
+		return TokenData::COMMENT;
 		
 	case WHITESPACE:
 	case NEWLINE:
-		return Token::WHITESPACE;
+		return TokenData::WHITESPACE;
 		
 	case OPERATOR:
-		return Token::OPERATOR;
+		return TokenData::OPERATOR;
 		
 	case LETTER:
 	case DIGIT:
-		if (previousType==Token::IDENTIFIER || previousType==Token::LITERAL)
+		if (previousType==TokenData::IDENTIFIER || previousType==TokenData::LITERAL)
 			return previousType;
 		else if (type==DIGIT)
-			return Token::LITERAL;
+			return TokenData::LITERAL;
 		else
-			return Token::IDENTIFIER;
+			return TokenData::IDENTIFIER;
 		
 	default:
-		return Token::UNKNOWN;
+		return TokenData::UNKNOWN;
 		
 	}
 }
@@ -126,40 +126,40 @@ void lexString(string text, string filename, vector<Token>& tokens)
 	int line=1;
 	int charPos=1;
 	
-	Token::Type type=Token::WHITESPACE;
+	TokenData::Type type=TokenData::WHITESPACE;
 	
 	for (unsigned i=0; i<text.size(); i++)
 	{
 		CharClassifier::Type charType=charClassifier.get(text[i]);
-		Token::Type newType=CharClassifier::getTokenType(charType, type);
+		TokenData::Type newType=CharClassifier::getTokenType(charType, type);
 		
 		if (newType!=type)
 		{
 			if (!tokenTxt.empty())
 			{
-				if (type==Token::OPERATOR)
+				if (type==TokenData::OPERATOR)
 				{
 					vector<Operator> ops;
 					getOperators(tokenTxt, ops);
 					
 					for (auto op: ops)
 					{
-						tokens.push_back(Token(tokenTxt, filename, line, charPos, type, op));
+						tokens.push_back(makeToken(tokenTxt, filename, line, charPos, type, op));
 					}
 				}
-				else if (type==Token::COMMENT)
+				else if (type==TokenData::COMMENT)
 				{
 					// do nothing
 				}
 				else
 				{
-					tokens.push_back(Token(tokenTxt, filename, line, charPos, type));
+					tokens.push_back(makeToken(tokenTxt, filename, line, charPos, type));
 				}
 			}
 			tokenTxt="";
 		}
 		
-		if (newType!=Token::WHITESPACE)
+		if (newType!=TokenData::WHITESPACE)
 		{
 			tokenTxt+=text[i];
 		}
