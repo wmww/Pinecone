@@ -341,7 +341,7 @@ ActionPtr ElementList::resolveActions()
 			data.push_back((*i)->resolveActions(table));
 		}
 		
-		return listAction(data);
+		//return listAction(data);
 	}
 }
 

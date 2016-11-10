@@ -9,7 +9,7 @@ class MakeTupleAction: public Action
 {
 public:
 	
-	MakeTupleAction(vector<ActionPtr>& sourceActionsIn):
+	MakeTupleAction(const vector<ActionPtr>& sourceActionsIn):
 		Action(
 			Type(
 				new TypeBase(
@@ -107,7 +107,7 @@ private:
 	vector<ActionPtr> sourceActions;
 };
 
-ActionPtr makeTupleAction(std::vector<ActionPtr>& sourceActionsIn)
+ActionPtr makeTupleAction(const std::vector<ActionPtr>& sourceActionsIn)
 {
 	return ActionPtr(new MakeTupleAction(sourceActionsIn));
 }
