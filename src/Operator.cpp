@@ -1,28 +1,29 @@
 #include "../h/Operator.h"
 #include "../h/ErrorHandler.h"
 
-unordered_map<string, shared_ptr<OperatorBase>> OperatorBase::operators;
+unordered_map<string, shared_ptr<OperatorData>> OperatorData::operators;
+vector<int> OperatorData::precedenceLevels;
 
-Operator opPlus=OperatorBase::create("+", true, true, true);
-Operator opMinus=OperatorBase::create("-", true, true, true);
-Operator opMultiply=OperatorBase::create("*", true, true, true);
-Operator opDivide=OperatorBase::create("/", true, true, true);
-Operator opEqual=OperatorBase::create("=", true, true, false);
-Operator opGreater=OperatorBase::create(">", true, true, false);
-Operator opLess=OperatorBase::create("<", true, true, false);
-Operator opColon=OperatorBase::create(":", true, true, false);
-Operator opDot=OperatorBase::create(".", true, true, false);
-Operator opComma=OperatorBase::create(",", true, true, false);
-Operator opIf=OperatorBase::create("?", true, true, false);
-Operator opLoop=OperatorBase::create("@", true, true, false);
-Operator opOpenPeren=OperatorBase::create("(", false, false, false);
-Operator opClosePeren=OperatorBase::create(")", false, false, false);
+Operator opPlus=		OperatorData::create("+", 20, 20, true, true, true);
+Operator opMinus=		OperatorData::create("-", 20, 20, true, true, true);
+Operator opMultiply=	OperatorData::create("*", 30, 30, true, true, true);
+Operator opDivide=		OperatorData::create("/", 30, 30, true, true, true);
+Operator opEqual=		OperatorData::create("=", 40, 40, true, true, true);
+Operator opGreater=		OperatorData::create(">", 40, 40, true, true, true);
+Operator opLess=		OperatorData::create("<", 40, 40, true, true, true);
+Operator opColon=		OperatorData::create(":", 50, 10, false, false, false);
+Operator opComma=		OperatorData::create(",", 60, 60, true, true, false);
+Operator opDot=			OperatorData::create(".", 70, 70, true, true, false);
+Operator opIf=			OperatorData::create("?", 80, 80, true, true, false);
+Operator opLoop=		OperatorData::create("@", 90, 90, true, true, false);
+Operator opOpenPeren=	OperatorData::create("(", 100, 100, false, false, false);
+Operator opClosePeren=	OperatorData::create(")", 100, 100, false, false, false);
 
 void getOperators(string text, vector<Operator>& out)
 {
-	auto i=OperatorBase::operators.find(text);
+	auto i=OperatorData::operators.find(text);
 	
-	if (i==OperatorBase::operators.end())
+	if (i==OperatorData::operators.end())
 	{
 		error.log("unknown operator '" + text + "'", SOURCE_ERROR);
 		return;
@@ -33,7 +34,7 @@ void getOperators(string text, vector<Operator>& out)
 		return;
 	}
 	
-	/*for (auto i=OperatorBase::operators.begin(); i!=OperatorBase::operators.end(); i++)
+	/*for (auto i=OperatorData::operators.begin(); i!=OperatorData::operators.end(); i++)
 	{
 		if (text==(*i)->getText())
 		{

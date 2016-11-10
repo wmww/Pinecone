@@ -16,44 +16,84 @@ using std::unordered_map;
 
 #include <iostream>
 
-class OperatorBase
+// describes an operator
+// NOTE: there will only be one instance of OperatorData for +, not one for every overload of +
+class OperatorData
 {
 public:
 	
-	static shared_ptr<OperatorBase> create(string textIn, bool leftIn, bool rightIn, bool overridableIn)
+	// this is the only way to make an operator, and should only be called when setting up all the global operators at the top of Operator.cpp
+	static shared_ptr<OperatorData> create(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool leftParseLRIn, bool rightParseLRIn, bool overloadableIn)
 	{
-		shared_ptr<OperatorBase> ptr(new OperatorBase(textIn, leftIn, rightIn, overridableIn));
+		shared_ptr<OperatorData> ptr(new OperatorData(textIn, leftPrecedenceIn, rightPrecedenceIn, leftParseLRIn, rightParseLRIn, overloadableIn));
 		operators[textIn]=ptr;
+		
+		for (auto i=precedenceLevels.begin();; i++)
+		{
+			if (i==precedenceLevels.end() || *i>leftPrecedenceIn)
+			{
+				precedenceLevels.insert(i, leftPrecedenceIn);
+				break;
+			}
+			else if (*i==leftPrecedenceIn)
+				break;
+		}
+		
+		for (auto i=precedenceLevels.begin();; i++)
+		{
+			if (i==precedenceLevels.end() || *i>rightPrecedenceIn)
+			{
+				precedenceLevels.insert(i, rightPrecedenceIn);
+				break;
+			}
+			else if (*i==rightPrecedenceIn)
+				break;
+		}
+		
 		//operators.push_back(ptr);
 		return ptr;
 	}
 	
 	string getText() {return text;}
-	bool getTakesLeftInput() {return takesLeftInput;}
-	bool getTakesRightInput() {return takesRightInput;}
-	bool getOverridable() {return overridable;}
+	int getLeftPrecedence() {return leftPrecedence;}
+	int getRightPrecedence() {return rightPrecedence;}
+	bool getOverloadable() {return overloadable;}
 	
-	//static vector<shared_ptr<OperatorBase>> operators;
+	//static vector<shared_ptr<OperatorData>> operators;
 	
-	static unordered_map<string, shared_ptr<OperatorBase>> operators;
+	static unordered_map<string, shared_ptr<OperatorData>> operators;
+	
+	// stores the precedence levels that are used in order
+	static vector<int> precedenceLevels;
 	
 private:
 	
-	OperatorBase(string textIn, bool leftIn, bool rightIn, bool overridableIn)
+	OperatorData(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool leftParseLRIn, bool rightParseLRIn, bool overloadableIn)
 	{
 		text=textIn;
-		takesLeftInput=leftIn;
-		takesRightInput=rightIn;
-		overridable=overridableIn;
+		leftPrecedence=leftPrecedenceIn;
+		rightPrecedence=rightPrecedenceIn;
+		leftParseLR=leftParseLRIn;
+		rightParseLR=rightParseLRIn;
+		overloadable=overloadableIn;
 	}
 	
+	// the text of the operator, generally 1 or 2 characters
 	string text;
-	bool takesLeftInput;
-	bool takesRightInput;
-	bool overridable;
+	
+	// the precedence of left and right inputs, if this is -1 then the operator does not take an input on that side
+	int leftPrecedence;
+	int rightPrecedence;
+	
+	// if to parse the left or right input left to right (right to left if false)
+	bool leftParseLR;
+	bool rightParseLR;
+	
+	// if this operator can be overloaded
+	bool overloadable;
 };
 
-typedef shared_ptr<OperatorBase> Operator;
+typedef shared_ptr<OperatorData> Operator;
 
 extern Operator opPlus;
 extern Operator opMinus;
