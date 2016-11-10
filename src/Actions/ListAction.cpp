@@ -1,13 +1,11 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
-using std::list;
-
 class ListAction: public Action
 {
 public:
 	
-	ListAction(list<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void, "LIST")
+	ListAction(const vector<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void, "LIST")
 	{
 		if (actionsIn.size()<=0)
 		{
@@ -72,11 +70,10 @@ public:
 
 	
 private:
-	list<ActionPtr> actions;
+	vector<ActionPtr> actions;
 };
 
-
-ActionPtr listAction(list<ActionPtr>& actionsIn)
+ActionPtr listAction(const vector<ActionPtr>& actionsIn)
 {
 	return ActionPtr(new ListAction(actionsIn));
 }

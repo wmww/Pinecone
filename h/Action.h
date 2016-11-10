@@ -3,11 +3,12 @@
 #include "Type.h"
 #include <functional>
 #include <memory>
-#include <list>
+#include <vector>
 
 using std::shared_ptr;
 using std::to_string;
 using std::function;
+using std::vector;
 
 class Action
 {
@@ -53,11 +54,11 @@ ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightType
 
 ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn);
 
-ActionPtr listAction(std::list<ActionPtr>& actionsIn);
+ActionPtr listAction(const std::vector<ActionPtr>& actionsIn);
 
 ActionPtr loopAction(ActionPtr conditionIn, ActionPtr loopActionIn);
 
-ActionPtr makeTupleAction(std::vector<ActionPtr>& sourceActionsIn);
+ActionPtr makeTupleAction(const std::vector<ActionPtr>& sourceActionsIn);
 
 ActionPtr varGetAction(size_t in, Type typeIn, string textIn);
 ActionPtr varSetAction(size_t in, Type typeIn, string textIn);

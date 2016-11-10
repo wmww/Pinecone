@@ -16,8 +16,8 @@ const Operator opComma=		OperatorData::create(",", 60, 60, false);
 const Operator opDot=		OperatorData::create(".", 70, 70, false);
 const Operator opIf=		OperatorData::create("?", 80, 80, false);
 const Operator opLoop=		OperatorData::create("@", 90, 90, false);
-const Operator opOpenPeren=	OperatorData::create("(", 100, 100, false);
-const Operator opClosePeren=OperatorData::create(")", 100, 100, false);
+const Operator opOpenPeren=	OperatorData::create("(", 0, 100, false);
+const Operator opClosePeren=OperatorData::create(")", 100, 0, false);
 
 void getOperators(string text, vector<Operator>& out)
 {

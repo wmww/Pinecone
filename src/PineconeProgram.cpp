@@ -29,6 +29,11 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	}
 	
 	astRoot=parseTokens(tokens);
+	
+	if (printOutput)
+	{
+		cout << endl << "parsed abstract syntax tree:\n" << astRoot->getDescription() << endl;
+	}
 }
 
 ActionTablePtr PineconeProgram::getGlobalActionTable()
