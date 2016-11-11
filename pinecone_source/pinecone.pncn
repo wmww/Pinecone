@@ -1,18 +1,25 @@
 
+a: 7
+b: 2
 
-a: 6
-b: 23
+print: a
+print: b
 
-a<b@
-(
-	(a: a+2)
-	b: b-1
-	
-	print: a
-	print: b
-	print
-)
+#c: 6 + d: 2
 
-print: 0
+#print: c
+#print: d
+
+#a<b@
+#(
+#	(a: a+2)
+#	b: b-1
+#	
+#	print: a
+#	print: b
+#	print
+#)
+
+#print: 0
 
 

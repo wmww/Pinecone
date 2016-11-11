@@ -45,6 +45,7 @@ public:
 	Operator getOp() const {return op;}
 	
 	static string typeToString(TokenData::Type in);
+	string getDescription();
 	
 private:
 	
@@ -54,9 +55,6 @@ private:
 	int charPos;
 	Type tokenType;
 	Operator op;
-	
-	static string toString(Type);
-	string toString();
 };
 
 typedef shared_ptr<TokenData> Token;

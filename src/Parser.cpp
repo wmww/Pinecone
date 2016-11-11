@@ -1,12 +1,15 @@
 #include "../h/Token.h"
 #include "../h/Action.h"
+#include "../h/ActionTable.h"
 #include "../h/ErrorHandler.h"
+#include "../h/StackFrame.h"
 
 #include <vector>
 using std::vector;
 
 using std::min;
 using std::max;
+using std::pair;
 
 //	recursivly parse tokens and return action
 //		tokens: the tokens to parse
@@ -21,14 +24,14 @@ using std::max;
 //		left: left most token to parse (inclusive)
 //		right: right most token to parse (inclusive)
 //		returns: pointer to ListAction for that section of tokens
-ActionPtr parseTokenList(const vector<Token>& tokens, int left, int right);
+ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
 
 //	recursivly parses a single expression (no action lists)
 //		tokens: the tokens to parse
 //		left: left most token to parse (inclusive)
 //		right: right most token to parse (inclusive)
 //		returns: pointer to root action for that section of tokens
-ActionPtr parseExpression(const vector<Token>& tokens, int left, int right);
+ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
 
 //	splits an expression on the given token (should always be an operator)
 //		tokens: the tokens to parse
@@ -36,18 +39,20 @@ ActionPtr parseExpression(const vector<Token>& tokens, int left, int right);
 //		right: right most token to parse (inclusive)
 //		index: the index to split on
 //		returns: pointer to BranchAction that is the root of the split
-ActionPtr splitExpression(const vector<Token>& tokens, int left, int right, int index);
+ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
 
 //	returns the action for a single token
 //		token: the token to get the action for
 //		returns: the action for the token
-ActionPtr parseSingleToken(const Token token);
+ActionPtr parseSingleToken(Token token, const ActionTablePtr table);
 
 //	returns the index of the close peren that matches the given open peren index
 //		tokens: the token array to use
 //		start: the index of an open peren
 //		returns: the index of the close peren that matches
 int skipPeren(const vector<Token>& tokens, int start);
+
+ActionPtr parseLiteral(Token token);
 
 int skipPeren(const vector<Token>& tokens, int start)
 {
@@ -86,9 +91,9 @@ int skipPeren(const vector<Token>& tokens, int start)
 	}
 }
 
-ActionPtr parseTokens(const vector<Token>& tokens)
+ActionPtr parseTokens(const vector<Token>& tokens, ActionTablePtr table)
 {
-	return parseTokenList(tokens, 0, tokens.size()-1);
+	return parseTokenList(tokens, table, 0, tokens.size()-1);
 }
 
 /*ActionPtr parseTokens(const vector<Token>& tokens, int left, int right, int precedenceLevel)
@@ -128,13 +133,12 @@ ActionPtr parseTokens(const vector<Token>& tokens)
 	}
 }*/
 
-ActionPtr parseExpression(const vector<Token>& tokens, int left, int right)
+ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
 	if (left==right)
-		return parseSingleToken(tokens[left]);
+		return parseSingleToken(tokens[left], table);
 	
-	//the first bit is 0 if that token is a min on the left and 1 if not, second bit is the same but for the right
-	vector<unsigned char> notMin(right-left+1);
+	vector<pair<bool, bool>> isMin(right-left+1);
 	
 	int lowest;
 	
@@ -142,15 +146,15 @@ ActionPtr parseExpression(const vector<Token>& tokens, int left, int right)
 	
 	for (int i=left; i<=right; i++)
 	{
+		isMin[i]=pair<bool, bool>(false, false);
+		
 		Operator op=tokens[i]->getOp();
 		
 		if (op)
 		{
-			notMin[i]=0x00;
-			
-			if (op->getLeftPrece()>=lowest)
+			if (op->getLeftPrece()<lowest)
 			{
-				notMin[i]|=0x01;
+				isMin[i].first=true;
 			}
 			
 			lowest=min(lowest, op->getRightPrece());
@@ -159,15 +163,15 @@ ActionPtr parseExpression(const vector<Token>& tokens, int left, int right)
 	
 	lowest=10000; //an number bigger then any precedence
 	
-	for (int i=right; i>=right; i--)
+	for (int i=right; i>=left; i--)
 	{
 		Operator op=tokens[i]->getOp();
 		
 		if (op)
 		{
-			if (op->getRightPrece()>=lowest)
+			if (op->getRightPrece()<lowest)
 			{
-				notMin[i]|=0x02;
+				isMin[i].second=true;
 			}
 			
 			lowest=min(lowest, op->getLeftPrece());
@@ -176,14 +180,20 @@ ActionPtr parseExpression(const vector<Token>& tokens, int left, int right)
 	
 	for (int i=left; i<=right; i++)
 	{
-		if (!notMin[i])
-			return splitExpression(tokens, left, right, i);
+		if (isMin[i].first && isMin[i].second)
+		{
+			return splitExpression(tokens, table, left, right, i);
+		}
 	}
+	
+	error.log("could not find where to split expression", SOURCE_ERROR, tokens[left]);
+	error.log("range: " + ([&]()->string{string out; for (int i=left; i<=right; i++) {out+=tokens[i]->getText()+" ";} return out;})(), JSYK, tokens[left]);
+	error.log("isMin: " + ([&]()->string{string out; for (auto i: isMin) {out+="\n"+to_string(i.first)+", "+to_string(i.second);} return out;})(), JSYK, tokens[left]);
 	
 	return voidAction;
 }
 
-ActionPtr parseTokenList(const vector<Token>& tokens, int left, int right)
+ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
 	vector<ActionPtr> actions;
 	
@@ -196,19 +206,19 @@ ActionPtr parseTokenList(const vector<Token>& tokens, int left, int right)
 			if (tokens[i]->getOp()==opOpenPeren)
 				i=skipPeren(tokens, i);
 				
-			if (i>=right)
+			if (i>=right) // at the end
 			{
 				if (actions.empty())
 				{
-					return parseExpression(tokens, left, right);
+					return parseExpression(tokens, table, left, right);
 				}
 				else
 				{
-					actions.push_back(parseExpression(tokens, left, right));
+					actions.push_back(parseExpression(tokens, table, left, right));
 					break;
 				}
 			}
-			else if // if the left cant absorb the right and the right cant absorbe the left
+			else if // if the left can't absorb the right and the right cant absorbe the left
 				(
 					(
 						!tokens[i]->getOp()
@@ -221,7 +231,7 @@ ActionPtr parseTokenList(const vector<Token>& tokens, int left, int right)
 					)
 				)
 			{
-				actions.push_back(parseExpression(tokens, left, right));
+				actions.push_back(parseExpression(tokens, table, left, i));
 				break;
 			}
 			
@@ -234,12 +244,190 @@ ActionPtr parseTokenList(const vector<Token>& tokens, int left, int right)
 	return listAction(actions);
 }
 
-ActionPtr splitExpression(const vector<Token>& tokens, int left, int right, int index)
+ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
 {
-	return voidAction;
+	Operator op=tokens[i]->getOp();
+	
+	if (!op)
+	{
+		error.log(string() + __FUNCTION__ + " called with an index that is not an operator (token: " + tokens[i]->getText() + ")", INTERNAL_ERROR, tokens[i]);
+		return voidAction;
+	}
+	
+	if (op==opColon)
+	{
+		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
+		{
+			auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
+			
+			ActionPtr out=table->makeBranchAction(tokens[left], voidAction, rightAction);
+		
+			if (out==voidAction)
+			{
+				Type type=rightAction->getReturnType();
+				
+				if (type->isCreatable())
+				{
+					size_t offset=table->getStackFrame()->getSize();
+					table->getStackFrame()->addMember(type);
+					
+					ActionPtr getAction=varGetAction(offset, type, tokens[left]->getText());
+					ActionPtr setAction=varSetAction(offset, type, tokens[left]->getText());
+					out = branchAction(voidAction, setAction, rightAction);
+					table->addAction(getAction);
+					table->addAction(setAction);
+				}
+				else
+				{
+					error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, tokens[i]);
+					out=voidAction;
+				}
+			}
+			
+			return out;
+		}
+		else
+		{
+			error.log("right now, ':' must have an identifier to its left, instead it had " + to_string(left) + "-" + to_string(i-1) + " which is of token type of " + TokenData::typeToString(tokens[left]->getType()), SOURCE_ERROR, tokens[i]);
+			return voidAction;
+		}
+	}
+	else
+	{
+		auto leftAction=(left==i)?voidAction:parseExpression(tokens, table, left, i-1);
+		auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
+		
+		return table->makeBranchAction(tokens[i], leftAction, rightAction);
+	}
+	
 }
 
-ActionPtr parseSingleToken(const Token token)
+ActionPtr parseSingleToken(Token token, ActionTablePtr table)
 {
-	return voidAction;
+	if (token->getType()==TokenData::LITERAL)
+	{
+		return parseLiteral(token);
+	}
+	else
+		return voidAction;
+}
+
+ActionPtr parseLiteral(Token token)
+{
+	string in=token->getText();
+	
+	if (in.empty())
+		return nullptr;
+	
+	//bool floatingPoint=false;
+	
+	Type type=UnknownType;
+	
+	if (in.empty())
+	{
+		error.log("tried to make literal with empty string", INTERNAL_ERROR, token);
+	}
+	
+	if ((in[0]>='0' && in[0]<='9') || in[0]=='.')
+	{
+		type=Int;
+		
+		for (auto i=in.begin(); i!=in.end(); ++i)
+		{
+			if (*i=='.' || *i=='_')
+			{
+				type=Dub;
+				break;
+			}
+		}
+		
+		if (in.back()=='d' || in.back()=='f')
+		{
+			type=Dub;
+			in.pop_back();
+		}
+		else if (in.back()=='i')
+		{
+			type=Int;
+			in.pop_back();
+		}
+		else if (in.back()=='b')
+		{
+			type=Bool;
+			in.pop_back();
+		}
+	}
+	
+	if (type==Int || type==Int)
+	{
+		int val=0;
+		
+		for (auto i=in.begin(); i!=in.end(); ++i)
+		{
+			if (*i<'0' || *i>'9')
+			{
+				error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
+				return nullptr;
+			}
+			
+			val=val*10+(*i-'0');
+		}
+		
+		if (type==Bool)
+		{
+			bool out=(val!=0);
+			return constGetAction(&out, type, token->getText());
+		}
+		else
+		{
+			int out=val;
+			return constGetAction(&out, type, token->getText());
+		}
+	}
+	else if (type==Dub) //floating point
+	{
+		double val=0;
+		int pointPos=0;
+		
+		for (auto i=in.begin(); i!=in.end(); ++i)
+		{
+			if (*i=='.' || *i=='_')
+			{
+				if (pointPos==0)
+				{
+					pointPos=10;
+				}
+				else
+				{
+					error.log(string() + "multiple decimal points found in number '" + in + "'", SOURCE_ERROR, token);
+					return voidAction;
+				}
+			}
+			else if (*i>='0' && *i<='9')
+			{
+				if (pointPos)
+				{
+					val+=(double)(*i-'0')/pointPos;
+					pointPos*=10;
+				}
+				else
+				{
+					val=val*10+(*i-'0');
+				}
+			}
+			else
+			{
+				error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
+				return voidAction;
+			}
+		}
+		
+		double out=val;
+		return constGetAction(&out, type, token->getText());
+	}
+	else
+	{
+		error.log("tried to make literal with invalid type of " + type->toString(), INTERNAL_ERROR, token);
+		return voidAction;
+	}
 }
