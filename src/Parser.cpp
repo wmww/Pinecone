@@ -44,7 +44,7 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 //	returns the action for a single token
 //		token: the token to get the action for
 //		returns: the action for the token
-ActionPtr parseSingleToken(Token token, const ActionTablePtr table);
+ActionPtr parseSingleToken(Token token, const ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
 
 //	returns the index of the close peren that matches the given open peren index
 //		tokens: the token array to use
@@ -53,6 +53,8 @@ ActionPtr parseSingleToken(Token token, const ActionTablePtr table);
 int skipPeren(const vector<Token>& tokens, int start);
 
 ActionPtr parseLiteral(Token token);
+
+ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
 
 int skipPeren(const vector<Token>& tokens, int start)
 {
@@ -136,7 +138,7 @@ ActionPtr parseTokens(const vector<Token>& tokens, ActionTablePtr table)
 ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
 	if (left==right)
-		return parseSingleToken(tokens[left], table);
+		return parseSingleToken(tokens[left], table, voidAction, voidAction);
 	
 	vector<pair<bool, bool>> isMin(right-left+1);
 	
@@ -256,35 +258,11 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	
 	if (op==opColon)
 	{
-		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
+		if (i==left+1)
 		{
 			auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
 			
-			ActionPtr out=table->makeBranchAction(tokens[left], voidAction, rightAction);
-		
-			if (out==voidAction)
-			{
-				Type type=rightAction->getReturnType();
-				
-				if (type->isCreatable())
-				{
-					size_t offset=table->getStackFrame()->getSize();
-					table->getStackFrame()->addMember(type);
-					
-					ActionPtr getAction=varGetAction(offset, type, tokens[left]->getText());
-					ActionPtr setAction=varSetAction(offset, type, tokens[left]->getText());
-					out = branchAction(voidAction, setAction, rightAction);
-					table->addAction(getAction);
-					table->addAction(setAction);
-				}
-				else
-				{
-					error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, tokens[i]);
-					out=voidAction;
-				}
-			}
-			
-			return out;
+			return parseSingleToken(tokens[left], table, voidAction, rightAction);
 		}
 		else
 		{
@@ -302,18 +280,35 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	
 }
 
-ActionPtr parseSingleToken(Token token, ActionTablePtr table)
+ActionPtr parseSingleToken(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn)
 {
-	if (token->getType()==TokenData::LITERAL)
+	switch (token->getType())
 	{
+		
+	case TokenData::LITERAL:
 		return parseLiteral(token);
+		break;
+		
+	case TokenData::IDENTIFIER:
+		return parseIdentifier(token, table, leftIn, rightIn);
+		break;
+		
+	default:
+		error.log(string() + __FUNCTION__ + " called with token of invalid token type " + token->getDescription(), INTERNAL_ERROR, token);
+		break;
 	}
-	else
-		return voidAction;
+	
+	return voidAction;
 }
 
 ActionPtr parseLiteral(Token token)
 {
+	if (token->getType()!=TokenData::LITERAL)
+	{
+		error.log(string() + __FUNCTION__ + " called with incorrect token type " + token->getDescription(), INTERNAL_ERROR, token);
+		return voidAction;
+	}
+	
 	string in=token->getText();
 	
 	if (in.empty())
@@ -431,3 +426,55 @@ ActionPtr parseLiteral(Token token)
 		return voidAction;
 	}
 }
+
+
+ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn)
+{
+	if (token->getType()!=TokenData::IDENTIFIER)
+	{
+		error.log(string() + __FUNCTION__ + " called with incorrect token type " + token->getDescription(), INTERNAL_ERROR, token);
+		return voidAction;
+	}
+	
+	ActionPtr out=table->makeBranchAction(token, leftIn, rightIn);
+	
+	if (out==voidAction)
+	{
+		Type type=rightIn->getReturnType();
+		
+		if (type->isCreatable())
+		{
+			size_t offset=table->getStackFrame()->getSize();
+			table->getStackFrame()->addMember(type);
+			
+			ActionPtr getAction=varGetAction(offset, type, token->getText());
+			ActionPtr setAction=varSetAction(offset, type, token->getText());
+			out = branchAction(voidAction, setAction, rightIn);
+			table->addAction(getAction);
+			table->addAction(setAction);
+		}
+		else
+		{
+			error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, token);
+			out=voidAction;
+		}
+	}
+	
+	return out;
+	
+	/*
+	if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
+		{
+			
+		}
+		else
+		{
+			error.log("right now, ':' must have an identifier to its left, instead it had " + to_string(left) + "-" + to_string(i-1) + " which is of token type of " + TokenData::typeToString(tokens[left]->getType()), SOURCE_ERROR, tokens[i]);
+			return voidAction;
+		}
+		
+		*/
+}
+
+	
+	
