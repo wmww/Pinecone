@@ -1,4 +1,5 @@
 #include "../h/Token.h"
+#include "../h/msclStringFuncs.h"
 
 Token makeToken(string textIn, string fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn)
 {
@@ -22,6 +23,11 @@ string TokenData::typeToString(TokenData::Type in)
 
 string TokenData::getDescription()
 {
+	return text+" ("+TokenData::typeToString(tokenType)+")";
+}
+
+string TokenData::getTypeDescription()
+{
 	string out;
 	
 	if (tokenType==TokenData::OPERATOR)
@@ -41,20 +47,20 @@ string TokenData::getDescription()
 	return out;
 }
 
-string stringFromTokens(vector<Token>& tokens)
+string tableStringFromTokens(vector<Token>& tokens, string tableName)
 {
-	string out;
+	string out="Name\tType\n";
 	
 	for (unsigned i=0; i<tokens.size(); ++i)
 	{
 		out+=tokens[i]->getText() + "\t";
 		
-		out+=tokens[i]->getDescription();
+		out+=tokens[i]->getTypeDescription();
 		
 		if (i<tokens.size()-1)
 			out+="\n";
 	}
 	
-	return out;
+	return putStringInTable(out, tableName);
 }
 

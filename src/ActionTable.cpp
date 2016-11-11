@@ -138,10 +138,10 @@ ActionPtr ActionTable::makeBranchAction(Token token, ActionPtr left, ActionPtr r
 	
 	ActionPtr out=makeBranchAction(matches, left, right);
 	
-	if (out==voidAction)
+	/*if (out==voidAction)
 	{
 		error.log("no overload found for {" + left->getReturnType()->getName() + "}.(" + token->getText() + "): {" + right->getReturnType()->getName() + "}", SOURCE_ERROR, token);
-	}
+	}*/
 	
 	return out;
 }

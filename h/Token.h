@@ -46,6 +46,7 @@ public:
 	
 	static string typeToString(TokenData::Type in);
 	string getDescription();
+	string getTypeDescription();
 	
 private:
 	
@@ -61,4 +62,4 @@ typedef shared_ptr<TokenData> Token;
 
 Token makeToken(string textIn, string fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn=Operator(nullptr));
 
-string stringFromTokens(vector<Token>& tokens);
+string tableStringFromTokens(vector<Token>& tokens, string tableName);
