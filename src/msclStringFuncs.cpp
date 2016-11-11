@@ -208,7 +208,7 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 		i++;
 	}
 	
-	out+="\n |"+padString("", size+extraWidth, 1, "_")+"| ";
+	out+="\n |"+padString("", size+extraWidth, 1, "_")+"| \n";
 	
 	return out;
 }
@@ -308,7 +308,7 @@ string putStringInTable(const string& in, string tableName)
 		out+=padString("", widths[j]+4, 1, "_");
 	}
 	
-	out+="|";
+	out+="| \n";
 	
 	return out;
 }

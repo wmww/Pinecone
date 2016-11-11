@@ -100,21 +100,14 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, ActionPtr left, Action
 	
 	addActionsToList(matches, data.text);
 	
-	if (matches.empty())
+	ActionPtr out=makeBranchAction(matches, left, right);
+	
+	if (out==voidAction)
 	{
-		return voidAction;
+		error.log("no overload found for " + data.text, SOURCE_ERROR);
 	}
-	else
-	{
-		ActionPtr out=makeBranchAction(matches, left, right);
-		
-		if (out==voidAction)
-		{
-			error.log("no overload found for " + data.text, SOURCE_ERROR);
-		}
-		
-		return out;
-	}
+	
+	return out;
 }
 
 ActionPtr ActionTable::makeBranchAction(ElementData data, Operator op, ActionPtr left, ActionPtr right)
@@ -128,8 +121,36 @@ ActionPtr ActionTable::makeBranchAction(ElementData data, Operator op, ActionPtr
 	return out;
 }
 
+ActionPtr ActionTable::makeBranchAction(Token token, ActionPtr left, ActionPtr right)
+{
+	vector<ActionPtr> matches;
+	
+	if (token->getOp())
+	{
+		addActionsToList(matches, token->getOp());
+	}
+	else
+	{
+		string text=token->getText();
+		addActionsToList(matches, text);
+	}
+	
+	
+	ActionPtr out=makeBranchAction(matches, left, right);
+	
+	if (out==voidAction)
+	{
+		error.log("no overload found for {" + left->getReturnType()->getName() + "}.(" + token->getText() + "): {" + right->getReturnType()->getName() + "}", SOURCE_ERROR, token);
+	}
+	
+	return out;
+}
+
 ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr left, ActionPtr right)
 {
+	if (matches.empty())
+		return voidAction;
+	
 	Type leftType=left->getReturnType();
 	Type rightType=right->getReturnType();
 	
@@ -222,6 +243,7 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 		{
 			return branchAction((*actionsBranches.begin())[0], (*actionsBranches.begin())[1], (*actionsBranches.begin())[2]);
 		}
+		else
 		{
 			return voidAction;
 			

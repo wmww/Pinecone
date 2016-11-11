@@ -20,6 +20,27 @@ string TokenData::typeToString(TokenData::Type in)
 	}
 }
 
+string TokenData::getDescription()
+{
+	string out;
+	
+	if (tokenType==TokenData::OPERATOR)
+	{
+		if (op)
+		{
+			out+=op->getText()+" ";
+		}
+		else
+		{
+			out+="unknown ";
+		}
+	}
+	
+	out+=TokenData::typeToString(tokenType);
+	
+	return out;
+}
+
 string stringFromTokens(vector<Token>& tokens)
 {
 	string out;
@@ -27,18 +48,9 @@ string stringFromTokens(vector<Token>& tokens)
 	for (unsigned i=0; i<tokens.size(); ++i)
 	{
 		out+=tokens[i]->getText() + "\t";
-		if (tokens[i]->getType()==TokenData::OPERATOR)
-		{
-			if (tokens[i]->getOp())
-			{
-				out+=tokens[i]->getOp()->getText()+" ";
-			}
-			else
-			{
-				out+="unknown ";
-			}
-		}
-		out+=TokenData::typeToString(tokens[i]->getType());
+		
+		out+=tokens[i]->getDescription();
+		
 		if (i<tokens.size()-1)
 			out+="\n";
 	}
