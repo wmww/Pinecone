@@ -55,8 +55,8 @@ public:
 	}
 	
 	string getText() {return text;}
-	int getLeftPrecedence() {return leftPrecedence;}
-	int getRightPrecedence() {return rightPrecedence;}
+	int getLeftPrece() {return leftPrecedence;}
+	int getRightPrece() {return rightPrecedence;}
 	bool getOverloadable() {return overloadable;}
 	
 	//static vector<shared_ptr<OperatorData>> operators;
