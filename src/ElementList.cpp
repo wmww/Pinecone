@@ -334,14 +334,14 @@ ActionPtr ElementList::resolveActions()
 	}
 	else
 	{
-		list<ActionPtr> data;
+		vector<ActionPtr> data;
 		
 		for (auto i=elems.begin(); i!=elems.end(); ++i)
 		{
 			data.push_back((*i)->resolveActions(table));
 		}
 		
-		//return listAction(data);
+		return listAction(data);
 	}
 }
 
