@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ElementData.h"
 #include "Token.h"
 
 #include <string>
@@ -22,7 +21,6 @@ public:
 	static string priorityToStr(ErrorPriority in);
 	
 	void log(string msg, ErrorPriority priority);
-	void log(string msg, ElementData data, ErrorPriority priority);
 	void log(string msg, ErrorPriority priority, Token token);
 	
 	void msg(string in);

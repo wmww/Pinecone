@@ -1,16 +1,21 @@
 
 a: 11
 b: 28
+c: tru
 
-(a<b)@
+c?
 (
-	a: a+2
-	b: b-1
-	
-	print: a
-	print: b
-	print
+	a<b@
+	(
+		a: a+2
+		b: b-1
+		
+		print: a
+		print: b
+		print
+	)
 )
+
 
 print: 0
 

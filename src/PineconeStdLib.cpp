@@ -73,7 +73,7 @@ void addAction(Operator op, Type returnType, Type leftType, Type rightType, func
 	stdLibActionTable->addAction(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
 }
 
-void populatePineconeStdLib(ActionTablePtr t)
+void populatePineconeStdLib()
 {
 	ActionTablePtr table=stdLibActionTable;
 	
