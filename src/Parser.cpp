@@ -57,6 +57,8 @@ ActionPtr parseSingleToken(Token token, const ActionTablePtr table, ActionPtr le
 //		returns: the index of the close peren that matches
 int skipPeren(const vector<Token>& tokens, int start);
 
+ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
+
 ActionPtr parseLiteral(Token token);
 
 ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
@@ -272,6 +274,23 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		return voidAction;
 	}
 	
+	if (op->getOverloadable())
+	{
+		auto leftAction=(left==i)?voidAction:parseExpression(tokens, table, left, i-1);
+		auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
+		
+		return table->makeBranchAction(tokens[i], leftAction, rightAction);
+	}
+	else
+	{
+		return parseOperator(tokens, table, left, right, i);
+	}
+}
+
+ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
+{
+	Operator op=tokens[i]->getOp();
+	
 	if (op==opColon)
 	{
 		if (i==left+1)
@@ -286,14 +305,45 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 			return voidAction;
 		}
 	}
+	else if (op==opIf)
+	{
+		auto leftAction=parseExpression(tokens, table, left, i-1);
+		auto rightAction=parseExpression(tokens, table, i+1, right);
+		
+		auto conditionAction=table->addConverter(leftAction, Bool);
+		
+		if (conditionAction==voidAction)
+		{
+			error.log("could not use "+leftAction->getDescription()+" as if condition", SOURCE_ERROR, tokens[i]);
+			return voidAction;
+		}
+		else
+		{
+			return ifAction(conditionAction, rightAction);
+		}
+	}
+	else if (op==opLoop)
+	{
+		auto leftAction=parseExpression(tokens, table, left, i-1);
+		auto rightAction=parseExpression(tokens, table, i+1, right);
+		
+		auto conditionAction=table->addConverter(leftAction, Bool);
+		
+		if (conditionAction==voidAction)
+		{
+			error.log("could not use "+leftAction->getDescription()+" as condition in while loop", SOURCE_ERROR, tokens[i]);
+			return voidAction;
+		}
+		else
+		{
+			return loopAction(conditionAction, rightAction);
+		}
+	}
 	else
 	{
-		auto leftAction=(left==i)?voidAction:parseExpression(tokens, table, left, i-1);
-		auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
-		
-		return table->makeBranchAction(tokens[i], leftAction, rightAction);
+		error.log("unknown operator "+op->getText(), INTERNAL_ERROR, tokens[i]);
+		return voidAction;
 	}
-	
 }
 
 ActionPtr parseSingleToken(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn)
@@ -443,7 +493,6 @@ ActionPtr parseLiteral(Token token)
 	}
 }
 
-
 ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn)
 {
 	if (token->getType()!=TokenData::IDENTIFIER)
@@ -477,19 +526,6 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 	}
 	
 	return out;
-	
-	/*
-	if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
-		{
-			
-		}
-		else
-		{
-			error.log("right now, ':' must have an identifier to its left, instead it had " + to_string(left) + "-" + to_string(i-1) + " which is of token type of " + TokenData::typeToString(tokens[left]->getType()), SOURCE_ERROR, tokens[i]);
-			return voidAction;
-		}
-		
-		*/
 }
 
 	
