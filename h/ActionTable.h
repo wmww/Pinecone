@@ -20,6 +20,7 @@ public:
 	//should only be called within this class except for creating the root
 	ActionTable(shared_ptr<ActionTable> parentIn);
 	ActionTable(StackFrame * stackFrameIn);
+	ActionTable(shared_ptr<ActionTable> parentIn, StackFrame * stackFrameIn);
 	
 	~ActionTable() {clear();}
 	

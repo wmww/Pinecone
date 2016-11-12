@@ -1,7 +1,7 @@
 #include "../h/PineconeProgram.h"
 #include "../h/Operator.h"
-
-ActionTablePtr table;
+#include "../h/StackFrame.h"
+#include "../h/ActionTable.h"
 
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
@@ -60,19 +60,25 @@ addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(
 
 ActionPtr voidAction;
 
+StackFrame stdLibStackFrame;
+ActionTablePtr stdLibActionTable(new ActionTable(&stdLibStackFrame));
+
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	table->addAction(lambdaAction(returnType, lambda, leftType, rightType, text));
+	stdLibActionTable->addAction(lambdaAction(returnType, lambda, leftType, rightType, text));
 }
 
 void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	table->addAction(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
+	stdLibActionTable->addAction(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
 }
 
 void populatePineconeStdLib(ActionTablePtr t)
 {
-	table=t;
+	ActionTablePtr table=stdLibActionTable;
+	
+	table->clear();
+	stdLibStackFrame.clear();
 	
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
 	voidAction=createNewVoidAction();
@@ -222,7 +228,5 @@ void populatePineconeStdLib(ActionTablePtr t)
 	//t->addAction()
 	
 	cout << endl << putStringInBox(table->toString(), false, "standard library") << endl;
-	
-	table=nullptr;
 }
 

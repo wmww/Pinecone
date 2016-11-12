@@ -15,6 +15,12 @@ ActionTable::ActionTable(StackFrame * stackFrameIn)
 	stackFrame=stackFrameIn;
 }
 
+ActionTable::ActionTable(shared_ptr<ActionTable> parentIn, StackFrame * stackFrameIn)
+{
+	parent=parentIn;
+	stackFrame=stackFrameIn;
+}
+
 void ActionTable::clear()
 {
 	actions.clear();
