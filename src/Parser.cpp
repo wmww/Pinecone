@@ -65,7 +65,22 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 
 int skipPeren(const vector<Token>& tokens, int start)
 {
-	if (tokens[start]->getOp()!=opOpenPeren)
+	Operator open, close;
+	int step;
+	
+	if (tokens[start]->getOp()==opOpenPeren)
+	{
+		open=opOpenPeren;
+		close=opClosePeren;
+		step=1;
+	}
+	else if (tokens[start]->getOp()==opClosePeren)
+	{
+		open=opClosePeren;
+		close=opOpenPeren;
+		step=-1;
+	}
+	else
 	{
 		error.log("skipPeren called with index that is not an open parenthesis", INTERNAL_ERROR, tokens[start]);
 		return start;
@@ -76,19 +91,19 @@ int skipPeren(const vector<Token>& tokens, int start)
 	
 	while(true)
 	{
-		i++;
+		i+=step;
 		
 		if (i>=int(tokens.size()))
 		{
-			error.log("no closing parenthesis", SOURCE_ERROR, tokens[start]);
+			error.log("no matching brace", SOURCE_ERROR, tokens[start]);
 			return start;
 		}
 		
-		if (tokens[i]->getOp()==opOpenPeren)
+		if (tokens[i]->getOp()==open)
 		{
 			c++;
 		}
-		else if (tokens[i]->getOp()==opClosePeren)
+		else if (tokens[i]->getOp()==close)
 		{
 			c--;
 			
@@ -153,7 +168,17 @@ ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
 ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
 	if (left==right)
+	{
 		return parseSingleToken(tokens[left], table, voidAction, voidAction);
+	}
+	
+	if (tokens[left]->getOp()==opOpenPeren && skipPeren(tokens, left)==right)
+	{
+		if (left+1<right)
+			return parseTokenList(tokens, table, left+1, right-1);
+		else
+			return voidAction; // a rare place where a voidAction may actually be intended by the programmer
+	}
 	
 	vector<bool> isMinLeft(right-left+1);
 	vector<bool> isMinRight(right-left+1);
@@ -165,14 +190,25 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	for (int i=left; i<=right; i++)
 	{
 		isMinLeft[i]=false;
-		
+		isMinRight[i]=false;
+	}
+	
+	for (int i=left; i<=right; i++)
+	{
 		Operator op=tokens[i]->getOp();
 		
 		if (op)
 		{
-			if (op->getLeftPrece()<lowest)
+			if (op==opOpenPeren)
 			{
-				isMinLeft[i]=true;
+				i=skipPeren(tokens, i);
+			}
+			else
+			{
+				if (op->getLeftPrece()<lowest)
+				{
+					isMinLeft[i]=true;
+				}
 			}
 			
 			lowest=min(lowest, op->getRightPrece());
@@ -183,18 +219,23 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	
 	for (int i=right; i>=left; i--)
 	{
-		isMinRight[i]=false;
-		
 		Operator op=tokens[i]->getOp();
 		
 		if (op)
 		{
-			if (op->getRightPrece()<lowest)
+			if (op==opClosePeren)
 			{
-				isMinRight[i]=true;
+				i=skipPeren(tokens, i);
 			}
-			
-			lowest=min(lowest, op->getLeftPrece());
+			else
+			{
+				if (op->getRightPrece()<lowest)
+				{
+					isMinRight[i]=true;
+				}
+				
+				lowest=min(lowest, op->getLeftPrece());
+			}
 		}
 	}
 	

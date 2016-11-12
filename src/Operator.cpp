@@ -21,17 +21,18 @@ const Operator opClosePeren=OperatorData::create(")", 100, 0, false);
 
 void getOperators(string text, vector<Operator>& out)
 {
-	auto i=OperatorData::operators.find(text);
-	
-	if (i==OperatorData::operators.end())
+	for (unsigned j=0; j<text.size(); j++)
 	{
-		error.log("unknown operator '" + text + "'", SOURCE_ERROR);
-		return;
-	}
-	else
-	{
-		out.push_back(i->second);
-		return;
+		auto i=OperatorData::operators.find(text.substr(j, j+1));
+		
+		if (i==OperatorData::operators.end())
+		{
+			error.log("unknown operator '" + text + "'", SOURCE_ERROR);
+		}
+		else
+		{
+			out.push_back(i->second);
+		}
 	}
 	
 	/*for (auto i=OperatorData::operators.begin(); i!=OperatorData::operators.end(); i++)
