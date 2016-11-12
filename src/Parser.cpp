@@ -106,7 +106,9 @@ ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
 	
 	ActionPtr actions=parseTokenList(tokens, table, left, right);
 	
-	return functionAction(actions, Void, Void, table->getStackFrame()->getSize(), "main_function");
+	ActionPtr out=functionAction(actions, Void, Void, table->getStackFrame()->getSize(), "main_function");
+	
+	return out;
 }
 
 /*ActionPtr parseTokens(const vector<Token>& tokens, int left, int right, int precedenceLevel)
@@ -151,7 +153,8 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	if (left==right)
 		return parseSingleToken(tokens[left], table, voidAction, voidAction);
 	
-	vector<pair<bool, bool>> isMin(right-left+1);
+	vector<bool> isMinLeft(right-left+1);
+	vector<bool> isMinRight(right-left+1);
 	
 	int lowest;
 	
@@ -159,7 +162,7 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	
 	for (int i=left; i<=right; i++)
 	{
-		isMin[i]=pair<bool, bool>(false, false);
+		isMinLeft[i]=false;
 		
 		Operator op=tokens[i]->getOp();
 		
@@ -167,7 +170,7 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		{
 			if (op->getLeftPrece()<lowest)
 			{
-				isMin[i].first=true;
+				isMinLeft[i]=true;
 			}
 			
 			lowest=min(lowest, op->getRightPrece());
@@ -178,13 +181,15 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	
 	for (int i=right; i>=left; i--)
 	{
+		isMinRight[i]=false;
+		
 		Operator op=tokens[i]->getOp();
 		
 		if (op)
 		{
 			if (op->getRightPrece()<lowest)
 			{
-				isMin[i].second=true;
+				isMinRight[i]=true;
 			}
 			
 			lowest=min(lowest, op->getLeftPrece());
@@ -193,15 +198,15 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	
 	for (int i=left; i<=right; i++)
 	{
-		if (isMin[i].first && isMin[i].second)
+		if (isMinLeft[i] && isMinRight[i])
 		{
 			return splitExpression(tokens, table, left, right, i);
 		}
 	}
 	
 	error.log("could not find where to split expression", SOURCE_ERROR, tokens[left]);
-	error.log("range: " + ([&]()->string{string out; for (int i=left; i<=right; i++) {out+=tokens[i]->getText()+" ";} return out;})(), JSYK, tokens[left]);
-	error.log("isMin: " + ([&]()->string{string out; for (auto i: isMin) {out+="\n"+to_string(i.first)+", "+to_string(i.second);} return out;})(), JSYK, tokens[left]);
+	//error.log("range: " + ([&]()->string{string out; for (int i=left; i<=right; i++) {out+=tokens[i]->getText()+" ";} return out;})(), JSYK, tokens[left]);
+	//error.log("isMin: " + ([&]()->string{string out; for (auto i: isMin) {out+="\n"+to_string(i.first)+", "+to_string(i.second);} return out;})(), JSYK, tokens[left]);
 	
 	return voidAction;
 }
