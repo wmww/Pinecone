@@ -11,6 +11,9 @@ using std::min;
 using std::max;
 using std::pair;
 
+extern StackFrame stdLibStackFrame;
+extern ActionTablePtr stdLibActionTable;
+
 //	recursivly parse tokens and return action
 //		tokens: the tokens to parse
 //		left: left most token to parse (inclusinve)
@@ -18,6 +21,8 @@ using std::pair;
 //		precedence: the index in precedence of the operator to look for (even means left to right, odd right to left)
 //		returns: pointer to action for that section of tokens
 //ActionPtr parseTokens(const vector<Token>& tokens, int left, int right, int precedenceLevel);
+
+ActionPtr parseFunction(const vector<Token>& tokens, int left, int right);
 
 //	splits a stream of tokens into a ListAction and calls parseExpression on each expression
 //		tokens: the tokens to parse
@@ -93,9 +98,13 @@ int skipPeren(const vector<Token>& tokens, int start)
 	}
 }
 
-ActionPtr parseTokens(const vector<Token>& tokens, ActionTablePtr table)
+ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
 {
-	ActionPtr actions=parseTokenList(tokens, table, 0, tokens.size()-1);
+	StackFrame frame;
+	
+	ActionTablePtr table(new ActionTable(stdLibActionTable, &frame));
+	
+	ActionPtr actions=parseTokenList(tokens, table, left, right);
 	
 	return functionAction(actions, Void, Void, table->getStackFrame()->getSize(), "main_function");
 }

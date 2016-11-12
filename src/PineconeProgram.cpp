@@ -5,6 +5,10 @@
 #include "../h/ErrorHandler.h"
 #include "../h/Operator.h"
 
+void populatePineconeStdLib(ActionTablePtr t);
+void lexString(string text, string filename, vector<Token>& tokens);
+ActionPtr parseFunction(const vector<Token>& tokens, int left, int right);
+
 PineconeProgram::PineconeProgram()
 {
 	populatePineconeStdLib(getGlobalActionTable());
@@ -28,7 +32,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 		cout << endl << tableStringFromTokens(tokens, "lexer output") << endl;
 	}
 	
-	astRoot=parseTokens(tokens, getGlobalActionTable());
+	astRoot=parseFunction(tokens, 0, tokens.size()-1);
 	
 	if (printOutput)
 	{
