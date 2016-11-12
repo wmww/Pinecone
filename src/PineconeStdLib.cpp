@@ -26,7 +26,7 @@
 
 #define GET_PTR_VAL(typeIn, varInName) =*((getCppType(typeIn)*)(varInName))
 
-#define DO_INSTANTIATE(typeIn, varOutName, valIn) getCppType(typeIn) varOutName GET_PTR_VAL(typeIn, valIn);
+#define DO_INSTANTIATE(typeIn, varOutName, valIn) getCppType(typeIn) varOutName valIn;
 #define DONT_INSTANTIATE(typeIn, varOutName, valIn) ;
 #define INSTANTIATE_CPP_TUPLE(t0, t1, varOutName, valIn)\
 	DO_INSTANTIATE(t0, CONCAT(varOutName, 0), valIn)\
@@ -51,9 +51,9 @@
 #define func(nameText, returnType, leftType, rightType, lambdaBody)							\
 addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(rightType), LAMBDA_HEADER\
 {																							\
-	INSTANTIATE##_##leftType(leftType, left, leftIn)									\
-	INSTANTIATE##_##rightType(rightType, right, rightIn)								\
-	INSTANTIATE##_##returnType(returnType, out, nullptr)								\
+	INSTANTIATE##_##leftType(leftType, left, GET_PTR_VAL(leftType, leftIn))									\
+	INSTANTIATE##_##rightType(rightType, right, GET_PTR_VAL(leftType, rightIn))								\
+	INSTANTIATE##_##returnType(returnType, out, ;)								\
 	lambdaBody;																				\
 	CONCAT(RETURN, returnType)(returnType, out)												\
 })																							\
