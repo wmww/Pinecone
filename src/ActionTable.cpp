@@ -1,6 +1,5 @@
 #include "../h/ActionTable.h"
 #include "../h/ErrorHandler.h"
-#include "../h/OperatorElement.h"
 #include "../h/Action.h"
 
 ActionTable::ActionTable(shared_ptr<ActionTable> parentIn)
@@ -98,33 +97,6 @@ ActionPtr ActionTable::addConverter(ActionPtr action, vector<Type>& types)
 	}
 	
 	return voidAction;
-}
-
-ActionPtr ActionTable::makeBranchAction(ElementData data, ActionPtr left, ActionPtr right)
-{
-	vector<ActionPtr> matches;
-	
-	addActionsToList(matches, data.text);
-	
-	ActionPtr out=makeBranchAction(matches, left, right);
-	
-	if (out==voidAction)
-	{
-		error.log("no overload found for " + data.text, SOURCE_ERROR);
-	}
-	
-	return out;
-}
-
-ActionPtr ActionTable::makeBranchAction(ElementData data, Operator op, ActionPtr left, ActionPtr right)
-{
-	vector<ActionPtr> matches;
-	
-	addActionsToList(matches, op);
-	
-	ActionPtr out=makeBranchAction(matches, left, right);
-	
-	return out;
 }
 
 ActionPtr ActionTable::makeBranchAction(Token token, ActionPtr left, ActionPtr right)

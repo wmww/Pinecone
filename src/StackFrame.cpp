@@ -6,37 +6,8 @@ unsigned char * stackPtr=nullptr;
 
 void StackFrame::clear()
 {
-	elements.clear();
 	actions=nullptr;
 	members.clear();
-}
-
-void StackFrame::appendElement(ElementPtr in)
-{
-	elements.appendElement(in);
-}
-
-void StackFrame::resolve(bool printOutput)
-{
-	if (printOutput)
-		cout << endl << elements.printToBoxedString("unstructured element list") << endl;
-	
-	elements.structureByOperators();
-	
-	if (printOutput)
-		cout << endl << elements.printToBoxedString("structured by operators") << endl;
-	
-	ActionPtr ptr=elements.resolveActions();
-	
-	actions=functionAction(ptr, Void, Void, frameSize, "global");
-	
-	if (printOutput)
-	{
-		if (actions)
-			cout << endl << putStringInBox(actions->getDescription(), false, "action tree") << endl;
-		else
-			cout << endl << "actins is null" << endl;
-	}
 }
 
 void StackFrame::execute()

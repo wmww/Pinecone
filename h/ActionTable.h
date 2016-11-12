@@ -3,7 +3,6 @@
 //#include "Identifier.h"
 #include "Type.h"
 #include "Action.h"
-#include "ElementData.h"
 #include "Token.h"
 #include "Operator.h"
 //#include "StackFrame.h"
@@ -33,8 +32,6 @@ public:
 	
 	ActionPtr addConverter(ActionPtr action, vector<Type>& types);
 	
-	ActionPtr makeBranchAction(ElementData data, ActionPtr left, ActionPtr right);
-	ActionPtr makeBranchAction(ElementData data, Operator op, ActionPtr left, ActionPtr right);
 	ActionPtr makeBranchAction(Token token, ActionPtr left, ActionPtr right);
 	
 	void addAction(ActionPtr in);

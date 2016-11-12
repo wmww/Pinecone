@@ -17,8 +17,6 @@ using std::list;
 
 #include "msclStringFuncs.h"
 #include "ActionTable.h"
-#include "ElementData.h"
-#include "ElementList.h"
 #include "StackFrame.h"
 #include "Token.h"
 
@@ -52,7 +50,6 @@ public:
 private:
 	
 	void cleanUp();
-	ElementPtr makeElement(ElementData data);
 	
 private:
 	
