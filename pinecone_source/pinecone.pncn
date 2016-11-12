@@ -1,9 +1,9 @@
 
 a: 7
-b: 2
+2+4
 
 print: a
-print: b
+#print: b
 
 #c: 6 + d: 2
 
