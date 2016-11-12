@@ -22,6 +22,11 @@ public:
 			}
 		}
 	}
+	
+	~ListAction() 
+	{
+		
+	}
 
 	string getDescription()
 	{

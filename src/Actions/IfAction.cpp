@@ -36,7 +36,9 @@ public:
 	{
 		void* conditionOut=condition->execute(nullptr, nullptr);
 		if (*((bool*)conditionOut))
+		{
 			free(ifAction->execute(nullptr, nullptr));
+		}
 		free(conditionOut);
 		return nullptr;
 	}

@@ -94,6 +94,11 @@ public:
 			error.log(rightInput->getDescription() + " return type is not the same as the right input of " + action->getDescription(), INTERNAL_ERROR);
 		}
 	}
+	
+	~RightBranchAction()
+	{
+		
+	}
 
 	string getDescription()
 	{
