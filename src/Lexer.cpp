@@ -144,7 +144,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 					
 					for (auto op: ops)
 					{
-						tokens.push_back(makeToken(tokenTxt, filename, line, charPos, type, op));
+						tokens.push_back(makeToken(op->getText(), filename, line, charPos, type, op));
 					}
 				}
 				else if (type==TokenData::COMMENT)

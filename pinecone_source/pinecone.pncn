@@ -2,13 +2,14 @@
 a: 11
 b: 28
 
-a<b@
+(a<b)@
 (
 	a: a+2
 	b: b-1
 	
 	print: a
 	print: b
+	print
 )
 
 print: 0
