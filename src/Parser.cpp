@@ -95,7 +95,9 @@ int skipPeren(const vector<Token>& tokens, int start)
 
 ActionPtr parseTokens(const vector<Token>& tokens, ActionTablePtr table)
 {
-	return parseTokenList(tokens, table, 0, tokens.size()-1);
+	ActionPtr actions=parseTokenList(tokens, table, 0, tokens.size()-1);
+	
+	return functionAction(actions, Void, Void, table->getStackFrame()->getSize(), "main_function");
 }
 
 /*ActionPtr parseTokens(const vector<Token>& tokens, int left, int right, int precedenceLevel)
