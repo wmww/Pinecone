@@ -5,6 +5,8 @@
 #include <string>
 using std::string;
 
+#define FUNC string(__FUNCTION__)
+
 enum ErrorPriority
 {
 	SOURCE_ERROR,

@@ -4,13 +4,15 @@
 b: 0
 a: 1
 
-a<100 | a: a+1 @
+{a<100}@
 (
 	print: a
 	tmp: a
 	a: a+b
 	b: tmp
 )
+
+print
 
 x: fls
 y: fls

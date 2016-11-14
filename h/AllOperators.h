@@ -35,8 +35,12 @@ public:
 	DECLARE_OP(	comma,		",",	60,		61,		false	);	\
 	DECLARE_OP(	dot,		".",	70,		71,		false	);	\
 	DECLARE_OP(	colon,		":",	95,		15,		false	);	\
-	DECLARE_OP(	openPeren,	"(",	0,		101,	false	);	\
+	DECLARE_OP(	openPeren,	"(",	0,		100,	false	);	\
 	DECLARE_OP(	closePeren,	")",	100,	0,		false	);	\
+	DECLARE_OP(	openSqBrac,	"[",	0,		100,	false	);	\
+	DECLARE_OP(	closeSqBrac,"]",	100,	0,		false	);	\
+	DECLARE_OP(	openCrBrac,	"{",	0,		100,	false	);	\
+	DECLARE_OP(	closeCrBrac,"}",	100,	0,		false	);	\
 	
 	ALL_OPS;
 	
@@ -56,4 +60,5 @@ private:
 };
 
 // the single instance of this class, starts out as nullptr but chages to a real instance in AllOperators::init
-extern shared_ptr<AllOperators> ops;
+//extern shared_ptr<AllOperators> ops;
+extern AllOperators* ops;
