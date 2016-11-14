@@ -42,11 +42,11 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 //		rightIn: the right input
 ActionPtr parseSingleToken(Token token, const ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
 
-//	returns the index of the close peren that matches the given open peren index
+//	returns the index of the closing brace that matches the given opening brace index, works with (), [], and {}
 //		tokens: the token array to use
 //		start: the index of an open peren
 //		returns: the index of the close peren that matches
-int skipPeren(const vector<Token>& tokens, int start);
+int skipBrace(const vector<Token>& tokens, int start);
 
 void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<ActionPtr>& out);
 
@@ -59,10 +59,12 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 
 
 
-int skipPeren(const vector<Token>& tokens, int start)
+int skipBrace(const vector<Token>& tokens, int start)
 {
 	Operator open, close;
 	int step;
+	
+	Operator op=tokens[start]->getOp();
 	
 	if (tokens[start]->getOp()==ops->openPeren)
 	{
@@ -76,9 +78,33 @@ int skipPeren(const vector<Token>& tokens, int start)
 		close=ops->openPeren;
 		step=-1;
 	}
+	else if (tokens[start]->getOp()==ops->openSqBrac)
+	{
+		open=ops->openSqBrac;
+		close=ops->closeSqBrac;
+		step=1;
+	}
+	else if (tokens[start]->getOp()==ops->closeSqBrac)
+	{
+		open=ops->closeSqBrac;
+		close=ops->openSqBrac;
+		step=-1;
+	}
+	else if (tokens[start]->getOp()==ops->openCrBrac)
+	{
+		open=ops->openCrBrac;
+		close=ops->closeCrBrac;
+		step=1;
+	}
+	else if (tokens[start]->getOp()==ops->closeCrBrac)
+	{
+		open=ops->closeCrBrac;
+		close=ops->openCrBrac;
+		step=-1;
+	}
 	else
 	{
-		error.log("skipPeren called with index that is not an open parenthesis", INTERNAL_ERROR, tokens[start]);
+		error.log(FUNC + " called with index that is not a valid brace", INTERNAL_ERROR, tokens[start]);
 		return start;
 	}
 	
@@ -124,43 +150,6 @@ ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
 	return out;
 }
 
-/*ActionPtr parseTokens(const vector<Token>& tokens, int left, int right, int precedenceLevel)
-{
-	int precedence=OperatorData::precedenceLevels[precedenceLevel];
-	int start, end, step;
-	
-	if (precedenceLevel%2)
-	{
-		start=right-1;
-		end=left;
-		step=-1;
-	}
-	else
-	{
-		start=left+1;
-		end=right;
-		step=1;
-	}
-	
-	for (int i=start; i!=end; i+=step)
-	{
-		Operator op=tokens[i]->getOp();
-		
-		if (op)
-		{
-			if (op->getLeftPrecedence()<precedence)
-			{
-				error.log("precedence level too low for current recursion level", INTERNAL_ERROR, tokens[i]);
-				return voidAction;
-			}
-			else if (op->getLeftPrecedence()==precedence)
-			{
-				
-			}
-		}
-	}
-}*/
-
 ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
 	if (left>right)
@@ -171,14 +160,6 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	else if (left==right)
 	{
 		return parseSingleToken(tokens[left], table, voidAction, voidAction);
-	}
-	
-	if (tokens[left]->getOp()==ops->openPeren && skipPeren(tokens, left)==right)
-	{
-		if (left+1<right)
-			return parseTokenList(tokens, table, left+1, right-1);
-		else
-			return voidAction; // a rare place where a voidAction may actually be intended by the programmer
 	}
 	
 	vector<bool> isMinLeft(right-left+1);
@@ -200,9 +181,39 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		
 		if (op)
 		{
-			if (op==ops->openPeren)
+			if (op==ops->openPeren || op==ops->openSqBrac || op==ops->openCrBrac)
 			{
-				i=skipPeren(tokens, i);
+				int j=i;
+				i=skipBrace(tokens, i);
+				
+				if (j==left && i==right)
+				{
+					if (op==ops->openPeren)
+					{
+						if (left+1<right)
+							return parseTokenList(tokens, table, left+1, right-1);
+						else
+							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
+					}
+					else if (op==ops->openSqBrac)
+					{
+						if (left+1<right)
+							return parseTokenList(tokens, table, left+1, right-1);
+						else
+							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
+					}
+					else if (op==ops->openCrBrac)
+					{
+						if (left+1<right)
+							return parseTokenList(tokens, table, left+1, right-1);
+						else
+							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
+					}
+					else
+					{
+						return voidAction;
+					}
+				}
 			}
 			else
 			{
@@ -226,7 +237,7 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		{
 			if (op==ops->closePeren)
 			{
-				i=skipPeren(tokens, i);
+				i=skipBrace(tokens, i);
 			}
 			else
 			{
@@ -266,7 +277,7 @@ ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int 
 		while(true)
 		{
 			if (tokens[i]->getOp()==ops->openPeren)
-				i=skipPeren(tokens, i);
+				i=skipBrace(tokens, i);
 				
 			if (i>=right) // at the end
 			{
