@@ -59,7 +59,19 @@ public:
 		
 		return out;
 	}
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		string out;
 		
+		for (auto i: actions)
+		{
+			out+=i->getCSource()+";\n";
+		}
+		
+		return out;
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		auto i=actions.begin();

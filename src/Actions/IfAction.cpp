@@ -31,6 +31,11 @@ public:
 	{
 		return "if " + condition->getDescription() + " then " + ifAction->getDescription();
 	}
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		return "if (" + condition->getCSource() + ")\n{\n" + ifAction->getCSource() + "\n}";
+	}
 
 	void* execute(void* inLeft, void* inRight)
 	{
@@ -81,6 +86,11 @@ public:
 		return "if " + condition->getDescription() + " then " + ifAction->getDescription();
 	}
 
+	string getCSource(string inLeft, string inRight)
+	{
+		return "if (" + condition->getCSource() + ")\n{\n" + ifAction->getCSource() + "\n} else {\n" + elseAction->getCSource() + "\n}";
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* conditionOut=condition->execute(nullptr, nullptr);

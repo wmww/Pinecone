@@ -39,6 +39,11 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	{
 		cout << endl << "parsed abstract syntax tree:\n" << astRoot->getDescription() << endl;
 	}
+	
+	if (printOutput)
+	{
+		cout << endl << "C source code:\n" << astRoot->getCSource() << endl;
+	}
 }
 
 void PineconeProgram::execute()

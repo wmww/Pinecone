@@ -26,7 +26,32 @@ public:
 	{
 		return getText() + action->getDescription();
 	}
-
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		string out;
+		out+="/* function C source not yet implemented, but here is the action: */";
+		out+="\n*/\n";
+		out+=action->getCSource();
+		out+="\n*/";
+		return out;
+		
+		/*string name=getGlobalCName();
+		
+		string globalCFunc;
+		globalCFunc+=action->getReturnType()->getCSource();
+		globalCFunc+=" ";
+		globalCFunc+=name;
+		globalCFunc+="("
+		if (!inLeft.empty())
+			globalCFunc+=inLeft+","
+		globalCFunc+=
+		globalCFunc+=
+		globalCFunc+=
+		action->getCSource()
+		addGlobalCSource();*/
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		unsigned char * oldStackPtr=stackPtr;

@@ -34,6 +34,11 @@ public:
 		setDescription("Void Action");
 	}
 	
+	string getCSource(string inLeft, string inRight)
+	{
+		return "/* void action */";
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		return nullptr;
@@ -47,6 +52,11 @@ public:
 	{
 		lambda=lambdaIn;
 		setDescription(text);// + " (lambda action)");
+	}
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		return "/* lambda action (not yet implemented) */";
 	}
 	
 	void* execute(void* inLeft, void* inRight)
