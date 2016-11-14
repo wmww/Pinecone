@@ -1,6 +1,7 @@
 #include "../h/Token.h"
 #include "../h/ErrorHandler.h"
 #include "../h/Operator.h"
+#include "../h/AllOperators.h"
 
 #include <vector>
 using std::vector;
@@ -57,7 +58,9 @@ void CharClassifier::setUp()
 	
 	hm['#']=SINGLE_LINE_COMMENT;
 	
-	for (auto i=OperatorData::operators.begin(); i!=OperatorData::operators.end(); ++i)
+	unordered_map<string, Operator>& opsMap=ops->getOpsMap();
+	
+	for (auto i=opsMap.begin(); i!=opsMap.end(); ++i)
 	{
 		string str=(*i).first;
 		for (unsigned j=0; j<str.size(); j++)
@@ -139,10 +142,10 @@ void lexString(string text, string filename, vector<Token>& tokens)
 			{
 				if (type==TokenData::OPERATOR)
 				{
-					vector<Operator> ops;
-					getOperators(tokenTxt, ops);
+					vector<Operator> opMatches;
+					ops->get(tokenTxt, opMatches);
 					
-					for (auto op: ops)
+					for (auto op: opMatches)
 					{
 						tokens.push_back(makeToken(op->getText(), filename, line, charPos, type, op));
 					}

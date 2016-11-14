@@ -1,0 +1,98 @@
+
+#define PUT_OPS_IN_MAP_CMD
+
+#include "../h/AllOperators.h"
+#include "../h/ErrorHandler.h"
+
+shared_ptr<AllOperators> ops(nullptr);
+
+Operator opCreate(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool overloadableIn);
+
+#include "../h/OperatorVars.h"
+
+void AllOperators::init()
+{
+	ops=shared_ptr<AllOperators>(new AllOperators());
+}
+
+AllOperators::AllOperators()
+{	
+	#undef DECLARE_OP
+	
+	#define DECLARE_OP(name, text, left, right, overload)\
+		putOpInMap(name);
+	
+	ALL_OPS;
+}
+
+void AllOperators::putOpInMap(Operator op)
+{
+	opsMap[op->getText()]=op;
+}
+
+void AllOperators::get(string text, vector<Operator>& out)
+{
+	for (unsigned j=0; j<text.size(); j++)
+	{
+		auto i=opsMap.find(text.substr(j, j+1));
+		
+		if (i==opsMap.end())
+		{
+			error.log("unknown operator '" + text + "'", SOURCE_ERROR);
+		}
+		else
+		{
+			out.push_back(i->second);
+		}
+	}
+	
+	/*for (auto i=OperatorData::operators.begin(); i!=OperatorData::operators.end(); i++)
+	{
+		if (text==(*i)->getText())
+		{
+			out.push_back(*i);
+			return;
+		}
+	}
+	
+	//in the future, as more operators are found the text string will become shorter and shorter
+	if (!text.empty())
+		error.log("unknown operator '" + text + "'", SOURCE_ERROR);
+		*/
+}
+
+/*
+// this is the only way to make an operator, and should only be called when setting up all the global operators at the top of Operator.cpp
+Operator opCreate(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool overloadableIn)
+{
+	Operator ptr(new OperatorData(textIn, leftPrecedenceIn, rightPrecedenceIn, overloadableIn));
+	
+	
+	for (auto i=OperatorData::precedenceLevels.begin();; i++)
+	{
+		if (i==OperatorData::precedenceLevels.end() || *i>leftPrecedenceIn)
+		{
+			OperatorData::precedenceLevels.insert(i, leftPrecedenceIn);
+			break;
+		}
+		else if (*i==leftPrecedenceIn)
+			break;
+	}
+	
+	for (auto i=OperatorData::precedenceLevels.begin();; i++)
+	{
+		if (i==OperatorData::precedenceLevels.end() || *i>rightPrecedenceIn)
+		{
+			OperatorData::precedenceLevels.insert(i, rightPrecedenceIn);
+			break;
+		}
+		else if (*i==rightPrecedenceIn)
+			break;
+	}
+	
+	//operators.push_back(ptr);
+	return ptr;
+}
+*/
+
+

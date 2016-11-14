@@ -1,5 +1,5 @@
 #include "../h/PineconeProgram.h"
-#include "../h/Operator.h"
+#include "../h/AllOperators.h"
 #include "../h/StackFrame.h"
 #include "../h/ActionTable.h"
 
@@ -98,44 +98,44 @@ void populatePineconeStdLib()
 	///operators
 	
 	// +
-	func(opPlus, Int, Int, Int, retrn left+right);
-	func(opPlus, Dub, Dub, Dub, retrn left+right);
+	func(ops->plus, Int, Int, Int, retrn left+right);
+	func(ops->plus, Dub, Dub, Dub, retrn left+right);
 	
 	// -
-	func(opMinus, Int, Int, Int, retrn left-right);
-	func(opMinus, Dub, Dub, Dub, retrn left-right);
+	func(ops->minus, Int, Int, Int, retrn left-right);
+	func(ops->minus, Dub, Dub, Dub, retrn left-right);
 	
 	// *
-	func(opMultiply, Int, Int, Int, retrn left*right);
-	func(opMultiply, Dub, Dub, Dub, retrn left*right);
+	func(ops->multiply, Int, Int, Int, retrn left*right);
+	func(ops->multiply, Dub, Dub, Dub, retrn left*right);
 	
 	// /
-	func(opDivide, Int, Int, Int, retrn left/right);
-	func(opDivide, Dub, Dub, Dub, retrn left/right);
+	func(ops->divide, Int, Int, Int, retrn left/right);
+	func(ops->divide, Dub, Dub, Dub, retrn left/right);
 	
 	// =
-	func(opEqual, Bool, Bool, Bool, retrn left==right);
-	func(opEqual, Bool, Int, Int, retrn left==right);
-	func(opEqual, Bool, Dub, Dub, retrn left==right);
+	func(ops->equal, Bool, Bool, Bool, retrn left==right);
+	func(ops->equal, Bool, Int, Int, retrn left==right);
+	func(ops->equal, Bool, Dub, Dub, retrn left==right);
 	
 	// >
-	func(opGreater, Bool, Bool, Bool,
+	func(ops->greater, Bool, Bool, Bool,
 		retrn !left && right);
 	
-	func(opGreater, Bool, Int, Int,
+	func(ops->greater, Bool, Int, Int,
 		retrn left>right);
 	
-	func(opGreater, Bool, Dub, Dub,
+	func(ops->greater, Bool, Dub, Dub,
 		retrn left>right);
 	
 	// <
-	func(opLess, Bool, Bool, Bool,
+	func(ops->less, Bool, Bool, Bool,
 		retrn left && !right);
 	
-	func(opLess, Bool, Int, Int,
+	func(ops->less, Bool, Int, Int,
 		retrn left<right);
 	
-	func(opLess, Bool, Dub, Dub,
+	func(ops->less, Bool, Dub, Dub,
 		retrn left<right);
 	
 	
