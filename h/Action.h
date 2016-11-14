@@ -57,6 +57,7 @@ ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn);
 ActionPtr listAction(const std::vector<ActionPtr>& actionsIn);
 
 ActionPtr loopAction(ActionPtr conditionIn, ActionPtr loopActionIn);
+ActionPtr loopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loopActionIn);
 
 ActionPtr makeTupleAction(const std::vector<ActionPtr>& sourceActionsIn);
 

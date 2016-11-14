@@ -8,8 +8,6 @@ shared_ptr<AllOperators> ops(nullptr);
 
 Operator opCreate(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool overloadableIn);
 
-#include "../h/OperatorVars.h"
-
 void AllOperators::init()
 {
 	ops=shared_ptr<AllOperators>(new AllOperators());

@@ -21,10 +21,10 @@ public:
 	#define DECLARE_OP(name, text, left, right, overload)\
 		const Operator name{new OperatorData(text, left, right, overload)};
 	
-	#define ALL_OPS \
-	DECLARE_OP(	pipe,		"|",	5,		5,		false	);	\
-	DECLARE_OP(	loop,		"@",	10,		11,		false	);	\
-	DECLARE_OP(	ifOp,		"?",	10,		11,		false	);	\
+	#define ALL_OPS												\
+	DECLARE_OP(	loop,		"@",	5,		5,		false	);	\
+	DECLARE_OP(	ifOp,		"?",	5,		5,		false	);	\
+	DECLARE_OP(	pipe,		"|",	10,		10,		false	);	\
 	DECLARE_OP(	plus,		"+",	20,		21,		true	);	\
 	DECLARE_OP(	minus,		"-",	20,		21,		true	);	\
 	DECLARE_OP(	multiply,	"*",	30,		31,		true	);	\

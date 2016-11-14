@@ -5,11 +5,12 @@ class LoopAction: public Action
 {
 public:
 	
-	LoopAction(ActionPtr conditionIn, ActionPtr loopActionIn)
+	LoopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loopActionIn)
 		:Action(Void, Void, Void, "LOOP")
 	{
 		condition=conditionIn;
 		loopAction=loopActionIn;
+		endAction=endActionIn;
 		
 		if (condition->getReturnType()!=Bool)
 		{
@@ -34,14 +35,19 @@ public:
 
 	void* execute(void* inLeft, void* inRight)
 	{
+		void* conditionOut;
+		
 		while (true)
 		{
-			void* conditionOut=condition->execute(nullptr, nullptr);
+			conditionOut=condition->execute(nullptr, nullptr);
 			if (!(*((bool*)conditionOut)))
 				break;
-			free(loopAction->execute(nullptr, nullptr));
 			free(conditionOut);
+			free(loopAction->execute(nullptr, nullptr));
+			free(endAction->execute(nullptr, nullptr));
 		}
+		
+		free(conditionOut);
 		
 		return nullptr;
 	}
@@ -50,11 +56,17 @@ private:
 	
 	ActionPtr condition;
 	ActionPtr loopAction;
+	ActionPtr endAction;
 };
 
 ActionPtr loopAction(ActionPtr conditionIn, ActionPtr loopActionIn)
 {
-	return ActionPtr(new LoopAction(conditionIn, loopActionIn));
+	return ActionPtr(new LoopAction(conditionIn, voidAction, loopActionIn));
+}
+
+ActionPtr loopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loopActionIn)
+{
+	return ActionPtr(new LoopAction(conditionIn, endActionIn, loopActionIn));
 }
 
 
