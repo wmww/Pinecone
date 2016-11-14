@@ -21,15 +21,17 @@ public:
 	void setDescription(string in) {description=in;}
 	
 	string getText() {return text;}
-	virtual string getDescription() {return description;}
 	string toString();
 	
 	Type& getReturnType() {return returnType;}
 	Type& getInLeftType() {return inLeftType;}
 	Type& getInRightType() {return inRightType;}
 	//void* execute(void* inLeft, void* inRight);
-	virtual void* execute(void* inLeft, void* inRight)=0;
 	
+	virtual string getDescription() {return description;}
+	virtual void* execute(void* inLeft, void* inRight)=0;
+	virtual string getCSource(string inLeft="", string inRight="")=0;
+		
 protected:
 	
 	string text;

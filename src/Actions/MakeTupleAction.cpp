@@ -83,7 +83,12 @@ public:
 		
 		return out;*/
 	}
-
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		return "/* C source for MakeTupleAction not yet implemented */";
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(getReturnType()->getSize());

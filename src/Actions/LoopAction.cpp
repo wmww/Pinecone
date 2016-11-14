@@ -32,7 +32,21 @@ public:
 	{
 		return "while " + condition->getDescription() + " do " + loopAction->getDescription();
 	}
-
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		string out;
+		
+		out+="while (";
+		out+=condition->getCSource();
+		out+=")\n{";
+		out+=loopAction->getCSource();
+		out+=endAction->getCSource();
+		out+="\n}";
+		
+		return out;
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* conditionOut;

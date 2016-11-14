@@ -13,7 +13,12 @@ public:
 		
 		setDescription("get " + typeIn->getName() + " '" + textIn + "'");
 	}
-
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		return getText();
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(returnType->getSize());
@@ -38,7 +43,12 @@ public:
 		
 		setDescription("set " + typeIn->getName() + " '" + textIn + "'");
 	}
-
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		return getText() + "=" + inRight;
+	}
+	
 	void* execute(void* left, void* right)
 	{
 		//copy data on to the stack location of the var
@@ -72,7 +82,12 @@ public:
 	{
 		free(data);
 	}
-
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		return getText();
+	}
+	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(returnType->getSize());
