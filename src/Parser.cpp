@@ -15,41 +15,31 @@ using std::pair;
 extern StackFrame stdLibStackFrame;
 extern ActionTablePtr stdLibActionTable;
 
-//	recursivly parse tokens and return action
+//	unless otherwise noted, these are what the perams for the following functions mean
 //		tokens: the tokens to parse
-//		left: left most token to parse (inclusinve)
+//		table: the table to use
+//		left: left most token to parse (inclusive)
 //		right: right most token to parse (inclusive)
-//		precedence: the index in precedence of the operator to look for (even means left to right, odd right to left)
-//		returns: pointer to action for that section of tokens
-//ActionPtr parseTokens(const vector<Token>& tokens, int left, int right, int precedenceLevel);
+//		returns: (if type is ActionPtr) the action pointer for that section of the program
 
+//	parses a function and returns the functionAction for it
 ActionPtr parseFunction(const vector<Token>& tokens, int left, int right);
 
 //	splits a stream of tokens into a ListAction and calls parseExpression on each expression
-//		tokens: the tokens to parse
-//		left: left most token to parse (inclusive)
-//		right: right most token to parse (inclusive)
-//		returns: pointer to ListAction for that section of tokens
 ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
 
 //	recursivly parses a single expression (no action lists)
-//		tokens: the tokens to parse
-//		left: left most token to parse (inclusive)
-//		right: right most token to parse (inclusive)
-//		returns: pointer to root action for that section of tokens
 ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
 
 //	splits an expression on the given token (should always be an operator)
-//		tokens: the tokens to parse
-//		left: left most token to parse (inclusive)
-//		right: right most token to parse (inclusive)
 //		index: the index to split on
 //		returns: pointer to BranchAction that is the root of the split
 ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
 
 //	returns the action for a single token
 //		token: the token to get the action for
-//		returns: the action for the token
+//		leftIn: the left input
+//		rightIn: the right input
 ActionPtr parseSingleToken(Token token, const ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
 
 //	returns the index of the close peren that matches the given open peren index
@@ -58,11 +48,16 @@ ActionPtr parseSingleToken(Token token, const ActionTablePtr table, ActionPtr le
 //		returns: the index of the close peren that matches
 int skipPeren(const vector<Token>& tokens, int start);
 
+void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<ActionPtr>& out);
+
 ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
 
 ActionPtr parseLiteral(Token token);
 
 ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
+
+
+
 
 int skipPeren(const vector<Token>& tokens, int start)
 {
@@ -168,7 +163,12 @@ ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
 
 ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
-	if (left==right)
+	if (left>right)
+	{
+		error.log(string() + __FUNCTION__ + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
+		return voidAction;
+	}
+	else if (left==right)
 	{
 		return parseSingleToken(tokens[left], table, voidAction, voidAction);
 	}
@@ -329,6 +329,31 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	}
 }
 
+void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<ActionPtr>& out)
+{
+	error.log("parseChain called " + to_string(left) + ", " + to_string(right), JSYK);
+	
+	if (tokens[left]->getOp()==ops->pipe)
+	{
+		error.log("improper use of pipe", SOURCE_ERROR, tokens[left]);
+		return;
+	}
+	else if (tokens[right]->getOp()==ops->pipe)
+	{
+		error.log("improper use of pipe", SOURCE_ERROR, tokens[right]);
+		return;
+	}
+	
+	int i;
+	
+	for (i=left+1; i<=right && tokens[i]->getOp()!=ops->pipe; i++) {}
+	
+	out.push_back(parseExpression(tokens, table, left, i-1));
+	
+	if (i<right)
+		parseChain(tokens, table, i+1, right, out);
+}
+
 ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
 {
 	Operator op=tokens[i]->getOp();
@@ -366,24 +391,50 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 	}
 	else if (op==ops->loop)
 	{
-		auto leftAction=parseExpression(tokens, table, left, i-1);
+		vector<ActionPtr> leftActions;
+		
+		parseChain(tokens, table, left, i-1, leftActions);
+		
 		auto rightAction=parseExpression(tokens, table, i+1, right);
 		
-		auto conditionAction=table->addConverter(leftAction, Bool);
-		
-		if (conditionAction==voidAction)
+		if (leftActions.size()==1)
 		{
-			error.log("could not use "+leftAction->getDescription()+" as condition in while loop", SOURCE_ERROR, tokens[i]);
-			return voidAction;
+			auto conditionAction=table->addConverter(leftActions[0], Bool);
+			
+			if (conditionAction==voidAction)
+			{
+				error.log("could not use "+leftActions[0]->getDescription()+" as condition in while loop", SOURCE_ERROR, tokens[i]);
+				return voidAction;
+			}
+			else
+			{
+				return loopAction(conditionAction, voidAction, rightAction);
+			}
+		}
+		else if (leftActions.size()==2)
+		{
+			auto conditionAction=table->addConverter(leftActions[0], Bool);
+			auto afterAction=leftActions[1];
+			
+			if (conditionAction==voidAction)
+			{
+				error.log("could not use "+leftActions[0]->getDescription()+" as condition in while loop", SOURCE_ERROR, tokens[i]);
+				return voidAction;
+			}
+			else
+			{
+				return loopAction(conditionAction, afterAction, rightAction);
+			}
 		}
 		else
 		{
-			return loopAction(conditionAction, rightAction);
+			error.log("can not make loop with chain of length " + to_string(leftActions.size()), SOURCE_ERROR, tokens[i]);
+			return voidAction;
 		}
 	}
 	else
 	{
-		error.log("unknown operator "+op->getText(), INTERNAL_ERROR, tokens[i]);
+		error.log(string() + __FUNCTION__ + " sent unknown operator (" + to_string(left) + ", " + to_string(right) + ") "+op->getText(), INTERNAL_ERROR, tokens[i]);
 		return voidAction;
 	}
 }
