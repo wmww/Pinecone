@@ -54,6 +54,7 @@
 		<Unit filename="../src/Actions/ListAction.cpp" />
 		<Unit filename="../src/Actions/LoopAction.cpp" />
 		<Unit filename="../src/Actions/MakeTupleAction.cpp" />
+		<Unit filename="../src/Actions/TypeAction.cpp" />
 		<Unit filename="../src/Actions/VarAction.cpp" />
 		<Unit filename="../src/AllOperators.cpp" />
 		<Unit filename="../src/ErrorHandler.cpp" />

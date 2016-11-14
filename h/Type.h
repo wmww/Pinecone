@@ -36,10 +36,12 @@ public:
 		INT,
 		BOOL,
 		TUPLE,
+		METATYPE
 	};
 	
 	
-	TypeBase(PrimitiveType typeIn, string nameIn) {type=typeIn; name=nameIn;}
+	TypeBase(PrimitiveType typeIn, string nameIn);
+	TypeBase(PrimitiveType shouldBeMetatype, shared_ptr<TypeBase> typeIn, string nameIn);
 	TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn);
 	
 	static string toString(PrimitiveType in);

@@ -7,6 +7,22 @@ const Type Bool = Type(new TypeBase(TypeBase::BOOL, "Bool"));
 const Type Int = Type(new TypeBase(TypeBase::INT, "Int"));
 const Type Dub = Type(new TypeBase(TypeBase::DUB, "Dub"));
 
+TypeBase::TypeBase(PrimitiveType typeIn, string nameIn)
+{
+	type=typeIn;
+	name=nameIn;
+}
+
+TypeBase::TypeBase(PrimitiveType shouldBeMetatype, Type typeIn, string nameIn)
+{
+	if (shouldBeMetatype==METATYPE)
+	{
+		type=METATYPE;
+		name=nameIn;
+		types.push_back(typeIn);
+	}
+}
+
 TypeBase::TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn)
 {
 	name=nameIn;
@@ -21,10 +37,11 @@ string TypeBase::toString(PrimitiveType in)
 		//case NONE: return "NO_TYPE";
 		case UNKNOWN: return "UNKNOWN_TYPE";
 		case VOID: return "VOID";
-		case TUPLE: return "TUPLE";
 		case BOOL: return "BOOL";
 		case INT: return "INT";
 		case DUB: return "DUB";
+		case TUPLE: return "TUPLE";
+		case METATYPE: return "METATYPE";
 		default: return "ERROR_GETTING_TYPE";
 	}
 }
@@ -73,7 +90,7 @@ bool TypeBase::isCreatable()
 			return true;
 		}
 	}
-	else if (type==VOID || type==UNKNOWN)// || type==NONE)
+	else if (type==VOID || type==UNKNOWN || type==METATYPE)
 	{
 		return false;
 	}
@@ -95,6 +112,7 @@ size_t TypeBase::getSize()
 	switch (type)
 	{
 		case VOID: return 0;
+		case METATYPE: return 0;
 		case BOOL: return sizeof(bool);
 		case INT: return sizeof(int);
 		case DUB: return sizeof(double);
@@ -210,6 +228,7 @@ bool TypeBase::matches(Type other)
 		return type==other->type;
 	}
 }
+
 /*
 void* TypeBase::createVoidPtr()
 {
