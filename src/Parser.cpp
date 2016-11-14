@@ -374,8 +374,11 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 	}
 	else if (op==ops->ifOp)
 	{
+		vector<ActionPtr> rightActions;
+		
+		parseChain(tokens, table, i+1, right, rightActions);
+		
 		auto leftAction=parseExpression(tokens, table, left, i-1);
-		auto rightAction=parseExpression(tokens, table, i+1, right);
 		
 		auto conditionAction=table->addConverter(leftAction, Bool);
 		
@@ -386,7 +389,19 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 		}
 		else
 		{
-			return ifAction(conditionAction, rightAction);
+			if (rightActions.size()==1)
+			{
+				return ifAction(conditionAction, rightActions[0]);
+			}
+			else if (rightActions.size()==2)
+			{
+				return ifElseAction(conditionAction, rightActions[0], rightActions[1]);
+			}
+			else
+			{
+				error.log("can not make if with chain of length " + to_string(rightActions.size()), SOURCE_ERROR, tokens[i]);
+				return voidAction;
+			}
 		}
 	}
 	else if (op==ops->loop)
