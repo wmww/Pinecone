@@ -11,3 +11,11 @@ a<100 | a: a+1 @
 	a: a+b
 	b: tmp
 )
+
+x: fls
+y: fls
+
+x?
+	print: 1
+	|
+	print: 2

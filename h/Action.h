@@ -53,6 +53,7 @@ ActionPtr branchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr righ
 ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn);
 
 ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn);
+ActionPtr ifElseAction(ActionPtr conditionIn, ActionPtr ifActionIn, ActionPtr elseAction);
 
 ActionPtr listAction(const std::vector<ActionPtr>& actionsIn);
 
