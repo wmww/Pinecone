@@ -3,6 +3,7 @@
 #include "../h/ActionTable.h"
 #include "../h/ErrorHandler.h"
 #include "../h/StackFrame.h"
+#include "../h/AllOperators.h"
 
 #include <vector>
 using std::vector;
@@ -68,16 +69,16 @@ int skipPeren(const vector<Token>& tokens, int start)
 	Operator open, close;
 	int step;
 	
-	if (tokens[start]->getOp()==opOpenPeren)
+	if (tokens[start]->getOp()==ops->openPeren)
 	{
-		open=opOpenPeren;
-		close=opClosePeren;
+		open=ops->openPeren;
+		close=ops->closePeren;
 		step=1;
 	}
-	else if (tokens[start]->getOp()==opClosePeren)
+	else if (tokens[start]->getOp()==ops->closePeren)
 	{
-		open=opClosePeren;
-		close=opOpenPeren;
+		open=ops->closePeren;
+		close=ops->openPeren;
 		step=-1;
 	}
 	else
@@ -172,7 +173,7 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		return parseSingleToken(tokens[left], table, voidAction, voidAction);
 	}
 	
-	if (tokens[left]->getOp()==opOpenPeren && skipPeren(tokens, left)==right)
+	if (tokens[left]->getOp()==ops->openPeren && skipPeren(tokens, left)==right)
 	{
 		if (left+1<right)
 			return parseTokenList(tokens, table, left+1, right-1);
@@ -199,7 +200,7 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		
 		if (op)
 		{
-			if (op==opOpenPeren)
+			if (op==ops->openPeren)
 			{
 				i=skipPeren(tokens, i);
 			}
@@ -223,7 +224,7 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		
 		if (op)
 		{
-			if (op==opClosePeren)
+			if (op==ops->closePeren)
 			{
 				i=skipPeren(tokens, i);
 			}
@@ -264,7 +265,7 @@ ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int 
 		
 		while(true)
 		{
-			if (tokens[i]->getOp()==opOpenPeren)
+			if (tokens[i]->getOp()==ops->openPeren)
 				i=skipPeren(tokens, i);
 				
 			if (i>=right) // at the end
@@ -332,7 +333,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 {
 	Operator op=tokens[i]->getOp();
 	
-	if (op==opColon)
+	if (op==ops->colon)
 	{
 		if (i==left+1)
 		{
@@ -346,7 +347,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 			return voidAction;
 		}
 	}
-	else if (op==opIf)
+	else if (op==ops->ifOp)
 	{
 		auto leftAction=parseExpression(tokens, table, left, i-1);
 		auto rightAction=parseExpression(tokens, table, i+1, right);
@@ -363,7 +364,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 			return ifAction(conditionAction, rightAction);
 		}
 	}
-	else if (op==opLoop)
+	else if (op==ops->loop)
 	{
 		auto leftAction=parseExpression(tokens, table, left, i-1);
 		auto rightAction=parseExpression(tokens, table, i+1, right);

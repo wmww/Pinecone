@@ -1,6 +1,7 @@
 #include "../h/PineconeProgram.h"
 #include "../h/ErrorHandler.h"
 #include "../h/Operator.h"
+#include "../h/AllOperators.h"
 
 void populatePineconeStdLib();
 void lexString(string text, string filename, vector<Token>& tokens);
@@ -8,7 +9,7 @@ ActionPtr parseFunction(const vector<Token>& tokens, int left, int right);
 
 PineconeProgram::PineconeProgram()
 {
-	populatePineconeStdLib();
+	
 }
 
 void PineconeProgram::cleanUp()
@@ -18,6 +19,9 @@ void PineconeProgram::cleanUp()
 
 void PineconeProgram::resolveProgram(bool printOutput)
 {
+	AllOperators::init();
+	populatePineconeStdLib();
+	
 	//initialProgramPopulation();
 	
 	//globalFrame.resolve(printOutput);

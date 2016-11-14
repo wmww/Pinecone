@@ -38,6 +38,8 @@
 		<Unit filename="../h/ErrorHandler.h" />
 		<Unit filename="../h/Lexer.h" />
 		<Unit filename="../h/Operator.h" />
+		<Unit filename="../h/OperatorVars.h" />
+		<Unit filename="../h/OperatorsSingleton.h" />
 		<Unit filename="../h/PineconeProgram.h" />
 		<Unit filename="../h/StackFrame.h" />
 		<Unit filename="../h/Token.h" />
