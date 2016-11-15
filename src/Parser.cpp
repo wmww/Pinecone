@@ -54,6 +54,10 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 
 ActionPtr parseLiteral(Token token);
 
+//ActionPtr parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
+//ActionPtr parseSingleTypeElement(const vector<Token>& tokens, ActionTablePtr table, int& i, int right, string& name, Type& type);
+ActionPtr parseTypeToken(Token token, ActionTablePtr table);
+
 ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
 
 
@@ -204,8 +208,15 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 					}
 					else if (op==ops->openCrBrac)
 					{
-						if (left+1<right)
-							return parseTokenList(tokens, table, left+1, right-1);
+						if (left+2==right)
+						{
+							return parseTypeToken(tokens[left+1], table);
+						}
+						else if (left+1<right)
+						{
+							error.log("complex type parsing not yet implemented (required in "+stringFromTokens(tokens, left, right)+")", SOURCE_ERROR, tokens[left]);
+							return voidAction;
+						}
 						else
 							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
 					}
@@ -235,7 +246,7 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		
 		if (op)
 		{
-			if (op==ops->closePeren)
+			if (op==ops->closePeren || op==ops->closeSqBrac || op==ops->closeCrBrac)
 			{
 				i=skipBrace(tokens, i);
 			}
@@ -259,7 +270,8 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 		}
 	}
 	
-	error.log("could not find where to split expression", SOURCE_ERROR, tokens[left]);
+	error.log("could not find where to split expression '" + stringFromTokens(tokens, left, right) + "'", SOURCE_ERROR, tokens[left]);
+		
 	//error.log("range: " + ([&]()->string{string out; for (int i=left; i<=right; i++) {out+=tokens[i]->getText()+" ";} return out;})(), JSYK, tokens[left]);
 	//error.log("isMin: " + ([&]()->string{string out; for (auto i: isMin) {out+="\n"+to_string(i.first)+", "+to_string(i.second);} return out;})(), JSYK, tokens[left]);
 	
@@ -342,8 +354,6 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 
 void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<ActionPtr>& out)
 {
-	error.log("parseChain called " + to_string(left) + ", " + to_string(right), JSYK);
-	
 	if (tokens[left]->getOp()==ops->pipe)
 	{
 		error.log("improper use of pipe", SOURCE_ERROR, tokens[left]);
@@ -612,6 +622,64 @@ ActionPtr parseLiteral(Token token)
 	}
 }
 
+/*ActionPtr parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
+{
+	vector<string> names;
+	vector<Type> types;
+	
+	for (int i=left; i<=right; i++)
+	{
+		
+	}
+}*/
+
+/*void parseSingleTypeElement(const vector<Token>& tokens, ActionTablePtr table, int& i, int right, string& name, Type& type)
+{
+	int end=right;
+	if (i+1<right && tokens[i+1]->getOp()==ops->colon)
+	{
+		if (tokens[i]->getType()==TokenData::IDENTIFIER)
+		{
+			if (i)
+			
+			=parseType(tokens, table, int i+2, int right)->getReturnType()->getTypes()[0];
+			
+			if (tokens[i+2]->get)
+			{
+				
+			}
+		}
+		else
+		{
+			error.log("label in type definition was not an identifier", SOURCE_ERROR, tokens[i]);
+			return typeGetAction(newMetatype(Void), "Void");
+		}
+	}
+}*/
+
+ActionPtr parseTypeToken(Token token, ActionTablePtr table)
+{
+	if (token->getType()==TokenData::IDENTIFIER)
+	{
+		Type type=table->getType(token->getText());
+		
+		if (type)
+		{
+			return typeGetAction(newMetatype(type), token->getText());
+		}
+		else
+		{
+			error.log("could not find type "+token->getDescription(), SOURCE_ERROR, token);
+			return typeGetAction(newMetatype(Void), "Void");
+		}
+	}
+	else
+	{
+		error.log(FUNC+"called with non identifier token", INTERNAL_ERROR, token);
+		return typeGetAction(newMetatype(Void), "Void");
+	}
+}
+
 ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn)
 {
 	if (token->getType()!=TokenData::IDENTIFIER)
@@ -624,27 +692,43 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 	
 	if (out==voidAction)
 	{
-		Type type=rightIn->getReturnType();
-		
-		if (type->isCreatable())
+		if (rightIn->getReturnType()->isVoid())
 		{
-			size_t offset=table->getStackFrame()->getSize();
-			table->getStackFrame()->addMember(type);
-			
-			ActionPtr getAction=varGetAction(offset, type, token->getText());
-			ActionPtr setAction=varSetAction(offset, type, token->getText());
-			out = branchAction(voidAction, setAction, rightIn);
-			table->addAction(getAction);
-			table->addAction(setAction);
+			error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
+				return voidAction;
 		}
 		else
 		{
-			error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, token);
-			out=voidAction;
+			Type type=rightIn->getReturnType();
+			
+			if (type->getType()==TypeBase::METATYPE)
+			{
+				table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())));
+				return rightIn;
+			}
+			else if (type->isCreatable())
+			{
+				size_t offset=table->getStackFrame()->getSize();
+				table->getStackFrame()->addMember(type);
+				
+				ActionPtr getAction=varGetAction(offset, type, token->getText());
+				ActionPtr setAction=varSetAction(offset, type, token->getText());
+				out = branchAction(voidAction, setAction, rightIn);
+				table->addAction(getAction);
+				table->addAction(setAction);
+				return out;
+			} 
+			else
+			{
+				error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, token);
+				return voidAction;
+			}			
 		}
 	}
-	
-	return out;
+	else
+	{
+		return out;
+	}
 }
 
 	

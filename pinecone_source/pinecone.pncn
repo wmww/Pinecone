@@ -1,10 +1,16 @@
 
 # Fibonacci
 
+type: {Int}
+
+#print: type
+
+print
+
 b: 0
 a: 1
 
-{a<100}@
+(a<100)@
 (
 	print: a
 	tmp: a

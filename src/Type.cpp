@@ -7,6 +7,13 @@ const Type Bool = Type(new TypeBase(TypeBase::BOOL, "Bool"));
 const Type Int = Type(new TypeBase(TypeBase::INT, "Int"));
 const Type Dub = Type(new TypeBase(TypeBase::DUB, "Dub"));
 
+TypeBase::TypeBase(shared_ptr<TypeBase> typeIn, string nameIn)
+{
+	name=nameIn;
+	type=typeIn->type;
+	types=vector<Type>(typeIn->types);
+}
+
 TypeBase::TypeBase(PrimitiveType typeIn, string nameIn)
 {
 	type=typeIn;
@@ -20,6 +27,13 @@ TypeBase::TypeBase(PrimitiveType shouldBeMetatype, Type typeIn, string nameIn)
 		type=METATYPE;
 		name=nameIn;
 		types.push_back(typeIn);
+	}
+	else
+	{
+		error.log("metatype created with primitive type that is not METATYPE", INTERNAL_ERROR);
+		type=UNKNOWN;
+		name="";
+		types.push_back(Void);
 	}
 }
 
@@ -227,6 +241,11 @@ bool TypeBase::matches(Type other)
 	{
 		return type==other->type;
 	}
+}
+
+Type newMetatype(Type typeIn)
+{
+	return Type(new TypeBase(TypeBase::METATYPE, typeIn, "{"+typeIn->getName()+"}"));
 }
 
 /*
