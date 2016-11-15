@@ -39,7 +39,7 @@ public:
 		METATYPE
 	};
 	
-	
+	TypeBase(shared_ptr<TypeBase> typeIn, string nameIn);
 	TypeBase(PrimitiveType typeIn, string nameIn);
 	TypeBase(PrimitiveType shouldBeMetatype, shared_ptr<TypeBase> typeIn, string nameIn);
 	TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn);
@@ -63,6 +63,8 @@ public:
 	
 	bool matches(shared_ptr<TypeBase> other);
 	
+	shared_ptr<TypeBase> copyWithName(string newName);
+	
 	//void* createVoidPtr();
 	//void* cloneVoidPtr(void* ptr);
 	//void* castVoidPtr(void* ptr, shared_ptr<TypeBase> typeOut);
@@ -80,6 +82,8 @@ private:
 };
 
 typedef shared_ptr<TypeBase> Type;
+
+Type newMetatype(Type typeIn);
 
 const extern Type UnknownType;
 const extern Type Void;

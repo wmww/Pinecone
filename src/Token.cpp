@@ -23,7 +23,7 @@ string TokenData::typeToString(TokenData::Type in)
 
 string TokenData::getDescription()
 {
-	return text+" ("+TokenData::typeToString(tokenType)+")";
+	return to_string(getLine()) + ":" + to_string(getCharPos()) + " (" + TokenData::typeToString(tokenType) + " '" + getText() + "')";
 }
 
 string TokenData::getTypeDescription()
@@ -47,7 +47,7 @@ string TokenData::getTypeDescription()
 	return out;
 }
 
-string tableStringFromTokens(vector<Token>& tokens, string tableName)
+string tableStringFromTokens(const vector<Token>& tokens, string tableName)
 {
 	string out="Name\tType\n";
 	
@@ -64,3 +64,16 @@ string tableStringFromTokens(vector<Token>& tokens, string tableName)
 	return putStringInTable(out, tableName);
 }
 
+string stringFromTokens(const vector<Token>& tokens, int left, int right)
+{
+	string out;
+	
+	for (int i=left; i<=right; ++i)
+	{
+		out+=tokens[i]->getText();
+		if (i<right)
+			out+=" ";
+	}
+	
+	return out;
+}
