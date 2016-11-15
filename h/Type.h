@@ -63,8 +63,6 @@ public:
 	
 	bool matches(shared_ptr<TypeBase> other);
 	
-	shared_ptr<TypeBase> copyWithName(string newName);
-	
 	//void* createVoidPtr();
 	//void* cloneVoidPtr(void* ptr);
 	//void* castVoidPtr(void* ptr, shared_ptr<TypeBase> typeOut);

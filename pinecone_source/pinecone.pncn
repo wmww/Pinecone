@@ -4,8 +4,7 @@
 type: {Int}
 
 #print: type
-
-print
+#print
 
 b: 0
 a: 1

@@ -4,9 +4,14 @@
 #include "../h/ErrorHandler.h"
 #include "../h/StackFrame.h"
 #include "../h/AllOperators.h"
+#include "../h/msclStringFuncs.h"
 
 #include <vector>
 using std::vector;
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 using std::min;
 using std::max;
@@ -148,6 +153,8 @@ ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
 	ActionTablePtr table(new ActionTable(stdLibActionTable, &frame));
 	
 	ActionPtr actions=parseTokenList(tokens, table, left, right);
+	
+	cout << endl << putStringInBox(table->toString(), false, "function table") << endl;
 	
 	ActionPtr out=functionAction(actions, Void, Void, table->getStackFrame()->getSize(), "main_function");
 	
@@ -665,7 +672,7 @@ ActionPtr parseTypeToken(Token token, ActionTablePtr table)
 		
 		if (type)
 		{
-			return typeGetAction(newMetatype(type), token->getText());
+			return typeGetAction(type, token->getText());
 		}
 		else
 		{
@@ -704,7 +711,7 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 			if (type->getType()==TypeBase::METATYPE)
 			{
 				table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())));
-				return rightIn;
+				return voidAction;
 			}
 			else if (type->isCreatable())
 			{
