@@ -388,7 +388,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 	
 	if (op==ops->colon)
 	{
-		if (i==left+1)
+		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
 		{
 			auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
 			
@@ -396,8 +396,21 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 		}
 		else
 		{
-			error.log("right now, ':' must have an identifier to its left, instead it had " + to_string(left) + "-" + to_string(i-1) + " which is of token type of " + TokenData::typeToString(tokens[left]->getType()), SOURCE_ERROR, tokens[i]);
-			return voidAction;
+			auto action=parseExpression(tokens, table, left, i-1);
+			
+			auto type=action->getReturnType();
+			
+			if (type->getType()==TypeBase::METATYPE)
+			{
+				auto func=(right==i)?voidAction:parseFunction(tokens, i+1, right);
+				
+				return func;
+			}
+			else
+			{
+				error.log("right now, ':' must have an either an identifier or a type to its left, instead it had '"+stringFromTokens(tokens, left, i-1)+"'", SOURCE_ERROR, tokens[i]);
+				return voidAction;
+			}
 		}
 	}
 	else if (op==ops->ifOp)

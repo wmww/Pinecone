@@ -1,10 +1,11 @@
 
 # Fibonacci
 
-type: {Int}
-
-#print: type
-#print
+myPrint: {Int}:
+(
+	print: 7
+	print: tru
+)
 
 b: 0
 a: 1
