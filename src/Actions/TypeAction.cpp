@@ -8,11 +8,6 @@ public:
 	TypeGetAction(Type typeIn, string textIn):
 		Action(Type(new TypeBase(TypeBase::METATYPE, typeIn, textIn)), Void, Void, textIn)
 	{
-		if (typeIn->getType()!=TypeBase::METATYPE)
-		{
-			error.log("TypeGetAction created with type that is not a METATYPE", INTERNAL_ERROR);
-		}
-		
 		setDescription(textIn + " (type)");
 	}
 	
