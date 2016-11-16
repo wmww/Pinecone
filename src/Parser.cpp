@@ -714,7 +714,11 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 	{
 		if (rightIn->getReturnType()->isVoid())
 		{
-			error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
+			rightIn->setText(token->getText());
+			
+			table->addAction(rightIn);
+			
+			//error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
 				return voidAction;
 		}
 		else

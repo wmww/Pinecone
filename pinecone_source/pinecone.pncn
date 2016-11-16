@@ -20,6 +20,10 @@ a: 1
 
 print
 
+myPrint
+
+print
+
 x: fls
 y: fls
 

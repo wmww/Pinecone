@@ -20,6 +20,7 @@ public:
 	
 	void setDescription(string in) {description=in;}
 	
+	void setText(string in) {text=in;}
 	string getText() {return text;}
 	string toString();
 	
