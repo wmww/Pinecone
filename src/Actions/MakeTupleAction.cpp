@@ -26,7 +26,7 @@ public:
 					}(), ""
 				)
 			),
-			Void, Void, "TUPLE"
+			Void, Void
 		)
 	{
 		if (sourceActionsIn.size()<=0)

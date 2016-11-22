@@ -5,7 +5,7 @@ class BranchAction: public Action
 {
 public:
 	BranchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr rightInputIn)
-			:Action(actionIn->getReturnType(), Void, Void, "BRANCH")
+			:Action(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
 			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
@@ -78,7 +78,7 @@ class RightBranchAction: public Action
 {
 public:
 	RightBranchAction(ActionPtr actionIn, ActionPtr rightInputIn)
-		:Action(actionIn->getReturnType(), Void, Void, "RIGHT_BRANCH")
+		:Action(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
 			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
@@ -139,7 +139,7 @@ class LeftBranchAction: public Action
 {
 public:
 	LeftBranchAction(ActionPtr leftInputIn, ActionPtr actionIn)
-			:Action(actionIn->getReturnType(), Void, Void, "BRANCH")
+			:Action(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
 			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);

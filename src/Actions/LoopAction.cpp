@@ -6,7 +6,7 @@ class LoopAction: public Action
 public:
 	
 	LoopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loopActionIn)
-		:Action(Void, Void, Void, "LOOP")
+		:Action(Void, Void, Void)
 	{
 		condition=conditionIn;
 		loopAction=loopActionIn;

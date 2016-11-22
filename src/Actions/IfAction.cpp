@@ -6,7 +6,7 @@ class IfAction: public Action
 public:
 	
 	IfAction(ActionPtr conditionIn, ActionPtr ifActionIn)
-		:Action(Void, Void, Void, "IF")
+		:Action(Void, Void, Void)
 	{
 		condition=conditionIn;
 		ifAction=ifActionIn;
@@ -59,7 +59,7 @@ class IfElseAction: public Action
 public:
 	
 	IfElseAction(ActionPtr conditionIn, ActionPtr ifActionIn, ActionPtr elseActionIn)
-		:Action(Void, Void, Void, "IF_ELSE")
+		:Action(Void, Void, Void)
 	{
 		condition=conditionIn;
 		ifAction=ifActionIn;

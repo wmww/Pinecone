@@ -156,7 +156,7 @@ ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
 	
 	cout << endl << putStringInBox(table->toString(), false, "function table") << endl;
 	
-	ActionPtr out=functionAction(actions, Void, Void, table->getStackFrame()->getSize(), "main_function");
+	ActionPtr out=functionAction(actions, Void, Void, table->getStackFrame()->getSize());
 	
 	return out;
 }
@@ -685,18 +685,18 @@ ActionPtr parseTypeToken(Token token, ActionTablePtr table)
 		
 		if (type)
 		{
-			return typeGetAction(type, token->getText());
+			return typeGetAction(type);
 		}
 		else
 		{
 			error.log("could not find type "+token->getDescription(), SOURCE_ERROR, token);
-			return typeGetAction(newMetatype(Void), "Void");
+			return typeGetAction(newMetatype(Void));
 		}
 	}
 	else
 	{
 		error.log(FUNC+"called with non identifier token", INTERNAL_ERROR, token);
-		return typeGetAction(newMetatype(Void), "Void");
+		return typeGetAction(newMetatype(Void));
 	}
 }
 
@@ -712,41 +712,34 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 	
 	if (out==voidAction)
 	{
-		if (rightIn->getReturnType()->isVoid())
+		Type type=rightIn->getReturnType();
+		
+		if (type->isVoid()) //probably dev was trying to use an identifier that doesn't exist
 		{
-			rightIn->setText(token->getText());
-			
-			table->addAction(rightIn);
-			
-			//error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
+			error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
 				return voidAction;
+		}
+		else if (type->getType()==TypeBase::METATYPE)
+		{
+			table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())));
+			return voidAction;
+		}
+		else if (type->isCreatable())
+		{
+			size_t offset=table->getStackFrame()->getSize();
+			table->getStackFrame()->addMember(type);
+			
+			ActionPtr getAction=varGetAction(offset, type, token->getText());
+			ActionPtr setAction=varSetAction(offset, type, token->getText());
+			out = branchAction(voidAction, setAction, rightIn);
+			table->addAction(getAction, token->getText());
+			table->addAction(setAction, token->getText());
+			return out;
 		}
 		else
 		{
-			Type type=rightIn->getReturnType();
-			
-			if (type->getType()==TypeBase::METATYPE)
-			{
-				table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())));
-				return voidAction;
-			}
-			else if (type->isCreatable())
-			{
-				size_t offset=table->getStackFrame()->getSize();
-				table->getStackFrame()->addMember(type);
-				
-				ActionPtr getAction=varGetAction(offset, type, token->getText());
-				ActionPtr setAction=varSetAction(offset, type, token->getText());
-				out = branchAction(voidAction, setAction, rightIn);
-				table->addAction(getAction);
-				table->addAction(setAction);
-				return out;
-			} 
-			else
-			{
-				error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, token);
-				return voidAction;
-			}			
+			error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, token);
+			return voidAction;
 		}
 	}
 	else

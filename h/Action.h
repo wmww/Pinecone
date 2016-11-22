@@ -14,14 +14,14 @@ class Action
 {
 public:
 	
-	Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
+	Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn);
 	
 	virtual ~Action() {}
 	
 	void setDescription(string in) {description=in;}
 	
-	void setText(string in) {text=in;}
-	string getText() {return text;}
+	//void setText(string in) {text=in;}
+	//string getText() {return text;}
 	string toString();
 	
 	Type& getReturnType() {return returnType;}
@@ -35,7 +35,7 @@ public:
 		
 protected:
 	
-	string text;
+	//string text;
 	
 	Type returnType;
 	Type inLeftType;
@@ -53,7 +53,7 @@ ActionPtr createNewVoidAction();
 
 ActionPtr branchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr rightInputIn);
 
-ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn);
+ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn);
 
 ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn);
 ActionPtr ifElseAction(ActionPtr conditionIn, ActionPtr ifActionIn, ActionPtr elseAction);
@@ -65,9 +65,9 @@ ActionPtr loopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loo
 
 ActionPtr makeTupleAction(const std::vector<ActionPtr>& sourceActionsIn);
 
-ActionPtr varGetAction(size_t in, Type typeIn, string textIn);
-ActionPtr varSetAction(size_t in, Type typeIn, string textIn);
-ActionPtr constGetAction(void* in, Type typeIn, string textIn);
+ActionPtr varGetAction(size_t in, Type typeIn, string idIn);
+ActionPtr varSetAction(size_t in, Type typeIn, string idIn);
+ActionPtr constGetAction(void* in, Type typeIn, string idIn);
 
-ActionPtr typeGetAction(Type typeIn, string textIn);
+ActionPtr typeGetAction(Type typeIn);
 
