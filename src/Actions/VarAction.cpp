@@ -7,7 +7,7 @@ class VarGetAction: public Action
 public:
 	
 	VarGetAction(size_t in, Type typeIn, string textIn):
-		Action(typeIn, Void, Void, textIn)
+		Action(typeIn, Void, Void)
 	{
 		offset=in;
 		
@@ -16,7 +16,7 @@ public:
 	
 	string getCSource(string inLeft, string inRight)
 	{
-		return getText();
+		return "/* variable: "+getDescription()+" */";
 	}
 	
 	void* execute(void* inLeft, void* inRight)
@@ -37,7 +37,7 @@ class VarSetAction: public Action
 public:
 	
 	VarSetAction(size_t in, Type typeIn, string textIn):
-		Action(typeIn, Void, typeIn, textIn)
+		Action(typeIn, Void, typeIn)
 	{
 		offset=in;
 		
@@ -46,7 +46,7 @@ public:
 	
 	string getCSource(string inLeft, string inRight)
 	{
-		return getText() + "=" + inRight;
+		return "/* var="+inRight+" */";
 	}
 	
 	void* execute(void* left, void* right)
@@ -70,7 +70,7 @@ class ConstGetAction: public Action
 public:
 	
 	ConstGetAction(void* in, Type typeIn, string textIn):
-		Action(typeIn, Void, Void, textIn)
+		Action(typeIn, Void, Void)
 	{
 		data=malloc(returnType->getSize());
 		memcpy(data, in, returnType->getSize());
@@ -85,7 +85,7 @@ public:
 	
 	string getCSource(string inLeft, string inRight)
 	{
-		return getText();
+		return "/* const get not yet implemented */";
 	}
 	
 	void* execute(void* inLeft, void* inRight)

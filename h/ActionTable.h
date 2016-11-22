@@ -34,7 +34,7 @@ public:
 	
 	ActionPtr makeBranchAction(Token token, ActionPtr left, ActionPtr right);
 	
-	void addAction(ActionPtr in);
+	void addAction(ActionPtr in, string nameIn);
 	void addAction(ActionPtr in, Operator op);
 	
 	Type getType(string name);

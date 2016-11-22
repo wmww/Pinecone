@@ -163,4 +163,87 @@ atan2: $Dub|{y: Dub, x: Dub}.
 	
 ]
 
+
+
 ang: (4, 5).atan2
+
+
+atan2: {y: Dub; x: Dub}
+[
+	
+]
+
+
+a[b]
+
+(a: (b))
+
+i: 100
+
+funcName:
+{
+	^Int
+	a: Dub
+	b: Dub
+}[
+	i: 10
+	
+	(
+		j: 20
+		^j
+	)
+	
+	(
+		j: 7
+		^j
+	)
+]
+
+doStuff: {me: String}
+[
+	val: Int: me
+	
+	val+: a
+	
+	^val
+]
+
+a: 8
+
+a: 12
+
+b: a
+
+c: {a: Int}
+[
+	c=0 ?
+		~0
+	|
+		~c-1
+]
+
+a: 2 + c: 3+4
+
+if a
+(
+	# code
+)
+else
+(	
+	#[
+		this is a block comment
+	#]
+)
+
+a: tru
+b: 9
+
+while a=tru
+(
+	b-:1
+	
+	if b<0
+		a: fls
+)
+
+

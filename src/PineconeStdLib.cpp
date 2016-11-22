@@ -65,7 +65,7 @@ ActionTablePtr stdLibActionTable(new ActionTable(&stdLibStackFrame));
 
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	stdLibActionTable->addAction(lambdaAction(returnType, lambda, leftType, rightType, text));
+	stdLibActionTable->addAction(lambdaAction(returnType, lambda, leftType, rightType, text), text);
 }
 
 void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
@@ -86,13 +86,13 @@ void populatePineconeStdLib()
 	
 	///constansts
 	
-	table->addAction(voidAction);
+	table->addAction(voidAction, "void");
 	
 	bool trueVal=true;
-	table->addAction(constGetAction(&trueVal, Bool, "tru"));
+	table->addAction(constGetAction(&trueVal, Bool, "tru"), "true");
 	
 	bool falseVal=false;
-	table->addAction(constGetAction(&falseVal, Bool, "fls"));
+	table->addAction(constGetAction(&falseVal, Bool, "fls"), "fls");
 	
 	
 	///operators

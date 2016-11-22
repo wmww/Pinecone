@@ -29,15 +29,15 @@ void ActionTable::clear()
 	operators.clear();
 }
 
-void ActionTable::addAction(ActionPtr in)
+void ActionTable::addAction(ActionPtr in, string nameIn)
 {
-	Type type=getType(in->getText());
+	Type type=getType(nameIn);
 	
 	if (type)
 	{
 		if (in->getReturnType()!=type)
 		{
-			error.log("cannot create a function called " + in->getText() + " that does not return the type of the same name", SOURCE_ERROR);
+			error.log("cannot create a function called " + nameIn + " that does not return the type of the same name", SOURCE_ERROR);
 			return;
 		}
 		else
@@ -59,7 +59,7 @@ void ActionTable::addAction(ActionPtr in, Operator op)
 
 void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
 {
-	for (auto i=actions.begin(); i!=actions.end(); ++i)
+	/*for (auto i=actions.begin(); i!=actions.end(); ++i)
 	{
 		if ((*i)->getText()==text)
 			matches.push_back(*i);
@@ -68,7 +68,7 @@ void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
 	if (parent)
 	{
 		parent->addActionsToList(matches, text);
-	}
+	}*/
 }
 
 ActionPtr ActionTable::addConverter(ActionPtr action, vector<Type>& types)
@@ -282,7 +282,7 @@ Type ActionTable::getType(string name)
 
 void ActionTable::addActionsToList(vector<ActionPtr>& in, Operator op)
 {
-	for (auto i=operators.begin(); i!=operators.end(); ++i)
+	/*for (auto i=operators.begin(); i!=operators.end(); ++i)
 	{
 		if ((*i)->getText()==op->getText())
 			in.push_back(*i);
@@ -290,6 +290,7 @@ void ActionTable::addActionsToList(vector<ActionPtr>& in, Operator op)
 	
 	if (parent)
 		parent->addActionsToList(in, op);
+	*/
 }
 
 void ActionTable::addType(Type typeIn)

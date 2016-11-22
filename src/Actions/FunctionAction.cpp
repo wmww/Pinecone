@@ -10,21 +10,21 @@ class FunctionAction: public Action
 {
 public:
 	
-	FunctionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn):
-		Action(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn, textIn)
+	FunctionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn):
+		Action(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn)
 	{
 		dataSize=dataSizeIn;
 		action=actionIn;
 		
 		if (action->getInLeftType()!=Void || action->getInRightType()!=Void)
 		{
-			error.log(action->getText() + " put into function even though its inputs are not void", INTERNAL_ERROR);
+			error.log(action->getDescription() + " put into function even though its inputs are not void", INTERNAL_ERROR);
 		}
 	}
 
 	string getDescription()
 	{
-		return getText() + action->getDescription();
+		return "func: " + action->getDescription();
 	}
 	
 	string getCSource(string inLeft, string inRight)
@@ -77,7 +77,7 @@ private:
 	ActionPtr action;
 };
 
-ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn, string textIn)
+ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn)
 {
-	return ActionPtr(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, dataSizeIn, textIn));
+	return ActionPtr(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, dataSizeIn));
 }

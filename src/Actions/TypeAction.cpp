@@ -5,10 +5,10 @@ class TypeGetAction: public Action
 {
 public:
 	
-	TypeGetAction(Type typeIn, string textIn):
-		Action(Type(new TypeBase(TypeBase::METATYPE, typeIn, textIn)), Void, Void, textIn)
+	TypeGetAction(Type typeIn):
+		Action(Type(new TypeBase(TypeBase::METATYPE, typeIn, "customTypeNameHere")), Void, Void)
 	{
-		setDescription(textIn + " (type)");
+		setDescription(typeIn->toString()+" (type)");
 	}
 	
 	string getCSource(string inLeft, string inRight)
@@ -26,7 +26,7 @@ public:
 private:
 };
 
-ActionPtr typeGetAction(Type typeIn, string textIn)
+ActionPtr typeGetAction(Type typeIn)
 {
-	return ActionPtr(new TypeGetAction(typeIn, textIn));
+	return ActionPtr(new TypeGetAction(typeIn));
 }

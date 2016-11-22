@@ -2,9 +2,8 @@
 
 #include "../../h/ErrorHandler.h"
 
-Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
+Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn)
 {
-	text=textIn;
 	returnType=returnTypeIn;
 	inLeftType=inLeftTypeIn;
 	inRightType=inRightTypeIn;
@@ -17,7 +16,7 @@ Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn, string 
 
 string Action::toString()
 {
-	return text;
+	return description;
 	
 	//return returnType->getName() + " <- " + inLeftType->getName() + " " + text + " " + inRightType->getName();
 }
@@ -29,7 +28,7 @@ string Action::toString()
 class VoidAction: public Action
 {
 public:
-	VoidAction(): Action(Void, Void, Void, "Void")
+	VoidAction(): Action(Void, Void, Void)
 	{
 		setDescription("Void Action");
 	}
@@ -48,10 +47,10 @@ public:
 class LambdaAction: public Action
 {
 public:
-	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn): Action(returnTypeIn, inLeftTypeIn, inRightTypeIn, textIn)
+	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn): Action(returnTypeIn, inLeftTypeIn, inRightTypeIn)
 	{
 		lambda=lambdaIn;
-		setDescription(text);// + " (lambda action)");
+		setDescription(textIn);// + " (lambda action)");
 	}
 	
 	string getCSource(string inLeft, string inRight)

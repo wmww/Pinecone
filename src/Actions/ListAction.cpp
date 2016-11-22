@@ -5,7 +5,7 @@ class ListAction: public Action
 {
 public:
 	
-	ListAction(const vector<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void, "LIST")
+	ListAction(const vector<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void)
 	{
 		if (actionsIn.size()<=0)
 		{
