@@ -17,6 +17,7 @@ class NamespaceData;
 typedef shared_ptr<NamespaceData> Namespace;
 
 ///	has a bunch of hash tables for all the identifiers in a single scope
+//	in general, this class does not throw source errors, instead it simply returns null or default values if it can't find something
 //	contains a pointer to a stack frame but there may be many namespaces (due to many scopes) in a single stack frame
 //		for example, a function has a single stack frame but has several if blocks, each with its own IdTable
 //		each IdTable also has a pointer to its parent, which should only be null for the global standard library
@@ -82,9 +83,11 @@ public:
 	///	getting elements
 	
 	//	recursivly searches up looking for a type of the given name
+	//	returns UnknownType if it cant find the requested type
 	Type getType(string name);
 	
 	//	returns a branch action that is the action given in token with the left and right inputs
+	//	returns voidAction if it can't find a good match
 	Action makeActionForTokenWithInput(Token token, Action left, Action right);
 	
 	//	returns the given action with a conversion to the given type put over top of it if needed
@@ -118,6 +121,8 @@ private:
 	void getActions(string text, vector<Action>& out);
 	void getActions(Operator, vector<Action>& out);
 	
+	void getConvertersToType(Type typeIn, vector<Action>& out);
+	
 	//	if there is exactly 1 action in the vector with the correct input types, returns it otherwise returns null
 	//	NOTE: can return null
 	Action findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType);
@@ -136,7 +141,7 @@ private:
 	unordered_map<string, vector<Action>> actions;
 	
 	//	contains all converters (aka constructors), is a subset of actions
-	unordered_map<string, vector<Action>> converters;
+	unordered_map<Type, vector<Action>> converters;
 	
 	//	contains all operators
 	unordered_map<Operator, vector<Action>> operators;
