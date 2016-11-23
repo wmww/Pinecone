@@ -2,7 +2,7 @@
 
 #include "../../h/ErrorHandler.h"
 
-Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn)
+ActionData::ActionData(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn)
 {
 	returnType=returnTypeIn;
 	inLeftType=inLeftTypeIn;
@@ -10,11 +10,11 @@ Action::Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn)
 	
 	if (!returnType || !inLeftType || !inRightType)
 	{
-		error.log("Action created with null type", INTERNAL_ERROR);
+		error.log("ActionData created with null type", INTERNAL_ERROR);
 	}
 }
 
-string Action::toString()
+string ActionData::toString()
 {
 	return description;
 	
@@ -25,10 +25,10 @@ string Action::toString()
 	
 //void* LambdaAction::execute(void* inLeft, void* inRight)
 
-class VoidAction: public Action
+class VoidAction: public ActionData
 {
 public:
-	VoidAction(): Action(Void, Void, Void)
+	VoidAction(): ActionData(Void, Void, Void)
 	{
 		setDescription("Void Action");
 	}
@@ -44,10 +44,10 @@ public:
 	}
 };
 
-class LambdaAction: public Action
+class LambdaAction: public ActionData
 {
 public:
-	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn): Action(returnTypeIn, inLeftTypeIn, inRightTypeIn)
+	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn): ActionData(returnTypeIn, inLeftTypeIn, inRightTypeIn)
 	{
 		lambda=lambdaIn;
 		setDescription(textIn);// + " (lambda action)");
@@ -67,12 +67,12 @@ private:
 	function<void*(void*,void*)> lambda;
 };
 
-ActionPtr lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
+Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
 {
-	return ActionPtr(new LambdaAction(returnTypeIn, lambdaIn, inLeftTypeIn, inRightTypeIn, textIn));
+	return Action(new LambdaAction(returnTypeIn, lambdaIn, inLeftTypeIn, inRightTypeIn, textIn));
 }
 
-ActionPtr createNewVoidAction()
+Action createNewVoidAction()
 {
-	return ActionPtr(new VoidAction());
+	return Action(new VoidAction());
 }

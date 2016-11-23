@@ -29,7 +29,7 @@ void ActionTable::clear()
 	operators.clear();
 }
 
-void ActionTable::addAction(ActionPtr in, string nameIn)
+void ActionTable::addAction(Action in, string nameIn)
 {
 	Type type=getType(nameIn);
 	
@@ -52,12 +52,12 @@ void ActionTable::addAction(ActionPtr in, string nameIn)
 	}
 }
 
-void ActionTable::addAction(ActionPtr in, Operator op)
+void ActionTable::addAction(Action in, Operator op)
 {
 	operators.push_back(in);
 }
 
-void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
+void ActionTable::addActionsToList(vector<Action>& matches, string& text)
 {
 	/*for (auto i=actions.begin(); i!=actions.end(); ++i)
 	{
@@ -71,7 +71,7 @@ void ActionTable::addActionsToList(vector<ActionPtr>& matches, string& text)
 	}*/
 }
 
-ActionPtr ActionTable::addConverter(ActionPtr action, vector<Type>& types)
+Action ActionTable::addConverter(Action action, vector<Type>& types)
 {
 	for (auto i=types.begin(); i!=types.end(); i++)
 	{
@@ -81,7 +81,7 @@ ActionPtr ActionTable::addConverter(ActionPtr action, vector<Type>& types)
 		}
 	}
 	
-	vector<ActionPtr> typeConverters;
+	vector<Action> typeConverters;
 	
 	getAllConvertersForType(typeConverters, action->getReturnType());
 	
@@ -99,9 +99,9 @@ ActionPtr ActionTable::addConverter(ActionPtr action, vector<Type>& types)
 	return voidAction;
 }
 
-ActionPtr ActionTable::makeBranchAction(Token token, ActionPtr left, ActionPtr right)
+Action ActionTable::makeBranchAction(Token token, Action left, Action right)
 {
-	vector<ActionPtr> matches;
+	vector<Action> matches;
 	
 	if (token->getOp())
 	{
@@ -114,7 +114,7 @@ ActionPtr ActionTable::makeBranchAction(Token token, ActionPtr left, ActionPtr r
 	}
 	
 	
-	ActionPtr out=makeBranchAction(matches, left, right);
+	Action out=makeBranchAction(matches, left, right);
 	
 	/*if (out==voidAction)
 	{
@@ -124,7 +124,7 @@ ActionPtr ActionTable::makeBranchAction(Token token, ActionPtr left, ActionPtr r
 	return out;
 }
 
-ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr left, ActionPtr right)
+Action ActionTable::makeBranchAction(vector<Action>& matches, Action left, Action right)
 {
 	if (matches.empty())
 		return voidAction;
@@ -132,7 +132,7 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 	Type leftType=left->getReturnType();
 	Type rightType=right->getReturnType();
 	
-	ActionPtr action=nullptr;
+	Action action=nullptr;
 	
 	//look for exact match
 	
@@ -149,18 +149,18 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 	
 	if (!action)
 	{
-		vector<ActionPtr> leftConverters;
-		vector<ActionPtr> rightConverters;
+		vector<Action> leftConverters;
+		vector<Action> rightConverters;
 		
 		getAllConvertersForType(leftConverters, leftType);
 		getAllConvertersForType(rightConverters, rightType);
 		
-		vector<vector<ActionPtr>> actionsBranches;
+		vector<vector<Action>> actionsBranches;
 		
 		for (auto i=matches.begin(); i!=matches.end(); ++i)
 		{
-			ActionPtr rightMatch=nullptr;
-			ActionPtr leftMatch=nullptr;
+			Action rightMatch=nullptr;
+			Action leftMatch=nullptr;
 			bool failed=false;
 			
 			if (leftType!=(*i)->getInLeftType())
@@ -195,7 +195,7 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 			
 			if (!failed)
 			{
-				vector<ActionPtr> ptrs(3);
+				vector<Action> ptrs(3);
 				
 				if (leftMatch)
 					ptrs[0]=branchAction(voidAction, leftMatch, left);
@@ -229,13 +229,13 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 			
 			for (auto i=std::next(actionsBranches.begin()); i!=actionsBranches.end(); i++)
 			{
-				TypeBase::DOM_LEVEL leftDm=(*i)[0]->getReturnType().getDominance((*best)[0]->getReturnType())
-				TypeBase::DOM_LEVEL rightDm=(*i)[2]->getReturnType().getDominance((*best)[2]->getReturnType())
+				TypeData::DOM_LEVEL leftDm=(*i)[0]->getReturnType().getDominance((*best)[0]->getReturnType())
+				TypeData::DOM_LEVEL rightDm=(*i)[2]->getReturnType().getDominance((*best)[2]->getReturnType())
 				
 				if ()
 			}
 			
-			return ActionPtr(new BranchAction((*best)[0], (*best)[1], (*best)[2])); */
+			return Action(new BranchAction((*best)[0], (*best)[1], (*best)[2])); */
 		}
 	}
 	else
@@ -244,9 +244,9 @@ ActionPtr ActionTable::makeBranchAction(vector<ActionPtr>& matches, ActionPtr le
 	}
 }
 
-void ActionTable::getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type)
+void ActionTable::getAllConvertersForType(vector<Action>& convertersOut, Type type)
 {
-	if (type->getName().empty() && type->getType()==TypeBase::TUPLE)
+	if (type->getName().empty() && type->getType()==TypeData::TUPLE)
 	{
 		error.log("recursive tuple converter search not yet implemented in ActionTable::getAllConvertersForType", INTERNAL_ERROR);
 	}
@@ -280,7 +280,7 @@ Type ActionTable::getType(string name)
 	}
 }
 
-void ActionTable::addActionsToList(vector<ActionPtr>& in, Operator op)
+void ActionTable::addActionsToList(vector<Action>& in, Operator op)
 {
 	/*for (auto i=operators.begin(); i!=operators.end(); ++i)
 	{
@@ -306,7 +306,7 @@ void ActionTable::addType(Type typeIn)
 	types.push_back(Type(typeIn));
 }
 
-void ActionTable::addType(TypeBase::PrimitiveType typeIn, string nameIn)
+void ActionTable::addType(TypeData::PrimitiveType typeIn, string nameIn)
 {
 	Type preExisting=getType(nameIn);
 	
@@ -316,7 +316,7 @@ void ActionTable::addType(TypeBase::PrimitiveType typeIn, string nameIn)
 		return;
 	}
 	
-	types.push_back(Type(new TypeBase(typeIn, nameIn)));
+	types.push_back(Type(new TypeData(typeIn, nameIn)));
 }
 
 void ActionTable::addType(vector<Type> typesIn, string nameIn)
@@ -329,7 +329,7 @@ void ActionTable::addType(vector<Type> typesIn, string nameIn)
 		return;
 	}
 	
-	types.push_back(Type(new TypeBase(typesIn, nameIn)));
+	types.push_back(Type(new TypeData(typesIn, nameIn)));
 }
 
 string ActionTable::toString()

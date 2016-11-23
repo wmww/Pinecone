@@ -1,12 +1,12 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
-class LoopAction: public Action
+class LoopAction: public ActionData
 {
 public:
 	
-	LoopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loopActionIn)
-		:Action(Void, Void, Void)
+	LoopAction(Action conditionIn, Action endActionIn, Action loopActionIn)
+		:ActionData(Void, Void, Void)
 	{
 		condition=conditionIn;
 		loopAction=loopActionIn;
@@ -68,19 +68,19 @@ public:
 	
 private:
 	
-	ActionPtr condition;
-	ActionPtr loopAction;
-	ActionPtr endAction;
+	Action condition;
+	Action loopAction;
+	Action endAction;
 };
 
-ActionPtr loopAction(ActionPtr conditionIn, ActionPtr loopActionIn)
+Action loopAction(Action conditionIn, Action loopActionIn)
 {
-	return ActionPtr(new LoopAction(conditionIn, voidAction, loopActionIn));
+	return Action(new LoopAction(conditionIn, voidAction, loopActionIn));
 }
 
-ActionPtr loopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loopActionIn)
+Action loopAction(Action conditionIn, Action endActionIn, Action loopActionIn)
 {
-	return ActionPtr(new LoopAction(conditionIn, endActionIn, loopActionIn));
+	return Action(new LoopAction(conditionIn, endActionIn, loopActionIn));
 }
 
 

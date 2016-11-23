@@ -63,7 +63,7 @@ private:
 	vector<Token> tokens;
 	
 	//root of the abstract syntax tree
-	ActionPtr astRoot=createNewVoidAction();
+	Action astRoot=createNewVoidAction();
 	
 	vector<char> whitespaceChars, letterChars, digitChars;
 	char singleLineComment;

@@ -5,17 +5,17 @@
 
 using std::vector;
 
-class MakeTupleAction: public Action
+class MakeTupleAction: public ActionData
 {
 public:
 	
-	MakeTupleAction(const vector<ActionPtr>& sourceActionsIn):
-		Action(
+	MakeTupleAction(const vector<Action>& sourceActionsIn):
+		ActionData(
 			Type(
-				new TypeBase(
-					[&]() -> vector<shared_ptr<TypeBase>>
+				new TypeData(
+					[&]() -> vector<shared_ptr<TypeData>>
 					{
-						vector<shared_ptr<TypeBase>> out;
+						vector<shared_ptr<TypeData>> out;
 						
 						for (auto i=sourceActionsIn.begin(); i!=sourceActionsIn.end(); ++i)
 						{
@@ -109,10 +109,10 @@ public:
 	
 private:
 	
-	vector<ActionPtr> sourceActions;
+	vector<Action> sourceActions;
 };
 
-ActionPtr makeTupleAction(const std::vector<ActionPtr>& sourceActionsIn)
+Action makeTupleAction(const std::vector<Action>& sourceActionsIn)
 {
-	return ActionPtr(new MakeTupleAction(sourceActionsIn));
+	return Action(new MakeTupleAction(sourceActionsIn));
 }
