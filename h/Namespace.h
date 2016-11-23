@@ -1,0 +1,126 @@
+#pragma once
+
+#include "Type.h"
+#include "Action.h"
+#include "Token.h"
+#include "Operator.h"
+
+#include <unordered_map>
+using std::unordered_map;
+
+#include <vector>
+using std::vector;
+
+class StackFrame;
+
+class NamespaceData;
+typedef shared_ptr<NamespaceData> Namespace;
+
+///	has a bunch of hash tables for all the identifiers in a single scope
+//	contains a pointer to a stack frame but there may be many namespaces (due to many scopes) in a single stack frame
+//		for example, a function has a single stack frame but has several if blocks, each with its own IdTable
+//		each IdTable also has a pointer to its parent, which should only be null for the global standard library
+//	contains a pointer to its parent namespace, which can be null if it is the root
+//	can be created with one of the 'make' functions, not by directly instantiating it
+class NamespaceData: public std::enable_shared_from_this<NamespaceData>
+{
+public:
+	
+	/// enums
+	
+	//	the different types of identifiers
+	enum IdType
+	{
+		NONE=0,		//	no identifier for the specified name
+		ACTION,		//	a generic action (not a converter or operator)
+		CONVERTER,	//	a converter, and thus also an action
+		OPERATOR,	//	an operator, and this alos an action
+		TYPE		//	a type, not an action
+	};
+	
+	
+	/// creation functions
+	
+	//	makes a namespace with no parents and a new stack frame
+	static Namespace makeRootNamespace();
+	
+	//	makes a child namespace with the same stack frame as this one
+	Namespace makeChild();
+	
+	//	makes a child namespace with a new stack frame
+	Namespace makeChildAndFrame();
+	
+	
+	///	deletion functions
+	
+	//	clears out all the data this object holds
+	void clear();
+	~NamespaceData() {clear();}
+	
+	
+	///	getters
+	
+	//	returns a string with the complete contents of this stack frame
+	string getString();
+	
+	Namespace getParent() {return parent;}
+	shared_ptr<StackFrame> getStackFrame() {return stackFrame;}
+	
+	
+	///	adding elements
+	
+	//	used for adding generic actions AND converters (will autodetect if converter or not)
+	void addAction(Action action, string id);
+	
+	// add an operator
+	void addOperator(Action action, Operator op);
+	
+	//	add a type
+	void addType(Type type, string id);
+	
+	//Action addConverter(Action action, Type type);
+	//Action addConverter(Action action, vector<Type>& types);
+	
+	//Action makeBranchAction(Token token, Action left, Action right);
+	
+	//void addAction(Action in, string nameIn);
+	//void addAction(Action in, Operator op);
+	
+	//Type getType(string name);
+	
+	//void addType(Type typeIn);
+	//void addType(TypeData::PrimitiveType typeIn, string nameIn);
+	//void addType(vector<Type> typesIn, string nameIn);
+	
+private:
+	
+	//	the only constructor, is private so use a make function instead
+	NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn);
+	
+	//void addActionsToList(vector<Action>& in, string& text);
+	//void addActionsToList(vector<Action>& in, Operator op);
+	//Action makeBranchAction(vector<Action>& matches, Action left, Action right);
+	//void getAllConvertersForType(vector<Action>& convertersOut, Type type);
+	
+	//	this namespaces parent
+	shared_ptr<NamespaceData> parent;
+	
+	//	the stack frame this namespace uses
+	//		does not have a reference back because there can be many namespaces in one stack frame
+	shared_ptr<StackFrame> stackFrame;
+	
+	//	has the id type of every identifier in this namespace
+	unordered_map<string, vector<IdType>> allIds;
+	
+	//	contains all generic actions in this namespace, and all converters (but not operators)
+	unordered_map<string, vector<Action>> actions;
+	
+	//	contains all converters (aka constructors), is a subset of actions
+	unordered_map<string, vector<Action>> converters;
+	
+	//	contains all operators
+	unordered_map<Operator, vector<Action>> operators;
+	
+	//	contains all types in this namespace
+	unordered_map<string, Type> types;
+};

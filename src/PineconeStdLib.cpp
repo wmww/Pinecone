@@ -1,7 +1,7 @@
 #include "../h/PineconeProgram.h"
 #include "../h/AllOperators.h"
 #include "../h/StackFrame.h"
-#include "../h/ActionTable.h"
+#include "../h/Namespace.h"
 
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
@@ -60,8 +60,8 @@ addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(
 
 Action voidAction;
 
-StackFrame stdLibStackFrame;
-ActionTablePtr stdLibActionTable(new ActionTable(&stdLibStackFrame));
+shared_ptr<StackFrame> stdLibStackFrame;
+Namespace stdLibNamespace;
 
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
@@ -75,10 +75,8 @@ void addAction(Operator op, Type returnType, Type leftType, Type rightType, func
 
 void populatePineconeStdLib()
 {
-	ActionTablePtr table=stdLibActionTable;
-	
-	table->clear();
-	stdLibStackFrame.clear();
+	Namespace table=stdLibActionTable=NamespaceData::makeRootNamespace();
+	stdLibStackFrame=table->getStackFrame();
 	
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
 	voidAction=createNewVoidAction();

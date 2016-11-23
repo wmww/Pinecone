@@ -5,7 +5,8 @@
 #include <string>
 using std::string;
 
-#define FUNC string(__FUNCTION__)
+//#define FUNC string(__FUNCTION__)
+#define FUNC string(__PRETTY_FUNCTION__) //like __FUNCTION__, but adds class name
 
 enum ErrorPriority
 {
