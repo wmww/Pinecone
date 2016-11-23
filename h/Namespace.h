@@ -78,6 +78,18 @@ public:
 	//	add a type
 	void addType(Type type, string id);
 	
+	
+	///	getting elements
+	
+	//	recursivly searches up looking for a type of the given name
+	Type getType(string name);
+	
+	//	returns a branch action that is the action given in token with the left and right inputs
+	Action makeActionForTokenWithInput(Token token, Action left, Action right);
+	
+	//	returns the given action with a conversion to the given type put over top of it if needed
+	Action getActionConvertedToType(Action actionIn, Type outType);
+	
 	//Action addConverter(Action action, Type type);
 	//Action addConverter(Action action, vector<Type>& types);
 	
@@ -101,6 +113,14 @@ private:
 	//void addActionsToList(vector<Action>& in, Operator op);
 	//Action makeBranchAction(vector<Action>& matches, Action left, Action right);
 	//void getAllConvertersForType(vector<Action>& convertersOut, Type type);
+	
+	//	addes all the matching actions in this and in all parents to out
+	void getActions(string text, vector<Action>& out);
+	void getActions(Operator, vector<Action>& out);
+	
+	//	if there is exactly 1 action in the vector with the correct input types, returns it otherwise returns null
+	//	NOTE: can return null
+	Action findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType);
 	
 	//	this namespaces parent
 	shared_ptr<NamespaceData> parent;

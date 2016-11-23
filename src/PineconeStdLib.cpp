@@ -65,17 +65,17 @@ Namespace stdLibNamespace;
 
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	stdLibActionTable->addAction(lambdaAction(returnType, lambda, leftType, rightType, text), text);
+	stdLibNamespace->addAction(lambdaAction(returnType, lambda, leftType, rightType, text), text);
 }
 
 void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	stdLibActionTable->addAction(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
+	stdLibNamespace->addOperator(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
 }
 
 void populatePineconeStdLib()
 {
-	Namespace table=stdLibActionTable=NamespaceData::makeRootNamespace();
+	Namespace table=stdLibNamespace=NamespaceData::makeRootNamespace();
 	stdLibStackFrame=table->getStackFrame();
 	
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
@@ -139,10 +139,10 @@ void populatePineconeStdLib()
 	
 	///basic types
 	
-	table->addType(Void);
-	table->addType(Bool);
-	table->addType(Int);
-	table->addType(Dub);
+	table->addType(Void, Void->getName());
+	table->addType(Bool, Bool->getName());
+	table->addType(Int, Int->getName());
+	table->addType(Dub, Dub->getName());
 	
 	
 	///initalizers
@@ -225,6 +225,6 @@ void populatePineconeStdLib()
 	
 	//t->addAction()
 	
-	cout << endl << putStringInBox(table->toString(), false, "standard library") << endl;
+	cout << endl << putStringInBox(table->getString(), false, "standard library") << endl;
 }
 
