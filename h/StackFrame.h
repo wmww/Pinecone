@@ -23,7 +23,7 @@ public:
 	
 private:
 	
-	ActionPtr actions; //must always be functionAction
+	Action actions; //must always be functionAction
 	vector<Type> members;
 	size_t frameSize=0;
 };

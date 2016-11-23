@@ -14,7 +14,7 @@ using std::memcpy;
 
 class ActionTable;
 
-class TypeBase
+class TypeData
 {
 public:
 	
@@ -39,10 +39,10 @@ public:
 		METATYPE
 	};
 	
-	TypeBase(shared_ptr<TypeBase> typeIn, string nameIn);
-	TypeBase(PrimitiveType typeIn, string nameIn);
-	TypeBase(PrimitiveType shouldBeMetatype, shared_ptr<TypeBase> typeIn, string nameIn);
-	TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn);
+	TypeData(shared_ptr<TypeData> typeIn, string nameIn);
+	TypeData(PrimitiveType typeIn, string nameIn);
+	TypeData(PrimitiveType shouldBeMetatype, shared_ptr<TypeData> typeIn, string nameIn);
+	TypeData(vector<shared_ptr<TypeData>> typesIn, string nameIn);
 	
 	static string toString(PrimitiveType in);
 	string toString();
@@ -56,30 +56,27 @@ public:
 	string getName() {return name;}
 	
 	PrimitiveType getType() {return type;}
-	vector<shared_ptr<TypeBase>>& getTypes() {return types;}
+	vector<shared_ptr<TypeData>>& getTypes() {return types;}
 	
 	//bool operator==(const Type& other);
 	//bool exactlyEquals(const Type& other);
 	
-	bool matches(shared_ptr<TypeBase> other);
+	bool matches(shared_ptr<TypeData> other);
 	
 	//void* createVoidPtr();
 	//void* cloneVoidPtr(void* ptr);
-	//void* castVoidPtr(void* ptr, shared_ptr<TypeBase> typeOut);
+	//void* castVoidPtr(void* ptr, shared_ptr<TypeData> typeOut);
 	//void setVoidPtr(void* ptr, void* in);
 	//void deleteVoidPtr(void* ptr);
 	
 private:
 	
-	friend ActionTable;
-	
-	
 	string name;
 	PrimitiveType type;
-	vector<shared_ptr<TypeBase>> types;
+	vector<shared_ptr<TypeData>> types;
 };
 
-typedef shared_ptr<TypeBase> Type;
+typedef shared_ptr<TypeData> Type;
 
 Type newMetatype(Type typeIn);
 

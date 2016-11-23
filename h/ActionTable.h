@@ -23,24 +23,24 @@ public:
 	
 	~ActionTable() {clear();}
 	
-	ActionPtr addConverter(ActionPtr action, Type type)
+	Action addConverter(Action action, Type type)
 	{
 		vector<Type> types;
 		types.push_back(type);
 		return addConverter(action, types);
 	}
 	
-	ActionPtr addConverter(ActionPtr action, vector<Type>& types);
+	Action addConverter(Action action, vector<Type>& types);
 	
-	ActionPtr makeBranchAction(Token token, ActionPtr left, ActionPtr right);
+	Action makeBranchAction(Token token, Action left, Action right);
 	
-	void addAction(ActionPtr in, string nameIn);
-	void addAction(ActionPtr in, Operator op);
+	void addAction(Action in, string nameIn);
+	void addAction(Action in, Operator op);
 	
 	Type getType(string name);
 	
 	void addType(Type typeIn);
-	void addType(TypeBase::PrimitiveType typeIn, string nameIn);
+	void addType(TypeData::PrimitiveType typeIn, string nameIn);
 	void addType(vector<Type> typesIn, string nameIn);
 	
 	StackFrame* getStackFrame() {return stackFrame;}
@@ -50,15 +50,15 @@ public:
 	void clear();
 	
 private:
-	void addActionsToList(vector<ActionPtr>& in, string& text);
-	void addActionsToList(vector<ActionPtr>& in, Operator op);
-	ActionPtr makeBranchAction(vector<ActionPtr>& matches, ActionPtr left, ActionPtr right);
-	void getAllConvertersForType(vector<ActionPtr>& convertersOut, Type type);
+	void addActionsToList(vector<Action>& in, string& text);
+	void addActionsToList(vector<Action>& in, Operator op);
+	Action makeBranchAction(vector<Action>& matches, Action left, Action right);
+	void getAllConvertersForType(vector<Action>& convertersOut, Type type);
 	
 	shared_ptr<ActionTable> parent;
-	list<ActionPtr> converters;
-	list<ActionPtr> actions;
-	list<ActionPtr> operators;
+	list<Action> converters;
+	list<Action> actions;
+	list<Action> operators;
 	list<Type> types;
 	
 	StackFrame* stackFrame;

@@ -25,27 +25,27 @@ extern ActionTablePtr stdLibActionTable;
 //		table: the table to use
 //		left: left most token to parse (inclusive)
 //		right: right most token to parse (inclusive)
-//		returns: (if type is ActionPtr) the action pointer for that section of the program
+//		returns: (if type is Action) the action pointer for that section of the program
 
 //	parses a function and returns the functionAction for it
-ActionPtr parseFunction(const vector<Token>& tokens, int left, int right);
+Action parseFunction(const vector<Token>& tokens, int left, int right);
 
 //	splits a stream of tokens into a ListAction and calls parseExpression on each expression
-ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
+Action parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
 
 //	recursivly parses a single expression (no action lists)
-ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
+Action parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
 
 //	splits an expression on the given token (should always be an operator)
 //		index: the index to split on
 //		returns: pointer to BranchAction that is the root of the split
-ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
+Action splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
 
 //	returns the action for a single token
 //		token: the token to get the action for
 //		leftIn: the left input
 //		rightIn: the right input
-ActionPtr parseSingleToken(Token token, const ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
+Action parseSingleToken(Token token, const ActionTablePtr table, Action leftIn, Action rightIn);
 
 //	returns the index of the closing brace that matches the given opening brace index, works with (), [], and {}
 //		tokens: the token array to use
@@ -53,17 +53,17 @@ ActionPtr parseSingleToken(Token token, const ActionTablePtr table, ActionPtr le
 //		returns: the index of the close peren that matches
 int skipBrace(const vector<Token>& tokens, int start);
 
-void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<ActionPtr>& out);
+void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<Action>& out);
 
-ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
+Action parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
 
-ActionPtr parseLiteral(Token token);
+Action parseLiteral(Token token);
 
-//ActionPtr parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
-//ActionPtr parseSingleTypeElement(const vector<Token>& tokens, ActionTablePtr table, int& i, int right, string& name, Type& type);
-ActionPtr parseTypeToken(Token token, ActionTablePtr table);
+//Action parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
+//Action parseSingleTypeElement(const vector<Token>& tokens, ActionTablePtr table, int& i, int right, string& name, Type& type);
+Action parseTypeToken(Token token, ActionTablePtr table);
 
-ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn);
+Action parseIdentifier(Token token, ActionTablePtr table, Action leftIn, Action rightIn);
 
 
 
@@ -146,22 +146,22 @@ int skipBrace(const vector<Token>& tokens, int start)
 	}
 }
 
-ActionPtr parseFunction(const vector<Token>& tokens, int left, int right)
+Action parseFunction(const vector<Token>& tokens, int left, int right)
 {
 	StackFrame frame;
 	
 	ActionTablePtr table(new ActionTable(stdLibActionTable, &frame));
 	
-	ActionPtr actions=parseTokenList(tokens, table, left, right);
+	Action actions=parseTokenList(tokens, table, left, right);
 	
 	cout << endl << putStringInBox(table->toString(), false, "function table") << endl;
 	
-	ActionPtr out=functionAction(actions, Void, Void, table->getStackFrame()->getSize());
+	Action out=functionAction(actions, Void, Void, table->getStackFrame()->getSize());
 	
 	return out;
 }
 
-ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
+Action parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
 	if (left>right)
 	{
@@ -285,9 +285,9 @@ ActionPtr parseExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	return voidAction;
 }
 
-ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
+Action parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
-	vector<ActionPtr> actions;
+	vector<Action> actions;
 	
 	while (left<=right)
 	{
@@ -336,7 +336,7 @@ ActionPtr parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int 
 	return listAction(actions);
 }
 
-ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
+Action splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
 {
 	Operator op=tokens[i]->getOp();
 	
@@ -359,7 +359,7 @@ ActionPtr splitExpression(const vector<Token>& tokens, ActionTablePtr table, int
 	}
 }
 
-void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<ActionPtr>& out)
+void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<Action>& out)
 {
 	if (tokens[left]->getOp()==ops->pipe)
 	{
@@ -382,7 +382,7 @@ void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int
 		parseChain(tokens, table, i+1, right, out);
 }
 
-ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
+Action parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
 {
 	Operator op=tokens[i]->getOp();
 	
@@ -400,7 +400,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 			
 			auto type=action->getReturnType();
 			
-			if (type->getType()==TypeBase::METATYPE)
+			if (type->getType()==TypeData::METATYPE)
 			{
 				auto func=(right==i)?voidAction:parseFunction(tokens, i+1, right);
 				
@@ -415,7 +415,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 	}
 	else if (op==ops->ifOp)
 	{
-		vector<ActionPtr> rightActions;
+		vector<Action> rightActions;
 		
 		parseChain(tokens, table, i+1, right, rightActions);
 		
@@ -447,7 +447,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 	}
 	else if (op==ops->loop)
 	{
-		vector<ActionPtr> leftActions;
+		vector<Action> leftActions;
 		
 		parseChain(tokens, table, left, i-1, leftActions);
 		
@@ -495,7 +495,7 @@ ActionPtr parseOperator(const vector<Token>& tokens, ActionTablePtr table, int l
 	}
 }
 
-ActionPtr parseSingleToken(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn)
+Action parseSingleToken(Token token, ActionTablePtr table, Action leftIn, Action rightIn)
 {
 	switch (token->getType())
 	{
@@ -516,7 +516,7 @@ ActionPtr parseSingleToken(Token token, ActionTablePtr table, ActionPtr leftIn, 
 	return voidAction;
 }
 
-ActionPtr parseLiteral(Token token)
+Action parseLiteral(Token token)
 {
 	if (token->getType()!=TokenData::LITERAL)
 	{
@@ -642,7 +642,7 @@ ActionPtr parseLiteral(Token token)
 	}
 }
 
-/*ActionPtr parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
+/*Action parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
 {
 	vector<string> names;
 	vector<Type> types;
@@ -677,7 +677,7 @@ ActionPtr parseLiteral(Token token)
 	}
 }*/
 
-ActionPtr parseTypeToken(Token token, ActionTablePtr table)
+Action parseTypeToken(Token token, ActionTablePtr table)
 {
 	if (token->getType()==TokenData::IDENTIFIER)
 	{
@@ -700,7 +700,7 @@ ActionPtr parseTypeToken(Token token, ActionTablePtr table)
 	}
 }
 
-ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, ActionPtr rightIn)
+Action parseIdentifier(Token token, ActionTablePtr table, Action leftIn, Action rightIn)
 {
 	if (token->getType()!=TokenData::IDENTIFIER)
 	{
@@ -708,7 +708,7 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 		return voidAction;
 	}
 	
-	ActionPtr out=table->makeBranchAction(token, leftIn, rightIn);
+	Action out=table->makeBranchAction(token, leftIn, rightIn);
 	
 	if (out==voidAction)
 	{
@@ -719,9 +719,9 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 			error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
 				return voidAction;
 		}
-		else if (type->getType()==TypeBase::METATYPE)
+		else if (type->getType()==TypeData::METATYPE)
 		{
-			table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())));
+			table->addType(Type(new TypeData(type->getTypes()[0], token->getText())));
 			return voidAction;
 		}
 		else if (type->isCreatable())
@@ -729,8 +729,8 @@ ActionPtr parseIdentifier(Token token, ActionTablePtr table, ActionPtr leftIn, A
 			size_t offset=table->getStackFrame()->getSize();
 			table->getStackFrame()->addMember(type);
 			
-			ActionPtr getAction=varGetAction(offset, type, token->getText());
-			ActionPtr setAction=varSetAction(offset, type, token->getText());
+			Action getAction=varGetAction(offset, type, token->getText());
+			Action setAction=varSetAction(offset, type, token->getText());
 			out = branchAction(voidAction, setAction, rightIn);
 			table->addAction(getAction, token->getText());
 			table->addAction(setAction, token->getText());

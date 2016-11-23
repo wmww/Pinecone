@@ -5,7 +5,7 @@
 
 void populatePineconeStdLib();
 void lexString(string text, string filename, vector<Token>& tokens);
-ActionPtr parseFunction(const vector<Token>& tokens, int left, int right);
+Action parseFunction(const vector<Token>& tokens, int left, int right);
 
 PineconeProgram::PineconeProgram()
 {

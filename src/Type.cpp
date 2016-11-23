@@ -1,26 +1,26 @@
 #include "../h/Type.h"
 #include "../h/ErrorHandler.h"
 
-const Type UnknownType = Type(new TypeBase(TypeBase::UNKNOWN, "UNKNOWN_TYPE"));
-const Type Void = Type(new TypeBase(TypeBase::VOID, "Void"));
-const Type Bool = Type(new TypeBase(TypeBase::BOOL, "Bool"));
-const Type Int = Type(new TypeBase(TypeBase::INT, "Int"));
-const Type Dub = Type(new TypeBase(TypeBase::DUB, "Dub"));
+const Type UnknownType = Type(new TypeData(TypeData::UNKNOWN, "UNKNOWN_TYPE"));
+const Type Void = Type(new TypeData(TypeData::VOID, "Void"));
+const Type Bool = Type(new TypeData(TypeData::BOOL, "Bool"));
+const Type Int = Type(new TypeData(TypeData::INT, "Int"));
+const Type Dub = Type(new TypeData(TypeData::DUB, "Dub"));
 
-TypeBase::TypeBase(shared_ptr<TypeBase> typeIn, string nameIn)
+TypeData::TypeData(shared_ptr<TypeData> typeIn, string nameIn)
 {
 	name=nameIn;
 	type=typeIn->type;
 	types=vector<Type>(typeIn->types);
 }
 
-TypeBase::TypeBase(PrimitiveType typeIn, string nameIn)
+TypeData::TypeData(PrimitiveType typeIn, string nameIn)
 {
 	type=typeIn;
 	name=nameIn;
 }
 
-TypeBase::TypeBase(PrimitiveType shouldBeMetatype, Type typeIn, string nameIn)
+TypeData::TypeData(PrimitiveType shouldBeMetatype, Type typeIn, string nameIn)
 {
 	if (shouldBeMetatype==METATYPE)
 	{
@@ -37,14 +37,14 @@ TypeBase::TypeBase(PrimitiveType shouldBeMetatype, Type typeIn, string nameIn)
 	}
 }
 
-TypeBase::TypeBase(vector<shared_ptr<TypeBase>> typesIn, string nameIn)
+TypeData::TypeData(vector<shared_ptr<TypeData>> typesIn, string nameIn)
 {
 	name=nameIn;
 	type=TUPLE;
 	types.insert(types.end(), std::make_move_iterator(typesIn.begin()), std::make_move_iterator(typesIn.end()));
 }
 
-string TypeBase::toString(PrimitiveType in)
+string TypeData::toString(PrimitiveType in)
 {
 	switch (in)
 	{
@@ -60,7 +60,7 @@ string TypeBase::toString(PrimitiveType in)
 	}
 }
 
-string TypeBase::toString()
+string TypeData::toString()
 {
 	if (type==TUPLE)
 	{
@@ -88,7 +88,7 @@ string TypeBase::toString()
 	}
 }
 
-bool TypeBase::isCreatable()
+bool TypeData::isCreatable()
 {
 	if (type==INT || type==DUB || type==BOOL)
 	{
@@ -116,12 +116,12 @@ bool TypeBase::isCreatable()
 	return false;
 }
 
-bool TypeBase::isVoid()
+bool TypeData::isVoid()
 {
 	return type==VOID;
 }
 
-size_t TypeBase::getSize()
+size_t TypeData::getSize()
 {
 	switch (type)
 	{
@@ -147,7 +147,7 @@ size_t TypeBase::getSize()
 }
 
 /*
-Type TypeBase::getDominant(Type a, Type b)
+Type TypeData::getDominant(Type a, Type b)
 {
 	if ((a.getType()==TUPLE) != (b.getType()==TUPLE))
 	{
@@ -178,7 +178,7 @@ Type TypeBase::getDominant(Type a, Type b)
 */
 
 /*
-bool TypeBase::operator==(const Type& other)
+bool TypeData::operator==(const Type& other)
 {
 	if (type==UNKNOWN || other.type==UNKNOWN)
 	{
@@ -200,7 +200,7 @@ bool TypeBase::operator==(const Type& other)
 	}
 }
 
-bool TypeBase::exactlyEquals(const Type& other)
+bool TypeData::exactlyEquals(const Type& other)
 {
 	if (type==TUPLE && other.type==TUPLE)
 	{
@@ -222,7 +222,7 @@ bool TypeBase::exactlyEquals(const Type& other)
 }
 */
 
-bool TypeBase::matches(Type other)
+bool TypeData::matches(Type other)
 {
 	if (type==TUPLE && other->type==TUPLE)
 	{
@@ -245,11 +245,11 @@ bool TypeBase::matches(Type other)
 
 Type newMetatype(Type typeIn)
 {
-	return Type(new TypeBase(TypeBase::METATYPE, typeIn, "{"+typeIn->getName()+"}"));
+	return Type(new TypeData(TypeData::METATYPE, typeIn, "{"+typeIn->getName()+"}"));
 }
 
 /*
-void* TypeBase::createVoidPtr()
+void* TypeData::createVoidPtr()
 {
 	switch (type)
 	{
@@ -268,7 +268,7 @@ void* TypeBase::createVoidPtr()
 	return malloc(getSize());
 }
 
-void TypeBase::deleteVoidPtr(void* ptr)
+void TypeData::deleteVoidPtr(void* ptr)
 {
 	free(ptr);
 	
@@ -290,7 +290,7 @@ void TypeBase::deleteVoidPtr(void* ptr)
 	}
 }
 
-void TypeBase::setVoidPtr(void* ptr, void* val)
+void TypeData::setVoidPtr(void* ptr, void* val)
 {
 	memcpy(ptr, val, getSize());
 	
@@ -313,7 +313,7 @@ void TypeBase::setVoidPtr(void* ptr, void* val)
 	}
 }
 
-void* TypeBase::cloneVoidPtr(void* val)
+void* TypeData::cloneVoidPtr(void* val)
 {
 	void* ptr=createVoidPtr();
 	setVoidPtr(ptr, val);
@@ -339,7 +339,7 @@ void* TypeBase::cloneVoidPtr(void* val)
 		return nullptr;
 }
 
-void* TypeBase::castVoidPtr(void* val, Type typeOut)
+void* TypeData::castVoidPtr(void* val, Type typeOut)
 {
 	if (type==VOID || !val)
 	{

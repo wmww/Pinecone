@@ -6,12 +6,12 @@
 #include <cstring> //for memcpy
 using std::memcpy;
 
-class FunctionAction: public Action
+class FunctionAction: public ActionData
 {
 public:
 	
-	FunctionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn):
-		Action(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn)
+	FunctionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn):
+		ActionData(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn)
 	{
 		dataSize=dataSizeIn;
 		action=actionIn;
@@ -74,10 +74,10 @@ public:
 private:
 	
 	int dataSize;
-	ActionPtr action;
+	Action action;
 };
 
-ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn)
+Action functionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn)
 {
-	return ActionPtr(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, dataSizeIn));
+	return Action(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, dataSizeIn));
 }

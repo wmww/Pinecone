@@ -1,12 +1,12 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
-class TypeGetAction: public Action
+class TypeGetAction: public ActionData
 {
 public:
 	
 	TypeGetAction(Type typeIn):
-		Action(Type(new TypeBase(TypeBase::METATYPE, typeIn, "customTypeNameHere")), Void, Void)
+		ActionData(Type(new TypeData(TypeData::METATYPE, typeIn, "customTypeNameHere")), Void, Void)
 	{
 		setDescription(typeIn->toString()+" (type)");
 	}
@@ -26,7 +26,7 @@ public:
 private:
 };
 
-ActionPtr typeGetAction(Type typeIn)
+Action typeGetAction(Type typeIn)
 {
-	return ActionPtr(new TypeGetAction(typeIn));
+	return Action(new TypeGetAction(typeIn));
 }

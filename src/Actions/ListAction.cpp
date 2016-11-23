@@ -1,11 +1,11 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
-class ListAction: public Action
+class ListAction: public ActionData
 {
 public:
 	
-	ListAction(const vector<ActionPtr>& actionsIn): Action((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void)
+	ListAction(const vector<Action>& actionsIn): ActionData((actionsIn.size()>0?actionsIn.back()->getReturnType():UnknownType), Void, Void)
 	{
 		if (actionsIn.size()<=0)
 		{
@@ -87,10 +87,10 @@ public:
 
 	
 private:
-	vector<ActionPtr> actions;
+	vector<Action> actions;
 };
 
-ActionPtr listAction(const vector<ActionPtr>& actionsIn)
+Action listAction(const vector<Action>& actionsIn)
 {
-	return ActionPtr(new ListAction(actionsIn));
+	return Action(new ListAction(actionsIn));
 }

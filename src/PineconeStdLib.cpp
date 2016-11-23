@@ -18,7 +18,7 @@
 #define PNCN_Int Int
 #define PNCN_Bool Bool
 #define PNCN_Void Void
-#define PNCN_Tuple(t1, t2) Type(new TypeBase(vector<Type>({PNCN##_##t1, PNCN##_##t2}), ""))
+#define PNCN_Tuple(t1, t2) Type(new TypeData(vector<Type>({PNCN##_##t1, PNCN##_##t2}), ""))
 
 #define LAMBDA_HEADER [](void* leftIn, void* rightIn)->void*
 
@@ -58,7 +58,7 @@ addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(
 	CONCAT(RETURN, returnType)(returnType, out)												\
 })																							\
 
-ActionPtr voidAction;
+Action voidAction;
 
 StackFrame stdLibStackFrame;
 ActionTablePtr stdLibActionTable(new ActionTable(&stdLibStackFrame));
@@ -191,7 +191,7 @@ void populatePineconeStdLib()
 		cout << right << endl);
 	
 	/*addAction(
-		"print", Void, Void, Type(new TypeBase(vector<Type>({Int, Dub}), "")),
+		"print", Void, Void, Type(new TypeData(vector<Type>({Int, Dub}), "")),
 		LAMBDA_HEADER
 		{
 			cout << "(" << *((int*)rightIn) << ", " << *((double*)((int*)rightIn+1)) << ")" << endl;
@@ -206,7 +206,7 @@ void populatePineconeStdLib()
 	
 	/*t->addAction
 	(
-		ActionPtr
+		Action
 		(
 			new LambdaAction
 			(

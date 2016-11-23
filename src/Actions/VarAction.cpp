@@ -2,12 +2,12 @@
 #include "../../h/ErrorHandler.h"
 #include "../../h/StackFrame.h"
 
-class VarGetAction: public Action
+class VarGetAction: public ActionData
 {
 public:
 	
 	VarGetAction(size_t in, Type typeIn, string textIn):
-		Action(typeIn, Void, Void)
+		ActionData(typeIn, Void, Void)
 	{
 		offset=in;
 		
@@ -32,12 +32,12 @@ private:
 };
 
 //an action for setting a variable, will NOT delete the data element in destructor
-class VarSetAction: public Action
+class VarSetAction: public ActionData
 {
 public:
 	
 	VarSetAction(size_t in, Type typeIn, string textIn):
-		Action(typeIn, Void, typeIn)
+		ActionData(typeIn, Void, typeIn)
 	{
 		offset=in;
 		
@@ -65,12 +65,12 @@ private:
 	size_t offset;
 };
 
-class ConstGetAction: public Action
+class ConstGetAction: public ActionData
 {
 public:
 	
 	ConstGetAction(void* in, Type typeIn, string textIn):
-		Action(typeIn, Void, Void)
+		ActionData(typeIn, Void, Void)
 	{
 		data=malloc(returnType->getSize());
 		memcpy(data, in, returnType->getSize());
@@ -100,17 +100,17 @@ private:
 	void* data;
 };
 
-ActionPtr varGetAction(size_t in, Type typeIn, string textIn)
+Action varGetAction(size_t in, Type typeIn, string textIn)
 {
-	return ActionPtr(new VarGetAction(in, typeIn, textIn));
+	return Action(new VarGetAction(in, typeIn, textIn));
 }
 
-ActionPtr varSetAction(size_t in, Type typeIn, string textIn)
+Action varSetAction(size_t in, Type typeIn, string textIn)
 {
-	return ActionPtr(new VarSetAction(in, typeIn, textIn));
+	return Action(new VarSetAction(in, typeIn, textIn));
 }
 
-ActionPtr constGetAction(void* in, Type typeIn, string textIn)
+Action constGetAction(void* in, Type typeIn, string textIn)
 {
-	return ActionPtr(new ConstGetAction(in, typeIn, textIn));
+	return Action(new ConstGetAction(in, typeIn, textIn));
 }

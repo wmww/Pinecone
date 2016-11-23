@@ -1,11 +1,11 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
-class BranchAction: public Action
+class BranchAction: public ActionData
 {
 public:
-	BranchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr rightInputIn)
-			:Action(actionIn->getReturnType(), Void, Void)
+	BranchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
+			:ActionData(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
 			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
@@ -69,16 +69,16 @@ public:
 	}
 	
 private:
-	ActionPtr action;
-	ActionPtr leftInput;
-	ActionPtr rightInput;
+	Action action;
+	Action leftInput;
+	Action rightInput;
 };
 
-class RightBranchAction: public Action
+class RightBranchAction: public ActionData
 {
 public:
-	RightBranchAction(ActionPtr actionIn, ActionPtr rightInputIn)
-		:Action(actionIn->getReturnType(), Void, Void)
+	RightBranchAction(Action actionIn, Action rightInputIn)
+		:ActionData(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
 			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
@@ -131,15 +131,15 @@ public:
 	}
 	
 private:
-	ActionPtr action;
-	ActionPtr rightInput;
+	Action action;
+	Action rightInput;
 };
 
-class LeftBranchAction: public Action
+class LeftBranchAction: public ActionData
 {
 public:
-	LeftBranchAction(ActionPtr leftInputIn, ActionPtr actionIn)
-			:Action(actionIn->getReturnType(), Void, Void)
+	LeftBranchAction(Action leftInputIn, Action actionIn)
+			:ActionData(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
 			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
@@ -187,11 +187,11 @@ public:
 	}
 	
 private:
-	ActionPtr leftInput;
-	ActionPtr action;
+	Action leftInput;
+	Action action;
 };
 
-ActionPtr branchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr rightInputIn)
+Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 {
 	if (leftInputIn->getReturnType()->isVoid())
 	{
@@ -201,18 +201,18 @@ ActionPtr branchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr righ
 		}
 		else
 		{
-			return ActionPtr(new RightBranchAction(actionIn, rightInputIn));
+			return Action(new RightBranchAction(actionIn, rightInputIn));
 		}
 	}
 	else
 	{
 		if (rightInputIn->getReturnType()->isVoid())
 		{
-			return ActionPtr(new LeftBranchAction(leftInputIn, actionIn));
+			return Action(new LeftBranchAction(leftInputIn, actionIn));
 		}
 		else
 		{
-			return ActionPtr(new BranchAction(leftInputIn, actionIn, rightInputIn));
+			return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 		}
 	}
 }

@@ -10,13 +10,13 @@ using std::to_string;
 using std::function;
 using std::vector;
 
-class Action
+class ActionData
 {
 public:
 	
-	Action(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn);
+	ActionData(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn);
 	
-	virtual ~Action() {}
+	virtual ~ActionData() {}
 	
 	void setDescription(string in) {description=in;}
 	
@@ -44,30 +44,30 @@ protected:
 	//virtual DataElem * privateExecute(DataElem * inLeft, DataElem * inRight)=0;
 };
 
-typedef shared_ptr<Action> ActionPtr;
+typedef shared_ptr<ActionData> Action;
 
-extern ActionPtr voidAction;
+extern Action voidAction;
 
-ActionPtr lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
-ActionPtr createNewVoidAction();
+Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
+Action createNewVoidAction();
 
-ActionPtr branchAction(ActionPtr leftInputIn, ActionPtr actionIn, ActionPtr rightInputIn);
+Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn);
 
-ActionPtr functionAction(ActionPtr actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn);
+Action functionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn);
 
-ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn);
-ActionPtr ifElseAction(ActionPtr conditionIn, ActionPtr ifActionIn, ActionPtr elseAction);
+Action ifAction(Action conditionIn, Action ifActionIn);
+Action ifElseAction(Action conditionIn, Action ifActionIn, Action elseAction);
 
-ActionPtr listAction(const std::vector<ActionPtr>& actionsIn);
+Action listAction(const std::vector<Action>& actionsIn);
 
-ActionPtr loopAction(ActionPtr conditionIn, ActionPtr loopActionIn);
-ActionPtr loopAction(ActionPtr conditionIn, ActionPtr endActionIn, ActionPtr loopActionIn);
+Action loopAction(Action conditionIn, Action loopActionIn);
+Action loopAction(Action conditionIn, Action endActionIn, Action loopActionIn);
 
-ActionPtr makeTupleAction(const std::vector<ActionPtr>& sourceActionsIn);
+Action makeTupleAction(const std::vector<Action>& sourceActionsIn);
 
-ActionPtr varGetAction(size_t in, Type typeIn, string idIn);
-ActionPtr varSetAction(size_t in, Type typeIn, string idIn);
-ActionPtr constGetAction(void* in, Type typeIn, string idIn);
+Action varGetAction(size_t in, Type typeIn, string idIn);
+Action varSetAction(size_t in, Type typeIn, string idIn);
+Action constGetAction(void* in, Type typeIn, string idIn);
 
-ActionPtr typeGetAction(Type typeIn);
+Action typeGetAction(Type typeIn);
 

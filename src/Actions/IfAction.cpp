@@ -1,12 +1,12 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
-class IfAction: public Action
+class IfAction: public ActionData
 {
 public:
 	
-	IfAction(ActionPtr conditionIn, ActionPtr ifActionIn)
-		:Action(Void, Void, Void)
+	IfAction(Action conditionIn, Action ifActionIn)
+		:ActionData(Void, Void, Void)
 	{
 		condition=conditionIn;
 		ifAction=ifActionIn;
@@ -50,16 +50,16 @@ public:
 	
 private:
 	
-	ActionPtr condition;
-	ActionPtr ifAction;
+	Action condition;
+	Action ifAction;
 };
 
-class IfElseAction: public Action
+class IfElseAction: public ActionData
 {
 public:
 	
-	IfElseAction(ActionPtr conditionIn, ActionPtr ifActionIn, ActionPtr elseActionIn)
-		:Action(Void, Void, Void)
+	IfElseAction(Action conditionIn, Action ifActionIn, Action elseActionIn)
+		:ActionData(Void, Void, Void)
 	{
 		condition=conditionIn;
 		ifAction=ifActionIn;
@@ -108,19 +108,19 @@ public:
 	
 private:
 	
-	ActionPtr condition;
-	ActionPtr ifAction;
-	ActionPtr elseAction;
+	Action condition;
+	Action ifAction;
+	Action elseAction;
 };
 
-ActionPtr ifAction(ActionPtr conditionIn, ActionPtr ifActionIn)
+Action ifAction(Action conditionIn, Action ifActionIn)
 {
-	return ActionPtr(new IfAction(conditionIn, ifActionIn));
+	return Action(new IfAction(conditionIn, ifActionIn));
 }
 
-ActionPtr ifElseAction(ActionPtr conditionIn, ActionPtr ifActionIn, ActionPtr elseAction)
+Action ifElseAction(Action conditionIn, Action ifActionIn, Action elseAction)
 {
-	return ActionPtr(new IfElseAction(conditionIn, ifActionIn, elseAction));
+	return Action(new IfElseAction(conditionIn, ifActionIn, elseAction));
 }
 
 
