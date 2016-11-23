@@ -16,7 +16,7 @@ using std::vector;
 using std::list;
 
 #include "msclStringFuncs.h"
-#include "ActionTable.h"
+#include "Namespace.h"
 #include "StackFrame.h"
 #include "Token.h"
 
@@ -35,7 +35,7 @@ public:
 	
 	void resolveProgram(bool printExtraOutput);
 	
-	ActionTablePtr getGlobalActionTable();
+	Namespace getGlobalActionTable();
 	
 	void execute();
 	

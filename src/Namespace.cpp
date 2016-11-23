@@ -1,8 +1,76 @@
-#include "../h/ActionTable.h"
+#include "../h/Namespace.h"
+#include "../h/StackFrame.h"
 #include "../h/ErrorHandler.h"
-#include "../h/Action.h"
 
-ActionTable::ActionTable(shared_ptr<ActionTable> parentIn)
+Namespace NamespaceData::makeRootNamespace()
+{
+	return Namespace(new NamespaceData(Namespace(nullptr), shared_ptr<StackFrame>(new StackFrame())));
+}
+
+Namespace NamespaceData::makeChild()
+{
+	return Namespace(new NamespaceData(shared_from_this(), stackFrame));
+}
+
+Namespace NamespaceData::makeChildAndFrame()
+{
+	return Namespace(new NamespaceData(shared_from_this(), shared_ptr<StackFrame>(new StackFrame())));
+}
+
+NamespaceData::NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn)
+{
+	parent=parentIn;
+	stackFrame=stackFrameIn;
+}
+
+void NamespaceData::clear()
+{
+	allIds.clear();
+	actions.clear();
+	converters.clear();
+	operators.clear();
+	types.clear();
+}
+
+string NamespaceData::getString()
+{
+	return "NamespaceData::getString not yet implemented";
+}
+
+void NamespaceData::addAction(Action action, string id)
+{
+	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+}
+
+void NamespaceData::addOperator(Action action, Operator op)
+{
+	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+}
+
+void NamespaceData::addType(Type type, string id)
+{
+	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*ActionTable::ActionTable(shared_ptr<ActionTable> parentIn)
 {
 	parent=parentIn;
 	stackFrame=parent->getStackFrame();
@@ -59,7 +127,7 @@ void ActionTable::addAction(Action in, Operator op)
 
 void ActionTable::addActionsToList(vector<Action>& matches, string& text)
 {
-	/*for (auto i=actions.begin(); i!=actions.end(); ++i)
+	for (auto i=actions.begin(); i!=actions.end(); ++i)
 	{
 		if ((*i)->getText()==text)
 			matches.push_back(*i);
@@ -68,7 +136,7 @@ void ActionTable::addActionsToList(vector<Action>& matches, string& text)
 	if (parent)
 	{
 		parent->addActionsToList(matches, text);
-	}*/
+	}
 }
 
 Action ActionTable::addConverter(Action action, vector<Type>& types)
@@ -115,11 +183,6 @@ Action ActionTable::makeBranchAction(Token token, Action left, Action right)
 	
 	
 	Action out=makeBranchAction(matches, left, right);
-	
-	/*if (out==voidAction)
-	{
-		error.log("no overload found for {" + left->getReturnType()->getName() + "}.(" + token->getText() + "): {" + right->getReturnType()->getName() + "}", SOURCE_ERROR, token);
-	}*/
 	
 	return out;
 }
@@ -225,17 +288,7 @@ Action ActionTable::makeBranchAction(vector<Action>& matches, Action left, Actio
 		{
 			return voidAction;
 			
-			/*auto best=actionsBranches.begin();
 			
-			for (auto i=std::next(actionsBranches.begin()); i!=actionsBranches.end(); i++)
-			{
-				TypeData::DOM_LEVEL leftDm=(*i)[0]->getReturnType().getDominance((*best)[0]->getReturnType())
-				TypeData::DOM_LEVEL rightDm=(*i)[2]->getReturnType().getDominance((*best)[2]->getReturnType())
-				
-				if ()
-			}
-			
-			return Action(new BranchAction((*best)[0], (*best)[1], (*best)[2])); */
 		}
 	}
 	else
@@ -282,7 +335,7 @@ Type ActionTable::getType(string name)
 
 void ActionTable::addActionsToList(vector<Action>& in, Operator op)
 {
-	/*for (auto i=operators.begin(); i!=operators.end(); ++i)
+	for (auto i=operators.begin(); i!=operators.end(); ++i)
 	{
 		if ((*i)->getText()==op->getText())
 			in.push_back(*i);
@@ -290,7 +343,7 @@ void ActionTable::addActionsToList(vector<Action>& in, Operator op)
 	
 	if (parent)
 		parent->addActionsToList(in, op);
-	*/
+	
 }
 
 void ActionTable::addType(Type typeIn)
@@ -385,4 +438,4 @@ string ActionTable::toString()
 	
 	return out;
 }
-
+*/

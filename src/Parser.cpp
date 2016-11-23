@@ -1,6 +1,6 @@
 #include "../h/Token.h"
 #include "../h/Action.h"
-#include "../h/ActionTable.h"
+#include "../h/Namespace.h"
 #include "../h/ErrorHandler.h"
 #include "../h/StackFrame.h"
 #include "../h/AllOperators.h"
@@ -18,7 +18,7 @@ using std::max;
 using std::pair;
 
 extern StackFrame stdLibStackFrame;
-extern ActionTablePtr stdLibActionTable;
+extern Namespace stdLibNamespace;
 
 //	unless otherwise noted, these are what the perams for the following functions mean
 //		tokens: the tokens to parse
@@ -31,21 +31,21 @@ extern ActionTablePtr stdLibActionTable;
 Action parseFunction(const vector<Token>& tokens, int left, int right);
 
 //	splits a stream of tokens into a ListAction and calls parseExpression on each expression
-Action parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
+Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, int right);
 
 //	recursivly parses a single expression (no action lists)
-Action parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
+Action parseExpression(const vector<Token>& tokens, Namespace table, int left, int right);
 
 //	splits an expression on the given token (should always be an operator)
 //		index: the index to split on
 //		returns: pointer to BranchAction that is the root of the split
-Action splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
+Action splitExpression(const vector<Token>& tokens, Namespace table, int left, int right, int index);
 
 //	returns the action for a single token
 //		token: the token to get the action for
 //		leftIn: the left input
 //		rightIn: the right input
-Action parseSingleToken(Token token, const ActionTablePtr table, Action leftIn, Action rightIn);
+Action parseSingleToken(Token token, const Namespace table, Action leftIn, Action rightIn);
 
 //	returns the index of the closing brace that matches the given opening brace index, works with (), [], and {}
 //		tokens: the token array to use
@@ -53,17 +53,17 @@ Action parseSingleToken(Token token, const ActionTablePtr table, Action leftIn, 
 //		returns: the index of the close peren that matches
 int skipBrace(const vector<Token>& tokens, int start);
 
-void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<Action>& out);
+void parseChain(const vector<Token>& tokens, Namespace table, int left, int right, vector<Action>& out);
 
-Action parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int index);
+Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int right, int index);
 
 Action parseLiteral(Token token);
 
-//Action parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right);
-//Action parseSingleTypeElement(const vector<Token>& tokens, ActionTablePtr table, int& i, int right, string& name, Type& type);
-Action parseTypeToken(Token token, ActionTablePtr table);
+//Action parseType(const vector<Token>& tokens, Namespace table, int left, int right);
+//Action parseSingleTypeElement(const vector<Token>& tokens, Namespace table, int& i, int right, string& name, Type& type);
+Action parseTypeToken(Token token, Namespace table);
 
-Action parseIdentifier(Token token, ActionTablePtr table, Action leftIn, Action rightIn);
+Action parseIdentifier(Token token, Namespace table, Action leftIn, Action rightIn);
 
 
 
@@ -150,7 +150,7 @@ Action parseFunction(const vector<Token>& tokens, int left, int right)
 {
 	StackFrame frame;
 	
-	ActionTablePtr table(new ActionTable(stdLibActionTable, &frame));
+	Namespace table(new ActionTable(stdLibActionTable, &frame));
 	
 	Action actions=parseTokenList(tokens, table, left, right);
 	
@@ -161,7 +161,7 @@ Action parseFunction(const vector<Token>& tokens, int left, int right)
 	return out;
 }
 
-Action parseExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
+Action parseExpression(const vector<Token>& tokens, Namespace table, int left, int right)
 {
 	if (left>right)
 	{
@@ -285,7 +285,7 @@ Action parseExpression(const vector<Token>& tokens, ActionTablePtr table, int le
 	return voidAction;
 }
 
-Action parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
+Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, int right)
 {
 	vector<Action> actions;
 	
@@ -336,7 +336,7 @@ Action parseTokenList(const vector<Token>& tokens, ActionTablePtr table, int lef
 	return listAction(actions);
 }
 
-Action splitExpression(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
+Action splitExpression(const vector<Token>& tokens, Namespace table, int left, int right, int i)
 {
 	Operator op=tokens[i]->getOp();
 	
@@ -359,7 +359,7 @@ Action splitExpression(const vector<Token>& tokens, ActionTablePtr table, int le
 	}
 }
 
-void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int right, vector<Action>& out)
+void parseChain(const vector<Token>& tokens, Namespace table, int left, int right, vector<Action>& out)
 {
 	if (tokens[left]->getOp()==ops->pipe)
 	{
@@ -382,7 +382,7 @@ void parseChain(const vector<Token>& tokens, ActionTablePtr table, int left, int
 		parseChain(tokens, table, i+1, right, out);
 }
 
-Action parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left, int right, int i)
+Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int right, int i)
 {
 	Operator op=tokens[i]->getOp();
 	
@@ -495,7 +495,7 @@ Action parseOperator(const vector<Token>& tokens, ActionTablePtr table, int left
 	}
 }
 
-Action parseSingleToken(Token token, ActionTablePtr table, Action leftIn, Action rightIn)
+Action parseSingleToken(Token token, Namespace table, Action leftIn, Action rightIn)
 {
 	switch (token->getType())
 	{
@@ -642,7 +642,7 @@ Action parseLiteral(Token token)
 	}
 }
 
-/*Action parseType(const vector<Token>& tokens, ActionTablePtr table, int left, int right)
+/*Action parseType(const vector<Token>& tokens, Namespace table, int left, int right)
 {
 	vector<string> names;
 	vector<Type> types;
@@ -653,7 +653,7 @@ Action parseLiteral(Token token)
 	}
 }*/
 
-/*void parseSingleTypeElement(const vector<Token>& tokens, ActionTablePtr table, int& i, int right, string& name, Type& type)
+/*void parseSingleTypeElement(const vector<Token>& tokens, Namespace table, int& i, int right, string& name, Type& type)
 {
 	int end=right;
 	if (i+1<right && tokens[i+1]->getOp()==ops->colon)
@@ -677,7 +677,7 @@ Action parseLiteral(Token token)
 	}
 }*/
 
-Action parseTypeToken(Token token, ActionTablePtr table)
+Action parseTypeToken(Token token, Namespace table)
 {
 	if (token->getType()==TokenData::IDENTIFIER)
 	{
@@ -700,7 +700,7 @@ Action parseTypeToken(Token token, ActionTablePtr table)
 	}
 }
 
-Action parseIdentifier(Token token, ActionTablePtr table, Action leftIn, Action rightIn)
+Action parseIdentifier(Token token, Namespace table, Action leftIn, Action rightIn)
 {
 	if (token->getType()!=TokenData::IDENTIFIER)
 	{

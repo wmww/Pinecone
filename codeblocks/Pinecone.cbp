@@ -34,10 +34,10 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="../h/Action.h" />
-		<Unit filename="../h/ActionTable.h" />
 		<Unit filename="../h/AllOperators.h" />
 		<Unit filename="../h/ErrorHandler.h" />
 		<Unit filename="../h/Lexer.h" />
+		<Unit filename="../h/Namespace.h" />
 		<Unit filename="../h/Operator.h" />
 		<Unit filename="../h/PineconeProgram.h" />
 		<Unit filename="../h/StackFrame.h" />
@@ -46,7 +46,6 @@
 		<Unit filename="../h/msclStringFuncs.h" />
 		<Unit filename="../pinecone_source/pinecone.pncn" />
 		<Unit filename="../pinecone_source/pinecone_concept.txt" />
-		<Unit filename="../src/ActionTable.cpp" />
 		<Unit filename="../src/Actions/Action.cpp" />
 		<Unit filename="../src/Actions/BranchAction.cpp" />
 		<Unit filename="../src/Actions/FunctionAction.cpp" />
@@ -59,6 +58,7 @@
 		<Unit filename="../src/AllOperators.cpp" />
 		<Unit filename="../src/ErrorHandler.cpp" />
 		<Unit filename="../src/Lexer.cpp" />
+		<Unit filename="../src/Namespace.cpp" />
 		<Unit filename="../src/Parser.cpp" />
 		<Unit filename="../src/PineconeProgram.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />
