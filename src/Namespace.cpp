@@ -52,6 +52,35 @@ void NamespaceData::addType(Type type, string id)
 	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
 }
 
+Action NamespaceData::makeActionForTokenWithInput(Token token, Action left, Action right)
+{
+	vector<Action> matches;
+	
+	if (token->getOp())
+	{
+		getActions(token->getOp(), matches);
+	}
+	else
+	{
+		string text=token->getText();
+		getActions(text, matches);
+	}
+	
+	Action selection=findActionWithInput(matches, left->getReturnType(), right->getReturnType());
+	
+	Action out;
+	
+	if (selection)
+	{
+		out=branchAction(selection, left, right);
+	}
+	else
+	{
+		out=voidAction;
+	}
+	
+	return out;
+}
 
 
 
@@ -439,3 +468,5 @@ string ActionTable::toString()
 	return out;
 }
 */
+
+

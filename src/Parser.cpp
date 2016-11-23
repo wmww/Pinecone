@@ -150,13 +150,13 @@ Action parseFunction(const vector<Token>& tokens, int left, int right)
 {
 	StackFrame frame;
 	
-	Namespace table(new ActionTable(stdLibActionTable, &frame));
+	Namespace nmspace=stdLibNamespace->makeChildAndFrame();
 	
-	Action actions=parseTokenList(tokens, table, left, right);
+	Action actions=parseTokenList(tokens, nmspace, left, right);
 	
-	cout << endl << putStringInBox(table->toString(), false, "function table") << endl;
+	cout << endl << putStringInBox(nmspace->getString(), false, "function table") << endl;
 	
-	Action out=functionAction(actions, Void, Void, table->getStackFrame()->getSize());
+	Action out=functionAction(actions, Void, Void, nmspace->getStackFrame()->getSize());
 	
 	return out;
 }
@@ -351,7 +351,7 @@ Action splitExpression(const vector<Token>& tokens, Namespace table, int left, i
 		auto leftAction=(left==i)?voidAction:parseExpression(tokens, table, left, i-1);
 		auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
 		
-		return table->makeBranchAction(tokens[i], leftAction, rightAction);
+		return table->makeActionForTokenWithInput(tokens[i], leftAction, rightAction);
 	}
 	else
 	{
@@ -421,7 +421,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 		
 		auto leftAction=parseExpression(tokens, table, left, i-1);
 		
-		auto conditionAction=table->addConverter(leftAction, Bool);
+		auto conditionAction=table->getActionConvertedToType(leftAction, Bool);
 		
 		if (conditionAction==voidAction)
 		{
@@ -455,7 +455,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 		
 		if (leftActions.size()==1)
 		{
-			auto conditionAction=table->addConverter(leftActions[0], Bool);
+			auto conditionAction=table->getActionConvertedToType(leftActions[0], Bool);
 			
 			if (conditionAction==voidAction)
 			{
@@ -469,7 +469,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 		}
 		else if (leftActions.size()==2)
 		{
-			auto conditionAction=table->addConverter(leftActions[0], Bool);
+			auto conditionAction=table->getActionConvertedToType(leftActions[0], Bool);
 			auto afterAction=leftActions[1];
 			
 			if (conditionAction==voidAction)
@@ -708,7 +708,7 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 		return voidAction;
 	}
 	
-	Action out=table->makeBranchAction(token, leftIn, rightIn);
+	Action out=table->makeActionForTokenWithInput(token, leftIn, rightIn);
 	
 	if (out==voidAction)
 	{
@@ -721,7 +721,7 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 		}
 		else if (type->getType()==TypeData::METATYPE)
 		{
-			table->addType(Type(new TypeData(type->getTypes()[0], token->getText())));
+			table->addType(Type(new TypeData(type->getTypes()[0], token->getText())), token->getText());
 			return voidAction;
 		}
 		else if (type->isCreatable())
