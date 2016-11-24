@@ -1,11 +1,11 @@
 
 # Fibonacci
 
-myPrint: {Int}:
-(
-	print: 7
-	print: tru
-)
+#myPrint: {Int}:
+#(
+#	print: 7
+#	print: tru
+#)
 
 b: 0
 a: 1
@@ -29,3 +29,4 @@ x ?
 	print: 1
 |
 	print: 2
+

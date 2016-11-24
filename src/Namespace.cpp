@@ -204,7 +204,7 @@ Action NamespaceData::makeActionForTokenWithInput(Token token, Action left, Acti
 	
 	if (selection)
 	{
-		out=branchAction(selection, left, right);
+		out=branchAction(left, selection, right);
 	}
 	else
 	{
@@ -260,7 +260,7 @@ Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftIn
 			if (match)
 			{
 				error.log(FUNC+"found too many overloads", INTERNAL_ERROR);
-				return voidAction;
+				return Action(nullptr);
 			}
 			else
 			{
@@ -275,7 +275,7 @@ Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftIn
 	}
 	else
 	{
-		return voidAction;
+		return Action(nullptr);
 	}
 }
 
