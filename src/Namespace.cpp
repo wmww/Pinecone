@@ -101,6 +101,25 @@ void NamespaceData::addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap)
 	hashMap[key].push_back(val);
 }
 
+template<typename T, typename U>
+void NamespaceData::getValuesFromMap(T key, vector<U>& out, unordered_map<T, vector<U>>& hashMap)
+{
+	auto matches=hashMap.find(key);
+	
+	if (matches!=hashMap.end())
+	{
+		out.insert(out.end(), matches->second.begin(), matches->second.end());
+	}
+	
+	if (parent)
+	{
+		//	get the same map we were sent, but in the parent
+		unordered_map<T, vector<U>>& parentMap=*((unordered_map<T, vector<U>>*)((char*)(&hashMap)-(char*)this+(char*)(&(*parent))));
+		
+		parent->getValuesFromMap(key, out, parentMap);
+	}
+}
+
 void NamespaceData::addAction(Action action, string id)
 {
 	Type type=getType(id);
@@ -217,33 +236,47 @@ Action NamespaceData::getActionConvertedToType(Action actionIn, Type outType)
 
 void NamespaceData::getActions(string text, vector<Action>& out)
 {
-	auto matches=actions.find(text);
-	
-	if (matches!=actions.end())
-	{
-		out.insert(out.end(), matches->second.begin(), matches->second.end());
-	}
-	
-	if (parent)
-	{
-		parent->getActions(text, out);
-	}
+	getValuesFromMap(text, out, actions);
 }
 
-void NamespaceData::getActions(Operator, vector<Action>& out)
+void NamespaceData::getActions(Operator op, vector<Action>& out)
 {
-	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+	getValuesFromMap(op, out, operators);
 }
 
 void NamespaceData::getConvertersToType(Type typeIn, vector<Action>& out)
 {
-	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+	getValuesFromMap(typeIn, out, converters);
 }
 
 Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType)
 {
-	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
-	return voidAction;
+	Action match(nullptr);
+	
+	for (auto i: actionsIn)
+	{
+		if (i->getInLeftType()==leftInType && i->getInRightType()==rightInType)
+		{
+			if (match)
+			{
+				error.log(FUNC+"found too many overloads", INTERNAL_ERROR);
+				return voidAction;
+			}
+			else
+			{
+				match=i;
+			}
+		}
+	}
+	
+	if (match)
+	{
+		return match;
+	}
+	else
+	{
+		return voidAction;
+	}
 }
 
 
