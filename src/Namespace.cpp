@@ -184,7 +184,7 @@ Type NamespaceData::getType(string name)
 	}
 }
 
-Action NamespaceData::makeActionForTokenWithInput(Token token, Action left, Action right)
+Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right)
 {
 	vector<Action> matches;
 	

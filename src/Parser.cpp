@@ -65,6 +65,7 @@ Action parseTypeToken(Token token, Namespace table);
 
 Action parseIdentifier(Token token, Namespace table, Action leftIn, Action rightIn);
 
+void parseIdentifierConst(Token token, Namespace table, Action rightIn);
 
 
 
@@ -165,7 +166,7 @@ Action parseExpression(const vector<Token>& tokens, Namespace table, int left, i
 {
 	if (left>right)
 	{
-		error.log(string() + __FUNCTION__ + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
+		//error.log(string() + __FUNCTION__ + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
 		return voidAction;
 	}
 	else if (left==right)
@@ -351,7 +352,7 @@ Action splitExpression(const vector<Token>& tokens, Namespace table, int left, i
 		auto leftAction=(left==i)?voidAction:parseExpression(tokens, table, left, i-1);
 		auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
 		
-		return table->makeActionForTokenWithInput(tokens[i], leftAction, rightAction);
+		return table->getActionForTokenWithInput(tokens[i], leftAction, rightAction);
 	}
 	else
 	{
@@ -390,7 +391,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 	{
 		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
 		{
-			auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
+			auto rightAction=parseExpression(tokens, table, i+1, right);
 			
 			return parseSingleToken(tokens[left], table, voidAction, rightAction);
 		}
@@ -402,7 +403,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 			
 			if (type->getType()==TypeData::METATYPE)
 			{
-				auto func=(right==i)?voidAction:parseFunction(tokens, i+1, right);
+				auto func=parseFunction(tokens, i+1, right);
 				
 				return func;
 			}
@@ -411,6 +412,22 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 				error.log("right now, ':' must have an either an identifier or a type to its left, instead it had '"+stringFromTokens(tokens, left, i-1)+"'", SOURCE_ERROR, tokens[i]);
 				return voidAction;
 			}
+		}
+	}
+	else if (op==ops->doubleColon)
+	{
+		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
+		{
+			Action rigntAction=parseExpression(tokens, table, i+1, right);
+			
+			parseIdentifierConst(tokens[left], table, rigntAction);
+			
+			return voidAction;
+		}
+		else
+		{
+			error.log("'::' must have an identifier to its left", SOURCE_ERROR, tokens[i]);
+			return voidAction;
 		}
 	}
 	else if (op==ops->ifOp)
@@ -708,7 +725,7 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 		return voidAction;
 	}
 	
-	Action out=table->makeActionForTokenWithInput(token, leftIn, rightIn);
+	Action out=table->getActionForTokenWithInput(token, leftIn, rightIn);
 	
 	if (out==voidAction)
 	{
@@ -748,5 +765,7 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 	}
 }
 
-	
-	
+void parseIdentifierConst(Token token, Namespace table, Action rightIn)
+{
+	table->addAction(rightIn, token->getText());
+}
