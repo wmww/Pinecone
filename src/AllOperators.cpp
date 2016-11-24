@@ -32,33 +32,33 @@ void AllOperators::putOpInMap(Operator op)
 
 void AllOperators::get(string text, vector<Operator>& out)
 {
-	for (unsigned j=0; j<text.size(); j++)
+	int start=0;
+	int end=text.size();
+	
+	while (start<int(text.size()))
 	{
-		auto i=opsMap.find(text.substr(j, j+1));
-		
-		if (i==opsMap.end())
+		while (true)
 		{
-			error.log("unknown operator '" + text + "'", SOURCE_ERROR);
-		}
-		else
-		{
-			out.push_back(i->second);
+			if (end<=start)
+			{
+				error.log("unknown operator '" + text + "'", SOURCE_ERROR);
+			}
+			
+			auto i=opsMap.find(text.substr(start, end-start));
+			
+			if (i==opsMap.end())
+			{
+				end--;
+			}
+			else
+			{
+				out.push_back(i->second);
+				start=end;
+				end=text.size();
+				break;
+			}
 		}
 	}
-	
-	/*for (auto i=OperatorData::operators.begin(); i!=OperatorData::operators.end(); i++)
-	{
-		if (text==(*i)->getText())
-		{
-			out.push_back(*i);
-			return;
-		}
-	}
-	
-	//in the future, as more operators are found the text string will become shorter and shorter
-	if (!text.empty())
-		error.log("unknown operator '" + text + "'", SOURCE_ERROR);
-		*/
 }
 
 /*
