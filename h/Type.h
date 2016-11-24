@@ -3,8 +3,8 @@
 #include <string>
 using std::string;
 
-#include <vector>
-using std::vector;
+#include <unordered_map>
+using std::unordered_map;
 
 #include <memory>
 using std::shared_ptr;
@@ -12,9 +12,11 @@ using std::shared_ptr;
 #include <cstring>
 using std::memcpy;
 
-class ActionTable;
+class TypeBase;
 
-class TypeData
+typedef shared_ptr<TypeBase> Type;
+
+class TypeBase
 {
 public:
 	
@@ -39,46 +41,31 @@ public:
 		METATYPE
 	};
 	
-	TypeData(shared_ptr<TypeData> typeIn, string nameIn);
-	TypeData(PrimitiveType typeIn, string nameIn);
-	TypeData(PrimitiveType shouldBeMetatype, shared_ptr<TypeData> typeIn, string nameIn);
-	TypeData(vector<shared_ptr<TypeData>> typesIn, string nameIn);
+	static Type makeNew(Type typeIn, string nameIn);
+	static Type makeNew(PrimitiveType typeIn, string nameIn);
+	static Type makeNew(unordered_map<string, Type>, string nameIn);
+	
+	TypeBase(string nameIn) {name=nameIn;}
 	
 	static string toString(PrimitiveType in);
-	string toString();
+	virtual string getString()=0;
 	
-	//static Type getDominant(Type a, Type b);
-	
-	bool isCreatable();
-	bool isVoid();
+	virtual bool isCreatable() {return true};
+	virtual bool isVoid() {return false;};
 	
 	size_t getSize();
 	string getName() {return name;}
 	
-	PrimitiveType getType() {return type;}
-	vector<shared_ptr<TypeData>>& getTypes() {return types;}
+	virtual PrimitiveType getType() {return type;}
 	
-	//bool operator==(const Type& other);
-	//bool exactlyEquals(const Type& other);
-	
-	bool matches(shared_ptr<TypeData> other);
-	
-	//void* createVoidPtr();
-	//void* cloneVoidPtr(void* ptr);
-	//void* castVoidPtr(void* ptr, shared_ptr<TypeData> typeOut);
-	//void setVoidPtr(void* ptr, void* in);
-	//void deleteVoidPtr(void* ptr);
+	bool matches(Type other);
 	
 private:
 	
 	string name;
-	PrimitiveType type;
-	vector<shared_ptr<TypeData>> types;
+	
+	virtual bool matchesSameTypeType(Type other)=0;
 };
-
-typedef shared_ptr<TypeData> Type;
-
-Type newMetatype(Type typeIn);
 
 const extern Type UnknownType;
 const extern Type Void;

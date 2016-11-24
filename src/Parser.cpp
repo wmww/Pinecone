@@ -59,7 +59,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 
 Action parseLiteral(Token token);
 
-//Action parseType(const vector<Token>& tokens, Namespace table, int left, int right);
+Action parseType(const vector<Token>& tokens, Namespace table, int left, int right);
 //Action parseSingleTypeElement(const vector<Token>& tokens, Namespace table, int& i, int right, string& name, Type& type);
 Action parseTypeToken(Token token, Namespace table);
 
@@ -220,8 +220,9 @@ Action parseExpression(const vector<Token>& tokens, Namespace table, int left, i
 						{
 							return parseTypeToken(tokens[left+1], table);
 						}
-						else if (left+1<right)
+						else if (left+1<right-1)
 						{
+							//return parseType(tokens, table, left+1, right-1)
 							error.log("complex type parsing not yet implemented (required in "+stringFromTokens(tokens, left, right)+")", SOURCE_ERROR, tokens[left]);
 							return voidAction;
 						}
@@ -666,7 +667,15 @@ Action parseLiteral(Token token)
 	
 	for (int i=left; i<=right; i++)
 	{
-		
+		if (tokens[i]->getType()==TokenData::IDENTIFIER && (i==right || tokens[i+1]->getType()==TokenData::IDENTIFIER))
+		{
+			if (left==i)
+			{
+				afsd
+			}
+				
+			left=i+1;
+		}
 	}
 }*/
 
