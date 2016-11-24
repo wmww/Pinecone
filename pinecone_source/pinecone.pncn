@@ -1,9 +1,9 @@
 
 # Fibonacci
 
-myPrint:: {Int}:
+myPrint:: {intIn: Int}:
 (
-	print: 7
+	print: intIn
 	print: tru
 )
 
