@@ -76,7 +76,7 @@ public:
 	// add an operator
 	void addOperator(Action action, Operator op);
 	
-	//	add a type
+	//	add a type, throws an internal error if that type is already in the namespace, so check before trying to add
 	void addType(Type type, string id);
 	
 	
@@ -116,6 +116,9 @@ private:
 	//void addActionsToList(vector<Action>& in, Operator op);
 	//Action makeBranchAction(vector<Action>& matches, Action left, Action right);
 	//void getAllConvertersForType(vector<Action>& convertersOut, Type type);
+	
+	template<typename T, typename U>
+	static void addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap);
 	
 	//	addes all the matching actions in this and in all parents to out
 	void getActions(string text, vector<Action>& out);
