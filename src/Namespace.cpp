@@ -34,22 +34,114 @@ void NamespaceData::clear()
 
 string NamespaceData::getString()
 {
-	return "NamespaceData::getString not yet implemented";
+	string out;
+	
+	out+="normal functions:\n";
+	
+	for (auto i: actions)
+	{
+		out+="\t";
+		
+		out+=i.first;
+		
+		if (i.second.size()>1)
+			out+=" (" + to_string(i.second.size()) + " overloads)";
+		
+		out+="\n";
+	}
+	
+	out+="\nconverters:\n";
+	
+	for (auto i: converters)
+	{
+		out+="\t";
+		
+		out+=i.first->getName();
+		
+		if (i.second.size()>1)
+			out+=" (" + to_string(i.second.size()) + " overloads)";
+		
+		out+="\n";
+	}
+	
+	out+="\noperators:\n";
+	
+	for (auto i: operators)
+	{
+		out+="\t";
+		out+=i.first->getText();
+		
+		if (i.second.size()>1)
+			out+=" (" + to_string(i.second.size()) + " overloads)";
+		
+		out+="\n";
+	}
+	
+	out+="\ntypes:\n";
+	for (auto i: types)
+	{
+		out+="\t";
+		out+=i.second->getName() + " (" + i.second->toString() + ")";
+		out+="\n";
+	}
+	
+	return out;
+}
+
+template<typename T, typename U>
+void NamespaceData::addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap)
+{
+	auto i=hashMap.find(key);
+	
+	if (i==hashMap.end())
+	{
+		hashMap[key]=vector<U>();
+	}
+	
+	hashMap[key].push_back(val);
 }
 
 void NamespaceData::addAction(Action action, string id)
 {
-	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+	Type type=getType(id);
+	
+	if (type!=UnknownType)
+	{
+		if (action->getReturnType()==type)
+		{
+			addToMap(id, CONVERTER, allIds);
+			addToMap(id, action, actions);
+			addToMap(type, action, converters);
+		}
+		else
+		{
+			error.log("can not call an action '"+id+"' as there is already a type named that which does not match the return type", SOURCE_ERROR);
+		}
+	}
+	else
+	{
+		addToMap(id, ACTION, allIds);
+		addToMap(id, action, actions);
+	}
 }
 
 void NamespaceData::addOperator(Action action, Operator op)
 {
-	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+	addToMap(op->getText(), OPERATOR, allIds);
+	addToMap(op, action, operators);
 }
 
 void NamespaceData::addType(Type type, string id)
 {
-	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+	if (types.find(id)==types.end())
+	{
+		addToMap(type->getName(), TYPE, allIds);
+		types[id]=type;
+	}
+	else
+	{
+		error.log("tried to create multiple types with the name '" + id + "'", INTERNAL_ERROR);
+	}
 }
 
 Type NamespaceData::getType(string name)
@@ -122,8 +214,37 @@ Action NamespaceData::getActionConvertedToType(Action actionIn, Type outType)
 	
 	return voidAction;
 }
-	
 
+void NamespaceData::getActions(string text, vector<Action>& out)
+{
+	auto matches=actions.find(text);
+	
+	if (matches!=actions.end())
+	{
+		out.insert(out.end(), matches->second.begin(), matches->second.end());
+	}
+	
+	if (parent)
+	{
+		parent->getActions(text, out);
+	}
+}
+
+void NamespaceData::getActions(Operator, vector<Action>& out)
+{
+	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+}
+
+void NamespaceData::getConvertersToType(Type typeIn, vector<Action>& out)
+{
+	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+}
+
+Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType)
+{
+	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+	return voidAction;
+}
 
 
 
