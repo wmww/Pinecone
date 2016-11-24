@@ -118,7 +118,10 @@ private:
 	//void getAllConvertersForType(vector<Action>& convertersOut, Type type);
 	
 	template<typename T, typename U>
-	static void addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap);
+	void addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap);
+	
+	template<typename T, typename U>
+	void getValuesFromMap(T key, vector<U>& out, unordered_map<T, vector<U>>& hashMap);
 	
 	//	addes all the matching actions in this and in all parents to out
 	void getActions(string text, vector<Action>& out);
