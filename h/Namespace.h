@@ -88,7 +88,7 @@ public:
 	
 	//	returns a branch action that is the action given in token with the left and right inputs
 	//	returns voidAction if it can't find a good match
-	Action makeActionForTokenWithInput(Token token, Action left, Action right);
+	Action getActionForTokenWithInput(Token token, Action left, Action right);
 	
 	//	returns the given action with a conversion to the given type put over top of it if needed
 	Action getActionConvertedToType(Action actionIn, Type outType);

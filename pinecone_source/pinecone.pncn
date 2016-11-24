@@ -19,7 +19,7 @@ a<100 @
 
 print
 
-myPrint: 7
+myPrint
 
 print
 x: fls
