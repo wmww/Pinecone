@@ -41,30 +41,43 @@ public:
 		METATYPE
 	};
 	
-	static Type makeNew(Type typeIn, string nameIn);
+	//static Type makeNew(Type typeIn, string nameIn);
 	static Type makeNew(PrimitiveType typeIn, string nameIn);
-	static Type makeNew(unordered_map<string, Type>, string nameIn);
+	//static Type makeNew(unordered_map<string, Type>, string nameIn);
 	
-	TypeBase(string nameIn) {name=nameIn;}
+	//TypeBase(string nameIn) {name=nameIn;}
 	
 	static string toString(PrimitiveType in);
 	virtual string getString()=0;
 	
-	virtual bool isCreatable() {return true};
+	virtual bool isCreatable() {return true;};
 	virtual bool isVoid() {return false;};
 	
 	size_t getSize();
-	string getName() {return name;}
+	//string getName() {return name;}
 	
-	virtual PrimitiveType getType() {return type;}
+	virtual PrimitiveType getType()=0;
 	
 	bool matches(Type other);
 	
 private:
 	
-	string name;
+	//string name;
 	
 	virtual bool matchesSameTypeType(Type other)=0;
+};
+
+//	since types are immutable, this class is an easy way to construct a tuple type
+class TupleTypeMaker
+{
+public:
+	void add(string name, Type type);
+	void add(Type type);
+	
+	Type get();
+	
+private:
+	unordered_map<string, Type> hashmap;
 };
 
 const extern Type UnknownType;
