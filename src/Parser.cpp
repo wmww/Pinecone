@@ -402,7 +402,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 			
 			auto type=action->getReturnType();
 			
-			if (type->getType()==TypeData::METATYPE)
+			if (type->getType()==TypeBase::METATYPE)
 			{
 				auto func=parseFunction(tokens, i+1, right);
 				
@@ -549,7 +549,7 @@ Action parseLiteral(Token token)
 	
 	//bool floatingPoint=false;
 	
-	Type type=UnknownType;
+	Type type=Unknown;
 	
 	if (in.empty())
 	{
@@ -655,7 +655,7 @@ Action parseLiteral(Token token)
 	}
 	else
 	{
-		error.log("tried to make literal with invalid type of " + type->toString(), INTERNAL_ERROR, token);
+		error.log("tried to make literal with invalid type of " + type->getString(), INTERNAL_ERROR, token);
 		return voidAction;
 	}
 }
@@ -716,13 +716,13 @@ Action parseTypeToken(Token token, Namespace table)
 		else
 		{
 			error.log("could not find type "+token->getDescription(), SOURCE_ERROR, token);
-			return typeGetAction(newMetatype(Void));
+			return typeGetAction(TypeBase::makeNewMeta(Void));
 		}
 	}
 	else
 	{
 		error.log(FUNC+"called with non identifier token", INTERNAL_ERROR, token);
-		return typeGetAction(newMetatype(Void));
+		return typeGetAction(TypeBase::makeNewMeta(Void));
 	}
 }
 
@@ -745,9 +745,12 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 			error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
 				return voidAction;
 		}
-		else if (type->getType()==TypeData::METATYPE)
+		else if (type->getType()==TypeBase::METATYPE)
 		{
-			table->addType(Type(new TypeData(type->getTypes()[0], token->getText())), token->getText());
+			//table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())), token->getText());
+			
+			error.log("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR);
+			
 			return voidAction;
 		}
 		else if (type->isCreatable())
@@ -764,7 +767,7 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 		}
 		else
 		{
-			error.log(string() + "type "+type->getName()+" not creatable", SOURCE_ERROR, token);
+			error.log(string() + "type "+type->getString()+" not creatable", SOURCE_ERROR, token);
 			return voidAction;
 		}
 	}

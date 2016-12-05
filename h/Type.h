@@ -6,6 +6,9 @@ using std::string;
 #include <unordered_map>
 using std::unordered_map;
 
+#include <vector>
+using std::vector;
+
 #include <memory>
 using std::shared_ptr;
 
@@ -41,26 +44,29 @@ public:
 		METATYPE
 	};
 	
-	//static Type makeNew(Type typeIn, string nameIn);
-	static Type makeNew(PrimitiveType typeIn, string nameIn);
+	static Type makeNewVoid();
+	static Type makeNewMeta(Type typeIn);
+	static Type makeNewPrimitive(PrimitiveType typeIn);
 	//static Type makeNew(unordered_map<string, Type>, string nameIn);
 	
 	//TypeBase(string nameIn) {name=nameIn;}
 	
-	static string toString(PrimitiveType in);
+	virtual Type getMetaType();
+	
+	static string getString(PrimitiveType in);
 	virtual string getString()=0;
 	
 	virtual bool isCreatable() {return true;};
 	virtual bool isVoid() {return false;};
 	
-	size_t getSize();
+	virtual size_t getSize()=0;
 	//string getName() {return name;}
 	
 	virtual PrimitiveType getType()=0;
 	
-	bool matches(Type other);
+	bool matches(Type other) {return other->getType()==getType() && matchesSameTypeType(other);}
 	
-private:
+protected:
 	
 	//string name;
 	
@@ -77,10 +83,11 @@ public:
 	Type get();
 	
 private:
-	unordered_map<string, Type> hashmap;
+	unordered_map<string, Type> typesMap;
+	vector<Type> typesOrder;
 };
 
-const extern Type UnknownType;
+const extern Type Unknown;
 const extern Type Void;
 const extern Type Bool;
 const extern Type Int;

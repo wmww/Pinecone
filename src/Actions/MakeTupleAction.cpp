@@ -11,21 +11,24 @@ public:
 	
 	MakeTupleAction(const vector<Action>& sourceActionsIn):
 		ActionData(
-			Type(
-				new TypeData(
-					[&]() -> vector<shared_ptr<TypeData>>
-					{
-						vector<shared_ptr<TypeData>> out;
-						
-						for (auto i=sourceActionsIn.begin(); i!=sourceActionsIn.end(); ++i)
-						{
-							out.push_back((*i)->getReturnType());
-						}
-						
-						return out;
-					}(), ""
-				)
-			),
+			[&]() -> Type
+			{
+				/*
+				TupleTypeMaker tuple;
+				
+				for (auto i=sourceActionsIn.begin(); i!=sourceActionsIn.end(); ++i)
+				{
+					tuple.add((*i)->getReturnType());
+				}
+				
+				return tuple.get();
+				*/
+				
+				error.log(FUNC+" not yet implemented", INTERNAL_ERROR);
+				
+				return Void;
+			}(),
+			
 			Void, Void
 		)
 	{
@@ -52,7 +55,7 @@ public:
 
 	string getDescription()
 	{
-		return "[tuple of type " + getReturnType()->toString() + "]";
+		return "[tuple of type " + getReturnType()->getString() + "]";
 		
 		/*string out;
 		out+="\n{";
