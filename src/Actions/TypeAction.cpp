@@ -6,9 +6,9 @@ class TypeGetAction: public ActionData
 public:
 	
 	TypeGetAction(Type typeIn):
-		ActionData(Type(new TypeData(TypeData::METATYPE, typeIn, "customTypeNameHere")), Void, Void)
+		ActionData(typeIn->getMetaType(), Void, Void)
 	{
-		setDescription(typeIn->toString()+" (type)");
+		setDescription(typeIn->getString()+" (type)");
 	}
 	
 	string getCSource(string inLeft, string inRight)

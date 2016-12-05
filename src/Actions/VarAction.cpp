@@ -11,7 +11,7 @@ public:
 	{
 		offset=in;
 		
-		setDescription("get " + typeIn->getName() + " '" + textIn + "'");
+		setDescription("get " + typeIn->getString() + " '" + textIn + "'");
 	}
 	
 	string getCSource(string inLeft, string inRight)
@@ -41,7 +41,7 @@ public:
 	{
 		offset=in;
 		
-		setDescription("set " + typeIn->getName() + " '" + textIn + "'");
+		setDescription("set " + typeIn->getString() + " '" + textIn + "'");
 	}
 	
 	string getCSource(string inLeft, string inRight)

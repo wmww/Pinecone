@@ -1,11 +1,11 @@
 
 # Fibonacci
 
-myPrint:: {intIn: Int}:
-(
-	print: intIn
-	print: tru
-)
+#myPrint:: {intIn: Int}:
+#(
+#	print: intIn
+#	print: tru
+#)
 
 b: 0
 a: 1
@@ -19,7 +19,7 @@ a<100 @
 
 print
 
-myPrint
+#myPrint
 
 print
 x: fls

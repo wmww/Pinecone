@@ -1,11 +1,211 @@
 #include "../h/Type.h"
 #include "../h/ErrorHandler.h"
 
-const Type UnknownType = Type(new TypeData(TypeData::UNKNOWN, "UNKNOWN_TYPE"));
-const Type Void = Type(new TypeData(TypeData::VOID, "Void"));
-const Type Bool = Type(new TypeData(TypeData::BOOL, "Bool"));
-const Type Int = Type(new TypeData(TypeData::INT, "Int"));
-const Type Dub = Type(new TypeData(TypeData::DUB, "Dub"));
+class VoidType: public TypeBase
+{
+public:
+	virtual string getString()
+	{
+		return "VOID";
+	}
+	
+	bool isCreatable()
+	{
+		return false;
+	}
+	
+	bool isVoid()
+	{
+		return true;
+	}
+	
+	size_t getSize()
+	{
+		return 0;
+	}
+	
+	PrimitiveType getType()
+	{
+		return VOID;
+	};
+	
+protected:
+	
+	bool matchesSameTypeType(Type other)
+	{
+		return true;
+	}
+};
+
+class UnknownType: public TypeBase
+{
+public:
+	virtual string getString()
+	{
+		return "UNKNOWN";
+	}
+	
+	bool isCreatable()
+	{
+		return false;
+	}
+	
+	bool isVoid()
+	{
+		return false;
+	}
+	
+	size_t getSize()
+	{
+		return 0;
+	}
+	
+	PrimitiveType getType()
+	{
+		return UNKNOWN;
+	};
+	
+protected:
+	
+	bool matchesSameTypeType(Type other)
+	{
+		return false;
+	}
+};
+
+class PrimType: public TypeBase
+{
+public:
+	
+	PrimType(PrimitiveType in)
+	{
+		primType=in;
+	}
+	
+	string getString()
+	{
+		return TypeBase::getString(primType);
+	}
+	
+	size_t getSize()
+	{
+		switch (primType)
+		{
+			case BOOL: return sizeof(bool);
+			case INT: return sizeof(int);
+			case DUB: return sizeof(double);
+			
+			default:
+				error.log("tried to get size of " + getString(), INTERNAL_ERROR);
+				return 0;
+		}
+	}
+	
+	PrimitiveType getType()
+	{
+		return primType;
+	}
+	
+protected:
+	
+	PrimitiveType primType;
+	
+	bool matchesSameTypeType(Type other)
+	{
+		return other->getType()==primType;
+	}
+};
+
+Type TypeBase::makeNewVoid()
+{
+	return Type(new VoidType);
+}
+
+Type TypeBase::makeNewPrimitive(PrimitiveType typeIn)
+{
+	return Type(new PrimType(typeIn));
+}
+
+Type TypeBase::makeNewMeta(Type typeIn)
+{
+	//return Type(new PrimType(typeIn));
+	
+	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
+	
+	return Void;
+}
+
+//static Type TypeBase::makeNewPrimitive(PrimitiveType typeIn);
+
+const Type Unknown(new UnknownType);
+const Type Void = TypeBase::makeNewVoid();
+const Type Bool = TypeBase::makeNewPrimitive(TypeBase::BOOL);
+const Type Int = TypeBase::makeNewPrimitive(TypeBase::INT);
+const Type Dub = TypeBase::makeNewPrimitive(TypeBase::DUB);
+
+Type TypeBase::getMetaType()
+{
+	return Unknown;
+}
+
+string TypeBase::getString(PrimitiveType in)
+{
+	switch (in)
+	{
+		case UNKNOWN: return "UNKNOWN_TYPE";
+		case VOID: return "VOID";
+		case BOOL: return "BOOL";
+		case INT: return "INT";
+		case DUB: return "DUB";
+		case TUPLE: return "TUPLE";
+		case METATYPE: return "METATYPE";
+		default: return "ERROR_GETTING_TYPE";
+	}
+}
+
+/*
+class TupleType: public TypeBase
+{
+public:
+	
+	virtual string getString()
+	{
+		string out;
+		
+		for (i: typesOrder)
+		{
+			out+=
+		}
+	}
+	
+	virtual size_t getSize()
+	{
+		size_t sum=0;
+		
+		for (i: typesOrder)
+		{
+			sum+=i->getSize();
+		}
+		
+		return sum;
+	}
+	
+	virtual PrimitiveType getType()
+	{
+		return TUPLE;
+	}
+	
+private:
+	
+	unordered_map<string, Type> typesMap;
+	vector<Type> typesOrder;
+	
+	virtual bool matchesSameTypeType(Type other)
+	{
+		return other->getType()==primType;
+	}
+};
+*/
 
 /*
 TypeData::TypeData(shared_ptr<TypeData> typeIn, string nameIn)
@@ -43,22 +243,6 @@ TypeData::TypeData(vector<shared_ptr<TypeData>> typesIn, string nameIn)
 	name=nameIn;
 	type=TUPLE;
 	types.insert(types.end(), std::make_move_iterator(typesIn.begin()), std::make_move_iterator(typesIn.end()));
-}
-
-string TypeData::toString(PrimitiveType in)
-{
-	switch (in)
-	{
-		//case NONE: return "NO_TYPE";
-		case UNKNOWN: return "UNKNOWN_TYPE";
-		case VOID: return "VOID";
-		case BOOL: return "BOOL";
-		case INT: return "INT";
-		case DUB: return "DUB";
-		case TUPLE: return "TUPLE";
-		case METATYPE: return "METATYPE";
-		default: return "ERROR_GETTING_TYPE";
-	}
 }
 
 string TypeData::toString()
@@ -173,3 +357,5 @@ Type newMetatype(Type typeIn)
 	return Type(new TypeData(TypeData::METATYPE, typeIn, "{"+typeIn->getName()+"}"));
 }
 */
+
+

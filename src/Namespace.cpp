@@ -56,7 +56,7 @@ string NamespaceData::getString()
 	{
 		out+="\t";
 		
-		out+=i.first->getName();
+		out+=i.first->getString();
 		
 		if (i.second.size()>1)
 			out+=" (" + to_string(i.second.size()) + " overloads)";
@@ -81,7 +81,7 @@ string NamespaceData::getString()
 	for (auto i: types)
 	{
 		out+="\t";
-		out+=i.second->getName() + " (" + i.second->toString() + ")";
+		out+=i.second->getString() + " (" + i.second->getString() + ")";
 		out+="\n";
 	}
 	
@@ -124,7 +124,7 @@ void NamespaceData::addAction(Action action, string id)
 {
 	Type type=getType(id);
 	
-	if (type!=UnknownType)
+	if (type!=Unknown)
 	{
 		if (action->getReturnType()==type)
 		{
@@ -154,7 +154,7 @@ void NamespaceData::addType(Type type, string id)
 {
 	if (types.find(id)==types.end())
 	{
-		addToMap(type->getName(), TYPE, allIds);
+		addToMap(type->getString(), TYPE, allIds);
 		types[id]=type;
 	}
 	else
@@ -175,7 +175,7 @@ Type NamespaceData::getType(string name)
 		}
 		else
 		{
-			return UnknownType;
+			return Unknown;
 		}
 	}
 	else

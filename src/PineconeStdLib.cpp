@@ -139,10 +139,10 @@ void populatePineconeStdLib()
 	
 	///basic types
 	
-	table->addType(Void, Void->getName());
-	table->addType(Bool, Bool->getName());
-	table->addType(Int, Int->getName());
-	table->addType(Dub, Dub->getName());
+	table->addType(Void, "Void");
+	table->addType(Bool, "Bool");
+	table->addType(Int, "Int");
+	table->addType(Dub, "Dub");
 	
 	
 	///initalizers
