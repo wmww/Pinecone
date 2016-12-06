@@ -145,6 +145,8 @@ public:
 			out+=(*subTypes)[i].name+": "+(*subTypes)[i].type->getString();
 		}
 		
+		out+="}";
+		
 		return out;
 	}
 	

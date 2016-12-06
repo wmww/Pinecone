@@ -527,6 +527,10 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 		
 		return makeTupleAction(out);
 	}
+	/*else if (op==ops->dot)
+	{
+		if (left+1==i && i+1==right && tokens[left]->getType()==TokenData::LITERAL && tokens[right]->getType()==TokenData::LITERAL)
+	}*/
 	else
 	{
 		error.log(string() + FUNC + " sent unknown operator (" + to_string(left) + ", " + to_string(right) + ") "+op->getText(), INTERNAL_ERROR, tokens[i]);
@@ -802,3 +806,5 @@ void parseIdentifierConst(Token token, Namespace table, Action rightIn)
 {
 	table->addAction(rightIn, token->getText());
 }
+
+
