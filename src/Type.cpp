@@ -193,6 +193,45 @@ private:
 	unique_ptr<vector<NamedType>> subTypes;
 };
 
+class MetaType: public TypeBase
+{
+public:
+	
+	MetaType(Type in)
+	{
+		type=in;
+	}
+	
+	string getString()
+	{
+		return "{"+type->getString()+"}";
+	}
+	
+	size_t getSize()
+	{
+		return 0;
+	}
+	
+	bool isCreatable()
+	{
+		return false;
+	}
+	
+	PrimitiveType getType()
+	{
+		return METATYPE;
+	}
+	
+protected:
+	
+	Type type;
+	
+	bool matchesSameTypeType(Type other)
+	{
+		return ((MetaType*)(&(*other)))->type==type;
+	}
+};
+
 Type TypeBase::makeNewVoid()
 {
 	return Type(new VoidType);
@@ -203,15 +242,6 @@ Type TypeBase::makeNewPrimitive(PrimitiveType typeIn)
 	return Type(new PrimType(typeIn));
 }
 
-Type TypeBase::makeNewMeta(Type typeIn)
-{
-	//return Type(new PrimType(typeIn));
-	
-	error.log(FUNC+" is not yet implemented", INTERNAL_ERROR);
-	
-	return Void;
-}
-
 const Type Unknown(new UnknownType);
 const Type Void = TypeBase::makeNewVoid();
 const Type Bool = TypeBase::makeNewPrimitive(TypeBase::BOOL);
@@ -220,7 +250,7 @@ const Type Dub = TypeBase::makeNewPrimitive(TypeBase::DUB);
 
 Type TypeBase::getMetaType()
 {
-	return Unknown;
+	return Type(new MetaType(shared_from_this()));
 }
 
 string TypeBase::getString(PrimitiveType in)

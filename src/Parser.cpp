@@ -741,13 +741,13 @@ Action parseTypeToken(Token token, Namespace table)
 		else
 		{
 			error.log("could not find type "+token->getDescription(), SOURCE_ERROR, token);
-			return typeGetAction(TypeBase::makeNewMeta(Void));
+			return typeGetAction(Void->getMetaType());
 		}
 	}
 	else
 	{
 		error.log(FUNC+"called with non identifier token", INTERNAL_ERROR, token);
-		return typeGetAction(TypeBase::makeNewMeta(Void));
+		return typeGetAction(Void->getMetaType());
 	}
 }
 
