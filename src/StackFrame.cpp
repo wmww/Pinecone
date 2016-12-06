@@ -2,18 +2,24 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
-unsigned char * stackPtr=nullptr;
+void * stackPtr=nullptr;
 
-void StackFrame::clear()
+void StackFrame::addMember(Type in)
 {
-	actions=nullptr;
-	members.clear();
+	members.push_back(in);
+	frameSize+=in->getSize();
 }
 
-void StackFrame::execute()
+void StackFrame::addLeftInput(Type in)
 {
-	if (actions)
-		free(actions->execute(nullptr, nullptr));
-	else
-		error.log("cannot execute stack frame because actions is null", RUNTIME_ERROR);
+	leftInputAdded=true;
+	leftInputOffset=frameSize;
+	addMember(in);
+}
+
+void StackFrame::addRightInput(Type in)
+{
+	rightInputAdded=true;
+	rightInputOffset=frameSize;
+	addMember(in);
 }

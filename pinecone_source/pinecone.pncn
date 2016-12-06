@@ -1,19 +1,16 @@
 
-
-
-myPrint::{Int}:
+myPrint::{myInt: Int; myDub: Dub}:
 (
-	print: 5
+	print: 7
 	print: tru
 )
 
 print: 3
 
-myTuple: (2, 1d)
+#myTuple: (2, 1d)
 
-myPrint
+myPrint: 12, 7d
 
-print
 x: fls
 y: fls
 

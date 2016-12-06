@@ -178,8 +178,8 @@ protected:
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
-			if ((*subTypes)[i].name!=(*o->subTypes)[i].name)
-				return false;
+			//if ((*subTypes)[i].name!=(*o->subTypes)[i].name)
+			//	return false;
 			
 			if ((*subTypes)[i].type!=(*o->subTypes)[i].type)
 				return false;

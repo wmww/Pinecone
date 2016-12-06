@@ -196,6 +196,12 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 	{
 		string text=token->getText();
 		getActions(text, matches);
+		error.log("found "+to_string(matches.size())+" matches for "+text, JSYK);
+		
+		for (auto i: matches)
+		{
+			error.log("\t"+i->getInLeftType()->getString()+" "+i->getInRightType()->getString(), JSYK);
+		}
 	}
 	
 	Action selection=findActionWithInput(matches, left->getReturnType(), right->getReturnType());
