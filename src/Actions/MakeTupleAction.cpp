@@ -13,7 +13,6 @@ public:
 		ActionData(
 			[&]() -> Type
 			{
-				/*
 				TupleTypeMaker tuple;
 				
 				for (auto i=sourceActionsIn.begin(); i!=sourceActionsIn.end(); ++i)
@@ -22,11 +21,6 @@ public:
 				}
 				
 				return tuple.get();
-				*/
-				
-				error.log(FUNC+" not yet implemented", INTERNAL_ERROR);
-				
-				return Void;
 			}(),
 			
 			Void, Void
