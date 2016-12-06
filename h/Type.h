@@ -25,7 +25,7 @@ struct NamedType
 	Type type;
 };
 
-class TypeBase
+class TypeBase: public std::enable_shared_from_this<TypeBase>
 {
 public:
 	
@@ -51,13 +51,12 @@ public:
 	};
 	
 	static Type makeNewVoid();
-	static Type makeNewMeta(Type typeIn);
 	static Type makeNewPrimitive(PrimitiveType typeIn);
 	//static Type makeNew(unordered_map<string, Type>, string nameIn);
 	
 	//TypeBase(string nameIn) {name=nameIn;}
 	
-	virtual Type getMetaType();
+	Type getMetaType();
 	
 	static string getString(PrimitiveType in);
 	virtual string getString()=0;
