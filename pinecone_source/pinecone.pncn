@@ -7,6 +7,8 @@
 #	print: tru
 #)
 
+myTuple: 2, 1
+
 b: 0
 a: 1
 a<100 @
@@ -26,7 +28,9 @@ x: fls
 y: fls
 
 x ?
+(
 	print: 1
-|
+)|(
 	print: 2
+)
 

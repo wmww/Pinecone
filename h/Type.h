@@ -19,6 +19,12 @@ class TypeBase;
 
 typedef shared_ptr<TypeBase> Type;
 
+struct NamedType
+{
+	string name;
+	Type type;
+};
+
 class TypeBase
 {
 public:
@@ -77,14 +83,17 @@ protected:
 class TupleTypeMaker
 {
 public:
+	TupleTypeMaker();
 	void add(string name, Type type);
 	void add(Type type);
 	
 	Type get();
 	
 private:
-	unordered_map<string, Type> typesMap;
-	vector<Type> typesOrder;
+	
+	string getUniqueName();
+	
+	std::unique_ptr<vector<NamedType>> subTypes;
 };
 
 const extern Type Unknown;

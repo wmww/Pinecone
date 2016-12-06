@@ -1,6 +1,9 @@
 #include "../h/Type.h"
 #include "../h/ErrorHandler.h"
 
+using std::unique_ptr;
+using std::get;
+
 class VoidType: public TypeBase
 {
 public:
@@ -116,6 +119,78 @@ protected:
 	}
 };
 
+class TupleType: public TypeBase
+{
+public:
+	
+	TupleType(unique_ptr<vector<NamedType>> in)
+	{
+		subTypes=std::move(in);
+		
+		if (!in)
+			error.log(FUNC+" sent null input, compiler will likely shit itself in the near future", INTERNAL_ERROR);
+	}
+	
+	string getString()
+	{
+		string out;
+		
+		out+="{";
+		
+		for (int i=0; i<int(subTypes->size()); i++)
+		{
+			if (i)
+				out+=", ";
+			
+			out+=(*subTypes)[i].name+": "+(*subTypes)[i].type->getString();
+		}
+		
+		return out;
+	}
+	
+	size_t getSize()
+	{
+		size_t sum;
+		
+		for (auto i: *subTypes)
+		{
+			sum+=i.type->getSize();
+		}
+		
+		return sum;
+	}
+	
+	PrimitiveType getType()
+	{
+		return TUPLE;
+	}
+	
+protected:
+	
+	bool matchesSameTypeType(Type other)
+	{
+		auto o=(TupleType*)(&(*other));
+		
+		if (subTypes->size()!=o->subTypes->size())
+			return false;
+		
+		for (int i=0; i<int(subTypes->size()); i++)
+		{
+			if ((*subTypes)[i].name!=(*o->subTypes)[i].name)
+				return false;
+			
+			if ((*subTypes)[i].type!=(*o->subTypes)[i].type)
+				return false;
+		}
+		
+		return true;
+	}
+	
+private:
+	
+	unique_ptr<vector<NamedType>> subTypes;
+};
+
 Type TypeBase::makeNewVoid()
 {
 	return Type(new VoidType);
@@ -134,8 +209,6 @@ Type TypeBase::makeNewMeta(Type typeIn)
 	
 	return Void;
 }
-
-//static Type TypeBase::makeNewPrimitive(PrimitiveType typeIn);
 
 const Type Unknown(new UnknownType);
 const Type Void = TypeBase::makeNewVoid();
@@ -161,6 +234,63 @@ string TypeBase::getString(PrimitiveType in)
 		case METATYPE: return "METATYPE";
 		default: return "ERROR_GETTING_TYPE";
 	}
+}
+
+TupleTypeMaker::TupleTypeMaker()
+{
+	subTypes=unique_ptr<vector<NamedType>>(new vector<NamedType>);
+}
+
+void TupleTypeMaker::add(string name, Type type)
+{
+	if (subTypes)
+		subTypes->push_back(NamedType{name, type});
+	else
+		error.log(FUNC+"called after type has been created", INTERNAL_ERROR);
+}
+
+void TupleTypeMaker::add(Type type)
+{
+	string name=getUniqueName();
+	
+	if (!name.empty())
+	{
+		add(name, type);
+	}
+	else
+	{
+		error.log("finding unique name in tuple type failed", INTERNAL_ERROR);
+	}
+}
+
+Type TupleTypeMaker::get()
+{
+	return Type(new TupleType(std::move(subTypes)));
+}
+
+string TupleTypeMaker::getUniqueName()
+{
+	for (char c='a'; c<='z'; ++c)
+	{
+		string str;
+		str+=c;
+		bool valid=true;
+		
+		for (auto i: *subTypes)
+		{
+			if (i.name==str)
+			{
+				valid=false;
+				break;
+			}
+		}
+		
+		if (valid)
+			return str;
+	}
+	
+	error.log("you've gotta be fuckin kidding", SOURCE_ERROR);
+	return "";
 }
 
 /*
