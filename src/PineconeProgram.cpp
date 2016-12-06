@@ -5,7 +5,7 @@
 
 void populatePineconeStdLib();
 void lexString(string text, string filename, vector<Token>& tokens);
-Action parseFunction(const vector<Token>& tokens, int left, int right);
+Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType);
 
 PineconeProgram::PineconeProgram()
 {
@@ -14,7 +14,7 @@ PineconeProgram::PineconeProgram()
 
 void PineconeProgram::cleanUp()
 {
-	globalFrame.clear();
+	globalFrame=StackFrame();
 }
 
 void PineconeProgram::resolveProgram(bool printOutput)
@@ -33,7 +33,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 		cout << endl << tableStringFromTokens(tokens, "lexer output") << endl;
 	}
 	
-	astRoot=parseFunction(tokens, 0, tokens.size()-1);
+	astRoot=parseFunction(tokens, 0, tokens.size()-1, Void, Void);
 	
 	if (printOutput)
 	{

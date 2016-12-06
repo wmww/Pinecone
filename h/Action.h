@@ -1,11 +1,13 @@
 #pragma once
 
+#include "StackFrame.h"
 #include "Type.h"
 #include <functional>
 #include <memory>
 #include <vector>
 
 using std::shared_ptr;
+using std::unique_ptr;
 using std::to_string;
 using std::function;
 using std::vector;
@@ -53,7 +55,7 @@ Action createNewVoidAction();
 
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn);
 
-Action functionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn);
+Action functionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, shared_ptr<StackFrame> stackFameIn);
 
 Action ifAction(Action conditionIn, Action ifActionIn);
 Action ifElseAction(Action conditionIn, Action ifActionIn, Action elseAction);

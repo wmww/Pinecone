@@ -22,7 +22,7 @@ public:
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(returnType->getSize());
-		memcpy(out, stackPtr+offset, returnType->getSize());
+		memcpy(out, (char*)stackPtr+offset, returnType->getSize());
 		return out;
 	}
 	
@@ -52,11 +52,11 @@ public:
 	void* execute(void* left, void* right)
 	{
 		//copy data on to the stack location of the var
-		memcpy(stackPtr+offset, right, inRightType->getSize());
+		memcpy((char*)stackPtr+offset, right, inRightType->getSize());
 		
 		//return a new copy of the data
 		void* out=malloc(returnType->getSize());
-		memcpy(out, stackPtr+offset, inRightType->getSize());
+		memcpy(out, (char*)stackPtr+offset, inRightType->getSize());
 		return out;
 	}
 	

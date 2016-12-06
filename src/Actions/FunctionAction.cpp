@@ -10,10 +10,10 @@ class FunctionAction: public ActionData
 {
 public:
 	
-	FunctionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn):
+	FunctionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, shared_ptr<StackFrame> stackFameIn):
 		ActionData(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn)
 	{
-		dataSize=dataSizeIn;
+		stackFame=stackFameIn;
 		action=actionIn;
 		
 		if (action->getInLeftType()!=Void || action->getInRightType()!=Void)
@@ -54,18 +54,19 @@ public:
 	
 	void* execute(void* inLeft, void* inRight)
 	{
-		unsigned char * oldStackPtr=stackPtr;
-		stackPtr=new unsigned char[dataSize];
+		void * oldStackPtr=stackPtr;
+		
+		stackPtr=malloc(stackFame->getSize());
 		
 		if (inLeft)
-			memcpy(stackPtr, inLeft, getInLeftType()->getSize());
+			memcpy((char*)stackPtr+stackFame->getLeftOffset(), inLeft, getInLeftType()->getSize());
 		
 		if (inRight)
-			memcpy(stackPtr+getInLeftType()->getSize(), inRight, getInRightType()->getSize());
+			memcpy((char*)stackPtr+stackFame->getRightOffset(), inRight, getInRightType()->getSize());
 		
 		void* out=action->execute(nullptr, nullptr);
 		
-		delete[] stackPtr;
+		free(stackPtr);
 		stackPtr=oldStackPtr;
 		
 		return out;
@@ -73,11 +74,11 @@ public:
 	
 private:
 	
-	int dataSize;
+	shared_ptr<StackFrame> stackFame;
 	Action action;
 };
 
-Action functionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, int dataSizeIn)
+Action functionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, shared_ptr<StackFrame> stackFameIn)
 {
-	return Action(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, dataSizeIn));
+	return Action(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, stackFameIn));
 }

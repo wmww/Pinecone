@@ -46,6 +46,7 @@
 		<Unit filename="../h/msclStringFuncs.h" />
 		<Unit filename="../pinecone_source/pinecone.pncn" />
 		<Unit filename="../pinecone_source/pinecone_concept.txt" />
+		<Unit filename="../pinecone_source/pinecone_examples.txt" />
 		<Unit filename="../src/Actions/Action.cpp" />
 		<Unit filename="../src/Actions/BranchAction.cpp" />
 		<Unit filename="../src/Actions/FunctionAction.cpp" />

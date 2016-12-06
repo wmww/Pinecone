@@ -28,7 +28,7 @@ extern Namespace stdLibNamespace;
 //		returns: (if type is Action) the action pointer for that section of the program
 
 //	parses a function and returns the functionAction for it
-Action parseFunction(const vector<Token>& tokens, int left, int right);
+Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType);
 
 //	splits a stream of tokens into a ListAction and calls parseExpression on each expression
 Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, int right);
@@ -61,7 +61,7 @@ Action parseLiteral(Token token);
 
 Action parseType(const vector<Token>& tokens, Namespace table, int left, int right);
 //Action parseSingleTypeElement(const vector<Token>& tokens, Namespace table, int& i, int right, string& name, Type& type);
-Action parseTypeToken(Token token, Namespace table);
+Type parseTypeToken(Token token, Namespace table);
 
 Action parseIdentifier(Token token, Namespace table, Action leftIn, Action rightIn);
 
@@ -147,7 +147,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 	}
 }
 
-Action parseFunction(const vector<Token>& tokens, int left, int right)
+Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType)
 {
 	StackFrame frame;
 	
@@ -157,7 +157,7 @@ Action parseFunction(const vector<Token>& tokens, int left, int right)
 	
 	cout << endl << putStringInBox(nmspace->getString(), false, "function table") << endl;
 	
-	Action out=functionAction(actions, Void, Void, nmspace->getStackFrame()->getSize());
+	Action out=functionAction(actions, leftInType, rightInType, nmspace->getStackFrame());
 	
 	return out;
 }
@@ -218,13 +218,11 @@ Action parseExpression(const vector<Token>& tokens, Namespace table, int left, i
 					{
 						if (left+2==right)
 						{
-							return parseTypeToken(tokens[left+1], table);
+							return typeGetAction(parseTypeToken(tokens[left+1], table));
 						}
 						else if (left+1<right-1)
 						{
-							//return parseType(tokens, table, left+1, right-1)
-							error.log("complex type parsing not yet implemented (required in "+stringFromTokens(tokens, left, right)+")", SOURCE_ERROR, tokens[left]);
-							return voidAction;
+							return parseType(tokens, table, left+1, right-1);
 						}
 						else
 							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
@@ -404,7 +402,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 			
 			if (type->getType()==TypeBase::METATYPE)
 			{
-				auto func=parseFunction(tokens, i+1, right);
+				auto func=parseFunction(tokens, i+1, right, Void, type);
 				
 				return func;
 			}
@@ -685,25 +683,6 @@ Action parseLiteral(Token token)
 	}
 }
 
-/*Action parseType(const vector<Token>& tokens, Namespace table, int left, int right)
-{
-	vector<string> names;
-	vector<Type> types;
-	
-	for (int i=left; i<=right; i++)
-	{
-		if (tokens[i]->getType()==TokenData::IDENTIFIER && (i==right || tokens[i+1]->getType()==TokenData::IDENTIFIER))
-		{
-			if (left==i)
-			{
-				afsd
-			}
-				
-			left=i+1;
-		}
-	}
-}*/
-
 /*void parseSingleTypeElement(const vector<Token>& tokens, Namespace table, int& i, int right, string& name, Type& type)
 {
 	int end=right;
@@ -728,7 +707,41 @@ Action parseLiteral(Token token)
 	}
 }*/
 
-Action parseTypeToken(Token token, Namespace table)
+Action parseType(const vector<Token>& tokens, Namespace table, int left, int right)
+{
+	TupleTypeMaker tuple;
+	
+	while (left<=right)
+	{
+		if (left+1<right && tokens[left+1]->getOp()==ops->colon)
+		{
+			if (tokens[left]->getType()!=TokenData::IDENTIFIER)
+			{
+				error.log("identifier must be to the left of ':' in type", SOURCE_ERROR, tokens[left]);
+				return voidAction;
+			}
+			
+			if (tokens[left+2]->getType()!=TokenData::IDENTIFIER)
+			{
+				error.log("identifier must be to the right of ':' in type", SOURCE_ERROR, tokens[left]);
+				return voidAction;
+			}
+			
+			tuple.add(tokens[left]->getText(), parseTypeToken(tokens[left+2], table));
+			
+			left+=3;
+		}
+		else
+		{
+			tuple.add(parseTypeToken(tokens[left+1], table));
+			left+=1;
+		}
+	}
+	
+	return typeGetAction(tuple.get());
+}
+
+Type parseTypeToken(Token token, Namespace table)
 {
 	if (token->getType()==TokenData::IDENTIFIER)
 	{
@@ -736,18 +749,18 @@ Action parseTypeToken(Token token, Namespace table)
 		
 		if (type)
 		{
-			return typeGetAction(type);
+			return type;
 		}
 		else
 		{
 			error.log("could not find type "+token->getDescription(), SOURCE_ERROR, token);
-			return typeGetAction(Void->getMetaType());
+			return Void;
 		}
 	}
 	else
 	{
 		error.log(FUNC+"called with non identifier token", INTERNAL_ERROR, token);
-		return typeGetAction(Void->getMetaType());
+		return Void;
 	}
 }
 
