@@ -1,7 +1,7 @@
 
 # Fibonacci
 
-#myPrint:: {intIn: Int}:
+#myPrint::{intIn: Int}:
 #(
 #	print: intIn
 #	print: tru
@@ -9,10 +9,12 @@
 
 print: 3
 
-myTuple: 2, 4
+myTuple: (2, 1d)
 
 b: 0
 a: 1
+
+
 a<100 @
 (
 	print: a
@@ -20,6 +22,24 @@ a<100 @
 	a: a+b
 	b: tmp
 )
+
+print
+
+i: 0
+keepGoing: tru
+
+keepGoing @
+(
+	print: i
+	i: i+1
+	i>400 ?
+	(
+		keepGoing: fls
+	)
+)
+
+i: 0; i<400 | i: i+1 @
+	print: i
 
 print
 

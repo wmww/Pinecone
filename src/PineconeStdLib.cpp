@@ -52,7 +52,7 @@
 addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(rightType), LAMBDA_HEADER\
 {																							\
 	INSTANTIATE##_##leftType(leftType, left, GET_PTR_VAL(leftType, leftIn))									\
-	INSTANTIATE##_##rightType(rightType, right, GET_PTR_VAL(leftType, rightIn))								\
+	INSTANTIATE##_##rightType(rightType, right, GET_PTR_VAL(rightType, rightIn))								\
 	INSTANTIATE##_##returnType(returnType, out, ;)								\
 	lambdaBody;																				\
 	CONCAT(RETURN, returnType)(returnType, out)												\
