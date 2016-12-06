@@ -506,9 +506,30 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 			return voidAction;
 		}
 	}
+	else if (op==ops->comma)
+	{
+		vector<Action> out;
+		
+		for (int j=left; j<=right+1; j++)
+		{
+			if (tokens[j]->getOp()==ops->comma || j==right+1)
+			{
+				if (j==left)
+				{
+					error.log("invalid use of ','", SOURCE_ERROR, tokens[j]);
+					return voidAction;
+				}
+				
+				out.push_back(parseExpression(tokens, table, left, j-1));
+				left=j+1;
+			}
+		}
+		
+		return makeTupleAction(out);
+	}
 	else
 	{
-		error.log(string() + __FUNCTION__ + " sent unknown operator (" + to_string(left) + ", " + to_string(right) + ") "+op->getText(), INTERNAL_ERROR, tokens[i]);
+		error.log(string() + FUNC + " sent unknown operator (" + to_string(left) + ", " + to_string(right) + ") "+op->getText(), INTERNAL_ERROR, tokens[i]);
 		return voidAction;
 	}
 }

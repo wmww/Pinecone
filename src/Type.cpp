@@ -125,10 +125,10 @@ public:
 	
 	TupleType(unique_ptr<vector<NamedType>> in)
 	{
-		subTypes=std::move(in);
-		
-		if (!in)
+		if (in==nullptr)
 			error.log(FUNC+" sent null input, compiler will likely shit itself in the near future", INTERNAL_ERROR);
+		
+		subTypes=std::move(in);
 	}
 	
 	string getString()
@@ -150,7 +150,7 @@ public:
 	
 	size_t getSize()
 	{
-		size_t sum;
+		size_t sum=0;
 		
 		for (auto i: *subTypes)
 		{
@@ -265,7 +265,12 @@ void TupleTypeMaker::add(Type type)
 
 Type TupleTypeMaker::get()
 {
-	return Type(new TupleType(std::move(subTypes)));
+	if (subTypes)
+		return Type(new TupleType(std::move(subTypes)));
+	else
+		error.log(FUNC+"called after type has been created", INTERNAL_ERROR);
+	
+	return Void;
 }
 
 string TupleTypeMaker::getUniqueName()
