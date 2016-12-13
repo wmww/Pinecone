@@ -164,6 +164,8 @@ Action parseFunction(const vector<Token>& tokens, int left, int right, Type left
 
 Action parseExpression(const vector<Token>& tokens, Namespace table, int left, int right)
 {
+	error.log("parsing expression: "+stringFromTokens(tokens, left, right), JSYK);
+	
 	if (left>right)
 	{
 		//error.log(string() + __FUNCTION__ + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
@@ -295,7 +297,9 @@ Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, in
 		
 		while(true)
 		{
-			if (tokens[i]->getOp()==ops->openPeren)
+			auto op=tokens[i]->getOp();
+			
+			if (op==ops->openPeren || op==ops->openSqBrac || op==ops->openCrBrac)
 				i=skipBrace(tokens, i);
 				
 			if (i>=right) // at the end
