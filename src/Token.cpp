@@ -14,7 +14,8 @@ string TokenData::typeToString(TokenData::Type in)
 		case IDENTIFIER: return "identifier";
 		case LITERAL: return "literal";
 		case OPERATOR: return "operator";
-		case COMMENT: return "comment";
+		case LINE_COMMENT: return "single line comment";
+		case BLOCK_COMMENT: return "block comment";
 		case SCOPE: return "scope";
 		case UNKNOWN: return "UNKNOWN";
 		default: return "ERROR GETTING TOKEN TYPE";

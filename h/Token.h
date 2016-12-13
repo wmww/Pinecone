@@ -20,7 +20,8 @@ public:
 		IDENTIFIER,
 		LITERAL,
 		OPERATOR,
-		COMMENT,
+		LINE_COMMENT,
+		BLOCK_COMMENT,
 		SCOPE,
 		CAST,
 		TUPLE,
@@ -43,6 +44,7 @@ public:
 	int getCharPos() const {return charPos;}
 	TokenData::Type getType() const {return tokenType;}
 	Operator getOp() const {return op;}
+	bool isComment() {return tokenType==LINE_COMMENT || tokenType==BLOCK_COMMENT;}
 	
 	static string typeToString(TokenData::Type in);
 	string getDescription();
