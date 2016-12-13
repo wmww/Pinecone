@@ -93,6 +93,10 @@ public:
 	//	returns the given action with a conversion to the given type put over top of it if needed
 	Action getActionConvertedToType(Action actionIn, Type outType);
 	
+	//	addes all the matching actions in this and in all parents to out
+	void getActions(string text, vector<Action>& out);
+	void getActions(Operator, vector<Action>& out);
+	
 	//Action addConverter(Action action, Type type);
 	//Action addConverter(Action action, vector<Type>& types);
 	
@@ -122,10 +126,6 @@ private:
 	
 	template<typename T, typename U>
 	void getValuesFromMap(T key, vector<U>& out, unordered_map<T, vector<U>>& hashMap);
-	
-	//	addes all the matching actions in this and in all parents to out
-	void getActions(string text, vector<Action>& out);
-	void getActions(Operator, vector<Action>& out);
 	
 	void getConvertersToType(Type typeIn, vector<Action>& out);
 	

@@ -151,6 +151,18 @@ Action parseFunction(const vector<Token>& tokens, int left, int right, Type left
 {
 	StackFrame frame;
 	
+	if (!leftInType->isVoid() && !leftInType->isCreatable())
+	{
+		error.log(FUNC+" sent "+leftInType->getString()+" type, which is not creatable", INTERNAL_ERROR, tokens[left]);
+		return voidAction;
+	}
+	
+	if (!rightInType->isVoid() && !rightInType->isCreatable())
+	{
+		error.log(FUNC+" sent "+rightInType->getString()+" type, which is not creatable", INTERNAL_ERROR, tokens[left]);
+		return voidAction;
+	}
+	
 	Namespace nmspace=stdLibNamespace->makeChildAndFrame();
 	
 	Action actions=parseTokenList(tokens, nmspace, left, right);
@@ -406,7 +418,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 			
 			if (type->getType()==TypeBase::METATYPE)
 			{
-				auto func=parseFunction(tokens, i+1, right, Void, type);
+				auto func=parseFunction(tokens, i+1, right, Void, type->getSubType());
 				
 				return func;
 			}
@@ -742,7 +754,11 @@ Action parseType(const vector<Token>& tokens, Namespace table, int left, int rig
 		}
 	}
 	
-	return typeGetAction(tuple.get());
+	auto out=tuple.get();
+	
+	error.log(FUNC+" returning "+out->getString(), JSYK, tokens[left]);
+	
+	return typeGetAction(out);
 }
 
 Type parseTypeToken(Token token, Namespace table)
@@ -780,37 +796,48 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 	
 	if (out==voidAction)
 	{
-		Type type=rightIn->getReturnType();
+		vector<Action> actions;
+		table->getActions(token->getText(), actions);
 		
-		if (type->isVoid()) //probably dev was trying to use an identifier that doesn't exist
+		if (actions.size()>0)
 		{
-			error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
-				return voidAction;
-		}
-		else if (type->getType()==TypeBase::METATYPE)
-		{
-			//table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())), token->getText());
-			
-			error.log("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR);
-			
+			error.log("attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
 			return voidAction;
-		}
-		else if (type->isCreatable())
-		{
-			size_t offset=table->getStackFrame()->getSize();
-			table->getStackFrame()->addMember(type);
-			
-			Action getAction=varGetAction(offset, type, token->getText());
-			Action setAction=varSetAction(offset, type, token->getText());
-			out = branchAction(voidAction, setAction, rightIn);
-			table->addAction(getAction, token->getText());
-			table->addAction(setAction, token->getText());
-			return out;
 		}
 		else
 		{
-			error.log(string() + "type "+type->getString()+" not creatable", SOURCE_ERROR, token);
-			return voidAction;
+			Type type=rightIn->getReturnType();
+			
+			if (type->isVoid()) //probably dev was trying to use an identifier that doesn't exist
+			{
+				error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
+					return voidAction;
+			}
+			else if (type->getType()==TypeBase::METATYPE)
+			{
+				//table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())), token->getText());
+				
+				error.log("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR);
+				
+				return voidAction;
+			}
+			else if (type->isCreatable())
+			{
+				size_t offset=table->getStackFrame()->getSize();
+				table->getStackFrame()->addMember(type);
+				
+				Action getAction=varGetAction(offset, type, token->getText());
+				Action setAction=varSetAction(offset, type, token->getText());
+				out = branchAction(voidAction, setAction, rightIn);
+				table->addAction(getAction, token->getText());
+				table->addAction(setAction, token->getText());
+				return out;
+			}
+			else
+			{
+				error.log(string() + "type "+type->getString()+" not creatable", SOURCE_ERROR, token);
+				return voidAction;
+			}
 		}
 	}
 	else

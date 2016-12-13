@@ -19,6 +19,12 @@ class TypeBase;
 
 typedef shared_ptr<TypeBase> Type;
 
+const extern Type Unknown;
+const extern Type Void;
+const extern Type Bool;
+const extern Type Int;
+const extern Type Dub;
+
 struct NamedType
 {
 	string name;
@@ -71,6 +77,9 @@ public:
 	
 	bool matches(Type other) {return other->getType()==getType() && matchesSameTypeType(other);}
 	
+	virtual Type getSubType() {return Void;}
+	virtual Type getSubType(string name) {return Void;}
+	
 protected:
 	
 	//string name;
@@ -94,9 +103,3 @@ private:
 	
 	std::unique_ptr<vector<NamedType>> subTypes;
 };
-
-const extern Type Unknown;
-const extern Type Void;
-const extern Type Bool;
-const extern Type Int;
-const extern Type Dub;
