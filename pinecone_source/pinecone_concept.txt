@@ -284,6 +284,14 @@ func :: {me: Int}.{a: Dub} > {Int}
 	
 ]
 
+\\
+this
+is
+block
+comment
+//
+
+
 //
 this
 is
@@ -291,6 +299,6 @@ block
 comment
 \\
 
-// it looks great on one line too \\
+\\ it looks great on one line too //
 
 

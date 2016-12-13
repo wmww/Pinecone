@@ -217,6 +217,8 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 		out=voidAction;
 	}
 	
+	error.log("selecting "+out->toString(), JSYK);
+	
 	return out;
 }
 
@@ -261,7 +263,8 @@ Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftIn
 	
 	for (auto i: actionsIn)
 	{
-		if (i->getInLeftType()==leftInType && i->getInRightType()==rightInType)
+		//if (i->getInLeftType()==leftInType && i->getInRightType()==rightInType)
+		if (i->getInLeftType()->matches(leftInType) && i->getInRightType()->matches(rightInType))
 		{
 			if (match)
 			{
@@ -272,6 +275,15 @@ Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftIn
 			{
 				match=i;
 			}
+		}
+		else
+		{
+			error.log(
+						i->getInLeftType()->getString()+" does not match "+leftInType->getString()+
+						" or "+
+						i->getInRightType()->getString()+" does not match "+rightInType->getString(),
+						JSYK
+						);
 		}
 	}
 	

@@ -145,7 +145,7 @@ public:
 			out+=(*subTypes)[i].name+": "+(*subTypes)[i].type->getString();
 		}
 		
-		out+="}";
+		out+="} (tuple)";
 		
 		return out;
 	}
@@ -167,6 +167,17 @@ public:
 		return TUPLE;
 	}
 	
+	Type getSubType(string name)
+	{
+		for (auto i: *subTypes)
+		{
+			if (i.name==name)
+				return i.type;
+		}
+		
+		return Void;
+	}
+	
 protected:
 	
 	bool matchesSameTypeType(Type other)
@@ -181,7 +192,10 @@ protected:
 			//if ((*subTypes)[i].name!=(*o->subTypes)[i].name)
 			//	return false;
 			
-			if ((*subTypes)[i].type!=(*o->subTypes)[i].type)
+			//if ((*subTypes)[i].type!=(*o->subTypes)[i].type)
+			//	return false;
+			
+			if (!(*subTypes)[i].type->matches((*o->subTypes)[i].type))
 				return false;
 		}
 		
@@ -204,7 +218,7 @@ public:
 	
 	string getString()
 	{
-		return "{"+type->getString()+"}";
+		return "{"+type->getString()+"} (meta type)";
 	}
 	
 	size_t getSize()
@@ -220,6 +234,11 @@ public:
 	PrimitiveType getType()
 	{
 		return METATYPE;
+	}
+	
+	Type getSubType()
+	{
+		return type;
 	}
 	
 protected:
