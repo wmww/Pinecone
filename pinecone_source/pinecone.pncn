@@ -1,19 +1,15 @@
 
-
-
 print: 3.7
 
-//
 myPrint::{myInt: Int; myDub: Dub}:
 (
 	print: 7
 	print: tru
 )
-\\
 
 #myTuple: (2, 1d)
 
-myPrint: 12, 7d
+myPrint: 12, 7.0
 
 x: fls
 y: fls
