@@ -20,12 +20,14 @@ public:
 		DIGIT,
 		OPERATOR,
 		SINGLE_LINE_COMMENT,
-		UNKNOWN
+		MULTI_LINE_COMMENT_START,
+		MULTI_LINE_COMMENT_END,
+		UNKNOWN,
 	};
 	
 	static TokenData::Type getTokenType(CharClassifier::Type type, TokenData::Type previousType);
 	
-	CharClassifier::Type get(char c);
+	CharClassifier::Type get(string& str, int i);
 	
 private:
 	void setUp();
@@ -72,10 +74,31 @@ void CharClassifier::setUp()
 	hasSetUp=true;
 }
 
-CharClassifier::Type CharClassifier::get(char c)
+CharClassifier::Type CharClassifier::get(string& str, int index)
 {
+	//	set up the first time this function is called
 	if (!hasSetUp)
 		setUp();
+	
+	//	chack fo multi line comments in a special way, because they are multi character
+	
+	if (str.substr(index, 2)=="//")
+		return MULTI_LINE_COMMENT_START;
+	
+	if (index>0 && str.substr(index-1, 2)=="\\\\")
+		return MULTI_LINE_COMMENT_END;
+	
+	//	allow a . to be a digit character only if it is followed by a digit
+	if (index<int(str.size())-1 && str[index]=='.')
+	{
+		auto i=hm.find(str[index+1]);
+		
+		if (i!=hm.end() && i->second==DIGIT)
+			return DIGIT;
+	}
+	
+	//	handle all other cases using the hashmap
+	char c=str[index];
 	
 	auto i=hm.find(c);
 	
@@ -87,19 +110,33 @@ CharClassifier::Type CharClassifier::get(char c)
 
 TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, TokenData::Type previousType)
 {
-	if (previousType==TokenData::COMMENT)
+	if (previousType==TokenData::LINE_COMMENT)
 	{
 		if (type==NEWLINE)
 			return TokenData::WHITESPACE;
 		else
-			return TokenData::COMMENT;
+			return TokenData::LINE_COMMENT;
+	}
+	else if (previousType==TokenData::BLOCK_COMMENT)
+	{
+		if (type==MULTI_LINE_COMMENT_END)
+			return TokenData::WHITESPACE;
+		else
+			return TokenData::BLOCK_COMMENT;
 	}
 	
 	switch (type)
 	{
 		
 	case SINGLE_LINE_COMMENT:
-		return TokenData::COMMENT;
+		return TokenData::LINE_COMMENT;
+	
+	case MULTI_LINE_COMMENT_START:
+		return TokenData::BLOCK_COMMENT;
+	
+	case MULTI_LINE_COMMENT_END:
+		error.log("block comment end without start", SOURCE_ERROR);
+		return TokenData::UNKNOWN;
 		
 	case WHITESPACE:
 	case NEWLINE:
@@ -133,7 +170,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 	
 	for (unsigned i=0; i<text.size(); i++)
 	{
-		CharClassifier::Type charType=charClassifier.get(text[i]);
+		CharClassifier::Type charType=charClassifier.get(text, i);
 		TokenData::Type newType=CharClassifier::getTokenType(charType, type);
 		
 		if (newType!=type)
@@ -150,7 +187,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 						tokens.push_back(makeToken(op->getText(), filename, line, charPos, type, op));
 					}
 				}
-				else if (type==TokenData::COMMENT)
+				else if (type==TokenData::LINE_COMMENT || type==TokenData::BLOCK_COMMENT)
 				{
 					// do nothing
 				}

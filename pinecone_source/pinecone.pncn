@@ -1,11 +1,15 @@
 
+
+
+print: 3.7
+
+//
 myPrint::{myInt: Int; myDub: Dub}:
 (
 	print: 7
 	print: tru
 )
-
-print: 3
+\\
 
 #myTuple: (2, 1d)
 
@@ -20,4 +24,5 @@ x ?
 )|(
 	print: 2
 )
+
 

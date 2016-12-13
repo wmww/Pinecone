@@ -246,7 +246,51 @@ while a=tru
 		a: fls
 )
 
-
 5-3-2
 
 a: b: c
+
+print: a	# works because a is defined below
+a:: 8		# constant
+a: 7		# compile error
+
+print: b	# compile error
+$b: 8		# variable
+b: 7 		# works
+
+print: c	# compile error
+$c:: 8		# immutable
+c: 7		# compile error
+
+
+myFunc :: {val1: Int; val2: Int}
+[
+	
+]
+
+
+\+ :: {Int} < {a: Int}.{b: Int}
+[
+	a+b^
+]
+
+func :: {me: Int | a: Dub} > {Int}
+[
+	
+]
+
+func :: {me: Int}.{a: Dub} > {Int}
+[
+	
+]
+
+//
+this
+is
+block
+comment
+\\
+
+// it looks great on one line too \\
+
+
