@@ -109,9 +109,61 @@ private:
 	vector<Action> sourceActions;
 };
 
+class GetElemFromTupleAction: public ActionData
+{
+public:
+	
+	GetElemFromTupleAction(Type typeInIn, Type typeOutIn, size_t offsetIn):
+		ActionData(typeOutIn, Void, typeInIn)
+	{
+		typeOut=typeOutIn;
+		offset=offsetIn;
+	}
+
+	string getDescription()
+	{
+		return "get element from tuple";
+		
+	}
+	
+	string getCSource(string inLeft, string inRight)
+	{
+		return "/* C source for GetElemFromTupleAction not yet implemented */";
+	}
+	
+	void* execute(void* inLeft, void* inRight)
+	{
+		void* out=malloc(typeOut->getSize());
+		memcpy(out, (char*)inRight+offset, typeOut->getSize());
+		
+		return out;
+	}
+
+
+	
+private:
+	Type typeOut;
+	size_t offset;
+};
+
 Action makeTupleAction(const std::vector<Action>& sourceActionsIn)
 {
 	return Action(new MakeTupleAction(sourceActionsIn));
 }
 
-
+Action getElemFromTupleAction(Action source, string name)
+{
+	OffsetAndType a=source->getReturnType()->getSubType(name);
+	
+	if (a.type->isVoid())
+	{
+		error.log("could not find '"+name+"' in "+source->getReturnType()->getString(), SOURCE_ERROR);
+		return voidAction;
+	}
+	
+	Action action=Action(new GetElemFromTupleAction(source->getReturnType(), a.type, a.offset));
+	
+	Action out=branchAction(voidAction, action, source);
+	
+	return out;
+}

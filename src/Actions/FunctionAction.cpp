@@ -16,6 +16,8 @@ public:
 		stackFame=stackFameIn;
 		action=actionIn;
 		
+		setDescription("function ("+getInLeftType()->getString()+"."+getInRightType()->getString()+" > "+getReturnType()->getString()+")");
+		
 		if (action->getInLeftType()!=Void || action->getInRightType()!=Void)
 		{
 			error.log(action->getDescription() + " put into function even though its inputs are not void", INTERNAL_ERROR);

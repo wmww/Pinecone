@@ -167,15 +167,19 @@ public:
 		return TUPLE;
 	}
 	
-	Type getSubType(string name)
+	OffsetAndType getSubType(string name)
 	{
+		size_t offset=0;
+		
 		for (auto i: *subTypes)
 		{
 			if (i.name==name)
-				return i.type;
+				return {offset, i.type};
+			else
+				offset+=i.type->getSize();
 		}
 		
-		return Void;
+		return {0, Void};
 	}
 	
 protected:
@@ -285,6 +289,22 @@ string TypeBase::getString(PrimitiveType in)
 		case METATYPE: return "METATYPE";
 		default: return "ERROR_GETTING_TYPE";
 	}
+}
+
+bool TypeBase::matches(Type other)
+{
+	auto otherType=other->getType();
+	
+	if (otherType!=getType())
+	{
+		return false;
+	}
+	else if (!matchesSameTypeType(other))
+	{
+		return false;
+	}
+	
+	return true;
 }
 
 TupleTypeMaker::TupleTypeMaker()
