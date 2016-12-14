@@ -120,6 +120,42 @@ void NamespaceData::getValuesFromMap(T key, vector<U>& out, unordered_map<T, vec
 	}
 }
 
+void NamespaceData::setInput(Type left, Type right)
+{
+	if (parent && parent->getStackFrame()==stackFrame)
+	{
+		error.log("called "+FUNC+" on namespace that is not the root of a stack frame, thus it can not get input", INTERNAL_ERROR);
+		return;
+	}
+	
+	stackFrame->setInput(left, right);
+	
+	string leftName="left";
+	size_t leftOffset=stackFrame->getLeftOffset();
+	Action leftGetAction=varGetAction(leftOffset, left, leftName);
+	Action leftSetAction=varSetAction(leftOffset, left, leftName);
+	addAction(leftGetAction, leftName);
+	addAction(leftSetAction, leftName);
+	
+	string rightName="right";
+	size_t rightOffset=stackFrame->getLeftOffset();
+	Action rightGetAction=varGetAction(rightOffset, right, rightName);
+	Action rightSetAction=varSetAction(rightOffset, right, rightName);
+	addAction(rightGetAction, rightName);
+	addAction(rightSetAction, rightName);
+}
+
+void NamespaceData::addVar(Type type, string name)
+{
+	size_t offset=stackFrame->getSize();
+	stackFrame->addMember(type);
+	
+	Action getAction=varGetAction(offset, type, name);
+	Action setAction=varSetAction(offset, type, name);
+	addAction(getAction, name);
+	addAction(setAction, name);
+}
+
 void NamespaceData::addAction(Action action, string id)
 {
 	Type type=getType(id);
@@ -196,12 +232,6 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 	{
 		string text=token->getText();
 		getActions(text, matches);
-		error.log("found "+to_string(matches.size())+" matches for "+text, JSYK);
-		
-		for (auto i: matches)
-		{
-			error.log("\t"+i->getInLeftType()->getString()+" "+i->getInRightType()->getString(), JSYK);
-		}
 	}
 	
 	Action selection=findActionWithInput(matches, left->getReturnType(), right->getReturnType());
@@ -216,8 +246,6 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 	{
 		out=voidAction;
 	}
-	
-	error.log("selecting "+out->toString(), JSYK);
 	
 	return out;
 }
@@ -275,15 +303,6 @@ Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftIn
 			{
 				match=i;
 			}
-		}
-		else
-		{
-			error.log(
-						i->getInLeftType()->getString()+" does not match "+leftInType->getString()+
-						" or "+
-						i->getInRightType()->getString()+" does not match "+rightInType->getString(),
-						JSYK
-						);
 		}
 	}
 	
