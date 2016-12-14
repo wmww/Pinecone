@@ -5,8 +5,10 @@
 # codeblocks project files
 *.layout
 *.depend
+*.cscope_file_list
 
 # executables
 PineconeDbg
 PineconeBin
 Pinecone
+pinecone
