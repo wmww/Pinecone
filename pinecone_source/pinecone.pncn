@@ -1,24 +1,10 @@
 
-print: 3.7
-
-myPrint::{Int}:
+myPrint::{Int; Dub}:
 (
-	print: right
-	print: tru
+	print: right.a
+	print: right.b
 )
 
-myTuple: (2, 1d)
-
-myPrint: 12
-
-x: fls
-y: fls
-
-x ?
-(
-	print: 1
-)|(
-	print: 2
-)
+myPrint: 12, 8.9
 
 

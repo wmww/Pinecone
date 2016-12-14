@@ -31,6 +31,12 @@ struct NamedType
 	Type type;
 };
 
+struct OffsetAndType
+{
+	size_t offset;
+	Type type;
+};
+
 class TypeBase: public std::enable_shared_from_this<TypeBase>
 {
 public:
@@ -75,10 +81,10 @@ public:
 	
 	virtual PrimitiveType getType()=0;
 	
-	bool matches(Type other) {return other->getType()==getType() && matchesSameTypeType(other);}
+	bool matches(Type other);
 	
 	virtual Type getSubType() {return Void;}
-	virtual Type getSubType(string name) {return Void;}
+	virtual OffsetAndType getSubType(string name) {return {0, Void};}
 	
 protected:
 	

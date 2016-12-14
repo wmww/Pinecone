@@ -408,7 +408,7 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 	{
 		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
 		{
-			auto rightAction=parseExpression(tokens, table, i+1, right);
+			Action rightAction=parseExpression(tokens, table, i+1, right);
 			
 			return parseSingleToken(tokens[left], table, voidAction, rightAction);
 		}
@@ -524,11 +524,13 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 	}
 	else if (op==ops->comma)
 	{
+		error.log("parsing comma in '"+stringFromTokens(tokens, left, right)+"'", JSYK, tokens[i]);
+		
 		vector<Action> out;
 		
-		for (int j=left; j<=right+1; j++)
+		for (int j=left; j<=right; j++)
 		{
-			if (tokens[j]->getOp()==ops->comma || j==right+1)
+			if (tokens[j]->getOp()==ops->comma)
 			{
 				if (j==left)
 				{
@@ -541,12 +543,27 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 			}
 		}
 		
+		if (left<=right)
+			out.push_back(parseExpression(tokens, table, left, right));
+		
 		return makeTupleAction(out);
 	}
-	/*else if (op==ops->dot)
+	else if (op==ops->dot)
 	{
-		if (left+1==i && i+1==right && tokens[left]->getType()==TokenData::LITERAL && tokens[right]->getType()==TokenData::LITERAL)
-	}*/
+		if (i==right-1 && tokens[right]->getType()==TokenData::IDENTIFIER)
+		{
+			Action leftAction=parseExpression(tokens, table, left, i-1);
+			
+			Action out=getElemFromTupleAction(leftAction, tokens[right]->getText());
+			
+			return out;
+		}
+		else
+		{
+			error.log("'.' must be followed by an identifier", SOURCE_ERROR, tokens[i]);
+			return voidAction;
+		}
+	}
 	else
 	{
 		error.log(string() + FUNC + " sent unknown operator (" + to_string(left) + ", " + to_string(right) + ") "+op->getText(), INTERNAL_ERROR, tokens[i]);
@@ -751,7 +768,7 @@ Action parseType(const vector<Token>& tokens, Namespace table, int left, int rig
 		}
 		else
 		{
-			tuple.add(parseTypeToken(tokens[left+1], table));
+			tuple.add(parseTypeToken(tokens[left], table));
 			left+=1;
 		}
 	}
@@ -779,7 +796,7 @@ Type parseTypeToken(Token token, Namespace table)
 	}
 	else
 	{
-		error.log(FUNC+"called with non identifier token", INTERNAL_ERROR, token);
+		error.log(FUNC+" called with non identifier token "+token->getText(), INTERNAL_ERROR, token);
 		return Void;
 	}
 }
@@ -794,14 +811,21 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 	
 	Action out=table->getActionForTokenWithInput(token, leftIn, rightIn);
 	
-	if (out==voidAction)
+	if (out==voidAction) // if we couldn't find a satisfactory action
 	{
 		vector<Action> actions;
 		table->getActions(token->getText(), actions);
 		
-		if (actions.size()>0)
+		if (actions.size()>0) // if there are actions with the requested name that didn't match the type
 		{
-			error.log("attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
+			error.log("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
+			error.log("available overloads:", JSYK, token);
+			for (auto i: actions)
+			{
+				error.log("\t"+i->toString(), JSYK, token);
+			}
+			error.log("attempted use:", JSYK, token);
+			error.log("\t"+leftIn->getReturnType()->getString()+"."+rightIn->getReturnType()->getString(), JSYK, token);
 			return voidAction;
 		}
 		else
