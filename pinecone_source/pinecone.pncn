@@ -1,10 +1,11 @@
 
-myPrint::{Int; Dub}:
+myPrint::{Bool, foo: Int, bar: Dub}:
 (
-	print: right.a
-	print: right.b
+	right.a ?
+		print: right.foo
+	|
+		print: right.bar
 )
 
-myPrint: 12, 8.9
-
+myPrint: fls, 12, 8.9
 

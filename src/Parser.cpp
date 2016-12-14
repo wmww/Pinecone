@@ -524,8 +524,6 @@ Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int
 	}
 	else if (op==ops->comma)
 	{
-		error.log("parsing comma in '"+stringFromTokens(tokens, left, right)+"'", JSYK, tokens[i]);
-		
 		vector<Action> out;
 		
 		for (int j=left; j<=right; j++)
@@ -748,6 +746,13 @@ Action parseType(const vector<Token>& tokens, Namespace table, int left, int rig
 	
 	while (left<=right)
 	{
+		//	skip commas
+		while (left<=right && tokens[left]->getOp()==ops->comma)
+		{
+			left++;
+		}
+		
+		//	if this is a named subtype
 		if (left+1<right && tokens[left+1]->getOp()==ops->colon)
 		{
 			if (tokens[left]->getType()!=TokenData::IDENTIFIER)
@@ -766,7 +771,7 @@ Action parseType(const vector<Token>& tokens, Namespace table, int left, int rig
 			
 			left+=3;
 		}
-		else
+		else //	this is an unnamed subtype
 		{
 			tuple.add(parseTypeToken(tokens[left], table));
 			left+=1;
