@@ -130,19 +130,25 @@ void NamespaceData::setInput(Type left, Type right)
 	
 	stackFrame->setInput(left, right);
 	
-	string leftName="left";
-	size_t leftOffset=stackFrame->getLeftOffset();
-	Action leftGetAction=varGetAction(leftOffset, left, leftName);
-	Action leftSetAction=varSetAction(leftOffset, left, leftName);
-	addAction(leftGetAction, leftName);
-	addAction(leftSetAction, leftName);
+	if (!left->isVoid())
+	{
+		string leftName="left";
+		size_t leftOffset=stackFrame->getLeftOffset();
+		Action leftGetAction=varGetAction(leftOffset, left, leftName);
+		Action leftSetAction=varSetAction(leftOffset, left, leftName);
+		addAction(leftGetAction, leftName);
+		addAction(leftSetAction, leftName);
+	}
 	
-	string rightName="right";
-	size_t rightOffset=stackFrame->getLeftOffset();
-	Action rightGetAction=varGetAction(rightOffset, right, rightName);
-	Action rightSetAction=varSetAction(rightOffset, right, rightName);
-	addAction(rightGetAction, rightName);
-	addAction(rightSetAction, rightName);
+	if (!right->isVoid())
+	{
+		string rightName="right";
+		size_t rightOffset=stackFrame->getRightOffset();
+		Action rightGetAction=varGetAction(rightOffset, right, rightName);
+		Action rightSetAction=varSetAction(rightOffset, right, rightName);
+		addAction(rightGetAction, rightName);
+		addAction(rightSetAction, rightName);
+	}
 }
 
 void NamespaceData::addVar(Type type, string name)
