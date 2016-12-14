@@ -10,8 +10,8 @@ class FunctionAction: public ActionData
 {
 public:
 	
-	FunctionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, shared_ptr<StackFrame> stackFameIn):
-		ActionData(actionIn->getReturnType(), inLeftTypeIn, inRightTypeIn)
+	FunctionAction(Action actionIn, shared_ptr<StackFrame> stackFameIn):
+		ActionData(actionIn->getReturnType(), stackFameIn->getLeftInType(), stackFameIn->getRightInType())
 	{
 		stackFame=stackFameIn;
 		action=actionIn;
@@ -78,7 +78,7 @@ private:
 	Action action;
 };
 
-Action functionAction(Action actionIn, Type inLeftTypeIn, Type inRightTypeIn, shared_ptr<StackFrame> stackFameIn)
+Action functionAction(Action actionIn, shared_ptr<StackFrame> stackFameIn)
 {
-	return Action(new FunctionAction(actionIn, inLeftTypeIn, inRightTypeIn, stackFameIn));
+	return Action(new FunctionAction(actionIn, stackFameIn));
 }

@@ -70,6 +70,12 @@ public:
 	
 	///	adding elements
 	
+	//	adds the input vars to the stack frame, will be called 'left' and 'right'
+	void setInput(Type left, Type right);
+	
+	//	add a get and set action for a variable also adds its data to the stack frame
+	void addVar(Type type, string name);
+	
 	//	used for adding generic actions AND converters (will autodetect if converter or not)
 	void addAction(Action action, string id);
 	

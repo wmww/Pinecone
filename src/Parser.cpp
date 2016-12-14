@@ -165,18 +165,20 @@ Action parseFunction(const vector<Token>& tokens, int left, int right, Type left
 	
 	Namespace nmspace=stdLibNamespace->makeChildAndFrame();
 	
+	nmspace->setInput(leftInType, rightInType);
+	
 	Action actions=parseTokenList(tokens, nmspace, left, right);
 	
 	cout << endl << putStringInBox(nmspace->getString(), false, "function table") << endl;
 	
-	Action out=functionAction(actions, leftInType, rightInType, nmspace->getStackFrame());
+	Action out=functionAction(actions, nmspace->getStackFrame());
 	
 	return out;
 }
 
 Action parseExpression(const vector<Token>& tokens, Namespace table, int left, int right)
 {
-	error.log("parsing expression: "+stringFromTokens(tokens, left, right), JSYK);
+	//error.log("parsing expression: "+stringFromTokens(tokens, left, right), JSYK);
 	
 	if (left>right)
 	{
@@ -756,8 +758,6 @@ Action parseType(const vector<Token>& tokens, Namespace table, int left, int rig
 	
 	auto out=tuple.get();
 	
-	error.log(FUNC+" returning "+out->getString(), JSYK, tokens[left]);
-	
 	return typeGetAction(out);
 }
 
@@ -823,14 +823,8 @@ Action parseIdentifier(Token token, Namespace table, Action leftIn, Action right
 			}
 			else if (type->isCreatable())
 			{
-				size_t offset=table->getStackFrame()->getSize();
-				table->getStackFrame()->addMember(type);
-				
-				Action getAction=varGetAction(offset, type, token->getText());
-				Action setAction=varSetAction(offset, type, token->getText());
-				out = branchAction(voidAction, setAction, rightIn);
-				table->addAction(getAction, token->getText());
-				table->addAction(setAction, token->getText());
+				table->addVar(type, token->getText());
+				auto out=table->getActionForTokenWithInput(token, leftIn, rightIn);
 				return out;
 			}
 			else
