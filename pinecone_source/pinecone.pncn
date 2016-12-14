@@ -1,15 +1,15 @@
 
 print: 3.7
 
-myPrint::{myInt: Int; myDub: Dub}:
+myPrint::{Int}:
 (
-	print: myInt
+	print: right
 	print: tru
 )
 
 myTuple: (2, 1d)
 
-myPrint: 12, 7.0
+myPrint: 12
 
 x: fls
 y: fls
