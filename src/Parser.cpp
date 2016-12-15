@@ -767,7 +767,15 @@ Action parseType(const vector<Token>& tokens, Namespace table, int left, int rig
 				return voidAction;
 			}
 			
-			tuple.add(tokens[left]->getText(), parseTypeToken(tokens[left+2], table));
+			Type type=parseTypeToken(tokens[left+2], table);
+			
+			if (!type->isCreatable())
+			{
+				error.log("failed to resolve "+tokens[left+2]->getText()+" into creatable type", SOURCE_ERROR, tokens[left+2]);
+				return voidAction;
+			}
+			
+			tuple.add(tokens[left]->getText(), type);
 			
 			left+=3;
 		}
