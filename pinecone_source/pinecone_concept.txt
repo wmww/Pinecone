@@ -302,3 +302,34 @@ comment
 \\ it looks great on one line too //
 
 
+BaseClass ::
+{
+	foo: Dub
+}
+
+MyObj ::
+{
+	$super: BaseClass
+	a: Int
+	b: Int
+}
+
+MyObj :: {} > {MyObj}:
+(
+	return: 8, 12
+)
+
+addToBoth :: {me: MyObj}.{}:
+(
+	a+: 1
+	b+: 1
+	foo
+)
+
+myPrint: tru, 12, 8.9
+
+obj: MyObj
+
+obj.addToBoth
+
+print: obj.a

@@ -1,11 +1,19 @@
 
-myPrint::{Bool, foo: Int, bar: Dub}:
+func :: {Int}:
 (
-	right.a ?
-		print: right.foo
+	right>0?
+		func: right-1
 	|
-		print: right.bar
+		print: tru
 )
 
-myPrint: fls, 12, 8.9
+func: 6
+
+a: 8
+
+b :: (func: 0)
+
+a: 3
+
+print: a
 

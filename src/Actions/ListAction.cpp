@@ -5,7 +5,12 @@ class ListAction: public ActionData
 {
 public:
 	
-	ListAction(const vector<Action>& actionsIn): ActionData((actionsIn.size()>0?actionsIn.back()->getReturnType():Unknown), Void, Void)
+	ListAction(const vector<Action>& actionsIn):
+		ActionData
+		(
+			(actionsIn.size()>0?actionsIn.back()->getReturnType():Void),
+			Void, Void
+		)
 	{
 		if (actionsIn.size()<=0)
 		{
