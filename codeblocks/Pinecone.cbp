@@ -35,6 +35,7 @@
 		</Compiler>
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/AllOperators.h" />
+		<Unit filename="../h/AstNode.h" />
 		<Unit filename="../h/ErrorHandler.h" />
 		<Unit filename="../h/Lexer.h" />
 		<Unit filename="../h/Namespace.h" />
@@ -57,10 +58,12 @@
 		<Unit filename="../src/Actions/TypeAction.cpp" />
 		<Unit filename="../src/Actions/VarAction.cpp" />
 		<Unit filename="../src/AllOperators.cpp" />
+		<Unit filename="../src/AstNode.cpp" />
 		<Unit filename="../src/ErrorHandler.cpp" />
 		<Unit filename="../src/Lexer.cpp" />
 		<Unit filename="../src/Namespace.cpp" />
 		<Unit filename="../src/Parser.cpp" />
+		<Unit filename="../src/Parser2.cpp" />
 		<Unit filename="../src/PineconeProgram.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />
 		<Unit filename="../src/StackFrame.cpp" />
