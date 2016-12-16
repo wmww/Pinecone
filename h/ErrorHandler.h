@@ -23,8 +23,7 @@ public:
 	
 	static string priorityToStr(ErrorPriority in);
 	
-	void log(string msg, ErrorPriority priority);
-	void log(string msg, ErrorPriority priority, Token token);
+	void log(string msg, ErrorPriority priority, Token token=nullptr);
 	
 	void msg(string in);
 	
@@ -36,3 +35,22 @@ private:
 };
 
 extern ErrorHandler error;
+
+class PineconeError
+{
+public:
+	PineconeError(string msgIn, ErrorPriority priorityIn, Token tokenIn=nullptr);
+	
+	void log();
+	
+private:
+	string msg;
+	ErrorPriority priority;
+	Token token;
+	
+};
+
+
+//typedef shared_ptr<PineconeError> Err;
+
+//Err makeError(string msgIn, ErrorPriority priorityIn, Token tokenIn=nullptr) {return Err(new PineconeError(msgIn, priorityIn, tokenIn));}

@@ -45,6 +45,7 @@ public:
 		leftIn=nullptr;
 		token=tokenIn;
 		rightIn=nullptr;
+		action=nullptr;
 	}
 	
 	/*
@@ -63,7 +64,10 @@ public:
 	Type getReturnType(Namespace ns);
 	Action getAction(Namespace ns);
 	
+	void resolveAction(Namespace ns);
+	
 private:
+	Action action;
 	Token token;
 	AstNode leftIn, rightIn;
 };

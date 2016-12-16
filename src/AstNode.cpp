@@ -1,4 +1,5 @@
 #include "../h/AstNode.h"
+#include "../h/ErrorHandler.h"
 
 AstNode astVoid=AstNode(new AstVoid);
 
@@ -20,7 +21,14 @@ Action AstList::getAction(Namespace ns)
 	
 	for (auto i: nodes)
 	{
-		actions.push_back(i->getAction(ns));
+		try
+		{
+			actions.push_back(i->getAction(ns));
+		}
+		catch (Err err)
+		{
+			err->log();
+		}
 	}
 	
 	Action out=listAction(actions);
@@ -29,10 +37,40 @@ Action AstList::getAction(Namespace ns)
 
 Type AstExpression::getReturnType(Namespace ns)
 {
-	return Void;
+	return getAction(ns)->getReturnType();
 }
 
 Action AstExpression::getAction(Namespace ns)
 {
-	return voidAction;
+	if (!action)
+	{
+		resolveAction(ns);
+	}
+	
+	if (action)
+		return action;
+	else
+		return voidAction;
+}
+
+void AstExpression::resolveAction(Namespace ns)
+{
+	if (!leftIn)
+		throw PineconeError("AstExpression not given left input", INTERNAL_ERROR, token);
+	
+	if (!rightIn)
+		throw PineconeError("AstExpression not given right input", INTERNAL_ERROR, token);
+	
+	Action leftAction=leftIn->getAction(ns);
+	Action rightAction=rightIn->getAction(ns);
+	
+	try
+	{
+		Action out=ns->getActionForTokenWithInput(token, leftAction, rightAction);
+	}
+	catch (IdNotFoundError)
+	{
+		PineconeError
+	}
+	
 }
