@@ -50,7 +50,6 @@ private:
 	
 };
 
-
 //typedef shared_ptr<PineconeError> Err;
 
 //Err makeError(string msgIn, ErrorPriority priorityIn, Token tokenIn=nullptr) {return Err(new PineconeError(msgIn, priorityIn, tokenIn));}

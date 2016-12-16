@@ -25,9 +25,9 @@ Action AstList::getAction(Namespace ns)
 		{
 			actions.push_back(i->getAction(ns));
 		}
-		catch (Err err)
+		catch (PineconeError err)
 		{
-			err->log();
+			err.log();
 		}
 	}
 	
@@ -64,13 +64,45 @@ void AstExpression::resolveAction(Namespace ns)
 	Action leftAction=leftIn->getAction(ns);
 	Action rightAction=rightIn->getAction(ns);
 	
+	Action out;
+	
 	try
 	{
-		Action out=ns->getActionForTokenWithInput(token, leftAction, rightAction);
+		out=ns->getActionForTokenWithInput(token, leftAction, rightAction);
 	}
-	catch (IdNotFoundError)
+	catch (IdNotFoundError err)
 	{
-		PineconeError
+		vector<Action> actions;
+		ns->getActions(token->getText(), actions);
+		
+		if (actions.size()>0) // if there are actions with the requested name that didn't match the type
+		{
+			throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
+			
+			/*error.log("available overloads:", JSYK, token);
+			for (auto i: actions)
+			{
+				error.log("\t"+i->toString(), JSYK, token);
+			}
+			error.log("attempted use:", JSYK, token);
+			error.log("\t"+leftIn->getReturnType()->getString()+"."+rightIn->getReturnType()->getString(), JSYK, token);
+			return voidAction;*/
+		}
+		
+		Type type=leftIn->getReturnType(ns);
+		
+		if (type->getType()==TypeBase::METATYPE)
+		{
+			throw PineconeError("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR, token);
+		}
+		else if (!type->isCreatable())
+		{
+			throw PineconeError("cannot create variable '"+token->getText()+"' of type "+type->getString(), SOURCE_ERROR, token);
+		}
+		
+		ns->addVar(type, token->getText());
+		out=ns->getActionForTokenWithInput(token, leftAction, rightAction);
 	}
 	
+	action=out;
 }

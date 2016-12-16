@@ -4,6 +4,7 @@
 #include "Action.h"
 #include "Token.h"
 #include "Operator.h"
+#include "ErrorHandler.h"
 
 #include <unordered_map>
 using std::unordered_map;
@@ -160,4 +161,27 @@ private:
 	
 	//	contains all types in this namespace
 	unordered_map<string, Type> types;
+};
+
+
+class IdNotFoundError
+{
+public:
+	IdNotFoundError(string idIn, Namespace nsIn)
+	{
+		id=idIn;
+		ns=nsIn;
+	}
+	
+	string getId() {return id;}
+	Namespace getNamespace() {return ns;}
+	
+	PineconeError toPineconeError()
+	{
+		return PineconeError("unknown identifier '"+id+"'", SOURCE_ERROR);
+	}
+	
+private:
+	string id;
+	Namespace ns;
 };
