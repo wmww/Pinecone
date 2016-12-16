@@ -316,10 +316,10 @@ MyObj ::
 
 MyObj :: {} > {MyObj}:
 (
-	return: 8, 12
+	return: (9.3), 8, 12
 )
 
-addToBoth :: {me: MyObj}.{}:
+addToBoth :: {$me: MyObj}.{}:
 (
 	a+: 1
 	b+: 1
@@ -332,4 +332,3 @@ obj: MyObj
 
 obj.addToBoth
 
-print: obj.a
