@@ -1,7 +1,24 @@
 #include "../h/AstNode.h"
 #include "../h/ErrorHandler.h"
+#include "../h/msclStringFuncs.h"
 
 AstNode astVoid=AstNode(new AstVoid);
+
+string AstList::getString()
+{
+	string out;
+	
+	out+="{";
+	
+	for (auto i: nodes)
+	{
+		out+=indentString(i->getString()+"\n")+"\n";
+	}
+	
+	out+="}";
+	
+	return out;
+}
 
 Type AstList::getReturnType(Namespace ns)
 {
@@ -35,6 +52,21 @@ Action AstList::getAction(Namespace ns)
 	return out;
 }
 
+string AstExpression::getString()
+{
+	string out;
+	
+	out+="(";
+	out+=leftIn->getString();
+	out+=") -> ";
+	out+=token->getText();
+	out+=" <- (";
+	out+=rightIn->getString();
+	out+=")";
+	
+	return out;
+}
+
 Type AstExpression::getReturnType(Namespace ns)
 {
 	return getAction(ns)->getReturnType();
@@ -55,12 +87,6 @@ Action AstExpression::getAction(Namespace ns)
 
 void AstExpression::resolveAction(Namespace ns)
 {
-	if (!leftIn)
-		throw PineconeError("AstExpression not given left input", INTERNAL_ERROR, token);
-	
-	if (!rightIn)
-		throw PineconeError("AstExpression not given right input", INTERNAL_ERROR, token);
-	
 	Action leftAction=leftIn->getAction(ns);
 	Action rightAction=rightIn->getAction(ns);
 	
@@ -106,3 +132,4 @@ void AstExpression::resolveAction(Namespace ns)
 	
 	action=out;
 }
+

@@ -1,3 +1,4 @@
+#pragma once
 
 #include "Token.h"
 #include "Action.h"
@@ -10,6 +11,9 @@ typedef shared_ptr<AstNodeBase> AstNode;
 class AstNodeBase
 {
 public:
+	
+	virtual string getString()=0;
+	
 	virtual Type getReturnType(Namespace ns)=0;
 	virtual Action getAction(Namespace ns)=0;
 };
@@ -17,6 +21,7 @@ public:
 class AstVoid: public AstNodeBase
 {
 public:
+	string getString() {return "void";}
 	Type getReturnType(Namespace ns) {return Void;}
 	Action getAction(Namespace ns) {return voidAction;}
 };
@@ -29,6 +34,8 @@ public:
 	
 	void addNode(AstNode in) {nodes.push_back(in);}
 	
+	string getString();
+	
 	Type getReturnType(Namespace ns);
 	Action getAction(Namespace ns);
 	
@@ -40,12 +47,15 @@ class AstExpression: public AstNodeBase
 {
 public:
 	
-	AstExpression(Token tokenIn)
+	AstNode make(AstNode leftInIn, Token tokenIn, AstNode rightInIn)
 	{
-		leftIn=nullptr;
-		token=tokenIn;
-		rightIn=nullptr;
-		action=nullptr;
+		AstExpression* node=new AstExpression;
+		
+		node->leftIn=leftInIn;
+		node->token=tokenIn;
+		node->rightIn=rightInIn;
+		
+		return AstNode(node);
 	}
 	
 	/*
@@ -61,13 +71,18 @@ public:
 	void setRightIn(AstNode in) {rightIn=in;}
 	//void setToken(Token in) {token=in;}
 	
+	string getString();
+	
 	Type getReturnType(Namespace ns);
 	Action getAction(Namespace ns);
 	
 	void resolveAction(Namespace ns);
 	
 private:
-	Action action;
-	Token token;
-	AstNode leftIn, rightIn;
+	
+	AstExpression() {}
+	
+	Action action=nullptr;
+	Token token=nullptr;
+	AstNode leftIn=nullptr, rightIn=nullptr;
 };
