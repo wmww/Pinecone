@@ -31,6 +31,12 @@ int searchInString(const string& in, int startPos, const string& pattern);
 //		out: all the substrings will be appended to this
 void sliceStringBy(const string& in, const string& pattern, vector<string>& out);
 
+//	indents a string
+//		in: the string to indent (can be multi line)
+//		indent: the string to use as the indent
+//		returns: the string indented
+string indentString(const string& in, string indent="    ");
+
 //	returns the original string with the tabs replaced by the correct number of spaces
 //		in: the string to convert
 //		spaceNum: number of spaces per tab
