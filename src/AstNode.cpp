@@ -4,6 +4,11 @@
 
 AstNode astVoid=AstNode(new AstVoid);
 
+AstNode makeFromTokens(const vector<Token>&, int start, int end)
+{
+	return astVoid;
+}
+
 string AstList::getString()
 {
 	string out;
