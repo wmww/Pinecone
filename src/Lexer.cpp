@@ -43,9 +43,9 @@ void CharClassifier::setUp()
 {
 	hm[' ']=WHITESPACE;
 	hm['\t']=WHITESPACE;
-	hm[';']=WHITESPACE;
 	
 	hm['\n']=NEWLINE;
+	hm[';']=NEWLINE;
 	
 	for (char c='a'; c<='z'; ++c)
 		hm[c]=LETTER;
@@ -139,8 +139,9 @@ TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, TokenDat
 		return TokenData::UNKNOWN;
 		
 	case WHITESPACE:
-	case NEWLINE:
 		return TokenData::WHITESPACE;
+	case NEWLINE:
+		return TokenData::LINE_END;
 		
 	case OPERATOR:
 		return TokenData::OPERATOR;

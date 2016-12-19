@@ -17,6 +17,7 @@ public:
 	enum Type
 	{
 		WHITESPACE,
+		LINE_END,
 		IDENTIFIER,
 		LITERAL,
 		OPERATOR,
