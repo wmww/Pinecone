@@ -25,6 +25,13 @@ bool substringMatches(const string& in, int pos, const string& subStr);
 //		returns: the absolute position (not the offset) of the first instance of the pattern in the input, or -1 if it can't find it
 int searchInString(const string& in, int startPos, const string& pattern);
 
+//	replaces all instances of one substring with another
+//		in: the string to search
+//		searchFor: pattern to replace
+//		replaceWith: new value
+//		returns: in after replace operation
+string replaceSubstring(const string& in, const string& searchFor, const string& replaceWith);
+
 //	sets the given array to be the given string sliced up using the given pattern
 //		in: the string to slice
 //		pattern: the pattern used to chop up the string, will not be included in output

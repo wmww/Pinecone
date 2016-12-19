@@ -11,6 +11,7 @@ string TokenData::typeToString(TokenData::Type in)
 	switch (in)
 	{
 		case WHITESPACE: return "whitespace";
+		case LINE_END: return "newline";
 		case IDENTIFIER: return "identifier";
 		case LITERAL: return "literal";
 		case OPERATOR: return "operator";
@@ -54,7 +55,14 @@ string tableStringFromTokens(const vector<Token>& tokens, string tableName)
 	
 	for (unsigned i=0; i<tokens.size(); ++i)
 	{
-		out+=tokens[i]->getText() + "\t";
+		//string a=tokens[i]->getText();
+		
+		//for (int i=1; i<12; i++)
+		//	a=replaceSubstring(a, "\n", "newline");
+		
+		out+=replaceSubstring(tokens[i]->getText(), "\n", "\\n") + "\t";
+		
+		//out+=a+"\t";
 		
 		out+=tokens[i]->getTypeDescription();
 		

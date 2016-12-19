@@ -31,6 +31,30 @@ int searchInString(const string& in, int startPos, const string& pattern)
 	return -1;
 }
 
+string replaceSubstring(const string& in, const string& searchFor, const string& replaceWith)
+{
+	string out;
+	int i=0;
+	
+	while (true)
+	{
+		int j=searchInString(in, i, searchFor);
+		
+		if (j<0)
+			break;
+		else
+		{
+			out+=in.substr(i, j-i);
+			out+=replaceWith;
+			i=j+searchFor.size();
+		}
+	}
+	
+	out+=in.substr(i, string::npos);
+	
+	return out;
+}
+
 void sliceStringBy(const string& in, const string& pattern, vector<string>& out)
 {
 	int start=0;
