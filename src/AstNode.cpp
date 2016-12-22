@@ -24,19 +24,19 @@ string AstList::getString()
 	return out;
 }
 
-Type AstList::getReturnType(Namespace ns)
+void AstList::resolveReturnType()
 {
 	if (nodes.empty())
 	{
-		return Void;
+		returnType=Void;
 	}
 	else
 	{
-		return nodes.back()->getReturnType(ns);
+		returnType=nodes.back()->getReturnType(ns);
 	}
 }
 
-void AstList::resolveAction(Namespace ns)
+void AstList::resolveAction()
 {
 	vector<Action> actions;
 	
@@ -44,7 +44,7 @@ void AstList::resolveAction(Namespace ns)
 	{
 		try
 		{
-			actions.push_back(i->getAction(ns));
+			actions.push_back(i->getAction());
 		}
 		catch (PineconeError err)
 		{
@@ -62,10 +62,7 @@ string AstExpression::getString()
 {
 	string out;
 	
-	if (leftIn!=astVoid || rightIn!=astVoid)
-	{
-		out+="(";
-	}
+	out+="(";
 	
 	if (leftIn!=astVoid)
 	{
@@ -73,26 +70,24 @@ string AstExpression::getString()
 		out+=" -> ";
 	}
 	
-	out+=token->getText();
+	out+=center->getString();
 	
-	if (leftIn!=astVoid)
+	if (rightIn!=astVoid)
 	{
 		out+=" <- ";
 		out+=rightIn->getString();
 	}
 	
-	if (leftIn!=astVoid || rightIn!=astVoid)
-	{
-		out+=")";
-	}
+	out+=")";
 	
 	return out;
 }
 
-void AstExpression::resolveAction(Namespace ns)
+void AstExpression::resolveAction()
 {
-	Action leftAction=leftIn->getAction(ns);
-	Action rightAction=rightIn->getAction(ns);
+	/*
+	Action leftAction=leftIn->getAction();
+	Action rightAction=rightIn->getAction();
 	
 	try
 	{
@@ -106,15 +101,6 @@ void AstExpression::resolveAction(Namespace ns)
 		if (actions.size()>0) // if there are actions with the requested name that didn't match the type
 		{
 			throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
-			
-			/*error.log("available overloads:", JSYK, token);
-			for (auto i: actions)
-			{
-				error.log("\t"+i->toString(), JSYK, token);
-			}
-			error.log("attempted use:", JSYK, token);
-			error.log("\t"+leftIn->getReturnType()->getString()+"."+rightIn->getReturnType()->getString(), JSYK, token);
-			return voidAction;*/
 		}
 		
 		Type type=leftIn->getReturnType(ns);
@@ -131,5 +117,18 @@ void AstExpression::resolveAction(Namespace ns)
 		ns->addVar(type, token->getText());
 		action=ns->getActionForTokenWithInput(token, leftAction, rightAction);
 	}
+	*/
+	
+	action=voidAction;
+}
+
+string AstToken::getString()
+{
+	return token->getText();
+}
+	
+void AstToken::resolveAction()
+{
+	action=voidAction;
 }
 
