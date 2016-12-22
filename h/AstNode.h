@@ -63,6 +63,8 @@ public:
 	
 protected:
 	
+	AstNodeBase() {}
+	
 	virtual void resolveReturnType()
 	{
 		returnType=getAction()->getReturnType();
@@ -139,11 +141,8 @@ public:
 	
 private:
 	
-	AstExpression() {}
-	
 	AstNode leftIn=nullptr, center=nullptr, rightIn=nullptr;
 };
-
 
 class AstToken: public AstNodeBase
 {
@@ -152,9 +151,7 @@ public:
 	static shared_ptr<AstToken> make(Token tokenIn)
 	{
 		shared_ptr<AstToken> node(new AstToken);
-		
 		node->token=tokenIn;
-		
 		return node;
 	}
 	
@@ -164,9 +161,79 @@ public:
 	
 private:
 	
-	AstToken() {}
+	Token token=nullptr;
+};
+
+class AstType: public AstNodeBase
+{
+	
+};
+
+class AstVoidType: public AstType
+{
+public:
+	
+	static shared_ptr<AstVoidType> make()
+	{
+		shared_ptr<AstVoidType> node(new AstVoidType);
+		return node;
+	}
+	
+	string getString() {return "{}";}
+	
+	void resolveAction() {action=voidAction;}
+	
+private:
+};
+
+class AstTokenType: public AstType
+{
+public:
+	
+	static shared_ptr<AstTokenType> make(Token tokenIn)
+	{
+		shared_ptr<AstTokenType> node(new AstTokenType);
+		node->token=tokenIn;
+		return node;
+	}
+	
+	string getString();
+	
+	void resolveAction();
+	
+private:
 	
 	Token token=nullptr;
 };
+
+
+class AstTupleType: public AstType
+{
+public:
+	
+	struct NamedType
+	{
+		Token name; // can be null
+		shared_ptr<AstType> type;
+	};
+	
+	static shared_ptr<AstTupleType> make(const vector<NamedType>& in)
+	{
+		shared_ptr<AstTupleType> node(new AstTupleType);
+		node->subTypes=in;
+		return node;
+	}
+	
+	string getString();
+	
+	void resolveAction();
+	
+private:
+	
+	vector<NamedType> subTypes;
+};
+
+
+
 
 

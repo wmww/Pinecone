@@ -12,14 +12,14 @@ string AstList::getString()
 {
 	string out;
 	
-	out+="\n{";
+	out+="\n(";
 	
 	for (auto i: nodes)
 	{
 		out+="\n"+indentString(i->getString())+"\n";
 	}
 	
-	out+="}";
+	out+=")";
 	
 	return out;
 }
@@ -122,12 +122,57 @@ void AstExpression::resolveAction()
 	action=voidAction;
 }
 
+
+/// Token
+
 string AstToken::getString()
 {
 	return token->getText();
 }
 	
 void AstToken::resolveAction()
+{
+	action=voidAction;
+}
+
+
+/// TokenType
+
+string AstTokenType::getString()
+{
+	return "{"+token->getText()+"}";
+}
+	
+void AstTokenType::resolveAction()
+{
+	action=voidAction;
+}
+
+
+/// TupleType
+
+string AstTupleType::getString()
+{
+	string out;
+	
+	out+="{";
+	
+	for (auto i: subTypes)
+	{
+		if (i.name)
+		{
+			out+=i.name->getText()+": ";
+		}
+		
+		out+=i.type->getString();
+	}
+	
+	out+="}";
+	
+	return out;
+}
+
+void AstTupleType::resolveAction()
 {
 	action=voidAction;
 }

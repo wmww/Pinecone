@@ -46,7 +46,7 @@ AstNode parseOperator(const vector<Token>& tokens, int left, int right, int inde
 
 //AstNode parseLiteral(Token token);
 
-//stNode parseType(const vector<Token>& tokens, int left, int right);
+shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right);
 //AstNode parseSingleTypeElement(const vector<Token>& tokens, int& i, int right, string& name, Type& type);
 //Type parseTypeToken(Token token);
 
@@ -195,21 +195,12 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 							return parseTokenList(tokens, left+1, right-1);
 						else
 							return astVoid; // a rare place where a astVoid may actually be intended by the programmer
-					}
+					}*/
 					else if (op==ops->openCrBrac)
 					{
-						if (left+2==right)
-						{
-							return typeGetAstNode(parseTypeToken(tokens[left+1], table));
-						}
-						else if (left+1<right-1)
-						{
-							return parseType(tokens, left+1, right-1);
-						}
-						else
-							return astVoid; // a rare place where a astVoid may actually be intended by the programmer
+						return parseType(tokens, left+1, right-1);
 					}
-					else*/
+					else
 					{
 						return astVoid;
 					}
@@ -359,9 +350,9 @@ void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode
 		parseChain(tokens, i+1, right, out);
 }
 
-/* AstNode parseType(const vector<Token>& tokens, int left, int right)
+shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 {
-	TupleTypeMaker tuple;
+	vector<AstTupleType::NamedType> types;
 	
 	while (left<=right)
 	{
@@ -376,40 +367,49 @@ void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode
 		{
 			if (tokens[left]->getType()!=TokenData::IDENTIFIER)
 			{
-				error.log("identifier must be to the left of ':' in type", SOURCE_ERROR, tokens[left]);
-				return astVoid;
+				throw PineconeError("identifier must be to the left of ':' in type", SOURCE_ERROR, tokens[left]);
 			}
 			
-			if (tokens[left+2]->getType()!=TokenData::IDENTIFIER)
+			shared_ptr<AstType> type;
+			
+			if (tokens[left+2]->getType()==TokenData::IDENTIFIER)
 			{
-				error.log("identifier must be to the right of ':' in type", SOURCE_ERROR, tokens[left]);
-				return astVoid;
+				type=AstTokenType::make(tokens[left+2]);
+				left+=3;
 			}
-			
-			Type type=parseTypeToken(tokens[left+2], table);
-			
-			if (!type->isCreatable())
+			else if (tokens[left+2]->getOp()==ops->openCrBrac)
 			{
-				error.log("failed to resolve "+tokens[left+2]->getText()+" into creatable type", SOURCE_ERROR, tokens[left+2]);
-				return astVoid;
+				int j=skipBrace(tokens, left+2);
+				
+				if (j>right)
+				{
+					throw PineconeError(FUNC+" skipping brance went outside of range", INTERNAL_ERROR, tokens[left+1]);
+				}
+				
+				type=parseType(tokens, left+2+1, j-1);
+				left=j+1;
+			}
+			else
+			{
+				throw PineconeError("invalid thingy '"+tokens[left+2]->getText()+"' in type", SOURCE_ERROR, tokens[left+2]);
 			}
 			
-			tuple.add(tokens[left]->getText(), type);
-			
-			left+=3;
+			types.push_back(AstTupleType::NamedType{tokens[left], type});
 		}
 		else //	this is an unnamed subtype
 		{
-			tuple.add(parseTypeToken(tokens[left], table));
+			types.push_back(AstTupleType::NamedType{nullptr, AstTokenType::make(tokens[left])});
 			left+=1;
 		}
 	}
 	
-	auto out=tuple.get();
-	
-	return typeGetAstNode(out);
+	if (types.size()==0)
+		return AstVoidType::make();
+	else if (types.size()==1 && !types[0].name)
+		return types[0].type;
+	else
+		return AstTupleType::make(types);
 }
-*/
 
 /* Type parseTypeToken(Token token, Namespace table)
 {
