@@ -84,14 +84,14 @@ string indentString(const string& in, string indent)
 	{
 		if (in[i]=='\n')
 		{
-			out+=in.substr(start, i+1);
+			out+=in.substr(start, start-i+1);
 			out+=indent;
 			start=i+1;
 		}
 	}
 	
-	if (start>int(in.size()))
-		out+=in.substr(start, string::npos);
+	if (start<=int(in.size()))
+		out+=in.substr(start, in.size()-start);
 	
 	return out;
 }
