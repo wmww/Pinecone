@@ -363,13 +363,14 @@ shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 		}
 		
 		//	if this is a named subtype
-		if (left+1<right && tokens[left+1]->getOp()==ops->colon)
+		if (left+2<=right && tokens[left+1]->getOp()==ops->colon)
 		{
 			if (tokens[left]->getType()!=TokenData::IDENTIFIER)
 			{
 				throw PineconeError("identifier must be to the left of ':' in type", SOURCE_ERROR, tokens[left]);
 			}
 			
+			Token name=tokens[left];
 			shared_ptr<AstType> type;
 			
 			if (tokens[left+2]->getType()==TokenData::IDENTIFIER)
@@ -394,7 +395,7 @@ shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 				throw PineconeError("invalid thingy '"+tokens[left+2]->getText()+"' in type", SOURCE_ERROR, tokens[left+2]);
 			}
 			
-			types.push_back(AstTupleType::NamedType{tokens[left], type});
+			types.push_back(AstTupleType::NamedType{name, type});
 		}
 		else //	this is an unnamed subtype
 		{

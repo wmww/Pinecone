@@ -39,7 +39,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	
 	if (printOutput)
 	{
-		cout << endl << putStringInBox(astRoot->getString(), false, "parsed abstract syntax tree") << endl;
+		cout << endl << putStringInBox(astRoot->getString(), false, "parsed abstract syntax tree", 160) << endl;
 	}
 	
 	/*if (printOutput)
