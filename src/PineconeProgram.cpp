@@ -33,11 +33,13 @@ void PineconeProgram::resolveProgram(bool printOutput)
 		cout << endl << tableStringFromTokens(tokens, "lexer output") << endl;
 	}
 	
-	astRoot=parseFunction(tokens, 0, tokens.size()-1, Void, Void);
+	//astRoot=parseFunction(tokens, 0, tokens.size()-1, Void, Void);
+	
+	astRoot=astNodeFromTokens(tokens);
 	
 	if (printOutput)
 	{
-		cout << endl << "parsed abstract syntax tree:\n" << astRoot->getDescription() << endl;
+		cout << endl << putStringInBox(astRoot->getString(), false, "parsed abstract syntax tree") << endl;
 	}
 	
 	/*if (printOutput)
@@ -49,6 +51,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 
 void PineconeProgram::execute()
 {
-	free(astRoot->execute(nullptr, nullptr));
+	cout << "not executing as that is not yet implemented for astNode" << endl;
+	//free(astRoot->execute(nullptr, nullptr));
 }
 

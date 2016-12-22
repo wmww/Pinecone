@@ -200,7 +200,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 			tokenTxt="";
 		}
 		
-		if (newType!=TokenData::WHITESPACE)
+		if (newType!=TokenData::WHITESPACE && newType!=TokenData::LINE_END)
 		{
 			tokenTxt+=text[i];
 		}

@@ -11,7 +11,7 @@ class AstNodeBase;
 
 typedef shared_ptr<AstNodeBase> AstNode;
 
-AstNode astNodeFromTokens(const vector<Token>&, int start, int end);
+AstNode astNodeFromTokens(const vector<Token>&);
 
 class AstNodeBase
 {
@@ -19,19 +19,37 @@ public:
 	
 	virtual string getString()=0;
 	
-	virtual Type getReturnType(Namespace ns)=0;
-	virtual Action getAction(Namespace ns)=0;
+	virtual Type getReturnType(Namespace ns)
+	{
+		return getAction(ns)->getReturnType();
+	}
+	
+	Action getAction(Namespace ns)
+	{
+		if (!action)
+		{
+			resolveAction(ns);
+		}
+		
+		return action;
+	}
+	
+protected:
+	
+	virtual void resolveAction(Namespace ns)=0;
+	
+	Action action=nullptr;
 };
 
 class AstVoid: public AstNodeBase
 {
 public:
 	
-	shared_ptr<AstVoid> make() {return shared_ptr<AstVoid>(new AstVoid);}
+	static shared_ptr<AstVoid> make() {return shared_ptr<AstVoid>(new AstVoid);}
 	
-	string getString() {return "void";}
+	string getString() {return "void node";}
 	Type getReturnType(Namespace ns) {return Void;}
-	Action getAction(Namespace ns) {return voidAction;}
+	void resolveAction(Namespace ns) {action=voidAction;}
 };
 
 extern AstNode astVoid;
@@ -41,15 +59,18 @@ class AstList: public AstNodeBase
 public:
 	
 	//	make a new instance of this type of node
-	shared_ptr<AstList> make() {return shared_ptr<AstList>(new AstList);}
-	
-	//	add a sub node to the end of the list
-	void addNode(AstNode in) {nodes.push_back(in);}
+	static shared_ptr<AstList> make(const vector<AstNode>& in)
+	{
+		shared_ptr<AstList> node(new AstList);
+		node->nodes=in;
+		return node;
+	}
 	
 	string getString();
 	
 	Type getReturnType(Namespace ns);
-	Action getAction(Namespace ns);
+	
+	void resolveAction(Namespace ns);
 	
 private:
 	
@@ -75,7 +96,7 @@ public:
 	}
 	*/
 	
-	shared_ptr<AstExpression> make(AstNode leftInIn, Token tokenIn, AstNode rightInIn)
+	static shared_ptr<AstExpression> make(AstNode leftInIn, Token tokenIn, AstNode rightInIn)
 	{
 		shared_ptr<AstExpression> node(new AstExpression);
 		
@@ -94,17 +115,14 @@ public:
 	
 	string getString();
 	
-	Type getReturnType(Namespace ns);
-	Action getAction(Namespace ns);
-	
 	void resolveAction(Namespace ns);
 	
 private:
 	
 	AstExpression() {}
 	
-	//	the action this node maps to, starts as nullptr and is resolved 
-	Action action=nullptr;
 	Token token=nullptr;
 	AstNode leftIn=nullptr, rightIn=nullptr;
 };
+
+

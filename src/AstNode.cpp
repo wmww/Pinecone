@@ -1,13 +1,12 @@
 #include "../h/AstNode.h"
 #include "../h/ErrorHandler.h"
 #include "../h/msclStringFuncs.h"
+#include "../h/AllOperators.h"
 
 AstNode astVoid=AstNode(new AstVoid);
 
-AstNode makeFromTokens(const vector<Token>&, int start, int end)
-{
-	return astVoid;
-}
+
+/// List
 
 string AstList::getString()
 {
@@ -37,7 +36,7 @@ Type AstList::getReturnType(Namespace ns)
 	}
 }
 
-Action AstList::getAction(Namespace ns)
+void AstList::resolveAction(Namespace ns)
 {
 	vector<Action> actions;
 	
@@ -53,9 +52,11 @@ Action AstList::getAction(Namespace ns)
 		}
 	}
 	
-	Action out=listAction(actions);
-	return out;
+	action=listAction(actions);
 }
+
+
+/// Expression
 
 string AstExpression::getString()
 {
@@ -72,34 +73,14 @@ string AstExpression::getString()
 	return out;
 }
 
-Type AstExpression::getReturnType(Namespace ns)
-{
-	return getAction(ns)->getReturnType();
-}
-
-Action AstExpression::getAction(Namespace ns)
-{
-	if (!action)
-	{
-		resolveAction(ns);
-	}
-	
-	if (action)
-		return action;
-	else
-		return voidAction;
-}
-
 void AstExpression::resolveAction(Namespace ns)
 {
 	Action leftAction=leftIn->getAction(ns);
 	Action rightAction=rightIn->getAction(ns);
 	
-	Action out;
-	
 	try
 	{
-		out=ns->getActionForTokenWithInput(token, leftAction, rightAction);
+		action=ns->getActionForTokenWithInput(token, leftAction, rightAction);
 	}
 	catch (IdNotFoundError err)
 	{
@@ -132,9 +113,7 @@ void AstExpression::resolveAction(Namespace ns)
 		}
 		
 		ns->addVar(type, token->getText());
-		out=ns->getActionForTokenWithInput(token, leftAction, rightAction);
+		action=ns->getActionForTokenWithInput(token, leftAction, rightAction);
 	}
-	
-	action=out;
 }
 
