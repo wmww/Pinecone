@@ -56,7 +56,15 @@ AstNode parseOperator(const vector<Token>& tokens, int left, int right, int inde
 
 AstNode astNodeFromTokens(const vector<Token>& tokens)
 {
-	return parseTokenList(tokens, 0, tokens.size()-1);
+	try
+	{
+		return parseTokenList(tokens, 0, tokens.size()-1);
+	}
+	catch (PineconeError err)
+	{
+		err.log();
+		return astVoid;
+	}
 }
 
 int skipBrace(const vector<Token>& tokens, int start)
@@ -145,7 +153,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	}
 	else if (left==right)
 	{
-		return AstExpression::make(astVoid, tokens[left], astVoid);
+		return AstToken::make(tokens[left]);
 	}
 	
 	vector<bool> isMinLeft(right-left+1);
@@ -247,7 +255,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	{
 		if (isMinLeft[i] && isMinRight[i])
 		{
-			return AstExpression::make(parseExpression(tokens, left, i-1), tokens[i], parseExpression(tokens, i+1, right));
+			return AstExpression::make(parseExpression(tokens, left, i-1), AstToken::make(tokens[i]), parseExpression(tokens, i+1, right));
 		}
 	}
 	
