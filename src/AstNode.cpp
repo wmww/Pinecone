@@ -157,14 +157,21 @@ string AstTupleType::getString()
 	
 	out+="{";
 	
-	for (auto i: subTypes)
+	for (int i=0; i<int(subTypes.size()); i++)
 	{
-		if (i.name)
+		auto type=subTypes[i];
+		
+		if (type.name)
 		{
-			out+=i.name->getText()+": ";
+			out+=type.name->getText()+": ";
 		}
 		
-		out+=i.type->getString();
+		out+=type.type->getString();
+		
+		if (i<int(subTypes.size())-1)
+		{
+			out+=", ";
+		}
 	}
 	
 	out+="}";

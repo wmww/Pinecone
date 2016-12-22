@@ -1,17 +1,22 @@
 
+func1 :: {num1: Int, num2: Dub}:
+(
+	print: num1
+	print: num2
+)
 
 
-func :: {Int}:
+func2 :: {Int}:
 (
 	a: 1
 	
 	right>0?
-		func: right-1
+		func2: right-1
 	|
 		print: tru
 )
 
-func: 6
+func2: 6
 
 a: 8
 
