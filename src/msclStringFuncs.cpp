@@ -77,14 +77,17 @@ void sliceStringBy(const string& in, const string& pattern, vector<string>& out)
 
 string indentString(const string& in, string indent)
 {
-	string out=indent;
+	string out;
 	int start=0;
+	
+	if (!in.empty())
+		out+=indent;
 	
 	for (int i=0; i<int(in.size()); i++)
 	{
 		if (in[i]=='\n')
 		{
-			out+=in.substr(start, start-i+1);
+			out+=in.substr(start, i-start+1);
 			out+=indent;
 			start=i+1;
 		}
