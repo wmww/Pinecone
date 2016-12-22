@@ -3,6 +3,8 @@
 
 func :: {Int}:
 (
+	a: 1
+	
 	right>0?
 		func: right-1
 	|

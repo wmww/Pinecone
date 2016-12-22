@@ -255,7 +255,17 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	{
 		if (isMinLeft[i] && isMinRight[i])
 		{
-			return AstExpression::make(parseExpression(tokens, left, i-1), AstToken::make(tokens[i]), parseExpression(tokens, i+1, right));
+			AstNode leftNode=parseExpression(tokens, left, i-1);
+			AstNode rightNode=parseExpression(tokens, i+1, right);
+			
+			if (tokens[i]->getOp()==ops->colon || tokens[i]->getOp()==ops->doubleColon)
+			{
+				return AstExpression::make(astVoid, leftNode, rightNode);
+			}
+			else
+			{
+				return AstExpression::make(leftNode, AstToken::make(tokens[i]), rightNode);
+			}
 		}
 	}
 	

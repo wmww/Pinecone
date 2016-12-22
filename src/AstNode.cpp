@@ -12,7 +12,7 @@ string AstList::getString()
 {
 	string out;
 	
-	out+="{";
+	out+="\n{";
 	
 	for (auto i: nodes)
 	{
