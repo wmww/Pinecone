@@ -341,8 +341,7 @@ void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode
 		parseChain(tokens, i+1, right, out);
 }
 
-/*
-AstNode parseType(const vector<Token>& tokens, int left, int right)
+/* AstNode parseType(const vector<Token>& tokens, int left, int right)
 {
 	TupleTypeMaker tuple;
 	
@@ -394,8 +393,7 @@ AstNode parseType(const vector<Token>& tokens, int left, int right)
 }
 */
 
-/*
-Type parseTypeToken(Token token, Namespace table)
+/* Type parseTypeToken(Token token, Namespace table)
 {
 	if (token->getType()==TokenData::IDENTIFIER)
 	{

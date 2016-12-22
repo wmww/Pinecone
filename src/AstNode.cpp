@@ -16,7 +16,7 @@ string AstList::getString()
 	
 	for (auto i: nodes)
 	{
-		out+=indentString(i->getString()+"\n")+"\n";
+		out+="\n"+indentString(i->getString())+"\n";
 	}
 	
 	out+="}";
@@ -62,13 +62,29 @@ string AstExpression::getString()
 {
 	string out;
 	
-	out+="(";
-	out+=leftIn->getString();
-	out+=") -> ";
+	if (leftIn!=astVoid || rightIn!=astVoid)
+	{
+		out+="(";
+	}
+	
+	if (leftIn!=astVoid)
+	{
+		out+=leftIn->getString();
+		out+=" -> ";
+	}
+	
 	out+=token->getText();
-	out+=" <- (";
-	out+=rightIn->getString();
-	out+=")";
+	
+	if (leftIn!=astVoid)
+	{
+		out+=" <- ";
+		out+=rightIn->getString();
+	}
+	
+	if (leftIn!=astVoid || rightIn!=astVoid)
+	{
+		out+=")";
+	}
 	
 	return out;
 }
