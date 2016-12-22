@@ -88,7 +88,6 @@ public:
 	void resolveReturnType() {returnType=Void;}
 	void resolveAction() {action=voidAction;}
 };
-
 extern AstNode astVoid;
 
 class AstList: public AstNodeBase
@@ -205,7 +204,6 @@ private:
 	
 	Token token=nullptr;
 };
-
 
 class AstTupleType: public AstType
 {
