@@ -42,6 +42,20 @@ void PineconeProgram::resolveProgram(bool printOutput)
 		cout << endl << putStringInBox(astRoot->getString(), false, "parsed abstract syntax tree", 160) << endl;
 	}
 	
+	if (astRoot)
+	{
+		try
+		{
+			actionRoot=astRoot->getAction();
+			
+			cout << endl << putStringInBox(actionRoot->toString(), false, "parsed action tree", 160) << endl;
+		}
+		catch (PineconeError err)
+		{
+			err.log();
+		}
+	}
+	
 	/*if (printOutput)
 	{
 		cout << endl << "C source code:\n" << astRoot->getCSource() << endl;
@@ -51,7 +65,6 @@ void PineconeProgram::resolveProgram(bool printOutput)
 
 void PineconeProgram::execute()
 {
-	cout << "not executing as that is not yet implemented for astNode" << endl;
-	//free(astRoot->execute(nullptr, nullptr));
+	free(actionRoot->execute(nullptr, nullptr));
 }
 
