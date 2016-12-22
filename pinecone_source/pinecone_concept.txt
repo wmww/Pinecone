@@ -332,3 +332,16 @@ obj: MyObj
 
 obj.addToBoth
 
+a: b: 7-1-1
+
+  :
+ / \
+a   :
+   / \
+  b   -
+	 / \
+	-   1
+   / \
+  7   1
+
+

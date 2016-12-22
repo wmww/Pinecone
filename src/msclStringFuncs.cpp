@@ -283,17 +283,19 @@ string putStringInTable(const string& in, string tableName)
 	
 	for (auto i: lineStrs)
 	{
-		table.push_back(vector<string>());
+		vector<string> row;
 		
-		sliceStringBy(i, "\t", table.back());
+		sliceStringBy(i, "\t", row);
 		
-		for (unsigned j=0; j<table.back().size(); j++)
+		for (unsigned j=0; j<row.size(); j++)
 		{
-			if (j>=widths.size())
+			if (j==widths.size())
 				widths.push_back(0);
 			
-			widths[j]=max(widths[j], int(table.back()[j].size()));
+			widths[j]=max(widths[j], int(row[j].size()));
 		}
+		
+		table.push_back(row);
 	}
 	
 	//make sure each row in the table has the same number of cells
