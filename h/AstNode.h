@@ -27,11 +27,13 @@ public:
 		ns=nsIn;
 		inLeftType=left;
 		inRightType=right;
+		
+		inputWasSet();
 	}
 	
 	virtual string getString()=0;
 	
-	Type getReturnType(Namespace ns)
+	Type getReturnType()
 	{
 		if (!returnType)
 		{
@@ -65,6 +67,8 @@ protected:
 	
 	AstNodeBase() {}
 	
+	virtual void inputWasSet() {}
+	
 	virtual void resolveReturnType()
 	{
 		returnType=getAction()->getReturnType();
@@ -85,6 +89,15 @@ public:
 	static shared_ptr<AstVoid> make() {return shared_ptr<AstVoid>(new AstVoid);}
 	
 	string getString() {return "void node";}
+	
+	void inputWasSet()
+	{
+		if (!inLeftType->isVoid() || !inRightType->isVoid())
+		{
+			throw PineconeError("AstVoid given non void input", INTERNAL_ERROR);
+		}
+	}
+	
 	void resolveReturnType() {returnType=Void;}
 	void resolveAction() {action=voidAction;}
 };
@@ -103,6 +116,8 @@ public:
 	}
 	
 	string getString();
+	
+	void inputWasSet();
 	
 	void resolveReturnType();
 	

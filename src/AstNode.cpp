@@ -5,6 +5,8 @@
 
 AstNode astVoid=AstNode(new AstVoid);
 
+extern StackFrame stdLibStackFrame;
+extern Namespace stdLibNamespace;
 
 /// List
 
@@ -24,6 +26,21 @@ string AstList::getString()
 	return out;
 }
 
+void AstList::inputWasSet()
+{
+	if (!inLeftType->isVoid() || !inRightType->isVoid())
+	{
+		throw PineconeError("AstList given non void input", INTERNAL_ERROR);
+	}
+	
+	ns=ns->makeChild();
+	
+	for (auto i: nodes)
+	{
+		i->setInput(ns, Void, Void);
+	}
+}
+
 void AstList::resolveReturnType()
 {
 	if (nodes.empty())
@@ -32,7 +49,7 @@ void AstList::resolveReturnType()
 	}
 	else
 	{
-		returnType=nodes.back()->getReturnType(ns);
+		returnType=nodes.back()->getReturnType();
 	}
 }
 

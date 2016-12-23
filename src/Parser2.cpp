@@ -18,9 +18,6 @@ using std::min;
 using std::max;
 using std::pair;
 
-extern StackFrame stdLibStackFrame;
-extern Namespace stdLibNamespace;
-
 //	unless otherwise noted, these are what the perams for the following functions mean
 //		tokens: the tokens to parse
 //		table: the table to use

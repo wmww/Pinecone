@@ -7,6 +7,8 @@ void populatePineconeStdLib();
 void lexString(string text, string filename, vector<Token>& tokens);
 Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType);
 
+extern Namespace stdLibNamespace;
+
 PineconeProgram::PineconeProgram()
 {
 	
@@ -36,6 +38,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	//astRoot=parseFunction(tokens, 0, tokens.size()-1, Void, Void);
 	
 	astRoot=astNodeFromTokens(tokens);
+	astRoot->setInput(stdLibNamespace, Void, Void);
 	
 	if (printOutput)
 	{
