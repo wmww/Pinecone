@@ -97,5 +97,16 @@ private:
 
 Action listAction(const vector<Action>& actionsIn)
 {
-	return Action(new ListAction(actionsIn));
+	if (actionsIn.size()==0)
+	{
+		return voidAction;
+	}
+	else if (actionsIn.size()==1)
+	{
+		return actionsIn[0];
+	}
+	else
+	{
+		return Action(new ListAction(actionsIn));
+	}
 }

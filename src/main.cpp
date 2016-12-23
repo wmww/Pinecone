@@ -20,7 +20,7 @@ int main(int argc, char ** argv)
 	
 	string widapLangSource=loadEntireFile(inputFilename, true);
 	
-	cout << endl << putStringInBox(widapLangSource, true, inputFilename) << endl;
+	//cout << endl << putStringInBox(widapLangSource, true, inputFilename) << endl;
 	
 	PineconeProgram parser;
 	
@@ -28,16 +28,16 @@ int main(int argc, char ** argv)
 	
 	if (error.getIfErrorLogged())
 	{
-		cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl << endl;
+		cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl;
 	}
 	else
 	{
 		cout << endl << "executing program..." << endl << endl;
 		
 		parser.execute();
-		
-		cout << endl << "all done" << endl;
 	}
+	
+	cout << endl << "all done" << endl;
 	
 	string outputFilename;
 	

@@ -203,18 +203,24 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 	
 	auto first=in.begin();
 	auto last=in.end();
-	last--;
 	
-	while(*first=="" && first!=last)
-	{
-		first++;
-		if (lineNum>=0)
-			lineNum++;
-	}
-	
-	while (*last=="" && first!=last)
+	if (first!=last)
 	{
 		last--;
+		
+		while(first!=last && *first=="")
+		{
+			first++;
+			if (lineNum>=0)
+				lineNum++;
+		}
+		
+		while (first!=last && *last=="")
+		{
+			last--;
+		}
+		
+		last++;
 	}
 	
 	//the extra width of the padding on the right and left (not the virt lines)
@@ -236,7 +242,7 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 	
 	auto i=first;
 	
-	while (true)
+	while (i!=last)
 	{
 		if (lineNum<0)
 		{
@@ -249,9 +255,6 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 		}
 		
 		out+=padString(*i, size, 1)+"  | ";
-		
-		if (i==last)
-			break;
 			
 		i++;
 	}
