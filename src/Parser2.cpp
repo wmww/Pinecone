@@ -53,15 +53,7 @@ shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right);
 
 AstNode astNodeFromTokens(const vector<Token>& tokens)
 {
-	try
-	{
-		return parseTokenList(tokens, 0, tokens.size()-1);
-	}
-	catch (PineconeError err)
-	{
-		err.log();
-		return astVoid;
-	}
+	return parseTokenList(tokens, 0, tokens.size()-1);
 }
 
 int skipBrace(const vector<Token>& tokens, int start)
@@ -184,7 +176,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 						if (left+1<right)
 							return parseTokenList(tokens, left+1, right-1);
 						else
-							return astVoid; // a rare place where a astVoid may actually be intended by the programmer
+							return AstVoid::make(); // a rare place where a astVoid may actually be intended by the programmer
 					}
 					/*else if (op==ops->openSqBrac)
 					{
@@ -199,7 +191,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 					}
 					else
 					{
-						return astVoid;
+						throw PineconeError("unknown bracket '"+op->getText()+"'", INTERNAL_ERROR);
 					}
 				}
 			}
@@ -248,7 +240,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 			
 			if (tokens[i]->getOp()==ops->colon || tokens[i]->getOp()==ops->doubleColon)
 			{
-				return AstExpression::make(astVoid, leftNode, rightNode);
+				return AstExpression::make(AstVoid::make(), leftNode, rightNode);
 			}
 			else
 			{

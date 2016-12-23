@@ -3,7 +3,7 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/AllOperators.h"
 
-AstNode astVoid=AstNode(new AstVoid);
+//AstNode astVoid=AstNode(new AstVoid);
 
 extern StackFrame stdLibStackFrame;
 extern Namespace stdLibNamespace;
@@ -81,7 +81,7 @@ string AstExpression::getString()
 	
 	out+="(";
 	
-	if (leftIn!=astVoid)
+	if (!leftIn->isVoid())
 	{
 		out+=leftIn->getString();
 		out+=" -> ";
@@ -89,7 +89,7 @@ string AstExpression::getString()
 	
 	out+=center->getString();
 	
-	if (rightIn!=astVoid)
+	if (!rightIn->isVoid())
 	{
 		out+=" <- ";
 		out+=rightIn->getString();
@@ -100,43 +100,22 @@ string AstExpression::getString()
 	return out;
 }
 
+void AstExpression::inputWasSet()
+{
+	if (!inLeftType->isVoid() || !inRightType->isVoid())
+	{
+		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR);
+	}
+	
+	leftIn->setInput(ns, Void, Void);
+	rightIn->setInput(ns, Void, Void);
+	
+	center->setInput(ns, leftIn->getReturnType(), rightIn->getReturnType());
+}
+
 void AstExpression::resolveAction()
 {
-	/*
-	Action leftAction=leftIn->getAction();
-	Action rightAction=rightIn->getAction();
-	
-	try
-	{
-		action=ns->getActionForTokenWithInput(token, leftAction, rightAction);
-	}
-	catch (IdNotFoundError err)
-	{
-		vector<Action> actions;
-		ns->getActions(token->getText(), actions);
-		
-		if (actions.size()>0) // if there are actions with the requested name that didn't match the type
-		{
-			throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
-		}
-		
-		Type type=leftIn->getReturnType(ns);
-		
-		if (type->getType()==TypeBase::METATYPE)
-		{
-			throw PineconeError("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR, token);
-		}
-		else if (!type->isCreatable())
-		{
-			throw PineconeError("cannot create variable '"+token->getText()+"' of type "+type->getString(), SOURCE_ERROR, token);
-		}
-		
-		ns->addVar(type, token->getText());
-		action=ns->getActionForTokenWithInput(token, leftAction, rightAction);
-	}
-	*/
-	
-	action=voidAction;
+	action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
 }
 
 
@@ -149,7 +128,34 @@ string AstToken::getString()
 	
 void AstToken::resolveAction()
 {
-	action=voidAction;
+	try
+	{
+		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+	}
+	catch (IdNotFoundError err)
+	{
+		vector<Action> actions;
+		ns->getActions(token->getText(), actions);
+		
+		if (actions.size()>0) // if there are actions with the requested name that didn't match the type
+		{
+			throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
+		}
+		
+		Type type=inRightType;
+		
+		if (type->getType()==TypeBase::METATYPE)
+		{
+			throw PineconeError("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR, token);
+		}
+		else if (!type->isCreatable())
+		{
+			throw PineconeError("cannot create variable '"+token->getText()+"' of type "+type->getString(), SOURCE_ERROR, token);
+		}
+		
+		ns->addVar(type, token->getText());
+		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+	}
 }
 
 

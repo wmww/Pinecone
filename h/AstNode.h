@@ -19,10 +19,12 @@ public:
 	
 	void setInput(Namespace nsIn, Type left, Type right)
 	{
-		if (ns || inLeftType || inRightType)
+		if (inputHasBeenSet)
 		{
-			throw PineconeError("tried to set input on an AST node more then once", INTERNAL_ERROR);
+			throw PineconeError("tried to set input on an AST node '"+getString()+"' more then once", INTERNAL_ERROR);
 		}
+		
+		inputHasBeenSet=true;
 		
 		ns=nsIn;
 		inLeftType=left;
@@ -30,6 +32,8 @@ public:
 		
 		inputWasSet();
 	}
+	
+	virtual bool isVoid() {return false;}
 	
 	virtual string getString()=0;
 	
@@ -80,6 +84,7 @@ protected:
 	Action action=nullptr;
 	Type returnType=nullptr;
 	Namespace ns=nullptr;
+	bool inputHasBeenSet=false;
 };
 
 class AstVoid: public AstNodeBase
@@ -87,6 +92,8 @@ class AstVoid: public AstNodeBase
 public:
 	
 	static shared_ptr<AstVoid> make() {return shared_ptr<AstVoid>(new AstVoid);}
+	
+	bool isVoid() {return true;}
 	
 	string getString() {return "void node";}
 	
@@ -101,7 +108,7 @@ public:
 	void resolveReturnType() {returnType=Void;}
 	void resolveAction() {action=voidAction;}
 };
-extern AstNode astVoid;
+//extern AstNode astVoid;
 
 class AstList: public AstNodeBase
 {
@@ -135,11 +142,6 @@ public:
 	
 	static shared_ptr<AstExpression> make(AstNode leftInIn, AstNode centerIn, AstNode rightInIn)
 	{
-		if (leftInIn==astVoid && rightInIn==astVoid)
-		{
-			throw PineconeError("tried to make an AstExpression node with both inputs void", INTERNAL_ERROR);
-		}
-		
 		shared_ptr<AstExpression> node(new AstExpression);
 		
 		node->leftIn=leftInIn;
@@ -150,6 +152,8 @@ public:
 	}
 	
 	string getString();
+	
+	void inputWasSet();
 	
 	void resolveAction();
 	
