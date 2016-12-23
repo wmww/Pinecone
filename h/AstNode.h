@@ -9,7 +9,7 @@ using std::vector;
 
 class AstNodeBase;
 
-typedef shared_ptr<AstNodeBase> AstNode;
+typedef unique_ptr<AstNodeBase> AstNode;
 
 AstNode astNodeFromTokens(const vector<Token>&);
 
@@ -91,7 +91,7 @@ class AstVoid: public AstNodeBase
 {
 public:
 	
-	static shared_ptr<AstVoid> make() {return shared_ptr<AstVoid>(new AstVoid);}
+	static unique_ptr<AstVoid> make() {return unique_ptr<AstVoid>(new AstVoid);}
 	
 	bool isVoid() {return true;}
 	
@@ -115,10 +115,10 @@ class AstList: public AstNodeBase
 public:
 	
 	//	make a new instance of this type of node
-	static shared_ptr<AstList> make(const vector<AstNode>& in)
+	static unique_ptr<AstList> make(vector<AstNode>& in)
 	{
-		shared_ptr<AstList> node(new AstList);
-		node->nodes=in;
+		unique_ptr<AstList> node(new AstList);
+		node->nodes=move(in);
 		return node;
 	}
 	
@@ -140,13 +140,13 @@ class AstExpression: public AstNodeBase
 {
 public:
 	
-	static shared_ptr<AstExpression> make(AstNode leftInIn, AstNode centerIn, AstNode rightInIn)
+	static unique_ptr<AstExpression> make(AstNode leftInIn, AstNode centerIn, AstNode rightInIn)
 	{
-		shared_ptr<AstExpression> node(new AstExpression);
+		unique_ptr<AstExpression> node(new AstExpression);
 		
-		node->leftIn=leftInIn;
-		node->center=centerIn;
-		node->rightIn=rightInIn;
+		node->leftIn=move(leftInIn);
+		node->center=move(centerIn);
+		node->rightIn=move(rightInIn);
 		
 		return node;
 	}
@@ -166,9 +166,9 @@ class AstToken: public AstNodeBase
 {
 public:
 	
-	static shared_ptr<AstToken> make(Token tokenIn)
+	static unique_ptr<AstToken> make(Token tokenIn)
 	{
-		shared_ptr<AstToken> node(new AstToken);
+		unique_ptr<AstToken> node(new AstToken);
 		node->token=tokenIn;
 		return node;
 	}
@@ -191,9 +191,9 @@ class AstVoidType: public AstType
 {
 public:
 	
-	static shared_ptr<AstVoidType> make()
+	static unique_ptr<AstVoidType> make()
 	{
-		shared_ptr<AstVoidType> node(new AstVoidType);
+		unique_ptr<AstVoidType> node(new AstVoidType);
 		return node;
 	}
 	
@@ -208,9 +208,9 @@ class AstTokenType: public AstType
 {
 public:
 	
-	static shared_ptr<AstTokenType> make(Token tokenIn)
+	static unique_ptr<AstTokenType> make(Token tokenIn)
 	{
-		shared_ptr<AstTokenType> node(new AstTokenType);
+		unique_ptr<AstTokenType> node(new AstTokenType);
 		node->token=tokenIn;
 		return node;
 	}
@@ -231,13 +231,13 @@ public:
 	struct NamedType
 	{
 		Token name; // can be null
-		shared_ptr<AstType> type;
+		unique_ptr<AstType> type;
 	};
 	
-	static shared_ptr<AstTupleType> make(const vector<NamedType>& in)
+	static unique_ptr<AstTupleType> make(vector<NamedType>& in)
 	{
-		shared_ptr<AstTupleType> node(new AstTupleType);
-		node->subTypes=in;
+		unique_ptr<AstTupleType> node(new AstTupleType);
+		node->subTypes=move(in);
 		return node;
 	}
 	
