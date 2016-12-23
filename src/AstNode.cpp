@@ -16,9 +16,9 @@ string AstList::getString()
 	
 	out+="\n(";
 	
-	for (auto i: nodes)
+	for (int i=0; i<int(nodes.size()); i++)
 	{
-		out+="\n"+indentString(i->getString())+"\n";
+		out+="\n"+indentString(nodes[i]->getString())+"\n";
 	}
 	
 	out+=")";
@@ -35,9 +35,9 @@ void AstList::inputWasSet()
 	
 	ns=ns->makeChild();
 	
-	for (auto i: nodes)
+	for (int i=0; i<int(nodes.size()); i++)
 	{
-		i->setInput(ns, Void, Void);
+		nodes[i]->setInput(ns, Void, Void);
 	}
 }
 
@@ -57,11 +57,11 @@ void AstList::resolveAction()
 {
 	vector<Action> actions;
 	
-	for (auto i: nodes)
+	for (int i=0; i<int(nodes.size()); i++)
 	{
 		try
 		{
-			actions.push_back(i->getAction());
+			actions.push_back(nodes[i]->getAction());
 		}
 		catch (PineconeError err)
 		{
@@ -182,14 +182,14 @@ string AstTupleType::getString()
 	
 	for (int i=0; i<int(subTypes.size()); i++)
 	{
-		auto type=subTypes[i];
+		auto type=&subTypes[i];
 		
-		if (type.name)
+		if (type->name)
 		{
-			out+=type.name->getText()+": ";
+			out+=type->name->getText()+": ";
 		}
 		
-		out+=type.type->getString();
+		out+=type->type->getString();
 		
 		if (i<int(subTypes.size())-1)
 		{

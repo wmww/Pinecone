@@ -40,7 +40,6 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	try
 	{
 		astRoot=astNodeFromTokens(tokens);
-		astRoot->setInput(stdLibNamespace, Void, Void);
 	}
 	catch (PineconeError err)
 	{
@@ -53,18 +52,25 @@ void PineconeProgram::resolveProgram(bool printOutput)
 		cout << endl << putStringInBox(astRoot->getString(), false, "parsed abstract syntax tree", 160) << endl;
 	}
 	
-	if (astRoot)
+	try
 	{
-		try
-		{
-			actionRoot=astRoot->getAction();
-			
-			cout << endl << putStringInBox(actionRoot->getDescription(), false, "parsed action tree", 160) << endl;
-		}
-		catch (PineconeError err)
-		{
-			err.log();
-		}
+		astRoot->setInput(stdLibNamespace, Void, Void);
+	}
+	catch (PineconeError err)
+	{
+		err.log();
+		astRoot=AstVoid::make();
+	}
+	
+	try
+	{
+		actionRoot=astRoot->getAction();
+		
+		cout << endl << putStringInBox(actionRoot->getDescription(), false, "parsed action tree", 160) << endl;
+	}
+	catch (PineconeError err)
+	{
+		err.log();
 	}
 	
 	/*if (printOutput)

@@ -43,7 +43,7 @@ AstNode parseOperator(const vector<Token>& tokens, int left, int right, int inde
 
 //AstNode parseLiteral(Token token);
 
-shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right);
+unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right);
 //AstNode parseSingleTypeElement(const vector<Token>& tokens, int& i, int right, string& name, Type& type);
 //Type parseTypeToken(Token token);
 
@@ -240,11 +240,11 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 			
 			if (tokens[i]->getOp()==ops->colon || tokens[i]->getOp()==ops->doubleColon)
 			{
-				return AstExpression::make(AstVoid::make(), leftNode, rightNode);
+				return AstExpression::make(AstVoid::make(), move(leftNode), move(rightNode));
 			}
 			else
 			{
-				return AstExpression::make(leftNode, AstToken::make(tokens[i]), rightNode);
+				return AstExpression::make(move(leftNode), AstToken::make(tokens[i]), move(rightNode));
 			}
 		}
 	}
@@ -339,7 +339,7 @@ void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode
 		parseChain(tokens, i+1, right, out);
 }
 
-shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
+unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 {
 	vector<AstTupleType::NamedType> types;
 	
@@ -360,7 +360,7 @@ shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 			}
 			
 			Token name=tokens[left];
-			shared_ptr<AstType> type;
+			unique_ptr<AstType> type;
 			
 			if (tokens[left+2]->getType()==TokenData::IDENTIFIER)
 			{
@@ -384,7 +384,7 @@ shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 				throw PineconeError("invalid thingy '"+tokens[left+2]->getText()+"' in type", SOURCE_ERROR, tokens[left+2]);
 			}
 			
-			types.push_back(AstTupleType::NamedType{name, type});
+			types.push_back(AstTupleType::NamedType{name, move(type)});
 		}
 		else //	this is an unnamed subtype
 		{
@@ -396,7 +396,7 @@ shared_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 	if (types.size()==0)
 		return AstVoidType::make();
 	else if (types.size()==1 && !types[0].name)
-		return types[0].type;
+		return move(types[0].type);
 	else
 		return AstTupleType::make(types);
 }
