@@ -68,6 +68,7 @@
 		<Unit filename="../src/Parser2.cpp" />
 		<Unit filename="../src/PineconeProgram.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />
+		<Unit filename="../src/ResolveLiteral.cpp" />
 		<Unit filename="../src/StackFrame.cpp" />
 		<Unit filename="../src/Token.cpp" />
 		<Unit filename="../src/Type.cpp" />
