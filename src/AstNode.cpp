@@ -8,6 +8,8 @@
 extern StackFrame stdLibStackFrame;
 extern Namespace stdLibNamespace;
 
+Action resolveLiteral(Token token);
+
 /// List
 
 string AstList::getString()
@@ -169,8 +171,7 @@ void AstToken::resolveAction()
 			throw PineconeError("a literal can not be given an input", SOURCE_ERROR, token);
 		}
 		
-		int val=1;
-		action=constGetAction(&val, Int, "1");
+		action=resolveLiteral(token);
 	}
 }
 
