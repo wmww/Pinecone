@@ -11,12 +11,12 @@ extern Namespace stdLibNamespace;
 
 PineconeProgram::PineconeProgram()
 {
-	
+	globalFrame=shared_ptr<StackFrame>(new StackFrame);
 }
 
 void PineconeProgram::cleanUp()
 {
-	globalFrame=StackFrame();
+	globalFrame=nullptr;
 }
 
 void PineconeProgram::resolveProgram(bool printOutput)
@@ -64,7 +64,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	
 	try
 	{
-		actionRoot=astRoot->getAction();
+		actionRoot=functionAction(astRoot->getAction(), globalFrame);
 		
 		cout << endl << putStringInBox(actionRoot->getDescription(), false, "parsed action tree", 160) << endl;
 	}
@@ -82,6 +82,14 @@ void PineconeProgram::resolveProgram(bool printOutput)
 
 void PineconeProgram::execute()
 {
-	free(actionRoot->execute(nullptr, nullptr));
+	try
+	{
+		free(actionRoot->execute(nullptr, nullptr));
+	}
+	catch (PineconeError err)
+	{
+		err.log();
+		cout << endl << ">>>>>>    program aborted due to error    <<<<<<" << endl;
+	}
 }
 

@@ -54,7 +54,7 @@ private:
 	
 private:
 	
-	StackFrame globalFrame;
+	shared_ptr<StackFrame> globalFrame;
 	
 	string inFileName;
 	string inSource;

@@ -29,8 +29,6 @@ public:
 		ns=nsIn;
 		inLeftType=left;
 		inRightType=right;
-		
-		inputWasSet();
 	}
 	
 	virtual bool isVoid() {return false;}
@@ -71,8 +69,6 @@ protected:
 	
 	AstNodeBase() {}
 	
-	virtual void inputWasSet() {}
-	
 	virtual void resolveReturnType()
 	{
 		returnType=getAction()->getReturnType();
@@ -97,16 +93,17 @@ public:
 	
 	string getString() {return "void node";}
 	
-	void inputWasSet()
+	void resolveReturnType() {returnType=Void;}
+	
+	void resolveAction()
 	{
 		if (!inLeftType->isVoid() || !inRightType->isVoid())
 		{
 			throw PineconeError("AstVoid given non void input", INTERNAL_ERROR);
 		}
+		
+		action=voidAction;
 	}
-	
-	void resolveReturnType() {returnType=Void;}
-	void resolveAction() {action=voidAction;}
 };
 //extern AstNode astVoid;
 
@@ -123,8 +120,6 @@ public:
 	}
 	
 	string getString();
-	
-	void inputWasSet();
 	
 	void resolveReturnType();
 	
@@ -152,8 +147,6 @@ public:
 	}
 	
 	string getString();
-	
-	void inputWasSet();
 	
 	void resolveAction();
 	
