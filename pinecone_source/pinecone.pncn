@@ -1,4 +1,8 @@
 
+a: 8
+print: a
+
+//
 func1 :: {num1: Int, num2: Dub}:
 (
 	print: num1
@@ -25,4 +29,4 @@ b :: (func: 0)
 a: 3
 
 print: a
-
+\\

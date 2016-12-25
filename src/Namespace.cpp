@@ -239,6 +239,8 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		getActions(token->getText(), matches);
 	}
 	
+	error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
+	
 	Action selection=findActionWithInput(matches, left, right);
 	
 	if (selection)

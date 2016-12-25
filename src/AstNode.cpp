@@ -26,21 +26,6 @@ string AstList::getString()
 	return out;
 }
 
-void AstList::inputWasSet()
-{
-	if (!inLeftType->isVoid() || !inRightType->isVoid())
-	{
-		throw PineconeError("AstList given non void input", INTERNAL_ERROR);
-	}
-	
-	ns=ns->makeChild();
-	
-	for (int i=0; i<int(nodes.size()); i++)
-	{
-		nodes[i]->setInput(ns, Void, Void);
-	}
-}
-
 void AstList::resolveReturnType()
 {
 	if (nodes.empty())
@@ -55,6 +40,18 @@ void AstList::resolveReturnType()
 
 void AstList::resolveAction()
 {
+	if (!inLeftType->isVoid() || !inRightType->isVoid())
+	{
+		throw PineconeError("AstList given non void input", INTERNAL_ERROR);
+	}
+	
+	ns=ns->makeChild();
+	
+	for (int i=0; i<int(nodes.size()); i++)
+	{
+		nodes[i]->setInput(ns, Void, Void);
+	}
+	
 	vector<Action> actions;
 	
 	for (int i=0; i<int(nodes.size()); i++)
@@ -100,7 +97,7 @@ string AstExpression::getString()
 	return out;
 }
 
-void AstExpression::inputWasSet()
+void AstExpression::resolveAction()
 {
 	if (!inLeftType->isVoid() || !inRightType->isVoid())
 	{
@@ -111,10 +108,9 @@ void AstExpression::inputWasSet()
 	rightIn->setInput(ns, Void, Void);
 	
 	center->setInput(ns, leftIn->getReturnType(), rightIn->getReturnType());
-}
-
-void AstExpression::resolveAction()
-{
+	
+	error.log("resolveAction called for "+getString(), JSYK);
+	
 	action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
 }
 
@@ -128,33 +124,53 @@ string AstToken::getString()
 	
 void AstToken::resolveAction()
 {
-	try
+	error.log("resolveAction called for token "+token->getText(), JSYK, token);
+	
+	if (token->getType()==TokenData::IDENTIFIER || token->getType()==TokenData::OPERATOR)
 	{
-		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+		try
+		{
+			error.log("looking for "+token->getText()+" in\n"+ns->getString(), JSYK, token);
+			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+		}
+		catch (IdNotFoundError err)
+		{
+			vector<Action> actions;
+			ns->getActions(token->getText(), actions);
+			
+			if (actions.size()>0) // if there are actions with the requested name that didn't match the type
+			{
+				throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
+			}
+			
+			Type type=inRightType;
+			
+			if (type->getType()==TypeBase::METATYPE)
+			{
+				throw PineconeError("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR, token);
+			}
+			else if (type->isVoid())
+			{
+				throw PineconeError("unknown identifier '"+token->getText()+"' (var can not be made bc right in type is "+type->getString(), SOURCE_ERROR, token);
+			}
+			else if (!type->isCreatable())
+			{
+				throw PineconeError("cannot create variable '"+token->getText()+"' of type "+type->getString(), SOURCE_ERROR, token);
+			}
+			
+			ns->addVar(type, token->getText());
+			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+		}
 	}
-	catch (IdNotFoundError err)
+	else if (token->getType()==TokenData::LITERAL)
 	{
-		vector<Action> actions;
-		ns->getActions(token->getText(), actions);
-		
-		if (actions.size()>0) // if there are actions with the requested name that didn't match the type
+		if (!inLeftType->isVoid() || !inRightType->isVoid())
 		{
-			throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
+			throw PineconeError("a literal can not be given an input", SOURCE_ERROR, token);
 		}
 		
-		Type type=inRightType;
-		
-		if (type->getType()==TypeBase::METATYPE)
-		{
-			throw PineconeError("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR, token);
-		}
-		else if (!type->isCreatable())
-		{
-			throw PineconeError("cannot create variable '"+token->getText()+"' of type "+type->getString(), SOURCE_ERROR, token);
-		}
-		
-		ns->addVar(type, token->getText());
-		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+		int val=1;
+		action=constGetAction(&val, Int, "1");
 	}
 }
 

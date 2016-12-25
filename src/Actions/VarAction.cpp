@@ -51,6 +51,11 @@ public:
 	
 	void* execute(void* left, void* right)
 	{
+		if (!stackPtr)
+		{
+			throw PineconeError("something fucked up big time. VarSetAction::execute called while stack pointer is still null", RUNTIME_ERROR);
+		}
+		
 		//copy data on to the stack location of the var
 		memcpy((char*)stackPtr+offset, right, inRightType->getSize());
 		
