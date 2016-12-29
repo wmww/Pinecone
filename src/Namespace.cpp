@@ -256,7 +256,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		getActions(token->getText(), matches);
 	}
 	
-	error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
+	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
 	
 	Action selection=findActionWithInput(matches, left, right);
 	
@@ -317,6 +317,23 @@ void NamespaceData::getConvertersToType(Type typeIn, vector<Action>& out)
 
 Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType)
 {
+	//error.log																	\
+	(																			\
+		string()+																\
+			"findActionWithInput called."+										\
+			"\n\tinput:\n"+														\
+			[&]()->string														\
+			{																	\
+				string out;														\
+				for (auto i: actionsIn)											\
+					out+="\t\t"+i->getTypesString()+"\n";						\
+				return out;														\
+			}()+																\
+			"\n\ttarget:\n"+													\
+			"\t\t"+leftInType->getString()+"."+rightInType->getString()+"\n",	\
+		JSYK																	\
+	);																			\
+	
 	Action match(nullptr);
 	
 	for (auto i: actionsIn)

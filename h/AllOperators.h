@@ -34,8 +34,8 @@ public:
 	DECLARE_OP(	less,		"<",	40,		41,		true	);	\
 	DECLARE_OP(	comma,		",",	60,		61,		false	);	\
 	DECLARE_OP(	dot,		".",	70,		71,		false	);	\
-	DECLARE_OP(	doubleColon,"::",	91,		90,		false	);	\
-	DECLARE_OP(	colon,		":",	95,		94,		false	);	\
+	DECLARE_OP(	doubleColon,"::",	13,		12,		false	);	\
+	DECLARE_OP(	colon,		":",	15,		14,		false	);	\
 	DECLARE_OP(	openPeren,	"(",	0,		100,	false	);	\
 	DECLARE_OP(	closePeren,	")",	100,	0,		false	);	\
 	DECLARE_OP(	openSqBrac,	"[",	0,		100,	false	);	\

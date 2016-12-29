@@ -25,6 +25,7 @@ public:
 	//void setText(string in) {text=in;}
 	//string getText() {return text;}
 	string toString();
+	string getTypesString();
 	
 	Type& getReturnType() {return returnType;}
 	Type& getInLeftType() {return inLeftType;}
