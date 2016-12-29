@@ -21,6 +21,11 @@ string ActionData::toString()
 	//return returnType->getName() + " <- " + inLeftType->getName() + " " + text + " " + inRightType->getName();
 }
 
+string ActionData::getTypesString()
+{
+	return returnType->getString()+" <- "+inLeftType->getString()+"."+inRightType->getString();
+}
+
 //LambdaAction::LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
 	
 //void* LambdaAction::execute(void* inLeft, void* inRight)
