@@ -49,7 +49,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	
 	if (printOutput)
 	{
-		cout << endl << putStringInBox(astRoot->getString(), false, "parsed abstract syntax tree", 160) << endl;
+		cout << endl << putStringInBox(astRoot->getString(), "parsed abstract syntax tree") << endl;
 	}
 	
 	try
@@ -66,7 +66,7 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	{
 		actionRoot=functionAction(astRoot->getAction(), globalFrame);
 		
-		cout << endl << putStringInBox(actionRoot->getDescription(), false, "parsed action tree", 160) << endl;
+		cout << endl << putStringInBox(actionRoot->getDescription(), "parsed action tree") << endl;
 	}
 	catch (PineconeError err)
 	{

@@ -132,7 +132,7 @@ void AstToken::resolveAction()
 	{
 		try
 		{
-			error.log("looking for "+token->getText()+" in\n"+ns->getString(), JSYK, token);
+			error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
 			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
 		}
 		catch (IdNotFoundError err)
@@ -161,7 +161,15 @@ void AstToken::resolveAction()
 			}
 			
 			ns->addVar(type, token->getText());
-			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+			
+			try
+			{
+				action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+			}
+			catch (IdNotFoundError err)
+			{
+				throw err.toPineconeError();
+			}
 		}
 	}
 	else if (token->getType()==TokenData::LITERAL)

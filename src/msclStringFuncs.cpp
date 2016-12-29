@@ -236,7 +236,10 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 	
 	size=min(maxWidth, size);
 	
-	out+="  _"+padString(boxName, size+extraWidth-2, 0, "_", "[ ", " ]")+"_  ";
+	if (boxName=="")
+		out+="  "+padString("", size+extraWidth, 1, "_")+"  ";
+	else
+		out+="  _"+padString(boxName, size+extraWidth-2, 0, "_", "[ ", " ]")+"_  ";
 	
 	out+="\n |"+padString("", size+extraWidth, 1, " ")+"| ";
 	
@@ -264,7 +267,7 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 	return out;
 }
 
-string putStringInBox(const string& in, bool showLineNums, string boxName, int maxWidth)
+string putStringInBox(const string& in, string boxName, bool showLineNums, int maxWidth)
 {
 	vector<string> lines;
 	

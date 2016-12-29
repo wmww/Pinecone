@@ -345,3 +345,32 @@ a   :
   7   1
 
 
+a: {}
+a.b: 8
+a.c: "hello"
+
+a . getString :: {}
+[
+	c + " " + b
+]
+
+
+
+MyClass: {}
+[
+	me.name: "Sophie"
+	me.age: 19
+	
+	me
+]
+
+getString: {MyClass}.{}
+[
+	name + " is " + age + " years old."
+]
+
+person: MyClass
+
+print: person.getString
+
+	> Sophie is 19 years old
