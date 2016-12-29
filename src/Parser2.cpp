@@ -132,6 +132,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 	}
 }
 
+/*
 AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
 	//error.log("parsing expression: "+stringFromTokens(tokens, left, right), JSYK);
@@ -178,13 +179,6 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 						else
 							return AstVoid::make(); // a rare place where a astVoid may actually be intended by the programmer
 					}
-					/*else if (op==ops->openSqBrac)
-					{
-						if (left+1<right)
-							return parseTokenList(tokens, left+1, right-1);
-						else
-							return astVoid; // a rare place where a astVoid may actually be intended by the programmer
-					}*/
 					else if (op==ops->openCrBrac)
 					{
 						return parseType(tokens, left+1, right-1);
@@ -254,6 +248,52 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	//error.log("range: " + ([&]()->string{string out; for (int i=left; i<=right; i++) {out+=tokens[i]->getText()+" ";} return out;})(), JSYK, tokens[left]);
 	//error.log("isMin: " + ([&]()->string{string out; for (auto i: isMin) {out+="\n"+to_string(i.first)+", "+to_string(i.second);} return out;})(), JSYK, tokens[left]);
 }
+*/
+
+AstNode parseExpression(const vector<Token>& tokens, int left, int right)
+{
+	if (left>right)
+	{
+		throw PineconeError(FUNC + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
+	}
+	else if (left==right)
+	{
+		return AstToken::make(tokens[left]);
+	}
+	
+	int maxPrece=-1;
+	int indexOfMax=-1;
+	
+	for (int i=left; i<=right; i++)
+	{
+		if (tokens[i]->getOp() && tokens[i]->getOp()->getPrece()>maxPrece)
+		{
+			maxPrece=tokens[i]->getOp()->getPrece();
+			indexOfMax=i;
+			
+			if (maxPrece%2)
+			{
+				maxPrece--;
+			}
+		}
+	}
+	
+	if (!indexOfMax)
+	{
+		throw PineconeError(FUNC+" could not find operator to split expression", INTERNAL_ERROR, tokens[left]);
+	}
+	
+	if (tokens[indexOfMax]->getOp()==ops->openPeren)
+	{
+		throw PineconeError("this shit is broken and I'm too tired to fix it now. goodnight.", INTERNAL_ERROR, tokens[indexOfMax]);
+	}
+	
+	AstNode leftNode=indexOfMax>left?parseExpression(tokens, left, indexOfMax-1):AstVoid::make();
+	AstNode centerNode=AstToken::make(tokens[indexOfMax]);
+	AstNode rightNode=indexOfMax<right?parseExpression(tokens, indexOfMax+1, right):AstVoid::make();
+	
+	return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
+}
 
 AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 {
@@ -290,18 +330,7 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 					break;
 				}
 			}
-			else if // if the left can't absorb the right and the right cant absorbe the left
-				(
-					(
-						!tokens[i]->getOp()
-						||
-						!tokens[i]->getOp()->getRightPrece()
-					) && (
-						!tokens[i+1]->getOp()
-						||
-						!tokens[i+1]->getOp()->getLeftPrece()
-					)
-				)
+			else if (!tokens[i]->getOp())// if the left can't absorb the right and the right cant absorbe the left
 			{
 				nodes.push_back(parseExpression(tokens, left, i));
 				break;
