@@ -1,10 +1,11 @@
 #include "../h/Namespace.h"
 #include "../h/StackFrame.h"
+#include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
 Namespace NamespaceData::makeRootNamespace()
 {
-	return Namespace(new NamespaceData(Namespace(nullptr), shared_ptr<StackFrame>(new StackFrame())));
+	return Namespace(new NamespaceData(Namespace(nullptr), shared_ptr<StackFrame>(new StackFrame()), "root"));
 }
 
 Namespace NamespaceData::makeChild()
@@ -12,15 +13,16 @@ Namespace NamespaceData::makeChild()
 	return Namespace(new NamespaceData(shared_from_this(), stackFrame));
 }
 
-Namespace NamespaceData::makeChildAndFrame()
+Namespace NamespaceData::makeChildAndFrame(string nameIn)
 {
-	return Namespace(new NamespaceData(shared_from_this(), shared_ptr<StackFrame>(new StackFrame())));
+	return Namespace(new NamespaceData(shared_from_this(), shared_ptr<StackFrame>(new StackFrame()), nameIn));
 }
 
-NamespaceData::NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn)
+NamespaceData::NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn, string nameIn)
 {
 	parent=parentIn;
 	stackFrame=stackFrameIn;
+	myName=nameIn;
 }
 
 void NamespaceData::clear()
@@ -83,6 +85,21 @@ string NamespaceData::getString()
 		out+="\t";
 		out+=i.second->getString() + " (" + i.second->getString() + ")";
 		out+="\n";
+	}
+	
+	return out;
+}
+
+string NamespaceData::getStringWithParents()
+{
+	auto ptr=shared_from_this();
+	
+	string out;
+	
+	while (ptr)
+	{
+		out=putStringInBox(ptr->getString()+"\n"+out, ptr->myName);
+		ptr=ptr->parent;
 	}
 	
 	return out;
@@ -246,7 +263,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	if (selection)
 		return selection;
 	else
-		throw IdNotFoundError(token->getText(), shared_from_this());
+		throw IdNotFoundError(token->getText(), matches.size()>0, shared_from_this());
 }
 
 Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right)
@@ -260,7 +277,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 	else
 	{
 		return voidAction;
-	}
+	} 
 }
 
 Action NamespaceData::getActionConvertedToType(Action actionIn, Type outType)

@@ -18,7 +18,6 @@ class NamespaceData;
 typedef shared_ptr<NamespaceData> Namespace;
 
 ///	has a bunch of hash tables for all the identifiers in a single scope
-//	in general, this class does not throw source errors, instead it simply returns null or default values if it can't find something
 //	contains a pointer to a stack frame but there may be many namespaces (due to many scopes) in a single stack frame
 //		for example, a function has a single stack frame but has several if blocks, each with its own IdTable
 //		each IdTable also has a pointer to its parent, which should only be null for the global standard library
@@ -50,7 +49,7 @@ public:
 	Namespace makeChild();
 	
 	//	makes a child namespace with a new stack frame
-	Namespace makeChildAndFrame();
+	Namespace makeChildAndFrame(string nameIn);
 	
 	
 	///	deletion functions
@@ -62,8 +61,11 @@ public:
 	
 	///	getters
 	
-	//	returns a string with the complete contents of this stack frame
+	//	returns a string with the complete contents of this namespace
 	string getString();
+	
+	//	retuens a string with this namespace and all it's parents nicely formatted
+	string getStringWithParents();
 	
 	Namespace getParent() {return parent;}
 	shared_ptr<StackFrame> getStackFrame() {return stackFrame;}
@@ -122,7 +124,7 @@ public:
 private:
 	
 	//	the only constructor, is private so use a make function instead
-	NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn);
+	NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn, string nameIn="");
 	
 	//void addActionsToList(vector<Action>& in, string& text);
 	//void addActionsToList(vector<Action>& in, Operator op);
@@ -140,6 +142,9 @@ private:
 	//	if there is exactly 1 action in the vector with the correct input types, returns it otherwise returns null
 	//	NOTE: can return null
 	Action findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType);
+	
+	//	the name of this namespace, for debugging purposes only
+	string myName;
 	
 	//	this namespaces parent
 	shared_ptr<NamespaceData> parent;
@@ -164,13 +169,13 @@ private:
 	unordered_map<string, Type> types;
 };
 
-
 class IdNotFoundError
 {
 public:
-	IdNotFoundError(string idIn, Namespace nsIn)
+	IdNotFoundError(string idIn, bool foundMatchIn, Namespace nsIn)
 	{
 		id=idIn;
+		foundMatch=foundMatchIn;
 		ns=nsIn;
 	}
 	
@@ -179,10 +184,22 @@ public:
 	
 	PineconeError toPineconeError()
 	{
-		return PineconeError("unknown identifier '"+id+"'", SOURCE_ERROR);
+		string msg;
+		
+		if (foundMatch)
+		{
+			msg="proper overload for '"+id+"' not found";
+		}
+		else
+		{
+			msg="unknown identifier '"+id+"'";
+		}
+		
+		return PineconeError(msg, SOURCE_ERROR);
 	}
 	
 private:
 	string id;
+	bool foundMatch;
 	Namespace ns;
 };

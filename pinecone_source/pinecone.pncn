@@ -1,6 +1,6 @@
 
 a: 8
-print: a
+print: a+7
 
 //
 func1 :: {num1: Int, num2: Dub}:

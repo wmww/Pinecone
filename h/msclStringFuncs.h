@@ -75,12 +75,12 @@ string padString(const string& in, int size, int alignment=1, string pad=" ", st
 string lineListToBoxedString(const vector<string>& in, string boxName="", int lineNum=-1, int maxWidth=80);
 
 //	puts the contents of a string into a well formatted
-//		in: the input string
+//		in: the input stringz
 //		showLineNums: if to show line numbers
 //		boxName: the name that will appear at the top of the box
 //		maxWidth: the maximum width of the contents of the box (with borders it may be a bit wider), if any line is longer it will be chopped
 //		returns: the boxed string
-string putStringInBox(const string& in, bool showLineNums=false, string boxName="", int maxWidth=80);
+string putStringInBox(const string& in, string boxName="", bool showLineNums=false, int maxWidth=80);
 
 //	puts the contents of a string into a table, with tabs being verticle seporators and newlines being horizontle ones
 //		in: the input string
