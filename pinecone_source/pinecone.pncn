@@ -1,6 +1,11 @@
 
-a: 8
+a: 8-(2-5)
 print: a+7
+
+a<9 ?
+	print: tru
+|
+	print: fls
 
 //
 func1 :: {num1: Int, num2: Dub}:

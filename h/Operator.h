@@ -17,19 +17,17 @@ class OperatorData
 public:
 	
 	string getText() {return text;}
-	int getLeftPrece() {return leftPrecedence;}
-	int getRightPrece() {return rightPrecedence;}
+	int getPrece() {return precedence;}
 	bool getOverloadable() {return overloadable;}
 	
 private:
 	
 	friend AllOperators;
 	
-	OperatorData(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool overloadableIn)
+	OperatorData(string textIn, int precedenceIn, bool overloadableIn)
 	{
 		text=textIn;
-		leftPrecedence=leftPrecedenceIn;
-		rightPrecedence=rightPrecedenceIn;
+		precedence=precedenceIn;
 		overloadable=overloadableIn;
 	}
 	
@@ -38,8 +36,7 @@ private:
 	
 	// the precedence of left and right inputs, if this is 0 then the operator does not take an input on that side
 	// if even then precedence level is parced left to right. if odd then right to left
-	int leftPrecedence;
-	int rightPrecedence;
+	int precedence;
 	
 	// if this operator can be overloaded
 	bool overloadable;

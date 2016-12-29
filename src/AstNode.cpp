@@ -111,7 +111,7 @@ void AstExpression::resolveAction()
 	
 	center->setInput(ns, leftIn->getReturnType(), rightIn->getReturnType());
 	
-	error.log("resolveAction called for "+getString(), JSYK);
+	//error.log("resolveAction called for "+getString(), JSYK);
 	
 	action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
 }
@@ -126,13 +126,13 @@ string AstToken::getString()
 	
 void AstToken::resolveAction()
 {
-	error.log("resolveAction called for token "+token->getText(), JSYK, token);
+	//error.log("resolveAction called for token "+token->getText(), JSYK, token);
 	
 	if (token->getType()==TokenData::IDENTIFIER || token->getType()==TokenData::OPERATOR)
 	{
 		try
 		{
-			error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
+			//error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
 			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
 		}
 		catch (IdNotFoundError err)
@@ -145,6 +145,11 @@ void AstToken::resolveAction()
 				throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
 			}
 			
+			if (token->getType()==TokenData::OPERATOR)
+			{
+				throw PineconeError("unknown overload for operator '"+token->getText()+"'", SOURCE_ERROR, token);
+			}
+			
 			Type type=inRightType;
 			
 			if (type->getType()==TypeBase::METATYPE)
@@ -153,7 +158,7 @@ void AstToken::resolveAction()
 			}
 			else if (type->isVoid())
 			{
-				throw PineconeError("unknown identifier '"+token->getText()+"' (var can not be made bc right in type is "+type->getString(), SOURCE_ERROR, token);
+				throw PineconeError("unknown identifier '"+token->getText()+"' (var can not be made bc right in type is "+type->getString()+")", SOURCE_ERROR, token);
 			}
 			else if (!type->isCreatable())
 			{
@@ -180,6 +185,10 @@ void AstToken::resolveAction()
 		}
 		
 		action=resolveLiteral(token);
+	}
+	else
+	{
+		throw PineconeError("AstToken givin invalid token '"+token->getText()+"' of type "+TokenData::typeToString(token->getType()), INTERNAL_ERROR, token);
 	}
 }
 

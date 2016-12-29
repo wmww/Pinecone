@@ -19,8 +19,9 @@ AllOperators::AllOperators()
 {	
 	#undef DECLARE_OP
 	
-	#define DECLARE_OP(name, text, left, right, overload)\
-		putOpInMap(name);
+	//#define DECLARE_OP(name, text, left, right, overload) putOpInMap(name);
+	
+	#define DECLARE_OP(name, text, prec, overload) putOpInMap(name);
 	
 	ALL_OPS;
 }
