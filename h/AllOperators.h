@@ -45,30 +45,30 @@ public:
 	DECLARE_OP(	closeCrBrac,"}",	100,	0,		false	);	\
 	*/
 	
-	#define DECLARE_OP(name, text, prec, overload)\
-		const Operator name{new OperatorData(text, prec, overload)};
+	#define DECLARE_OP(name, text, prece, input, overload)\
+		const Operator name{new OperatorData(text, prece, input, overload)};
 	
-	#define ALL_OPS												\
-	DECLARE_OP(	loop,		"@",	5,		false	);	\
-	DECLARE_OP(	ifOp,		"?",	5,		false	);	\
-	DECLARE_OP(	pipe,		"|",	15,		false	);	\
-	DECLARE_OP(	colon,		":",	25,		false	);	\
-	DECLARE_OP(	doubleColon,"::",	25,		false	);	\
-	DECLARE_OP(	comma,		",",	35,		false	);	\
-	DECLARE_OP(	equal,		"=",	40,		true	);	\
-	DECLARE_OP(	greater,	">",	50,		true	);	\
-	DECLARE_OP(	less,		"<",	50,		true	);	\
-	DECLARE_OP(	plus,		"+",	60,		true	);	\
-	DECLARE_OP(	minus,		"-",	60,		true	);	\
-	DECLARE_OP(	multiply,	"*",	70,		true	);	\
-	DECLARE_OP(	divide,		"/",	70,		true	);	\
-	DECLARE_OP(	dot,		".",	80,		false	);	\
-	DECLARE_OP(	openPeren,	"(",	100,	false	);	\
-	DECLARE_OP(	closePeren,	")",	99,		false	);	\
-	DECLARE_OP(	openSqBrac,	"[",	100,	false	);	\
-	DECLARE_OP(	closeSqBrac,"]",	99,		false	);	\
-	DECLARE_OP(	openCrBrac,	"{",	100,	false	);	\
-	DECLARE_OP(	closeCrBrac,"}",	99,		false	);	\
+	#define ALL_OPS																\
+	DECLARE_OP(	loop,		"@",	5,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	ifOp,		"?",	5,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	pipe,		"|",	15,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	colon,		":",	25,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	doubleColon,"::",	25,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	comma,		",",	35,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	equal,		"=",	40,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	greater,	">",	50,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	less,		"<",	50,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	plus,		"+",	60,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	minus,		"-",	60,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	multiply,	"*",	70,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	divide,		"/",	70,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	dot,		".",	80,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	openPeren,	"(",	100,	OperatorData::RIGHT,	false	);	\
+	DECLARE_OP(	closePeren,	")",	99,		OperatorData::LEFT,		false	);	\
+	DECLARE_OP(	openSqBrac,	"[",	100,	OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	closeSqBrac,"]",	99,		OperatorData::LEFT,		false	);	\
+	DECLARE_OP(	openCrBrac,	"{",	100,	OperatorData::RIGHT,	false	);	\
+	DECLARE_OP(	closeCrBrac,"}",	99,		OperatorData::LEFT,		false	);	\
 	
 	ALL_OPS;
 	

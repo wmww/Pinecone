@@ -317,22 +317,24 @@ void NamespaceData::getConvertersToType(Type typeIn, vector<Action>& out)
 
 Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType)
 {
-	//error.log																	\
-	(																			\
-		string()+																\
-			"findActionWithInput called."+										\
-			"\n\tinput:\n"+														\
-			[&]()->string														\
-			{																	\
-				string out;														\
-				for (auto i: actionsIn)											\
-					out+="\t\t"+i->getTypesString()+"\n";						\
-				return out;														\
-			}()+																\
-			"\n\ttarget:\n"+													\
-			"\t\t"+leftInType->getString()+"."+rightInType->getString()+"\n",	\
-		JSYK																	\
-	);																			\
+	/*
+	error.log
+	(
+		string()+
+			"findActionWithInput called."+
+			"\n\tinput:\n"+
+			[&]()->string
+			{
+				string out;
+				for (auto i: actionsIn)
+					out+="\t\t"+i->getTypesString()+"\n";
+				return out;
+			}()+
+			"\n\ttarget:\n"+
+			"\t\t"+leftInType->getString()+"."+rightInType->getString()+"\n",
+		JSYK
+	);
+	*/
 	
 	Action match(nullptr);
 	

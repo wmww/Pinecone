@@ -132,8 +132,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 	}
 }
 
-/*
-AstNode parseExpression(const vector<Token>& tokens, int left, int right)
+/*AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
 	//error.log("parsing expression: "+stringFromTokens(tokens, left, right), JSYK);
 	
@@ -252,6 +251,8 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 
 AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
+	error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
+	
 	if (left>right)
 	{
 		throw PineconeError(FUNC + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
@@ -261,38 +262,66 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		return AstToken::make(tokens[left]);
 	}
 	
-	int maxPrece=-1;
-	int indexOfMax=-1;
+	int minPrece=-1;
+	int indexOfMin=-1;
 	
 	for (int i=left; i<=right; i++)
 	{
-		if (tokens[i]->getOp() && tokens[i]->getOp()->getPrece()>maxPrece)
+		if (tokens[i]->getOp()==ops->openPeren || tokens[i]->getOp()==ops->openCrBrac)
 		{
-			maxPrece=tokens[i]->getOp()->getPrece();
-			indexOfMax=i;
+			int j=skipBrace(tokens, i);
 			
-			if (maxPrece%2)
+			if (i==left && j==right)
 			{
-				maxPrece--;
+				if (tokens[i]->getOp()==ops->openPeren)
+				{
+					return parseTokenList(tokens, left+1, right-1);
+				}
+				else 
+				{
+					return parseType(tokens, left+1, right-1);
+				}
+			}
+			
+			i=j;
+		}
+		else if (tokens[i]->getOp() && (minPrece<0 || tokens[i]->getOp()->getPrece()<minPrece))
+		{
+			minPrece=tokens[i]->getOp()->getPrece();
+			indexOfMin=i;
+			
+			if (minPrece%2)
+			{
+				minPrece++;
 			}
 		}
 	}
 	
-	if (!indexOfMax)
+	if (indexOfMin<0)
 	{
 		throw PineconeError(FUNC+" could not find operator to split expression", INTERNAL_ERROR, tokens[left]);
 	}
 	
-	if (tokens[indexOfMax]->getOp()==ops->openPeren)
+	if (tokens[indexOfMin]->getOp()==ops->colon || tokens[indexOfMin]->getOp()==ops->doubleColon)
 	{
-		throw PineconeError("this shit is broken and I'm too tired to fix it now. goodnight.", INTERNAL_ERROR, tokens[indexOfMax]);
+		if (indexOfMin==left || indexOfMin==right)
+		{
+			throw PineconeError("improper use of '"+tokens[indexOfMin]->getOp()->getText()+"'", SOURCE_ERROR, tokens[indexOfMin]);
+		}
+		
+		AstNode leftNode=parseExpression(tokens, left, indexOfMin-1);
+		AstNode rightNode=parseExpression(tokens, indexOfMin+1, right);
+		
+		return AstExpression::make(AstVoid::make(), move(leftNode), move(rightNode));
 	}
-	
-	AstNode leftNode=indexOfMax>left?parseExpression(tokens, left, indexOfMax-1):AstVoid::make();
-	AstNode centerNode=AstToken::make(tokens[indexOfMax]);
-	AstNode rightNode=indexOfMax<right?parseExpression(tokens, indexOfMax+1, right):AstVoid::make();
-	
-	return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
+	else
+	{
+		AstNode leftNode=indexOfMin>left?parseExpression(tokens, left, indexOfMin-1):AstVoid::make();
+		AstNode centerNode=AstToken::make(tokens[indexOfMin]);
+		AstNode rightNode=indexOfMin<right?parseExpression(tokens, indexOfMin+1, right):AstVoid::make();
+		
+		return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
+	}
 }
 
 AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
@@ -309,7 +338,7 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 			
 			if (op==ops->openPeren || op==ops->openSqBrac || op==ops->openCrBrac)
 				i=skipBrace(tokens, i);
-				
+			
 			if (i>=right) // at the end
 			{
 				if (nodes.empty())
@@ -330,7 +359,7 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 					break;
 				}
 			}
-			else if (!tokens[i]->getOp())// if the left can't absorb the right and the right cant absorbe the left
+			else if (!tokens[i]->getOp() && !tokens[i+1]->getOp())// if the left can't absorb the right and the right cant absorbe the left
 			{
 				nodes.push_back(parseExpression(tokens, left, i));
 				break;
