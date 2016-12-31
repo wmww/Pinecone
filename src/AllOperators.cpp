@@ -1,5 +1,4 @@
 
-#define PUT_OPS_IN_MAP_CMD
 
 #include "../h/AllOperators.h"
 #include "../h/ErrorHandler.h"
@@ -21,7 +20,7 @@ AllOperators::AllOperators()
 	
 	//#define DECLARE_OP(name, text, left, right, overload) putOpInMap(name);
 	
-	#define DECLARE_OP(name, text, prec, overload) putOpInMap(name);
+	#define DECLARE_OP(name, text, prece, input, overload) putOpInMap(name);
 	
 	ALL_OPS;
 }

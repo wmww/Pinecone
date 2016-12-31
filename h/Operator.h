@@ -16,15 +16,24 @@ class OperatorData
 {
 public:
 	
+	enum InputTaken
+	{
+		LEFT,
+		RIGHT,
+		BOTH,
+	};
+	
 	string getText() {return text;}
 	int getPrece() {return precedence;}
 	bool getOverloadable() {return overloadable;}
+	bool getTakesLeftIn() {return input==BOTH || input==LEFT;}
+	bool getTakesRightIn() {return input==BOTH || input==RIGHT;}
 	
 private:
 	
 	friend AllOperators;
 	
-	OperatorData(string textIn, int precedenceIn, bool overloadableIn)
+	OperatorData(string textIn, int precedenceIn, InputTaken inputIn, bool overloadableIn)
 	{
 		text=textIn;
 		precedence=precedenceIn;
@@ -40,6 +49,9 @@ private:
 	
 	// if this operator can be overloaded
 	bool overloadable;
+	
+	// if this operator takes input from the left, right or both
+	InputTaken input;
 };
 
 typedef shared_ptr<OperatorData> Operator;
