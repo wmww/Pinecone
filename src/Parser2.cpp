@@ -251,7 +251,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 
 AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
-	error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
+	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
 	
 	if (left>right)
 	{
@@ -302,13 +302,15 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		throw PineconeError(FUNC+" could not find operator to split expression", INTERNAL_ERROR, tokens[left]);
 	}
 	
-	if (tokens[indexOfMin]->getOp()==ops->colon || tokens[indexOfMin]->getOp()==ops->doubleColon)
+	Operator op=tokens[indexOfMin]->getOp();
+	
+	if ((indexOfMin==left)==op->takesLeftInput() || (indexOfMin==right)==op->takesRightInput())
 	{
-		if (indexOfMin==left || indexOfMin==right)
-		{
-			throw PineconeError("improper use of '"+tokens[indexOfMin]->getOp()->getText()+"'", SOURCE_ERROR, tokens[indexOfMin]);
-		}
-		
+		throw PineconeError("improper use of '"+op->getText()+"' operator", SOURCE_ERROR, tokens[indexOfMin]);
+	}
+	
+	if (op==ops->colon || op==ops->doubleColon)
+	{
 		AstNode leftNode=parseExpression(tokens, left, indexOfMin-1);
 		AstNode rightNode=parseExpression(tokens, indexOfMin+1, right);
 		
@@ -339,8 +341,6 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 		
 		if (i==right || (!tokenTakesRightInput && !nextTokenTakesLeftInput))
 		{
-			error.log("yes", JSYK);
-			
 			try
 			{
 				AstNode node=parseExpression(tokens, start, i);
@@ -420,7 +420,6 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 	
 	return AstList::make(nodes);
 }*/
-
 
 void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out)
 {

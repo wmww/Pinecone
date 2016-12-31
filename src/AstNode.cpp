@@ -130,6 +130,11 @@ void AstToken::resolveAction()
 	
 	if (token->getType()==TokenData::IDENTIFIER || token->getType()==TokenData::OPERATOR)
 	{
+		if (token->getOp() && !token->getOp()->isOverloadable())
+		{
+			throw PineconeError("non overloadable operator in AstToken, it should have been removed and processed by the parser", INTERNAL_ERROR, token);
+		}
+		
 		try
 		{
 			//error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
