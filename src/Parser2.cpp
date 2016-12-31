@@ -328,6 +328,53 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 {
 	vector<AstNode> nodes;
 	
+	int start=left;
+	int i=start;
+	
+	while (i<=right)
+	{
+		bool tokenTakesRightInput=(tokens[i]->getOp() && tokens[i]->getOp()->takesRightInput());
+		int next=i+1;
+		bool nextTokenTakesLeftInput=(next<=right && tokens[next]->getOp() && tokens[next]->getOp()->takesLeftInput());
+		
+		if (i==right || (!tokenTakesRightInput && !nextTokenTakesLeftInput))
+		{
+			error.log("yes", JSYK);
+			
+			try
+			{
+				AstNode node=parseExpression(tokens, start, i);
+				nodes.push_back(move(node));
+			}
+			catch (PineconeError err)
+			{
+				err.log();
+			}
+			
+			start=next;
+		}
+		
+		i++;
+	}
+	
+	if (nodes.size()==0)
+	{
+		return AstVoid::make();
+	}
+	else if (nodes.size()==1)
+	{
+		return move(nodes[0]);
+	}
+	else
+	{
+		return AstList::make(nodes);
+	}
+}
+
+/*AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
+{
+	vector<AstNode> nodes;
+	
 	while (left<=right)
 	{
 		int i=left;
@@ -372,7 +419,8 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 	}
 	
 	return AstList::make(nodes);
-}
+}*/
+
 
 void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out)
 {
