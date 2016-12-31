@@ -25,9 +25,9 @@ public:
 	
 	string getText() {return text;}
 	int getPrece() {return precedence;}
-	bool getOverloadable() {return overloadable;}
-	bool getTakesLeftIn() {return input==BOTH || input==LEFT;}
-	bool getTakesRightIn() {return input==BOTH || input==RIGHT;}
+	bool isOverloadable() {return overloadable;}
+	bool takesLeftInput() {return input==BOTH || input==LEFT;}
+	bool takesRightInput() {return input==BOTH || input==RIGHT;}
 	
 private:
 	
@@ -37,6 +37,7 @@ private:
 	{
 		text=textIn;
 		precedence=precedenceIn;
+		input=inputIn;
 		overloadable=overloadableIn;
 	}
 	
