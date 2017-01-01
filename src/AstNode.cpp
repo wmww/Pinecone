@@ -121,33 +121,41 @@ void AstExpression::resolveAction()
 
 string AstOpWithInput::getString()
 {
-	return "(AstOpWithInput::getString not yet implemented)";
-	
-	/*string out;
-	
-	out+="(";
+	string out;
 	
 	if (!leftIn.empty())
 	{
-		for (auto i: leftIn)
-			out+=i->getString()+" ";
+		out+="(";
+		
+		for (int i=0; i<int(leftIn.size()); i++)
+		{
+			if (i>0)
+				out+="    |";
+				
+			out+="\n"+indentString(leftIn[i]->getString())+"\n";
+		}
 			
-		out+=" ~> ";
+		out+=") -> ";
 	}
 	
 	out+=token->getText();
 	
 	if (!rightIn.empty())
 	{
-		out+=" <~ ";
+		out+=" -> (";
 		
-		for (auto i: rightIn)
-			out+=" "+i->getString();
+		for (int i=0; i<int(rightIn.size()); i++)
+		{
+			if (i>0)
+				out+="    |";
+				
+			out+="\n"+indentString(rightIn[i]->getString())+"\n";
+		}
+			
+		out+=")";
 	}
 	
-	out+=")";
-	
-	return out;*/
+	return out;
 }
 	
 void AstOpWithInput::resolveAction()
@@ -168,8 +176,6 @@ void AstOpWithInput::resolveAction()
 		{
 			throw PineconeError("'?' can only have one conditional to its left", SOURCE_ERROR, token);
 		}
-		
-		leftIn[0]->setInput(ns, Void, Void);
 		
 		Action condition=leftIn[0]->getAction();
 		
