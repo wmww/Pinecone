@@ -473,6 +473,8 @@ void parsePipeChain(const vector<Token>& tokens, int left, int right, vector<Ast
 			start=i+1;
 		}
 	}
+	
+	out.push_back(parseExpression(tokens, start, right));
 }
 
 unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
