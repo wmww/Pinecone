@@ -350,10 +350,15 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 	vector<AstNode> nodes;
 	
 	int start=left;
-	int i=start;
 	
-	while (i<=right)
+	for (int i=left; i<=right; i++)
 	{
+		
+		if (ops->isOpenBrac(tokens[i]->getOp()))
+		{
+			i=skipBrace(tokens, i);
+		}
+		
 		bool tokenTakesRightInput=(tokens[i]->getOp() && tokens[i]->getOp()->takesRightInput());
 		int next=i+1;
 		bool nextTokenTakesLeftInput=(next<=right && tokens[next]->getOp() && tokens[next]->getOp()->takesLeftInput());
@@ -372,8 +377,6 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 			
 			start=next;
 		}
-		
-		i++;
 	}
 	
 	if (nodes.size()==0)

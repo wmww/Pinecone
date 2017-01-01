@@ -1,14 +1,16 @@
 
-a: 8-(2-5);
-print: a+7
+# Fibonacci
 
-a>9 ?
-	print: tru
-|
-	print: fls
-	
-a<100 @
-	(print: (a: a+1))
+b: 0
+a: 1
+
+a<1000 @
+(
+	print: a
+	tmp: a
+	a: a+b
+	b: tmp
+)
 
 //
 func1 :: {num1: Int, num2: Dub}:
