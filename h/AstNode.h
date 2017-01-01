@@ -39,7 +39,7 @@ public:
 	{
 		if (!returnType)
 		{
-			if (!ns)
+			if (!inputHasBeenSet)
 			{
 				throw PineconeError("tried to get return type from AST node when input had not been set", INTERNAL_ERROR);
 			}
