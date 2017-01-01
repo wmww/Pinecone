@@ -37,7 +37,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right);
 //		returns: the index of the close peren that matches
 int skipBrace(const vector<Token>& tokens, int start);
 
-void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out);
+void parsePipeChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out);
 
 AstNode parseOperator(const vector<Token>& tokens, int left, int right, int index);
 
@@ -297,30 +297,49 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		}
 	}
 	
-	if (indexOfMin<0)
+	int i=indexOfMin;
+	
+	if (i<0)
 	{
 		throw PineconeError(FUNC+" could not find operator to split expression", INTERNAL_ERROR, tokens[left]);
 	}
 	
-	Operator op=tokens[indexOfMin]->getOp();
+	Operator op=tokens[i]->getOp();
 	
-	if ((indexOfMin==left)==op->takesLeftInput() || (indexOfMin==right)==op->takesRightInput())
+	if ((i==left)==op->takesLeftInput() || (i==right)==op->takesRightInput())
 	{
-		throw PineconeError("improper use of '"+op->getText()+"' operator", SOURCE_ERROR, tokens[indexOfMin]);
+		throw PineconeError("improper use of '"+op->getText()+"' operator", SOURCE_ERROR, tokens[i]);
 	}
 	
 	if (op==ops->colon || op==ops->doubleColon)
 	{
-		AstNode leftNode=parseExpression(tokens, left, indexOfMin-1);
-		AstNode rightNode=parseExpression(tokens, indexOfMin+1, right);
+		AstNode leftNode=parseExpression(tokens, left, i-1);
+		AstNode rightNode=parseExpression(tokens, i+1, right);
 		
 		return AstExpression::make(AstVoid::make(), move(leftNode), move(rightNode));
 	}
+	else if (op==ops->pipe)
+	{
+		throw PineconeError("invalid use of '"+op->getText()+"'", SOURCE_ERROR, tokens[i]);
+	}
+	else if (op==ops->ifOp || op==ops->loop)
+	{
+		vector<AstNode> leftNodes;
+		vector<AstNode> rightNodes;
+		
+		if (i>left)
+			parsePipeChain(tokens, left, i-1, leftNodes);
+		
+		if (i<right)
+			parsePipeChain(tokens, i+1, right, rightNodes);
+		
+		return AstOpWithInput::make(leftNodes, tokens[i], rightNodes);
+	}
 	else
 	{
-		AstNode leftNode=indexOfMin>left?parseExpression(tokens, left, indexOfMin-1):AstVoid::make();
-		AstNode centerNode=AstToken::make(tokens[indexOfMin]);
-		AstNode rightNode=indexOfMin<right?parseExpression(tokens, indexOfMin+1, right):AstVoid::make();
+		AstNode leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
+		AstNode centerNode=AstToken::make(tokens[i]);
+		AstNode rightNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
 		
 		return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
 	}
@@ -421,7 +440,7 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 	return AstList::make(nodes);
 }*/
 
-void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out)
+void parsePipeChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out)
 {
 	if (tokens[left]->getOp()==ops->pipe)
 	{
@@ -434,14 +453,26 @@ void parseChain(const vector<Token>& tokens, int left, int right, vector<AstNode
 		return;
 	}
 	
-	int i;
+	int start=left;
 	
-	for (i=left+1; i<=right && tokens[i]->getOp()!=ops->pipe; i++) {}
-	
-	out.push_back(parseExpression(tokens, left, i-1));
-	
-	if (i<right)
-		parseChain(tokens, i+1, right, out);
+	for (int i=left; i<=right; i++)
+	{
+		if (ops->isOpenBrac(tokens[i]->getOp()))
+		{
+			i=skipBrace(tokens, i);
+		}
+		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrece()<ops->pipe->getPrece())
+		{
+			out.clear();
+			out.push_back(parseExpression(tokens, left, right));
+			return;
+		}
+		else if (tokens[i]->getOp()==ops->pipe)
+		{
+			out.push_back(parseExpression(tokens, start, i-1));
+			start=i+1;
+		}
+	}
 }
 
 unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
