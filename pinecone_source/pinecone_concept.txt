@@ -25,10 +25,10 @@ print(add(a))
 
 max=
 {
-    a,b,c=$
-    a>b && a>c? a
-    : b>c? b
-    : c
+	a,b,c=$
+	a>b && a>c? a
+	: b>c? b
+	: c
 }
 
 max=
