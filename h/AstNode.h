@@ -198,6 +198,29 @@ private:
 	Token token=nullptr;
 };
 
+class AstTuple: public AstNodeBase
+{
+public:
+	
+	//	make a new instance of this type of node
+	static unique_ptr<AstTuple> make(vector<AstNode>& in)
+	{
+		unique_ptr<AstTuple> node(new AstTuple);
+		node->nodes=move(in);
+		return node;
+	}
+	
+	string getString();
+	
+	//void resolveReturnType();
+	
+	void resolveAction();
+	
+private:
+	
+	vector<AstNode> nodes;
+};
+
 class AstType: public AstNodeBase
 {
 	

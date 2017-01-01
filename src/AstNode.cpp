@@ -381,6 +381,41 @@ void AstToken::resolveAction()
 }
 
 
+/// Tuple
+
+string AstTuple::getString()
+{
+	string out;
+	
+	out+="(";
+	
+	for (int i=0; i<int(nodes.size()); i++)
+	{
+		if (i)
+			out+=", ";
+		
+		out+=nodes[i]->getString();
+	}
+	
+	out+=")";
+	
+	return out;
+}
+
+void AstTuple::resolveAction()
+{
+	vector<Action> actions;
+	
+	for (int i=0; i<int(nodes.size()); i++)
+	{
+		nodes[i]->setInput(ns, Void, Void);
+		actions.push_back(nodes[i]->getAction());
+	}
+	
+	action=makeTupleAction(actions);
+}
+
+
 /// TokenType
 
 string AstTokenType::getString()

@@ -37,7 +37,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right);
 //		returns: the index of the close peren that matches
 int skipBrace(const vector<Token>& tokens, int start);
 
-void parsePipeChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out);
+void parseSequence(const vector<Token>& tokens, int left, int right, Operator splitter, vector<AstNode>& out);
 
 AstNode parseOperator(const vector<Token>& tokens, int left, int right, int index);
 
@@ -328,12 +328,20 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		vector<AstNode> rightNodes;
 		
 		if (i>left)
-			parsePipeChain(tokens, left, i-1, leftNodes);
+			parseSequence(tokens, left, i-1, ops->pipe, leftNodes);
 		
 		if (i<right)
-			parsePipeChain(tokens, i+1, right, rightNodes);
+			parseSequence(tokens, i+1, right, ops->pipe, rightNodes);
 		
 		return AstOpWithInput::make(leftNodes, tokens[i], rightNodes);
+	}
+	else if (op==ops->comma)
+	{
+		vector<AstNode> nodes;
+		
+		parseSequence(tokens, left, right, ops->comma, nodes);
+		
+		return AstTuple::make(nodes);
 	}
 	else
 	{
@@ -443,19 +451,8 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 	return AstList::make(nodes);
 }*/
 
-void parsePipeChain(const vector<Token>& tokens, int left, int right, vector<AstNode>& out)
+void parseSequence(const vector<Token>& tokens, int left, int right, Operator splitter, vector<AstNode>& out)
 {
-	if (tokens[left]->getOp()==ops->pipe)
-	{
-		error.log("improper use of pipe", SOURCE_ERROR, tokens[left]);
-		return;
-	}
-	else if (tokens[right]->getOp()==ops->pipe)
-	{
-		error.log("improper use of pipe", SOURCE_ERROR, tokens[right]);
-		return;
-	}
-	
 	int start=left;
 	
 	for (int i=left; i<=right; i++)
@@ -464,20 +461,22 @@ void parsePipeChain(const vector<Token>& tokens, int left, int right, vector<Ast
 		{
 			i=skipBrace(tokens, i);
 		}
-		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrece()<ops->pipe->getPrece())
+		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrece()<splitter->getPrece())
 		{
 			out.clear();
 			out.push_back(parseExpression(tokens, left, right));
 			return;
 		}
-		else if (tokens[i]->getOp()==ops->pipe)
+		else if (tokens[i]->getOp()==splitter)
 		{
-			out.push_back(parseExpression(tokens, start, i-1));
+			if (start<=i-1)
+				out.push_back(parseExpression(tokens, start, i-1));
 			start=i+1;
 		}
 	}
 	
-	out.push_back(parseExpression(tokens, start, right));
+	if (start<=right)
+		out.push_back(parseExpression(tokens, start, right));
 }
 
 unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
