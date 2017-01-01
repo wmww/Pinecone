@@ -155,6 +155,29 @@ private:
 	AstNode leftIn=nullptr, center=nullptr, rightIn=nullptr;
 };
 
+class AstOpWithInput: public AstNodeBase
+{
+public:
+	static unique_ptr<AstOpWithInput> make(vector<AstNode>& leftInIn, Token tokenIn, vector<AstNode>& rightInIn)
+	{
+		unique_ptr<AstOpWithInput> node(new AstOpWithInput);
+		
+		node->leftIn=move(leftInIn);
+		node->token=tokenIn;
+		node->rightIn=move(rightInIn);
+		
+		return node;
+	}
+	
+	string getString();
+	
+	void resolveAction();
+	
+private:
+	Token token=nullptr;
+	vector<AstNode> leftIn, rightIn;
+};
+
 class AstToken: public AstNodeBase
 {
 public:

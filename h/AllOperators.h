@@ -72,9 +72,12 @@ public:
 	
 	ALL_OPS;
 	
-	//for read only, dont screw with this
+	// for read only, dont screw with this
 	unordered_map<string, Operator>& getOpsMap() {return opsMap;}
-
+	
+	// returns if the given operator is an opening bracket or peren
+	bool isOpenBrac(Operator op);
+	
 private:
 	
 	// is only called in init

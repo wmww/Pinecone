@@ -117,6 +117,117 @@ void AstExpression::resolveAction()
 }
 
 
+/// Operation with input
+
+string AstOpWithInput::getString()
+{
+	return "(AstOpWithInput::getString not yet implemented)";
+	
+	/*string out;
+	
+	out+="(";
+	
+	if (!leftIn.empty())
+	{
+		for (auto i: leftIn)
+			out+=i->getString()+" ";
+			
+		out+=" ~> ";
+	}
+	
+	out+=token->getText();
+	
+	if (!rightIn.empty())
+	{
+		out+=" <~ ";
+		
+		for (auto i: rightIn)
+			out+=" "+i->getString();
+	}
+	
+	out+=")";
+	
+	return out;*/
+}
+	
+void AstOpWithInput::resolveAction()
+{
+	for (int i=0; i<int(leftIn.size()); i++)
+		leftIn[i]->setInput(ns, Void, Void);
+	
+	for (int i=0; i<int(rightIn.size()); i++)
+		rightIn[i]->setInput(ns, Void, Void);
+	
+	if (token->getOp()==ops->ifOp)
+	{
+		if (leftIn.empty())
+		{
+			throw PineconeError("'?' must have a conditional to its left", SOURCE_ERROR, token);
+		}
+		else if (leftIn.size()!=1)
+		{
+			throw PineconeError("'?' can only have one conditional to its left", SOURCE_ERROR, token);
+		}
+		
+		leftIn[0]->setInput(ns, Void, Void);
+		
+		Action condition=leftIn[0]->getAction();
+		
+		if (rightIn.empty())
+		{
+			throw PineconeError("'?' must have a statement to its right", SOURCE_ERROR, token);
+		}
+		else if (rightIn.size()<=2)
+		{
+			Action a;
+			
+			try
+			{
+				a=rightIn[0]->getAction();
+			}
+			catch (PineconeError err)
+			{
+				err.log();
+				a=voidAction;
+			}
+			
+			if (rightIn.size()==1)
+			{
+				action=ifAction(condition, a);
+			}
+			else
+			{
+				Action e;
+				
+				try
+				{
+					e=rightIn[1]->getAction();
+				}
+				catch (PineconeError err)
+				{
+					err.log();
+					e=voidAction;
+				}
+				
+				action=ifElseAction(condition, a, e);
+			}
+		}
+		else
+		{
+			throw PineconeError("'?' can only have 1 or 2 '|' seporated expressions to its right", SOURCE_ERROR, token);
+		}
+	}
+	else if (token->getOp()==ops->loop)
+	{
+		throw PineconeError("loop not yet implemented", INTERNAL_ERROR, token);
+	}
+	else
+	{
+		throw PineconeError("AstOpWithInput made with bad token '"+token->getText()+"'", INTERNAL_ERROR, token);
+	}
+}
+
+
 /// Token
 
 string AstToken::getString()
