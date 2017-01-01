@@ -234,17 +234,12 @@ void AstOpWithInput::resolveAction()
 		for (int i=0; i<int(rightIn.size()); i++)
 			rightIn[i]->setInput(ns, Void, Void);
 		
-		Action conditionAction, endAction, bodyAction;
+		Action initAction=nullptr, conditionAction, endAction, bodyAction;
 
 		if (rightIn.size()>1)
 		{
 			throw PineconeError("'@' followed by multiple expressions", SOURCE_ERROR, token);
 		}
-
-		if (rightIn.empty())
-			bodyAction=voidAction;
-		else
-			bodyAction=rightIn[0]->getAction();
 
 		if (leftIn.size()==0)
 		{
@@ -262,22 +257,41 @@ void AstOpWithInput::resolveAction()
 		}
 		else if (leftIn.size()==3)
 		{
+			initAction=leftIn[0]->getAction();
 			conditionAction=leftIn[1]->getAction();
 			endAction=leftIn[2]->getAction();
-			
-			vector<Action> actions;
-			actions.push_back(leftIn[0]->getAction());
-			actions.push_back(loopAction(conditionAction, endAction, bodyAction));
-			
-			action=listAction(actions);
-			return;
 		}
 		else
 		{
 			throw PineconeError("chain of length "+to_string(leftIn.size())+"preceding '@', it should be length 1-3", SOURCE_ERROR, token);
 		}
 		
+		if (rightIn.empty())
+		{
+			bodyAction=voidAction;
+		}
+		else
+		{
+			try
+			{
+				bodyAction=rightIn[0]->getAction();
+			}
+			catch (PineconeError err)
+			{
+				err.log();
+				bodyAction=voidAction;
+			}
+		}
+		
 		action=loopAction(conditionAction, endAction, bodyAction);
+		
+		if (initAction)
+		{
+			vector<Action> actions;
+			actions.push_back(initAction);
+			actions.push_back(action);
+			action=listAction(actions);
+		}
 	}
 	else
 	{

@@ -1,16 +1,9 @@
 
-# Fibonacci
-
-b: 0
-a: 1
-
-a<1000 @
+a: 0 | a<12 | a: a+1 @
 (
 	print: a
-	tmp: a
-	a: a+b
-	b: tmp
 )
+
 
 //
 func1 :: {num1: Int, num2: Dub}:
