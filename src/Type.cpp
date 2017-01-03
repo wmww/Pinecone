@@ -179,7 +179,7 @@ public:
 				offset+=i.type->getSize();
 		}
 		
-		return {0, Void};
+		return {0, Unknown};
 	}
 	
 protected:

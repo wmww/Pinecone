@@ -67,7 +67,8 @@ Action loopAction(Action conditionIn, Action loopActionIn);
 Action loopAction(Action conditionIn, Action endActionIn, Action loopActionIn);
 
 Action makeTupleAction(const std::vector<Action>& sourceActionsIn);
-Action getElemFromTupleAction(Action source, string name);
+//Action getElemFromTupleAction(Action source, string name);
+Action getElemFromTupleAction(Type source, string name);
 
 Action varGetAction(size_t in, Type typeIn, string idIn);
 Action varSetAction(size_t in, Type typeIn, string idIn);

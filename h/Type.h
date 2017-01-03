@@ -84,7 +84,7 @@ public:
 	bool matches(Type other);
 	
 	virtual Type getSubType() {return Void;}
-	virtual OffsetAndType getSubType(string name) {return {0, Void};}
+	virtual OffsetAndType getSubType(string name) {return {0, Unknown};}
 	
 protected:
 	

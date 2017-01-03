@@ -114,7 +114,7 @@ class GetElemFromTupleAction: public ActionData
 public:
 	
 	GetElemFromTupleAction(Type typeInIn, Type typeOutIn, size_t offsetIn):
-		ActionData(typeOutIn, Void, typeInIn)
+		ActionData(typeOutIn, typeInIn, Void)
 	{
 		typeOut=typeOutIn;
 		offset=offsetIn;
@@ -134,12 +134,10 @@ public:
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(typeOut->getSize());
-		memcpy(out, (char*)inRight+offset, typeOut->getSize());
+		memcpy(out, (char*)inLeft+offset, typeOut->getSize());
 		
 		return out;
 	}
-
-
 	
 private:
 	Type typeOut;
@@ -151,19 +149,30 @@ Action makeTupleAction(const std::vector<Action>& sourceActionsIn)
 	return Action(new MakeTupleAction(sourceActionsIn));
 }
 
-Action getElemFromTupleAction(Action source, string name)
+/*Action getElemFromTupleAction(Action source, string name)
 {
 	OffsetAndType a=source->getReturnType()->getSubType(name);
 	
-	if (a.type->isVoid())
-	{
-		error.log("could not find '"+name+"' in "+source->getReturnType()->getString(), SOURCE_ERROR);
-		return voidAction;
-	}
+	if (a.type==Unknown)
+		throw PineconeError("could not find '"+name+"' in "+source->getReturnType()->getString(), SOURCE_ERROR);
 	
 	Action action=Action(new GetElemFromTupleAction(source->getReturnType(), a.type, a.offset));
 	
-	Action out=branchAction(voidAction, action, source);
+	Action out=branchAction(source, action, voidAction);
 	
 	return out;
 }
+*/
+
+Action getElemFromTupleAction(Type source, string name)
+{
+	OffsetAndType a=source->getSubType(name);
+	
+	if (a.type==Unknown)
+		throw PineconeError("could not find '"+name+"' in "+source->getString(), SOURCE_ERROR);
+	
+	Action out=Action(new GetElemFromTupleAction(source, a.type, a.offset));
+	
+	return out;
+}
+

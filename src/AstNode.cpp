@@ -318,6 +318,12 @@ void AstToken::resolveAction()
 			throw PineconeError("non overloadable operator in AstToken, it should have been removed and processed by the parser", INTERNAL_ERROR, token);
 		}
 		
+		if (inRightType->isVoid() && inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type!=Unknown)
+		{
+			action=getElemFromTupleAction(inLeftType, token->getText());
+			return;
+		}
+		
 		try
 		{
 			//error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
