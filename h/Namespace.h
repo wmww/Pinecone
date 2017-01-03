@@ -182,7 +182,7 @@ public:
 	string getId() {return id;}
 	Namespace getNamespace() {return ns;}
 	
-	PineconeError toPineconeError()
+	PineconeError toPineconeError(Token token)
 	{
 		string msg;
 		
@@ -195,7 +195,7 @@ public:
 			msg="unknown identifier '"+id+"'";
 		}
 		
-		return PineconeError(msg, SOURCE_ERROR);
+		return PineconeError(msg, SOURCE_ERROR, token);
 	}
 	
 private:

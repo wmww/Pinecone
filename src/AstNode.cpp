@@ -318,9 +318,17 @@ void AstToken::resolveAction()
 			throw PineconeError("non overloadable operator in AstToken, it should have been removed and processed by the parser", INTERNAL_ERROR, token);
 		}
 		
-		if (inRightType->isVoid() && inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type!=Unknown)
+		if (inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type!=Unknown)
 		{
-			action=getElemFromTupleAction(inLeftType, token->getText());
+			if (inRightType->isVoid())
+			{
+				action=getElemFromTupleAction(inLeftType, token->getText());
+			}
+			else
+			{
+				throw PineconeError("sorry, Pinecone does not yet support mutating tuples", SOURCE_ERROR, token);
+			}
+			
 			return;
 		}
 		
@@ -367,7 +375,7 @@ void AstToken::resolveAction()
 			}
 			catch (IdNotFoundError err)
 			{
-				throw err.toPineconeError();
+				throw err.toPineconeError(token);
 			}
 		}
 	}
