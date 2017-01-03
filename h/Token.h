@@ -8,6 +8,8 @@ using std::string;
 #include <vector>
 using std::vector;
 
+class SourceFile;
+
 //represents a single token such as an Int literal, an operator, or an identifier
 //is immutable
 class TokenData
@@ -29,7 +31,7 @@ public:
 		UNKNOWN
 	};
 	
-	TokenData(string textIn, string fileIn, int lineIn, int charPosIn, Type tokenTypeIn, Operator opIn=Operator(nullptr))
+	TokenData(string textIn, SourceFile* fileIn, int lineIn, int charPosIn, Type tokenTypeIn, Operator opIn=Operator(nullptr))
 	{
 		text=textIn;
 		file=fileIn;
@@ -40,7 +42,7 @@ public:
 	}
 	
 	string getText() const {return text;}
-	string getFile() const {return file;}
+	SourceFile* getFile() const {return file;}
 	int getLine() const {return line;}
 	int getCharPos() const {return charPos;}
 	TokenData::Type getType() const {return tokenType;}
@@ -54,7 +56,7 @@ public:
 private:
 	
 	string text;
-	string file;
+	SourceFile* file;
 	int line;
 	int charPos;
 	Type tokenType;
@@ -63,7 +65,7 @@ private:
 
 typedef shared_ptr<TokenData> Token;
 
-Token makeToken(string textIn, string fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn=Operator(nullptr));
+Token makeToken(string textIn, SourceFile* fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn=Operator(nullptr));
 
 string stringFromTokens(const vector<Token>& tokens, int left, int right);
 string tableStringFromTokens(const vector<Token>& tokens, string tableName);

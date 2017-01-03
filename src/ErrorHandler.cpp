@@ -1,6 +1,7 @@
 
 #include "../h/ErrorHandler.h"
 #include "../h/msclStringFuncs.h"
+#include "../h/SourceFile.h"
 
 #include <iostream>
 
@@ -56,7 +57,7 @@ void ErrorHandler::log(string msg, ErrorPriority priority, Token token)
 	
 	if (token)
 	{
-		cout << " in '" << token->getFile() << "' on line " << token->getLine() << " around character " << token->getCharPos() << ":" << endl;
+		cout << " in '" << token->getFile()->getFilename() << "' on line " << token->getLine() << " around character " << token->getCharPos() << ":" << endl;
 		cout << indentString(msg, "    ") << endl;
 	}
 	else
