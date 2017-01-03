@@ -1,5 +1,6 @@
 
 #include "../h/ErrorHandler.h"
+#include "../h/msclStringFuncs.h"
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ string ErrorHandler::priorityToStr(ErrorPriority in)
 		break;
 		
 	case INTERNAL_ERROR:
-		return "internal error";
+		return "INTERNAL ERRER";
 		break;
 		
 	case RUNTIME_ERROR:
@@ -33,7 +34,7 @@ string ErrorHandler::priorityToStr(ErrorPriority in)
 		break;
 		
 	default:
-		return "unknown priority level";
+		return "UNKNOWN PRIORITY LEVEL";
 		break;
 	}
 }
@@ -43,10 +44,23 @@ void ErrorHandler::log(string msg, ErrorPriority priority, Token token)
 	if (priority==SOURCE_ERROR || priority==INTERNAL_ERROR)
 		errorHasBeenLogged=true;
 	
-	if (token)
-		cout << token->getFile() << ":" << token->getLine() << ":" << token->getCharPos() << ": ";
+	// gcc style
+	//if (token)
+	//	cout << token->getFile() << ":" << token->getLine() << ":" << token->getCharPos() << ": ";
 	
-	cout << priorityToStr(priority) << ": " << msg << endl;
+	//cout << priorityToStr(priority) << ": " << msg << endl;
+	
+	// Pinecone style
+	
+	cout << endl << priorityToStr(priority);
+	
+	if (token)
+	{
+		cout << " in '" << token->getFile() << "' on line " << token->getLine() << " around character " << token->getCharPos() << ":" << endl;
+		cout << indentString(msg, "    ") << endl;
+	}
+	else
+		cout << ": " << msg << endl;
 }
 
 void ErrorHandler::msg(string in)
