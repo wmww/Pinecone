@@ -1,7 +1,7 @@
 #include "../h/Token.h"
 #include "../h/msclStringFuncs.h"
 
-Token makeToken(string textIn, string fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn)
+Token makeToken(string textIn, SourceFile* fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn)
 {
 	return Token(new TokenData(textIn, fileIn, lineIn, charPosIn, tokenTypeIn, opIn));
 }

@@ -2,6 +2,7 @@
 #include "../h/ErrorHandler.h"
 #include "../h/Operator.h"
 #include "../h/AllOperators.h"
+#include "../h/SourceFile.h"
 
 #include <vector>
 using std::vector;
@@ -27,7 +28,7 @@ public:
 	
 	static TokenData::Type getTokenType(CharClassifier::Type type, TokenData::Type previousType);
 	
-	CharClassifier::Type get(string& str, int i);
+	CharClassifier::Type get(SourceFile& file, int i);
 	
 private:
 	void setUp();
@@ -74,7 +75,7 @@ void CharClassifier::setUp()
 	hasSetUp=true;
 }
 
-CharClassifier::Type CharClassifier::get(string& str, int index)
+CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
 {
 	//	set up the first time this function is called
 	if (!hasSetUp)
@@ -82,23 +83,23 @@ CharClassifier::Type CharClassifier::get(string& str, int index)
 	
 	//	chack fo multi line comments in a special way, because they are multi character
 	
-	if (str.substr(index, 2)=="//")
+	if (file.substr(index, 2)=="//")
 		return MULTI_LINE_COMMENT_START;
 	
-	if (index>0 && str.substr(index-1, 2)=="\\\\")
+	if (index>0 && file.substr(index-1, 2)=="\\\\")
 		return MULTI_LINE_COMMENT_END;
 	
 	//	allow a . to be a digit character only if it is followed by a digit
-	if (index<int(str.size())-1 && str[index]=='.')
+	if (index<int(file.size())-1 && file[index]=='.')
 	{
-		auto i=hm.find(str[index+1]);
+		auto i=hm.find(file[index+1]);
 		
 		if (i!=hm.end() && i->second==DIGIT)
 			return DIGIT;
 	}
 	
 	//	handle all other cases using the hashmap
-	char c=str[index];
+	char c=file[index];
 	
 	auto i=hm.find(c);
 	
@@ -161,7 +162,7 @@ TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, TokenDat
 	}
 }
 
-void lexString(string text, string filename, vector<Token>& tokens)
+void lexString(SourceFile& file, vector<Token>& tokens)
 {
 	string tokenTxt;
 	int line=1;
@@ -169,9 +170,9 @@ void lexString(string text, string filename, vector<Token>& tokens)
 	
 	TokenData::Type type=TokenData::WHITESPACE;
 	
-	for (unsigned i=0; i<text.size(); i++)
+	for (int i=0; i<file.size(); i++)
 	{
-		CharClassifier::Type charType=charClassifier.get(text, i);
+		CharClassifier::Type charType=charClassifier.get(file, i);
 		TokenData::Type newType=CharClassifier::getTokenType(charType, type);
 		
 		if (newType!=type)
@@ -185,7 +186,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 					
 					for (auto op: opMatches)
 					{
-						tokens.push_back(makeToken(op->getText(), filename, line, charPos, type, op));
+						tokens.push_back(makeToken(op->getText(), &file, line, charPos, type, op));
 					}
 				}
 				else if (type==TokenData::LINE_COMMENT || type==TokenData::BLOCK_COMMENT)
@@ -194,7 +195,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 				}
 				else
 				{
-					tokens.push_back(makeToken(tokenTxt, filename, line, charPos, type));
+					tokens.push_back(makeToken(tokenTxt, &file, line, charPos, type));
 				}
 			}
 			tokenTxt="";
@@ -202,7 +203,7 @@ void lexString(string text, string filename, vector<Token>& tokens)
 		
 		if (newType!=TokenData::WHITESPACE && newType!=TokenData::LINE_END)
 		{
-			tokenTxt+=text[i];
+			tokenTxt+=file[i];
 		}
 		
 		type=newType;

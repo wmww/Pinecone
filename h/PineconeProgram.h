@@ -20,6 +20,7 @@ using std::list;
 #include "StackFrame.h"
 #include "Token.h"
 #include "AstNode.h"
+#include "SourceFile.h"
 
 class Element;
 
@@ -30,23 +31,13 @@ public:
 	PineconeProgram();
 	~PineconeProgram() {cleanUp();}
 	
-	void setInFileName(std::string in) {inFileName=in;}
-	void setSource(std::string in) {inSource=in;}
 	string getCpp() {return outCpp;}
 	
-	void resolveProgram(bool printExtraOutput);
+	void resolveProgram(string inFilename, bool printExtraOutput);
 	
 	Namespace getGlobalActionTable();
 	
 	void execute();
-	
-	string resolveProgram(string input, string fileIn, bool printExtraOutput=true)
-	{
-		setSource(input);
-		setInFileName(fileIn);
-		resolveProgram(printExtraOutput);
-		return getCpp();
-	}
 	
 private:
 	
@@ -56,8 +47,7 @@ private:
 	
 	shared_ptr<StackFrame> globalFrame;
 	
-	string inFileName;
-	string inSource;
+	SourceFile file;
 	string outCpp;
 	
 	//a list of all the tokens in the program

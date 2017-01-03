@@ -18,13 +18,9 @@ int main(int argc, char ** argv)
 	else
 		inputFilename="pinecone_source/pinecone.pncn";
 	
-	string widapLangSource=loadEntireFile(inputFilename, true);
-	
-	cout << endl << putStringInBox(widapLangSource, inputFilename, true) << endl;
-	
 	PineconeProgram parser;
 	
-	string cppSource=parser.resolveProgram(widapLangSource, inputFilename, true);
+	parser.resolveProgram(inputFilename, true);
 	
 	if (error.getIfErrorLogged())
 	{

@@ -40,6 +40,7 @@
 		<Unit filename="../h/Namespace.h" />
 		<Unit filename="../h/Operator.h" />
 		<Unit filename="../h/PineconeProgram.h" />
+		<Unit filename="../h/SourceFile.h" />
 		<Unit filename="../h/StackFrame.h" />
 		<Unit filename="../h/Token.h" />
 		<Unit filename="../h/Type.h" />
@@ -69,6 +70,7 @@
 		<Unit filename="../src/PineconeProgram.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />
 		<Unit filename="../src/ResolveLiteral.cpp" />
+		<Unit filename="../src/SourceFile.cpp" />
 		<Unit filename="../src/StackFrame.cpp" />
 		<Unit filename="../src/Token.cpp" />
 		<Unit filename="../src/Type.cpp" />

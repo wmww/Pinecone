@@ -4,7 +4,7 @@
 #include "../h/AllOperators.h"
 
 void populatePineconeStdLib();
-void lexString(string text, string filename, vector<Token>& tokens);
+void lexString(SourceFile& file, vector<Token>& tokens);
 Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType);
 
 extern Namespace stdLibNamespace;
@@ -19,7 +19,7 @@ void PineconeProgram::cleanUp()
 	globalFrame=nullptr;
 }
 
-void PineconeProgram::resolveProgram(bool printOutput)
+void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 {
 	AllOperators::init();
 	populatePineconeStdLib();
@@ -28,7 +28,14 @@ void PineconeProgram::resolveProgram(bool printOutput)
 	
 	//globalFrame.resolve(printOutput);
 	
-	lexString(inSource, inFileName, tokens);
+	file=SourceFile(inFilename);
+	
+	if (printOutput)
+	{
+		cout << endl << endl << file.getBoxedString() << endl;
+	}
+	
+	lexString(file, tokens);
 	
 	if (printOutput)
 	{
