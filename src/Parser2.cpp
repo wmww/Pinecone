@@ -285,9 +285,9 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 			
 			i=j;
 		}
-		else if (tokens[i]->getOp() && (minPrece<0 || tokens[i]->getOp()->getPrece()<minPrece))
+		else if (tokens[i]->getOp() && (minPrece<0 || tokens[i]->getOp()->getPrecedence()<minPrece))
 		{
-			minPrece=tokens[i]->getOp()->getPrece();
+			minPrece=tokens[i]->getOp()->getPrecedence();
 			indexOfMin=i;
 			
 			if (minPrece%2)
@@ -311,14 +311,9 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		throw PineconeError("improper use of '"+op->getText()+"' operator", SOURCE_ERROR, tokens[i]);
 	}
 	
-	if (op==ops->colon || op==ops->doubleColon)
-	{
-		AstNode leftNode=parseExpression(tokens, left, i-1);
-		AstNode rightNode=parseExpression(tokens, i+1, right);
-		
-		return AstExpression::make(AstVoid::make(), move(leftNode), move(rightNode));
-	}
-	else if (op==ops->pipe)
+	
+	
+	if (op==ops->pipe)
 	{
 		throw PineconeError("invalid use of '"+op->getText()+"'", SOURCE_ERROR, tokens[i]);
 	}
@@ -343,11 +338,56 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		return AstTuple::make(nodes);
 	}
-	else
+	else if (op==ops->dot)
 	{
 		AstNode leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
-		AstNode centerNode=AstToken::make(tokens[i]);
+		AstNode centerNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
+		
+		return AstExpression::make(move(leftNode), move(centerNode), AstVoid::make());
+	}
+	else
+	{
+		AstNode leftNode=nullptr;
+		AstNode centerNode=nullptr;
 		AstNode rightNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
+		
+		if (op==ops->colon || op==ops->doubleColon)
+		{
+			for (int j=i-1; j>=left; j--)
+			{
+				Operator op=tokens[j]->getOp();
+				
+				if (op)
+				{
+					if (op==ops->dot)
+					{
+						if (j==left)
+							throw PineconeError("'.' needs something to its left", SOURCE_ERROR, tokens[j]);
+							
+						if (j==i-1)
+							throw PineconeError("'.' can not be followed by '"+op->getText()+"'", SOURCE_ERROR, tokens[j]);
+						
+						leftNode=parseExpression(tokens, left, j-1);
+						centerNode=parseExpression(tokens, j+1, i-1);
+					}
+					else if (op->getPrecedence()<ops->dot->getPrecedence())
+					{
+						break;
+					}
+				}
+			}
+			
+			if (!leftNode)
+				leftNode=AstVoid::make();
+			
+			if (!centerNode)
+				centerNode=parseExpression(tokens, left, i-1);
+		}
+		else
+		{
+			leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
+			centerNode=AstToken::make(tokens[i]);
+		}
 		
 		return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
 	}
@@ -461,7 +501,7 @@ void parseSequence(const vector<Token>& tokens, int left, int right, Operator sp
 		{
 			i=skipBrace(tokens, i);
 		}
-		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrece()<splitter->getPrece())
+		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrecedence()<splitter->getPrecedence())
 		{
 			out.clear();
 			out.push_back(parseExpression(tokens, left, right));

@@ -8,6 +8,12 @@ print
 
 myTuple: (1, 9.7)
 
+print: myTuple.b
+
+myTuple.b: 1.88
+
+print: myTuple.b
+
 //
 func1 :: {num1: Int, num2: Dub}:
 (
