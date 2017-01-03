@@ -6,11 +6,11 @@ a: 0 | a<12 | a: a+1 @
 
 print
 
-myTuple: (1, 9.7|)
+myTuple: (1, 9.7)
 
 print: myTuple.b
 
-myTuple.b: 1.88
+	myTuple.b: 1.88
 
 print: myTuple.b
 

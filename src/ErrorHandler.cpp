@@ -60,14 +60,18 @@ void ErrorHandler::log(string msg, ErrorPriority priority, Token token)
 		cout << " in '" << token->getFile()->getFilename() << "' on line " << token->getLine() << " around character " << token->getCharPos() << ":" << endl;
 		cout << indentString(msg, "    ") << endl;
 		
+		string line=token->getFile()->getLine(token->getLine());
+		
+		int wspace=0;
+		for (; wspace<int(line.size()) && (line[wspace]==' ' || line[wspace]=='\t' || line[wspace]=='\n'); wspace++) {}
+		
 		string arrows="";
-		for (int i=0; i<token->getCharPos()-1; i++)
+		for (int i=0; i<token->getCharPos()-1-wspace; i++)
 			arrows+=" ";
 		for (int i=0; i<int(token->getText().size()); i++)
 			arrows+="^";
 		
-		cout << indentString(""+token->getFile()->getLine(token->getLine())+"\n"+arrows, "    ") << endl;
-		
+		cout << indentString(""+line.substr(wspace, string::npos)+"\n"+arrows, "    ") << endl;
 	}
 	else
 	{
