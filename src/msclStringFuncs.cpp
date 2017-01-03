@@ -197,6 +197,51 @@ string padString(const string& in, int size, int alignment,  string pad, string 
 	}
 }
 
+string getTextOfLine(const string& in, int lineNum)
+{
+	int start=-1;
+	int end=-1;
+	
+	if (lineNum<1)
+	{
+		return "";
+	}
+	else if (lineNum==1)
+	{
+		start=0;
+	}
+	
+	int line=1;
+	
+	for (unsigned i=0; i<in.size(); i++)
+	{
+		if (in[i]=='\n')
+		{
+			if (start<0)
+			{
+				line++;
+				
+				if (line==lineNum)
+				{
+					start=i+1;
+				}
+			}
+			else
+			{
+				end=i;
+				break;
+			}
+		}
+	}
+	
+	if (start<end)
+		return in.substr(start, end-start);
+	else if (start>=0)
+		return in.substr(start, string::npos);
+	else
+		return "";
+}
+
 string lineListToBoxedString(const vector<string>& in, string boxName, int lineNum, int maxWidth)
 {
 	string out;

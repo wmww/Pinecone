@@ -28,56 +28,67 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	
 	//globalFrame.resolve(printOutput);
 	
-	file=SourceFile(inFilename);
-	
-	if (printOutput)
+	if (!error.getIfErrorLogged())
 	{
-		cout << endl << endl << file.getBoxedString() << endl;
+		file=SourceFile(inFilename);
+		if (printOutput)
+		{
+			cout << endl << endl << file.getBoxedString() << endl;
+		}
 	}
 	
-	lexString(file, tokens);
-	
-	if (printOutput)
+	if (!error.getIfErrorLogged())
 	{
-		cout << endl << tableStringFromTokens(tokens, "lexer output") << endl;
+		lexString(file, tokens);
+		
+		if (printOutput)
+		{
+			cout << endl << tableStringFromTokens(tokens, "lexer output") << endl;
+		}
 	}
 	
 	//astRoot=parseFunction(tokens, 0, tokens.size()-1, Void, Void);
 	
-	try
+	if (!error.getIfErrorLogged())
 	{
-		astRoot=astNodeFromTokens(tokens);
-	}
-	catch (PineconeError err)
-	{
-		err.log();
-		astRoot=AstVoid::make();
-	}
-	
-	if (printOutput)
-	{
-		cout << endl << putStringInBox(astRoot->getString(), "parsed abstract syntax tree") << endl;
-	}
-	
-	try
-	{
-		astRoot->setInput(stdLibNamespace, Void, Void);
-	}
-	catch (PineconeError err)
-	{
-		err.log();
-		astRoot=AstVoid::make();
-	}
-	
-	try
-	{
-		actionRoot=functionAction(astRoot->getAction(), globalFrame);
+		try
+		{
+			astRoot=astNodeFromTokens(tokens);
+		}
+		catch (PineconeError err)
+		{
+			err.log();
+			astRoot=AstVoid::make();
+		}
 		
-		cout << endl << putStringInBox(actionRoot->getDescription(), "parsed action tree") << endl;
+		if (printOutput)
+		{
+			cout << endl << putStringInBox(astRoot->getString(), "parsed abstract syntax tree") << endl;
+		}
 	}
-	catch (PineconeError err)
+	
+	if (!error.getIfErrorLogged())
 	{
-		err.log();
+		try
+		{
+			astRoot->setInput(stdLibNamespace, Void, Void);
+		}
+		catch (PineconeError err)
+		{
+			err.log();
+			astRoot=AstVoid::make();
+		}
+		
+		try
+		{
+			actionRoot=functionAction(astRoot->getAction(), globalFrame);
+			
+			cout << endl << putStringInBox(actionRoot->getDescription(), "parsed action tree") << endl;
+		}
+		catch (PineconeError err)
+		{
+			err.log();
+		}
 	}
 	
 	/*if (printOutput)

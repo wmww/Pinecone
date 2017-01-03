@@ -66,6 +66,12 @@ void tabsToSpaces(vector<string>& in);
 //		returns: the padded string, or the chopped string if the input is shorter then the size
 string padString(const string& in, int size, int alignment=1, string pad=" ", string leftCap="", string rightCap="");
 
+//	returns the specific line (starting at 1) in the string it is sent
+//		in: the (presumably multiline) string
+//		lineNum: the line to return
+//		returns: the specific line (without newlines), or an empty string if that line is invalid
+string getTextOfLine(const string& in, int lineNum);
+
 //	takes an array of lines and puts a box around it
 //		in: an array of strings, each which will be on a new line
 //		boxName: the name of the box
