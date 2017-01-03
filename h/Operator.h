@@ -24,7 +24,7 @@ public:
 	};
 	
 	string getText() {return text;}
-	int getPrece() {return precedence;}
+	int getPrecedence() {return precedence;}
 	bool isOverloadable() {return overloadable;}
 	bool takesLeftInput() {return input==BOTH || input==LEFT;}
 	bool takesRightInput() {return input==BOTH || input==RIGHT;}
