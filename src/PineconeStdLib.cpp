@@ -225,6 +225,6 @@ void populatePineconeStdLib()
 	
 	//t->addAction()
 	
-	cout << endl << putStringInBox(table->getString(), "standard library") << endl;
+	//cout << endl << putStringInBox(table->getString(), "standard library") << endl;
 }
 

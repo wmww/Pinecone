@@ -51,7 +51,7 @@ string TokenData::getTypeDescription()
 
 string tableStringFromTokens(const vector<Token>& tokens, string tableName)
 {
-	string out="Name\tType\n";
+	/*string out="Name\tType\n";
 	
 	for (unsigned i=0; i<tokens.size(); ++i)
 	{
@@ -63,7 +63,66 @@ string tableStringFromTokens(const vector<Token>& tokens, string tableName)
 			out+="\n";
 	}
 	
-	return putStringInTable(out, tableName);
+	return putStringInTable(out, tableName);*/
+	
+	vector<string> lines;
+	string abv="", blw="";
+	string str="";
+	//const int tabSize=1;
+	const int maxWidth=80;
+	const string seporator="    ";
+	//const string seporator="   |   ";
+	
+	for (unsigned i=0; i<tokens.size(); ++i)
+	{
+		//string next=" | ";
+		
+		//for (int j=0; j<int(tabSize-str.size()%tabSize); j++)
+		//	next+=" ";
+		
+		//next+=tokens[i]->getText();
+		
+		if (i>0 && str.size()+seporator.size()+tokens[i]->getText().size()<maxWidth)
+		{
+			abv+=seporator;
+			str+=seporator;
+			blw+=seporator;
+			
+			for (unsigned j=0; j<tokens[i]->getText().size(); j++)
+			{
+				abv+=" ";
+				blw+=" ";
+			}
+			
+			str+=tokens[i]->getText();
+		}
+		else
+		{
+			if (i>0)
+			{
+				lines.push_back(abv);
+				lines.push_back(str);
+				lines.push_back(blw);
+				lines.push_back("");
+				abv="";
+				blw="";
+			}
+			
+			for (unsigned j=0; j<tokens[i]->getText().size(); j++)
+			{
+				abv+=" ";
+				blw+=" ";
+			}
+			
+			str=tokens[i]->getText();
+		}
+	}
+	
+	lines.push_back(abv);
+	lines.push_back(str);
+	lines.push_back(blw);
+	
+	return lineListToBoxedString(lines, tableName, -1, maxWidth+4);
 }
 
 string stringFromTokens(const vector<Token>& tokens, int left, int right)

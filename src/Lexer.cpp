@@ -186,7 +186,7 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 					
 					for (auto op: opMatches)
 					{
-						tokens.push_back(makeToken(op->getText(), &file, line, charPos, type, op));
+						tokens.push_back(makeToken(op->getText(), &file, line, charPos-tokenTxt.size(), type, op));
 					}
 				}
 				else if (type==TokenData::LINE_COMMENT || type==TokenData::BLOCK_COMMENT)
@@ -195,7 +195,7 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 				}
 				else
 				{
-					tokens.push_back(makeToken(tokenTxt, &file, line, charPos, type));
+					tokens.push_back(makeToken(tokenTxt, &file, line, charPos-tokenTxt.size(), type));
 				}
 			}
 			tokenTxt="";

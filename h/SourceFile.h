@@ -21,6 +21,8 @@ public:
 	
 	string getBoxedString();
 	
+	string getLine(int lineNum);
+	
 	inline int size()
 	{
 		return contents.size();

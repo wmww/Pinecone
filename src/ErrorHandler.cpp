@@ -53,15 +53,26 @@ void ErrorHandler::log(string msg, ErrorPriority priority, Token token)
 	
 	// Pinecone style
 	
-	cout << endl << priorityToStr(priority);
+	cout << priorityToStr(priority);
 	
 	if (token)
 	{
 		cout << " in '" << token->getFile()->getFilename() << "' on line " << token->getLine() << " around character " << token->getCharPos() << ":" << endl;
 		cout << indentString(msg, "    ") << endl;
+		
+		string arrows="";
+		for (int i=0; i<token->getCharPos()-1; i++)
+			arrows+=" ";
+		for (int i=0; i<int(token->getText().size()); i++)
+			arrows+="^";
+		
+		cout << indentString(""+token->getFile()->getLine(token->getLine())+"\n"+arrows, "    ") << endl;
+		
 	}
 	else
+	{
 		cout << ": " << msg << endl;
+	}
 }
 
 void ErrorHandler::msg(string in)
