@@ -5,6 +5,7 @@
 #include "Token.h"
 #include "Operator.h"
 #include "ErrorHandler.h"
+#include "AstNode.h"
 
 #include <unordered_map>
 using std::unordered_map;
@@ -87,6 +88,9 @@ public:
 	
 	//	add a type, throws an internal error if that type is already in the namespace, so check before trying to add
 	void addType(Type type, string id);
+	
+	//	add a constant expression
+	void addConst(Token inputToken, AstNode outputNode);
 	
 	
 	///	getting elements

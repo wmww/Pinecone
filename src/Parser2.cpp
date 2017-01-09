@@ -345,13 +345,38 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		return AstExpression::make(move(leftNode), move(centerNode), AstVoid::make());
 	}
+	else if (op==ops->doubleColon)
+	{
+		unique_ptr<AstToken> centerNode=nullptr;
+		AstNode rightNode=nullptr;
+		
+		if (i==left+1 && tokens[i-1]->getType()==TokenData::IDENTIFIER)
+		{
+			centerNode=AstToken::make(tokens[i-1]);
+		}
+		else
+		{
+			throw PineconeError("you can only use constant assignment on a single identifier", SOURCE_ERROR, tokens[i]);
+		}
+		
+		if (i<right)
+		{
+			rightNode=parseExpression(tokens, i+1, right);
+		}
+		else
+		{
+			rightNode=AstVoid::make();
+		}
+		
+		return AstConstExpression::make(move(centerNode), move(rightNode));
+	}
 	else
 	{
 		AstNode leftNode=nullptr;
 		AstNode centerNode=nullptr;
 		AstNode rightNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
 		
-		if (op==ops->colon || op==ops->doubleColon)
+		if (op==ops->colon)
 		{
 			for (int j=i-1; j>=left; j--)
 			{

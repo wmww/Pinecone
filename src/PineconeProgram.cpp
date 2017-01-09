@@ -63,7 +63,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		
 		if (printOutput)
 		{
-			cout << endl << putStringInBox(astRoot->getString(), "parsed abstract syntax tree") << endl;
+			cout << endl << putStringInBox(astRoot->getString(), "abstract syntax tree") << endl;
 		}
 	}
 	
@@ -83,7 +83,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		{
 			actionRoot=functionAction(astRoot->getAction(), globalFrame);
 			
-			cout << endl << putStringInBox(actionRoot->getDescription(), "parsed action tree") << endl;
+			cout << endl << putStringInBox(actionRoot->getDescription(), "action tree") << endl;
 		}
 		catch (PineconeError err)
 		{

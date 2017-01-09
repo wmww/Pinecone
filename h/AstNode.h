@@ -2,13 +2,15 @@
 
 #include "Token.h"
 #include "Action.h"
-#include "Namespace.h"
+#include "ErrorHandler.h"
+
+class NamespaceData;
+typedef shared_ptr<NamespaceData> Namespace;
 
 #include <vector>
 using std::vector;
 
 class AstNodeBase;
-
 typedef unique_ptr<AstNodeBase> AstNode;
 
 AstNode astNodeFromTokens(const vector<Token>&);
@@ -131,6 +133,26 @@ private:
 	vector<AstNode> nodes;
 };
 
+class AstToken: public AstNodeBase
+{
+public:
+	
+	static unique_ptr<AstToken> make(Token tokenIn)
+	{
+		unique_ptr<AstToken> node(new AstToken);
+		node->token=tokenIn;
+		return node;
+	}
+	
+	string getString();
+	
+	void resolveAction();
+	
+private:
+	
+	Token token=nullptr;
+};
+
 class AstExpression: public AstNodeBase
 {
 public:
@@ -146,13 +168,39 @@ public:
 		return node;
 	}
 	
-	string getString();
+	virtual string getString();
 	
-	void resolveAction();
+	virtual void resolveAction();
 	
 private:
 	
 	AstNode leftIn=nullptr, center=nullptr, rightIn=nullptr;
+};
+
+class AstConstExpression: public AstNodeBase
+{
+public:
+	
+	static unique_ptr<AstConstExpression> make(unique_ptr<AstToken> centerIn, AstNode rightInIn)
+	{
+		unique_ptr<AstConstExpression> node(new AstConstExpression);
+		
+		//node->leftIn=move(leftInIn);
+		node->center=move(centerIn);
+		node->rightIn=move(rightInIn);
+		
+		return node;
+	}
+	
+	virtual string getString();
+	
+	virtual void resolveAction();
+	
+private:
+	
+	//AstNode leftIn=nullptr;
+	unique_ptr<AstToken> center=nullptr;
+	AstNode rightIn=nullptr;
 };
 
 class AstOpWithInput: public AstNodeBase
@@ -176,26 +224,6 @@ public:
 private:
 	Token token=nullptr;
 	vector<AstNode> leftIn, rightIn;
-};
-
-class AstToken: public AstNodeBase
-{
-public:
-	
-	static unique_ptr<AstToken> make(Token tokenIn)
-	{
-		unique_ptr<AstToken> node(new AstToken);
-		node->token=tokenIn;
-		return node;
-	}
-	
-	string getString();
-	
-	void resolveAction();
-	
-private:
-	
-	Token token=nullptr;
 };
 
 class AstTuple: public AstNodeBase

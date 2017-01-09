@@ -1,4 +1,5 @@
 #include "../h/AstNode.h"
+#include "../h/Namespace.h"
 #include "../h/ErrorHandler.h"
 #include "../h/msclStringFuncs.h"
 #include "../h/AllOperators.h"
@@ -114,6 +115,51 @@ void AstExpression::resolveAction()
 	//error.log("resolveAction called for "+getString(), JSYK);
 	
 	action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
+}
+
+
+/// Const Expression
+
+string AstConstExpression::getString()
+{
+	string out;
+	
+	out+="(";
+	
+	out+=center->getString();
+	
+	if (!rightIn->isVoid())
+	{
+		out+=" <<== ";
+		out+=rightIn->getString();
+	}
+	
+	out+=")";
+	
+	return out;
+}
+
+void AstConstExpression::resolveAction()
+{
+	if (!inLeftType->isVoid() || !inRightType->isVoid())
+	{
+		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR);
+	}
+	
+	//leftIn->setInput(ns, Void, Void);
+	rightIn->setInput(ns, Void, Void);
+	
+	//error.log("resolveAction called for "+getString(), JSYK);
+	
+	Action rightAction=rightIn->getAction();
+	
+	void * val=rightAction->execute(nullptr, nullptr);
+	
+	center->setInput(ns, Void, rightIn->getReturnType());
+	
+	Action valAction=constGetAction(val, rightAction->getReturnType(), "const expression");
+	
+	action=branchAction(voidAction, center->getAction(), valAction);
 }
 
 
@@ -439,6 +485,8 @@ string AstTokenType::getString()
 
 void AstTokenType::resolveAction()
 {
+	
+	
 	action=voidAction;
 }
 

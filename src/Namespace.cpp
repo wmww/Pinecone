@@ -222,6 +222,11 @@ void NamespaceData::addType(Type type, string id)
 	}
 }
 
+void NamespaceData::addConst(Token inputToken, AstNode outputNode)
+{
+	
+}
+
 Type NamespaceData::getType(string name)
 {
 	auto i=types.find(name);
