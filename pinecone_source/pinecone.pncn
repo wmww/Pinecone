@@ -1,4 +1,13 @@
 
+# myType :: {Int, Dub}
+
+myVal:: 8+7
+
+myVal: myVal+1
+
+print: myVal
+
+//
 a: 0 | a<12 | a: a+1 @
 (
 	print: a
@@ -6,13 +15,10 @@ a: 0 | a<12 | a: a+1 @
 
 print
 
-myTuple: (1, 9.7)
+# myTuple: (1, 9.7)
 
-print: myTuple.b
-
-	myTuple.b: 1.88
-
-print: myTuple.b
+# print: myTuple.b
+\\
 
 //
 func1 :: {num1: Int, num2: Dub}:

@@ -57,7 +57,7 @@ void ErrorHandler::log(string msg, ErrorPriority priority, Token token)
 	
 	if (token)
 	{
-		cout << " in '" << token->getFile()->getFilename() << "' on line " << token->getLine() << " around character " << token->getCharPos() << ":" << endl;
+		cout << " in '" << token->getFile()->getFilename() << "' on line " << token->getLine() << ":" << endl;
 		cout << indentString(msg, "    ") << endl;
 		
 		string line=token->getFile()->getLine(token->getLine());
