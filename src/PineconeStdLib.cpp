@@ -1,7 +1,7 @@
 #include "../h/PineconeProgram.h"
 #include "../h/AllOperators.h"
 #include "../h/StackFrame.h"
-#include "../h/Namespace.h"
+#include "../h/Namespace2.h"
 
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
