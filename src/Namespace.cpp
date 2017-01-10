@@ -27,7 +27,7 @@ NamespaceData::NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFra
 
 void NamespaceData::clear()
 {
-	allIds.clear();
+	//allIds.clear();
 	actions.clear();
 	converters.clear();
 	operators.clear();
@@ -187,7 +187,7 @@ void NamespaceData::addAction(Action action, string id)
 	{
 		if (action->getReturnType()==type)
 		{
-			addToMap(id, CONVERTER, allIds);
+			//addToMap(id, CONVERTER, allIds);
 			addToMap(id, action, actions);
 			addToMap(type, action, converters);
 		}
@@ -198,14 +198,14 @@ void NamespaceData::addAction(Action action, string id)
 	}
 	else
 	{
-		addToMap(id, ACTION, allIds);
+		//addToMap(id, ACTION, allIds);
 		addToMap(id, action, actions);
 	}
 }
 
 void NamespaceData::addOperator(Action action, Operator op)
 {
-	addToMap(op->getText(), OPERATOR, allIds);
+	//addToMap(op->getText(), OPERATOR, allIds);
 	addToMap(op, action, operators);
 }
 
@@ -213,7 +213,7 @@ void NamespaceData::addType(Type type, string id)
 {
 	if (types.find(id)==types.end())
 	{
-		addToMap(type->getString(), TYPE, allIds);
+		//addToMap(type->getString(), TYPE, allIds);
 		types[id]=type;
 	}
 	else

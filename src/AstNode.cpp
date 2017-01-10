@@ -1,5 +1,5 @@
 #include "../h/AstNode.h"
-#include "../h/Namespace.h"
+#include "../h/Namespace2.h"
 #include "../h/ErrorHandler.h"
 #include "../h/msclStringFuncs.h"
 #include "../h/AllOperators.h"
