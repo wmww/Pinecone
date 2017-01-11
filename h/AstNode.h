@@ -19,7 +19,7 @@ class AstNodeBase
 {
 public:
 	
-	void setInput(Namespace nsIn, Type left, Type right)
+	void setInput(Namespace nsIn, bool dynamicIn, Type left, Type right)
 	{
 		if (inputHasBeenSet)
 		{
@@ -29,6 +29,7 @@ public:
 		inputHasBeenSet=true;
 		
 		ns=nsIn;
+		dynamic=dynamicIn;
 		inLeftType=left;
 		inRightType=right;
 	}
@@ -82,6 +83,7 @@ protected:
 	Type inLeftType=nullptr, inRightType=nullptr;
 	Action action=nullptr;
 	Type returnType=nullptr;
+	bool dynamic=false;
 	Namespace ns=nullptr;
 	bool inputHasBeenSet=false;
 };
@@ -134,6 +136,8 @@ private:
 	vector<AstNode> nodes;
 };
 
+class AstConstExpression;
+
 class AstToken: public AstNodeBase
 {
 public:
@@ -150,6 +154,8 @@ public:
 	void resolveAction();
 	
 private:
+	
+	friend AstConstExpression;
 	
 	Token token=nullptr;
 };
