@@ -53,6 +53,7 @@ void AstList::resolveAction()
 	for (int i=0; i<int(nodes.size()); i++)
 	{
 		nodes[i]->setInput(ns, dynamic, Void, Void);
+		nodes[i]->dealWithConstants();
 	}
 	
 	vector<Action> actions;
@@ -139,7 +140,7 @@ string AstConstExpression::getString()
 	return out;
 }
 
-void AstConstExpression::resolveAction()
+void AstConstExpression::resolveConstant()
 {
 	if (!inLeftType->isVoid() || !inRightType->isVoid())
 	{
@@ -160,10 +161,6 @@ void AstConstExpression::resolveAction()
 	Action valAction=constGetAction(val, rightAction->getReturnType(), "const expression");
 	
 	ns->addAction(valAction, center->token->getText());
-	
-	//action=branchAction(voidAction, center->getAction(), valAction);
-	
-	action=voidAction;
 }
 
 
