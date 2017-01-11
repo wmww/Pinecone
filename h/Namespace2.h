@@ -28,19 +28,6 @@ class NamespaceData: public std::enable_shared_from_this<NamespaceData>
 {
 public:
 	
-	/// enums
-	
-	//	the different types of identifiers
-	enum IdType
-	{
-		NONE=0,		//	no identifier for the specified name
-		ACTION,		//	a generic action (not a converter or operator)
-		CONVERTER,	//	a converter, and thus also an action
-		OPERATOR,	//	an operator, and this alos an action
-		TYPE		//	a type, not an action
-	};
-	
-	
 	/// creation functions
 	
 	//	makes a namespace with no parents and a new stack frame
@@ -50,14 +37,7 @@ public:
 	Namespace makeChild();
 	
 	//	makes a child namespace with a new stack frame
-	Namespace makeChildAndFrame(string nameIn);
-	
-	
-	///	deletion functions
-	
-	//	clears out all the data this object holds
-	void clear();
-	~NamespaceData() {clear();}
+	Namespace makeChildAndFrame();
 	
 	
 	///	getters
@@ -71,6 +51,9 @@ public:
 	Namespace getParent() {return parent;}
 	shared_ptr<StackFrame> getStackFrame() {return stackFrame;}
 	
+	/// adding elements
+	
+	void finishConstantVals() {constantValuesDone=true;}
 	
 	///	adding elements
 	
@@ -128,7 +111,7 @@ public:
 private:
 	
 	//	the only constructor, is private so use a make function instead
-	NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn, string nameIn="");
+	NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFrameIn);
 	
 	//void addActionsToList(vector<Action>& in, string& text);
 	//void addActionsToList(vector<Action>& in, Operator op);
@@ -147,8 +130,7 @@ private:
 	//	NOTE: can return null
 	Action findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType);
 	
-	//	the name of this namespace, for debugging purposes only
-	string myName;
+	bool constantValuesDone;
 	
 	//	this namespaces parent
 	shared_ptr<NamespaceData> parent;

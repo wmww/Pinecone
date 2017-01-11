@@ -1,6 +1,6 @@
 #include "../h/Token.h"
 #include "../h/Action.h"
-#include "../h/Namespace2.h"
+#include "../h/Namespace.h"
 #include "../h/ErrorHandler.h"
 #include "../h/StackFrame.h"
 #include "../h/AllOperators.h"

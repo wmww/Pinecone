@@ -3,6 +3,53 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
+template<typename KEY>
+void NamespaceData::ActionMap<KEY>::add(KEY key, AstNode node)
+{
+	auto i=nodes.find(key);
+	
+	if (i==nodes.end())
+	{
+		nodes[key]=vector<AstNode>();
+	}
+	
+	nodes[key].push_back(move(node));
+}
+
+template<typename KEY>
+void NamespaceData::ActionMap<KEY>::add(KEY key, Action action)
+{
+	auto i=actions.find(key);
+	
+	if (i==actions.end())
+	{
+		actions[key]=vector<Action>();
+	}
+	
+	actions[key].push_back(action);
+}
+
+template<typename KEY>
+void NamespaceData::ActionMap<KEY>::get(KEY key, vector<Action>& out)
+{
+	auto matches1=nodes.find(key);
+	
+	if (matches1!=nodes.end())
+	{
+		for (unsigned i=0; i<matches1->second.size(); i++)
+		{
+			add(key, matches1->second[i]->getAction());
+		}
+	}
+	
+	auto matches2=actions.find(key);
+	
+	if (matches2!=actions.end())
+	{
+		out.insert(out.end(), matches2->second.begin(), matches2->second.end());
+	}
+}
+
 Namespace NamespaceData::makeRootNamespace()
 {
 	return Namespace(new NamespaceData(Namespace(nullptr), shared_ptr<StackFrame>(new StackFrame()), "root"));
@@ -25,18 +72,9 @@ NamespaceData::NamespaceData(Namespace parentIn, shared_ptr<StackFrame> stackFra
 	myName=nameIn;
 }
 
-void NamespaceData::clear()
-{
-	//allIds.clear();
-	actions.clear();
-	converters.clear();
-	operators.clear();
-	types.clear();
-}
-
 string NamespaceData::getString()
 {
-	string out;
+	/*string out;
 	
 	out+="normal functions:\n";
 	
@@ -87,7 +125,9 @@ string NamespaceData::getString()
 		out+="\n";
 	}
 	
-	return out;
+	return out;*/
+	
+	return "NamespaceData::getString not yet implemented";
 }
 
 string NamespaceData::getStringWithParents()
@@ -105,6 +145,7 @@ string NamespaceData::getStringWithParents()
 	return out;
 }
 
+/* // addToMap templates
 template<typename T, typename U>
 void NamespaceData::addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap)
 {
@@ -136,6 +177,7 @@ void NamespaceData::getValuesFromMap(T key, vector<U>& out, unordered_map<T, vec
 		parent->getValuesFromMap(key, out, parentMap);
 	}
 }
+*/
 
 void NamespaceData::setInput(Type left, Type right)
 {
@@ -175,80 +217,129 @@ void NamespaceData::addVar(Type type, string name)
 	
 	Action getAction=varGetAction(offset, type, name);
 	Action setAction=varSetAction(offset, type, name);
-	addAction(getAction, name);
-	addAction(setAction, name);
+	dynamicActions.add(name, getAction);
+	dynamicActions.add(name, setAction);
 }
 
 void NamespaceData::addAction(Action action, string id)
 {
-	Type type=getType(id);
-	
-	if (type!=Unknown)
+	if (action->getReturnType()->getType()==TypeBase::METATYPE)
 	{
-		if (action->getReturnType()==type)
+		try
 		{
-			//addToMap(id, CONVERTER, allIds);
-			addToMap(id, action, actions);
-			addToMap(type, action, converters);
+			getType(id);
+			throw PineconeError("tried to make multiple types with the name '"+id+"'", SOURCE_ERROR);
 		}
-		else
-		{
-			error.log("can not call an action '"+id+"' as there is already a type named that which does not match the return type", SOURCE_ERROR);
-		}
+		catch (IdNotFoundError err) {}
+		
+		types.add(id, action);
 	}
 	else
 	{
-		//addToMap(id, ACTION, allIds);
-		addToMap(id, action, actions);
+		/*try
+		{
+			Type type=getType(id);
+			
+			if (action->getReturnType()==type)
+			{
+				actions.add(id, action);
+				converters.add(type, action)
+				//addToMap(id, CONVERTER, allIds);
+				addToMap(id, action, actions);
+				addToMap(type, action, converters);
+			}
+			else
+			{
+				throw PineconeError("can not call an action '"+id+"' as there is already a type named that which does not match the return type", SOURCE_ERROR);
+			}
+		}
+		catch (IdNotFoundError err)*/
+		{
+			actions.add(id, action);
+			//addToMap(id, ACTION, allIds);
+			//addToMap(id, action, actions);
+		}
 	}
 }
 
 void NamespaceData::addOperator(Action action, Operator op)
 {
+	operators.add(op, action);
 	//addToMap(op->getText(), OPERATOR, allIds);
-	addToMap(op, action, operators);
+	//addToMap(op, action, operators);
 }
 
 void NamespaceData::addType(Type type, string id)
 {
-	if (types.find(id)==types.end())
+	addAction(typeGetAction(type), id);
+}
+
+void NamespaceData::addAction(AstNode node, string id)
+{
+	if (node->isType())
 	{
-		//addToMap(type->getString(), TYPE, allIds);
-		types[id]=type;
+		types.add(id, move(node));
 	}
 	else
 	{
-		error.log("tried to create multiple types with the name '" + id + "'", INTERNAL_ERROR);
+		/*try
+		{
+			Type type=getType(id);
+			
+			if (action->getReturnType()==type)
+			{
+				actions.add(id, action);
+				converters.add(type, action)
+				//addToMap(id, CONVERTER, allIds);
+				addToMap(id, action, actions);
+				addToMap(type, action, converters);
+			}
+			else
+			{
+				throw PineconeError("can not call an action '"+id+"' as there is already a type named that which does not match the return type", SOURCE_ERROR);
+			}
+		}
+		catch (IdNotFoundError err)*/
+		{
+			actions.add(id, move(node));
+			//addToMap(id, ACTION, allIds);
+			//addToMap(id, action, actions);
+		}
 	}
 }
 
-void NamespaceData::addConst(Token inputToken, AstNode outputNode)
+void NamespaceData::addOperator(AstNode node, Operator op)
 {
-	
+	operators.add(op, move(node));
+	//addToMap(op->getText(), OPERATOR, allIds);
+	//addToMap(op, action, operators);
 }
 
 Type NamespaceData::getType(string name)
 {
-	auto i=types.find(name);
+	vector<Action> results;
 	
-	if (i==types.end())
+	types.get(name, results);
+	
+	if (results.empty())
 	{
-		if (parent)
-		{
-			return parent->getType(name);
-		}
-		else
-		{
-			return Unknown;
-		}
+		throw IdNotFoundError(name, false, shared_from_this());
+	}
+	else if (results.size()!=1)
+	{
+		throw PineconeError("namespace has multiple defenitions of the same type '"+name+"'", INTERNAL_ERROR);
+	}
+	else if (results[0]->getReturnType()->getType()!=TypeBase::METATYPE)
+	{
+		throw PineconeError("action returning non meta type stored in namespace type map for type '"+name+"'", INTERNAL_ERROR);
 	}
 	else
 	{
-		return i->second;
+		return results[0]->getReturnType()->getSubType();
 	}
 }
 
-Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right)
+Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic)
 {
 	vector<Action> matches;
 	
@@ -258,7 +349,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	}
 	else
 	{
-		getActions(token->getText(), matches);
+		getActions(token->getText(), matches, dynamic);
 	}
 	
 	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
@@ -271,9 +362,9 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		throw IdNotFoundError(token->getText(), matches.size()>0, shared_from_this());
 }
 
-Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right)
+Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic)
 {
-	Action selection=getActionForTokenWithInput(token, left->getReturnType(), right->getReturnType());
+	Action selection=getActionForTokenWithInput(token, left->getReturnType(), right->getReturnType(), dynamic);
 	
 	if (selection!=voidAction)
 	{
@@ -285,7 +376,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 	} 
 }
 
-Action NamespaceData::getActionConvertedToType(Action actionIn, Type outType)
+/*Action NamespaceData::getActionConvertedToType(Action actionIn, Type outType)
 {
 	if (actionIn->getReturnType()==outType)
 		return actionIn;
@@ -303,22 +394,35 @@ Action NamespaceData::getActionConvertedToType(Action actionIn, Type outType)
 	}
 	
 	return voidAction;
-}
+}*/
 
-void NamespaceData::getActions(string text, vector<Action>& out)
+void NamespaceData::getActions(string text, vector<Action>& out, bool dynamic)
 {
-	getValuesFromMap(text, out, actions);
+	actions.get(text, out);
+	
+	if (dynamic)
+	{
+		dynamicActions.get(text, out);
+	}
+	
+	if (parent)
+		parent->getActions(text, out, dynamic);
 }
 
 void NamespaceData::getActions(Operator op, vector<Action>& out)
 {
-	getValuesFromMap(op, out, operators);
+	operators.get(op, out);
+	
+	if (parent)
+		parent->getActions(op, out);
 }
 
+/*
 void NamespaceData::getConvertersToType(Type typeIn, vector<Action>& out)
 {
 	getValuesFromMap(typeIn, out, converters);
 }
+*/
 
 Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType)
 {

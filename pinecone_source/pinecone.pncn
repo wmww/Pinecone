@@ -1,7 +1,9 @@
 
 # myType :: {Int, Dub}
 
-8+myVal :: 8+7
+a: 7
+
+myVal :: 8+a
 
 myVal: myVal+1
 
