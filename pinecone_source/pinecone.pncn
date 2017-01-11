@@ -1,8 +1,9 @@
 
 
-print: a+b
+print: c
 
 b :: 4
+c :: a+b
 a :: 10
 
 

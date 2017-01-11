@@ -152,6 +152,9 @@ void AstConstExpression::resolveConstant()
 	
 	//error.log("resolveAction called for "+getString(), JSYK);
 	
+	ns->addAction(move(rightIn), center->token->getText());
+	
+	/*
 	Action rightAction=rightIn->getAction();
 	
 	void * val=rightAction->execute(nullptr, nullptr);
@@ -160,7 +163,7 @@ void AstConstExpression::resolveConstant()
 	
 	Action valAction=constGetAction(val, rightAction->getReturnType(), "const expression");
 	
-	ns->addAction(valAction, center->token->getText());
+	ns->addAction(valAction, center->token->getText());*/
 }
 
 
