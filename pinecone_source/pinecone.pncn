@@ -1,51 +1,14 @@
 
 
-print: c
+# Fibonacci
 
-b :: 4
-c :: a+b
-a :: 10
+b: 0
+a: 1
 
-
-
-//
-a: 0 | a<12 | a: a+1 @
+a<100 @
 (
 	print: a
+	tmp: a
+	a: a+b
+	b: tmp
 )
-
-print
-
-# myTuple: (1, 9.7)
-
-# print: myTuple.b
-\\
-
-//
-func1 :: {num1: Int, num2: Dub}:
-(
-	print: num1
-	print: num2
-)
-
-
-func2 :: {Int}:
-(
-	a: 1
-	
-	right>0?
-		func2: right-1
-	|
-		print: tru
-)
-
-func2: 6
-
-a: 8
-
-b :: (func: 0)
-
-a: 3
-
-print: a
-\\

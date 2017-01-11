@@ -8,13 +8,13 @@ public:
 			:ActionData(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
-			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
+			throw PineconeError(string() + "branch action created sent null action", INTERNAL_ERROR);
 		
 		if (!leftInputIn)
-			error.log(string() + "branch action created sent null leftInput", INTERNAL_ERROR);
+			throw PineconeError(string() + "branch action created sent null leftInput", INTERNAL_ERROR);
 		
 		if (!rightInputIn)
-			error.log(string() + "branch action created sent null rightInput", INTERNAL_ERROR);
+			throw PineconeError(string() + "branch action created sent null rightInput", INTERNAL_ERROR);
 		
 		action=actionIn;
 		leftInput=leftInputIn;
@@ -22,22 +22,22 @@ public:
 		
 		if (!leftInput->getInLeftType()->matches(Void) || !leftInput->getInRightType()->matches(Void))
 		{
-			error.log(leftInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
+			throw PineconeError(leftInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 		}
 		
 		if (!rightInput->getInLeftType()->matches(Void) || !rightInput->getInRightType()->matches(Void))
 		{
-			error.log(rightInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
+			throw PineconeError(rightInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 		}
 		
 		if (!leftInput->getReturnType()->matches(action->getInLeftType()))
 		{
-			error.log(leftInput->getDescription() + " return type is not the same as the left input of " + action->getDescription(), INTERNAL_ERROR);
+			throw PineconeError(leftInput->getDescription() + " return type is not the same as the left input of " + action->getDescription(), INTERNAL_ERROR);
 		}
 		
 		if (!rightInput->getReturnType()->matches(action->getInRightType()))
 		{
-			error.log(rightInput->getDescription() + " return type is not the same as the right input of " + action->getDescription(), INTERNAL_ERROR);
+			throw PineconeError(rightInput->getDescription() + " return type is not the same as the right input of " + action->getDescription(), INTERNAL_ERROR);
 		}
 	}
 
@@ -81,22 +81,22 @@ public:
 		:ActionData(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
-			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
+			throw PineconeError(string() + "branch action created sent null action", INTERNAL_ERROR);
 			
 		if (!rightInputIn)
-			error.log(string() + "branch action created sent null rightInput", INTERNAL_ERROR);
+			throw PineconeError(string() + "branch action created sent null rightInput", INTERNAL_ERROR);
 		
 		action=actionIn;
 		rightInput=rightInputIn;
 		
 		if (!rightInput->getInLeftType()->matches(Void) || !rightInput->getInRightType()->matches(Void))
 		{
-			error.log(rightInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
+			throw PineconeError(rightInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 		}
 		
 		if (!rightInput->getReturnType()->matches(action->getInRightType()))
 		{
-			error.log(rightInput->getDescription() + " return type is not the same as the right input of " + action->getDescription(), INTERNAL_ERROR);
+			throw PineconeError(rightInput->getDescription() + " return type is not the same as the right input of " + action->getDescription(), INTERNAL_ERROR);
 		}
 	}
 	
@@ -142,22 +142,22 @@ public:
 			:ActionData(actionIn->getReturnType(), Void, Void)
 	{
 		if (!actionIn)
-			error.log(string() + "branch action created sent null action", INTERNAL_ERROR);
+			throw PineconeError(string() + "branch action created sent null action", INTERNAL_ERROR);
 		
 		if (!leftInputIn)
-			error.log(string() + "branch action created sent null leftInput", INTERNAL_ERROR);
+			throw PineconeError(string() + "branch action created sent null leftInput", INTERNAL_ERROR);
 		
 		action=actionIn;
 		leftInput=leftInputIn;
 		
 		if (!leftInput->getInLeftType()->matches(Void) || !leftInput->getInRightType()->matches(Void))
 		{
-			error.log(leftInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
+			throw PineconeError(leftInput->getDescription() + " put into branch even though its inputs are not void", INTERNAL_ERROR);
 		}
 		
 		if (!leftInput->getReturnType()->matches(action->getInLeftType()))
 		{
-			error.log(leftInput->getDescription() + " return type is not the same as the left input of " + action->getDescription(), INTERNAL_ERROR);
+			throw PineconeError(leftInput->getDescription() + " return type is not the same as the left input of " + action->getDescription(), INTERNAL_ERROR);
 		}
 	}
 

@@ -1,10 +1,11 @@
 #include "../h/Token.h"
-#include "../h/Action.h"
+#include "../h/AstNode.h"
 #include "../h/Namespace.h"
 #include "../h/ErrorHandler.h"
 #include "../h/StackFrame.h"
 #include "../h/AllOperators.h"
 #include "../h/msclStringFuncs.h"
+#include "../h/AstNode.h"
 
 #include <vector>
 using std::vector;
@@ -17,35 +18,18 @@ using std::min;
 using std::max;
 using std::pair;
 
-extern StackFrame stdLibStackFrame;
-extern Namespace stdLibNamespace;
-
 //	unless otherwise noted, these are what the perams for the following functions mean
 //		tokens: the tokens to parse
 //		table: the table to use
 //		left: left most token to parse (inclusive)
 //		right: right most token to parse (inclusive)
-//		returns: (if type is Action) the action pointer for that section of the program
+//		returns: (if type is AstNode) the action pointer for that section of the program
 
-//	parses a function and returns the functionAction for it
-Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType);
-
-//	splits a stream of tokens into a ListAction and calls parseExpression on each expression
-Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, int right);
+//	splits a stream of tokens into a ListAstNode and calls parseExpression on each expression
+AstNode parseTokenList(const vector<Token>& tokens, int left, int right);
 
 //	recursivly parses a single expression (no action lists)
-Action parseExpression(const vector<Token>& tokens, Namespace table, int left, int right);
-
-//	splits an expression on the given token (should always be an operator)
-//		index: the index to split on
-//		returns: pointer to BranchAction that is the root of the split
-Action splitExpression(const vector<Token>& tokens, Namespace table, int left, int right, int index);
-
-//	returns the action for a single token
-//		token: the token to get the action for
-//		leftIn: the left input
-//		rightIn: the right input
-Action parseSingleToken(Token token, const Namespace table, Action leftIn, Action rightIn);
+AstNode parseExpression(const vector<Token>& tokens, int left, int right);
 
 //	returns the index of the closing brace that matches the given opening brace index, works with (), [], and {}
 //		tokens: the token array to use
@@ -53,21 +37,24 @@ Action parseSingleToken(Token token, const Namespace table, Action leftIn, Actio
 //		returns: the index of the close peren that matches
 int skipBrace(const vector<Token>& tokens, int start);
 
-void parseChain(const vector<Token>& tokens, Namespace table, int left, int right, vector<Action>& out);
+void parseSequence(const vector<Token>& tokens, int left, int right, Operator splitter, vector<AstNode>& out);
 
-Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int right, int index);
+AstNode parseOperator(const vector<Token>& tokens, int left, int right, int index);
 
-Action parseLiteral(Token token);
+//AstNode parseLiteral(Token token);
 
-Action parseType(const vector<Token>& tokens, Namespace table, int left, int right);
-//Action parseSingleTypeElement(const vector<Token>& tokens, Namespace table, int& i, int right, string& name, Type& type);
-Type parseTypeToken(Token token, Namespace table);
+unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right);
+//AstNode parseSingleTypeElement(const vector<Token>& tokens, int& i, int right, string& name, Type& type);
+//Type parseTypeToken(Token token);
 
-Action parseIdentifier(Token token, Namespace table, Action leftIn, Action rightIn);
+//AstNode parseIdentifier(Token token, AstNode leftIn, AstNode rightIn);
 
-void parseIdentifierConst(Token token, Namespace table, Action rightIn);
+//void parseIdentifierConst(Token token, AstNode rightIn);
 
-
+AstNode astNodeFromTokens(const vector<Token>& tokens)
+{
+	return parseTokenList(tokens, 0, tokens.size()-1);
+}
 
 int skipBrace(const vector<Token>& tokens, int start)
 {
@@ -114,8 +101,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 	}
 	else
 	{
-		error.log(FUNC + " called with index that is not a valid brace", INTERNAL_ERROR, tokens[start]);
-		return start;
+		throw PineconeError(FUNC + " called with index that is not a valid brace", INTERNAL_ERROR, tokens[start]);
 	}
 	
 	int c=1;
@@ -127,8 +113,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 		
 		if (i>=int(tokens.size()))
 		{
-			error.log("no matching brace", SOURCE_ERROR, tokens[start]);
-			return start;
+			throw PineconeError("no matching brace", SOURCE_ERROR, tokens[start]);
 		}
 		
 		if (tokens[i]->getOp()==open)
@@ -147,47 +132,17 @@ int skipBrace(const vector<Token>& tokens, int start)
 	}
 }
 
-Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType)
-{
-	StackFrame frame;
-	
-	if (!leftInType->isVoid() && !leftInType->isCreatable())
-	{
-		error.log(FUNC+" sent "+leftInType->getString()+" type, which is not creatable", INTERNAL_ERROR, tokens[left]);
-		return voidAction;
-	}
-	
-	if (!rightInType->isVoid() && !rightInType->isCreatable())
-	{
-		error.log(FUNC+" sent "+rightInType->getString()+" type, which is not creatable", INTERNAL_ERROR, tokens[left]);
-		return voidAction;
-	}
-	
-	Namespace nmspace=stdLibNamespace->makeChildAndFrame();
-	
-	nmspace->setInput(leftInType, rightInType);
-	
-	Action actions=parseTokenList(tokens, nmspace, left, right);
-	
-	cout << endl << putStringInBox(nmspace->getString(), false, "function table") << endl;
-	
-	Action out=functionAction(actions, nmspace->getStackFrame());
-	
-	return out;
-}
-
-Action parseExpression(const vector<Token>& tokens, Namespace table, int left, int right)
+/*AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
 	//error.log("parsing expression: "+stringFromTokens(tokens, left, right), JSYK);
 	
 	if (left>right)
 	{
-		//error.log(string() + __FUNCTION__ + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
-		return voidAction;
+		throw PineconeError(FUNC + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
 	}
 	else if (left==right)
 	{
-		return parseSingleToken(tokens[left], table, voidAction, voidAction);
+		return AstToken::make(tokens[left]);
 	}
 	
 	vector<bool> isMinLeft(right-left+1);
@@ -219,33 +174,17 @@ Action parseExpression(const vector<Token>& tokens, Namespace table, int left, i
 					if (op==ops->openPeren)
 					{
 						if (left+1<right)
-							return parseTokenList(tokens, table, left+1, right-1);
+							return parseTokenList(tokens, left+1, right-1);
 						else
-							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
-					}
-					else if (op==ops->openSqBrac)
-					{
-						if (left+1<right)
-							return parseTokenList(tokens, table, left+1, right-1);
-						else
-							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
+							return AstVoid::make(); // a rare place where a astVoid may actually be intended by the programmer
 					}
 					else if (op==ops->openCrBrac)
 					{
-						if (left+2==right)
-						{
-							return typeGetAction(parseTypeToken(tokens[left+1], table));
-						}
-						else if (left+1<right-1)
-						{
-							return parseType(tokens, table, left+1, right-1);
-						}
-						else
-							return voidAction; // a rare place where a voidAction may actually be intended by the programmer
+						return parseType(tokens, left+1, right-1);
 					}
 					else
 					{
-						return voidAction;
+						throw PineconeError("unknown bracket '"+op->getText()+"'", INTERNAL_ERROR);
 					}
 				}
 			}
@@ -289,21 +228,247 @@ Action parseExpression(const vector<Token>& tokens, Namespace table, int left, i
 	{
 		if (isMinLeft[i] && isMinRight[i])
 		{
-			return splitExpression(tokens, table, left, right, i);
+			AstNode leftNode=parseExpression(tokens, left, i-1);
+			AstNode rightNode=parseExpression(tokens, i+1, right);
+			
+			if (tokens[i]->getOp()==ops->colon || tokens[i]->getOp()==ops->doubleColon)
+			{
+				return AstExpression::make(AstVoid::make(), move(leftNode), move(rightNode));
+			}
+			else
+			{
+				return AstExpression::make(move(leftNode), AstToken::make(tokens[i]), move(rightNode));
+			}
 		}
 	}
 	
-	error.log("could not find where to split expression '" + stringFromTokens(tokens, left, right) + "'", SOURCE_ERROR, tokens[left]);
+	throw PineconeError("could not find where to split expression '" + stringFromTokens(tokens, left, right) + "'", SOURCE_ERROR, tokens[left]);
 		
 	//error.log("range: " + ([&]()->string{string out; for (int i=left; i<=right; i++) {out+=tokens[i]->getText()+" ";} return out;})(), JSYK, tokens[left]);
 	//error.log("isMin: " + ([&]()->string{string out; for (auto i: isMin) {out+="\n"+to_string(i.first)+", "+to_string(i.second);} return out;})(), JSYK, tokens[left]);
+}
+*/
+
+AstNode parseExpression(const vector<Token>& tokens, int left, int right)
+{
+	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
 	
-	return voidAction;
+	if (left>right)
+	{
+		throw PineconeError(FUNC + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
+	}
+	else if (left==right)
+	{
+		return AstToken::make(tokens[left]);
+	}
+	
+	int minPrece=-1;
+	int indexOfMin=-1;
+	
+	for (int i=left; i<=right; i++)
+	{
+		if (tokens[i]->getOp()==ops->openPeren || tokens[i]->getOp()==ops->openCrBrac)
+		{
+			int j=skipBrace(tokens, i);
+			
+			if (i==left && j==right)
+			{
+				if (tokens[i]->getOp()==ops->openPeren)
+				{
+					return parseTokenList(tokens, left+1, right-1);
+				}
+				else 
+				{
+					return parseType(tokens, left+1, right-1);
+				}
+			}
+			
+			i=j;
+		}
+		else if (tokens[i]->getOp() && (minPrece<0 || tokens[i]->getOp()->getPrecedence()<minPrece))
+		{
+			minPrece=tokens[i]->getOp()->getPrecedence();
+			indexOfMin=i;
+			
+			if (minPrece%2)
+			{
+				minPrece++;
+			}
+		}
+	}
+	
+	int i=indexOfMin;
+	
+	if (i<0)
+	{
+		throw PineconeError(FUNC+" could not find operator to split expression", INTERNAL_ERROR, tokens[left]);
+	}
+	
+	Operator op=tokens[i]->getOp();
+	
+	if ((i==left)==op->takesLeftInput() || (i==right)==op->takesRightInput())
+	{
+		throw PineconeError("improper use of '"+op->getText()+"' operator", SOURCE_ERROR, tokens[i]);
+	}
+	
+	
+	
+	if (op==ops->pipe)
+	{
+		throw PineconeError("invalid use of '"+op->getText()+"'", SOURCE_ERROR, tokens[i]);
+	}
+	else if (op==ops->ifOp || op==ops->loop)
+	{
+		vector<AstNode> leftNodes;
+		vector<AstNode> rightNodes;
+		
+		if (i>left)
+			parseSequence(tokens, left, i-1, ops->pipe, leftNodes);
+		
+		if (i<right)
+			parseSequence(tokens, i+1, right, ops->pipe, rightNodes);
+		
+		return AstOpWithInput::make(leftNodes, tokens[i], rightNodes);
+	}
+	else if (op==ops->comma)
+	{
+		vector<AstNode> nodes;
+		
+		parseSequence(tokens, left, right, ops->comma, nodes);
+		
+		return AstTuple::make(nodes);
+	}
+	else if (op==ops->dot)
+	{
+		AstNode leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
+		AstNode centerNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
+		
+		return AstExpression::make(move(leftNode), move(centerNode), AstVoid::make());
+	}
+	else if (op==ops->doubleColon)
+	{
+		unique_ptr<AstToken> centerNode=nullptr;
+		AstNode rightNode=nullptr;
+		
+		if (i==left+1 && tokens[i-1]->getType()==TokenData::IDENTIFIER)
+		{
+			centerNode=AstToken::make(tokens[i-1]);
+		}
+		else
+		{
+			throw PineconeError("you can only use constant assignment on a single identifier", SOURCE_ERROR, tokens[i]);
+		}
+		
+		if (i<right)
+		{
+			rightNode=parseExpression(tokens, i+1, right);
+		}
+		else
+		{
+			rightNode=AstVoid::make();
+		}
+		
+		return AstConstExpression::make(move(centerNode), move(rightNode));
+	}
+	else
+	{
+		AstNode leftNode=nullptr;
+		AstNode centerNode=nullptr;
+		AstNode rightNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
+		
+		if (op==ops->colon)
+		{
+			for (int j=i-1; j>=left; j--)
+			{
+				Operator op=tokens[j]->getOp();
+				
+				if (op)
+				{
+					if (op==ops->dot)
+					{
+						if (j==left)
+							throw PineconeError("'.' needs something to its left", SOURCE_ERROR, tokens[j]);
+							
+						if (j==i-1)
+							throw PineconeError("'.' can not be followed by '"+op->getText()+"'", SOURCE_ERROR, tokens[j]);
+						
+						leftNode=parseExpression(tokens, left, j-1);
+						centerNode=parseExpression(tokens, j+1, i-1);
+					}
+					else if (op->getPrecedence()<ops->dot->getPrecedence())
+					{
+						break;
+					}
+				}
+			}
+			
+			if (!leftNode)
+				leftNode=AstVoid::make();
+			
+			if (!centerNode)
+				centerNode=parseExpression(tokens, left, i-1);
+		}
+		else
+		{
+			leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
+			centerNode=AstToken::make(tokens[i]);
+		}
+		
+		return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
+	}
 }
 
-Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, int right)
+AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 {
-	vector<Action> actions;
+	vector<AstNode> nodes;
+	
+	int start=left;
+	
+	for (int i=left; i<=right; i++)
+	{
+		
+		if (ops->isOpenBrac(tokens[i]->getOp()))
+		{
+			i=skipBrace(tokens, i);
+		}
+		
+		bool tokenTakesRightInput=(tokens[i]->getOp() && tokens[i]->getOp()->takesRightInput());
+		int next=i+1;
+		bool nextTokenTakesLeftInput=(next<=right && tokens[next]->getOp() && tokens[next]->getOp()->takesLeftInput());
+		
+		if (i==right || (!tokenTakesRightInput && !nextTokenTakesLeftInput))
+		{
+			try
+			{
+				AstNode node=parseExpression(tokens, start, i);
+				nodes.push_back(move(node));
+			}
+			catch (PineconeError err)
+			{
+				err.log();
+			}
+			
+			start=next;
+		}
+	}
+	
+	if (nodes.size()==0)
+	{
+		return AstVoid::make();
+	}
+	else if (nodes.size()==1)
+	{
+		return move(nodes[0]);
+	}
+	else
+	{
+		return AstList::make(nodes);
+	}
+}
+
+/*AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
+{
+	vector<AstNode> nodes;
 	
 	while (left<=right)
 	{
@@ -315,33 +480,30 @@ Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, in
 			
 			if (op==ops->openPeren || op==ops->openSqBrac || op==ops->openCrBrac)
 				i=skipBrace(tokens, i);
-				
+			
 			if (i>=right) // at the end
 			{
-				if (actions.empty())
+				if (nodes.empty())
 				{
-					return parseExpression(tokens, table, left, right);
+					return parseExpression(tokens, left, right);
 				}
 				else
 				{
-					actions.push_back(parseExpression(tokens, table, left, right));
+					try
+					{
+						nodes.push_back(parseExpression(tokens, left, right));
+					}
+					catch (PineconeError err)
+					{
+						err.log();
+					}
+					
 					break;
 				}
 			}
-			else if // if the left can't absorb the right and the right cant absorbe the left
-				(
-					(
-						!tokens[i]->getOp()
-						||
-						!tokens[i]->getOp()->getRightPrece()
-					) && (
-						!tokens[i+1]->getOp()
-						||
-						!tokens[i+1]->getOp()->getLeftPrece()
-					)
-				)
+			else if (!tokens[i]->getOp() && !tokens[i+1]->getOp())// if the left can't absorb the right and the right cant absorbe the left
 			{
-				actions.push_back(parseExpression(tokens, table, left, i));
+				nodes.push_back(parseExpression(tokens, left, i));
 				break;
 			}
 			
@@ -351,398 +513,40 @@ Action parseTokenList(const vector<Token>& tokens, Namespace table, int left, in
 		left=i+1;
 	}
 	
-	return listAction(actions);
-}
-
-Action splitExpression(const vector<Token>& tokens, Namespace table, int left, int right, int i)
-{
-	Operator op=tokens[i]->getOp();
-	
-	if (!op)
-	{
-		error.log(string() + __FUNCTION__ + " called with an index that is not an operator (token: " + tokens[i]->getText() + ")", INTERNAL_ERROR, tokens[i]);
-		return voidAction;
-	}
-	
-	if (op->getOverloadable())
-	{
-		auto leftAction=(left==i)?voidAction:parseExpression(tokens, table, left, i-1);
-		auto rightAction=(right==i)?voidAction:parseExpression(tokens, table, i+1, right);
-		
-		return table->getActionForTokenWithInput(tokens[i], leftAction, rightAction);
-	}
-	else
-	{
-		return parseOperator(tokens, table, left, right, i);
-	}
-}
-
-void parseChain(const vector<Token>& tokens, Namespace table, int left, int right, vector<Action>& out)
-{
-	if (tokens[left]->getOp()==ops->pipe)
-	{
-		error.log("improper use of pipe", SOURCE_ERROR, tokens[left]);
-		return;
-	}
-	else if (tokens[right]->getOp()==ops->pipe)
-	{
-		error.log("improper use of pipe", SOURCE_ERROR, tokens[right]);
-		return;
-	}
-	
-	int i;
-	
-	for (i=left+1; i<=right && tokens[i]->getOp()!=ops->pipe; i++) {}
-	
-	out.push_back(parseExpression(tokens, table, left, i-1));
-	
-	if (i<right)
-		parseChain(tokens, table, i+1, right, out);
-}
-
-Action parseOperator(const vector<Token>& tokens, Namespace table, int left, int right, int i)
-{
-	Operator op=tokens[i]->getOp();
-	
-	if (op==ops->colon)
-	{
-		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
-		{
-			Action rightAction=parseExpression(tokens, table, i+1, right);
-			
-			return parseSingleToken(tokens[left], table, voidAction, rightAction);
-		}
-		else
-		{
-			auto action=parseExpression(tokens, table, left, i-1);
-			
-			auto type=action->getReturnType();
-			
-			if (type->getType()==TypeBase::METATYPE)
-			{
-				auto func=parseFunction(tokens, i+1, right, Void, type->getSubType());
-				
-				return func;
-			}
-			else
-			{
-				error.log("right now, ':' must have an either an identifier or a type to its left, instead it had '"+stringFromTokens(tokens, left, i-1)+"'", SOURCE_ERROR, tokens[i]);
-				return voidAction;
-			}
-		}
-	}
-	else if (op==ops->doubleColon)
-	{
-		if (i==left+1 && tokens[left]->getType()==TokenData::IDENTIFIER)
-		{
-			Action rigntAction=parseExpression(tokens, table, i+1, right);
-			
-			parseIdentifierConst(tokens[left], table, rigntAction);
-			
-			return voidAction;
-		}
-		else
-		{
-			error.log("'::' must have an identifier to its left", SOURCE_ERROR, tokens[i]);
-			return voidAction;
-		}
-	}
-	else if (op==ops->ifOp)
-	{
-		vector<Action> rightActions;
-		
-		parseChain(tokens, table, i+1, right, rightActions);
-		
-		auto leftAction=parseExpression(tokens, table, left, i-1);
-		
-		auto conditionAction=table->getActionConvertedToType(leftAction, Bool);
-		
-		if (conditionAction==voidAction)
-		{
-			error.log("could not use "+leftAction->getDescription()+" as if condition", SOURCE_ERROR, tokens[i]);
-			return voidAction;
-		}
-		else
-		{
-			if (rightActions.size()==1)
-			{
-				return ifAction(conditionAction, rightActions[0]);
-			}
-			else if (rightActions.size()==2)
-			{
-				return ifElseAction(conditionAction, rightActions[0], rightActions[1]);
-			}
-			else
-			{
-				error.log("can not make if with chain of length " + to_string(rightActions.size()), SOURCE_ERROR, tokens[i]);
-				return voidAction;
-			}
-		}
-	}
-	else if (op==ops->loop)
-	{
-		vector<Action> leftActions;
-		
-		parseChain(tokens, table, left, i-1, leftActions);
-		
-		auto rightAction=parseExpression(tokens, table, i+1, right);
-		
-		if (leftActions.size()==1)
-		{
-			auto conditionAction=table->getActionConvertedToType(leftActions[0], Bool);
-			
-			if (conditionAction==voidAction)
-			{
-				error.log("could not use "+leftActions[0]->getDescription()+" as condition in while loop", SOURCE_ERROR, tokens[i]);
-				return voidAction;
-			}
-			else
-			{
-				return loopAction(conditionAction, voidAction, rightAction);
-			}
-		}
-		else if (leftActions.size()==2)
-		{
-			auto conditionAction=table->getActionConvertedToType(leftActions[0], Bool);
-			auto afterAction=leftActions[1];
-			
-			if (conditionAction==voidAction)
-			{
-				error.log("could not use "+leftActions[0]->getDescription()+" as condition in while loop", SOURCE_ERROR, tokens[i]);
-				return voidAction;
-			}
-			else
-			{
-				return loopAction(conditionAction, afterAction, rightAction);
-			}
-		}
-		else
-		{
-			error.log("can not make loop with chain of length " + to_string(leftActions.size()), SOURCE_ERROR, tokens[i]);
-			return voidAction;
-		}
-	}
-	else if (op==ops->comma)
-	{
-		vector<Action> out;
-		
-		for (int j=left; j<=right; j++)
-		{
-			if (tokens[j]->getOp()==ops->comma)
-			{
-				if (j==left)
-				{
-					error.log("invalid use of ','", SOURCE_ERROR, tokens[j]);
-					return voidAction;
-				}
-				
-				out.push_back(parseExpression(tokens, table, left, j-1));
-				left=j+1;
-			}
-		}
-		
-		if (left<=right)
-			out.push_back(parseExpression(tokens, table, left, right));
-		
-		return makeTupleAction(out);
-	}
-	else if (op==ops->dot)
-	{
-		if (i==right-1 && tokens[right]->getType()==TokenData::IDENTIFIER)
-		{
-			Action leftAction=parseExpression(tokens, table, left, i-1);
-			
-			Action out=getElemFromTupleAction(leftAction, tokens[right]->getText());
-			
-			return out;
-		}
-		else
-		{
-			error.log("'.' must be followed by an identifier", SOURCE_ERROR, tokens[i]);
-			return voidAction;
-		}
-	}
-	else
-	{
-		error.log(string() + FUNC + " sent unknown operator (" + to_string(left) + ", " + to_string(right) + ") "+op->getText(), INTERNAL_ERROR, tokens[i]);
-		return voidAction;
-	}
-}
-
-Action parseSingleToken(Token token, Namespace table, Action leftIn, Action rightIn)
-{
-	switch (token->getType())
-	{
-		
-	case TokenData::LITERAL:
-		return parseLiteral(token);
-		break;
-		
-	case TokenData::IDENTIFIER:
-		return parseIdentifier(token, table, leftIn, rightIn);
-		break;
-		
-	default:
-		error.log(string() + __FUNCTION__ + " called with token of invalid token type " + token->getDescription(), INTERNAL_ERROR, token);
-		break;
-	}
-	
-	return voidAction;
-}
-
-Action parseLiteral(Token token)
-{
-	if (token->getType()!=TokenData::LITERAL)
-	{
-		error.log(string() + __FUNCTION__ + " called with incorrect token type " + token->getDescription(), INTERNAL_ERROR, token);
-		return voidAction;
-	}
-	
-	string in=token->getText();
-	
-	if (in.empty())
-		return nullptr;
-	
-	//bool floatingPoint=false;
-	
-	Type type=Unknown;
-	
-	if (in.empty())
-	{
-		error.log("tried to make literal with empty string", INTERNAL_ERROR, token);
-	}
-	
-	if ((in[0]>='0' && in[0]<='9') || in[0]=='.')
-	{
-		type=Int;
-		
-		for (auto i=in.begin(); i!=in.end(); ++i)
-		{
-			if (*i=='.' || *i=='_')
-			{
-				type=Dub;
-				break;
-			}
-		}
-		
-		if (in.back()=='d' || in.back()=='f')
-		{
-			type=Dub;
-			in.pop_back();
-		}
-		else if (in.back()=='i')
-		{
-			type=Int;
-			in.pop_back();
-		}
-		else if (in.back()=='b')
-		{
-			type=Bool;
-			in.pop_back();
-		}
-	}
-	
-	if (type==Int || type==Int)
-	{
-		int val=0;
-		
-		for (auto i=in.begin(); i!=in.end(); ++i)
-		{
-			if (*i<'0' || *i>'9')
-			{
-				error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
-				return nullptr;
-			}
-			
-			val=val*10+(*i-'0');
-		}
-		
-		if (type==Bool)
-		{
-			bool out=(val!=0);
-			return constGetAction(&out, type, token->getText());
-		}
-		else
-		{
-			int out=val;
-			return constGetAction(&out, type, token->getText());
-		}
-	}
-	else if (type==Dub) //floating point
-	{
-		double val=0;
-		int pointPos=0;
-		
-		for (auto i=in.begin(); i!=in.end(); ++i)
-		{
-			if (*i=='.' || *i=='_')
-			{
-				if (pointPos==0)
-				{
-					pointPos=10;
-				}
-				else
-				{
-					error.log(string() + "multiple decimal points found in number '" + in + "'", SOURCE_ERROR, token);
-					return voidAction;
-				}
-			}
-			else if (*i>='0' && *i<='9')
-			{
-				if (pointPos)
-				{
-					val+=(double)(*i-'0')/pointPos;
-					pointPos*=10;
-				}
-				else
-				{
-					val=val*10+(*i-'0');
-				}
-			}
-			else
-			{
-				error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
-				return voidAction;
-			}
-		}
-		
-		double out=val;
-		return constGetAction(&out, type, token->getText());
-	}
-	else
-	{
-		error.log("tried to make literal with invalid type of " + type->getString(), INTERNAL_ERROR, token);
-		return voidAction;
-	}
-}
-
-/*void parseSingleTypeElement(const vector<Token>& tokens, Namespace table, int& i, int right, string& name, Type& type)
-{
-	int end=right;
-	if (i+1<right && tokens[i+1]->getOp()==ops->colon)
-	{
-		if (tokens[i]->getType()==TokenData::IDENTIFIER)
-		{
-			if (i)
-			
-			=parseType(tokens, table, int i+2, int right)->getReturnType()->getTypes()[0];
-			
-			if (tokens[i+2]->get)
-			{
-				
-			}
-		}
-		else
-		{
-			error.log("label in type definition was not an identifier", SOURCE_ERROR, tokens[i]);
-			return typeGetAction(newMetatype(Void), "Void");
-		}
-	}
+	return AstList::make(nodes);
 }*/
 
-Action parseType(const vector<Token>& tokens, Namespace table, int left, int right)
+void parseSequence(const vector<Token>& tokens, int left, int right, Operator splitter, vector<AstNode>& out)
 {
-	TupleTypeMaker tuple;
+	int start=left;
+	
+	for (int i=left; i<=right; i++)
+	{
+		if (ops->isOpenBrac(tokens[i]->getOp()))
+		{
+			i=skipBrace(tokens, i);
+		}
+		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrecedence()<splitter->getPrecedence())
+		{
+			out.clear();
+			out.push_back(parseExpression(tokens, left, right));
+			return;
+		}
+		else if (tokens[i]->getOp()==splitter)
+		{
+			if (start<=i-1)
+				out.push_back(parseExpression(tokens, start, i-1));
+			start=i+1;
+		}
+	}
+	
+	if (start<=right)
+		out.push_back(parseExpression(tokens, start, right));
+}
+
+unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
+{
+	vector<AstTupleType::NamedType> types;
 	
 	while (left<=right)
 	{
@@ -753,45 +557,56 @@ Action parseType(const vector<Token>& tokens, Namespace table, int left, int rig
 		}
 		
 		//	if this is a named subtype
-		if (left+1<right && tokens[left+1]->getOp()==ops->colon)
+		if (left+2<=right && tokens[left+1]->getOp()==ops->colon)
 		{
 			if (tokens[left]->getType()!=TokenData::IDENTIFIER)
 			{
-				error.log("identifier must be to the left of ':' in type", SOURCE_ERROR, tokens[left]);
-				return voidAction;
+				throw PineconeError("identifier must be to the left of ':' in type", SOURCE_ERROR, tokens[left]);
 			}
 			
-			if (tokens[left+2]->getType()!=TokenData::IDENTIFIER)
+			Token name=tokens[left];
+			unique_ptr<AstType> type;
+			
+			if (tokens[left+2]->getType()==TokenData::IDENTIFIER)
 			{
-				error.log("identifier must be to the right of ':' in type", SOURCE_ERROR, tokens[left]);
-				return voidAction;
+				type=AstTokenType::make(tokens[left+2]);
+				left+=3;
 			}
-			
-			Type type=parseTypeToken(tokens[left+2], table);
-			
-			if (!type->isCreatable())
+			else if (tokens[left+2]->getOp()==ops->openCrBrac)
 			{
-				error.log("failed to resolve "+tokens[left+2]->getText()+" into creatable type", SOURCE_ERROR, tokens[left+2]);
-				return voidAction;
+				int j=skipBrace(tokens, left+2);
+				
+				if (j>right)
+				{
+					throw PineconeError(FUNC+" skipping brance went outside of range", INTERNAL_ERROR, tokens[left+1]);
+				}
+				
+				type=parseType(tokens, left+2+1, j-1);
+				left=j+1;
+			}
+			else
+			{
+				throw PineconeError("invalid thingy '"+tokens[left+2]->getText()+"' in type", SOURCE_ERROR, tokens[left+2]);
 			}
 			
-			tuple.add(tokens[left]->getText(), type);
-			
-			left+=3;
+			types.push_back(AstTupleType::NamedType{name, move(type)});
 		}
 		else //	this is an unnamed subtype
 		{
-			tuple.add(parseTypeToken(tokens[left], table));
+			types.push_back(AstTupleType::NamedType{nullptr, AstTokenType::make(tokens[left])});
 			left+=1;
 		}
 	}
 	
-	auto out=tuple.get();
-	
-	return typeGetAction(out);
+	if (types.size()==0)
+		return AstVoidType::make();
+	else if (types.size()==1 && !types[0].name)
+		return move(types[0].type);
+	else
+		return AstTupleType::make(types);
 }
 
-Type parseTypeToken(Token token, Namespace table)
+/* Type parseTypeToken(Token token, Namespace table)
 {
 	if (token->getType()==TokenData::IDENTIFIER)
 	{
@@ -813,73 +628,6 @@ Type parseTypeToken(Token token, Namespace table)
 		return Void;
 	}
 }
-
-Action parseIdentifier(Token token, Namespace table, Action leftIn, Action rightIn)
-{
-	if (token->getType()!=TokenData::IDENTIFIER)
-	{
-		error.log(string() + __FUNCTION__ + " called with incorrect token type " + token->getDescription(), INTERNAL_ERROR, token);
-		return voidAction;
-	}
-	
-	Action out=table->getActionForTokenWithInput(token, leftIn, rightIn);
-	
-	if (out==voidAction) // if we couldn't find a satisfactory action
-	{
-		vector<Action> actions;
-		table->getActions(token->getText(), actions);
-		
-		if (actions.size()>0) // if there are actions with the requested name that didn't match the type
-		{
-			error.log("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
-			error.log("available overloads:", JSYK, token);
-			for (auto i: actions)
-			{
-				error.log("\t"+i->toString(), JSYK, token);
-			}
-			error.log("attempted use:", JSYK, token);
-			error.log("\t"+leftIn->getReturnType()->getString()+"."+rightIn->getReturnType()->getString(), JSYK, token);
-			return voidAction;
-		}
-		else
-		{
-			Type type=rightIn->getReturnType();
-			
-			if (type->isVoid()) //probably dev was trying to use an identifier that doesn't exist
-			{
-				error.log("could not resolve '"+token->getText()+"'", SOURCE_ERROR, token);
-					return voidAction;
-			}
-			else if (type->getType()==TypeBase::METATYPE)
-			{
-				//table->addType(Type(new TypeBase(type->getTypes()[0], token->getText())), token->getText());
-				
-				error.log("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR);
-				
-				return voidAction;
-			}
-			else if (type->isCreatable())
-			{
-				table->addVar(type, token->getText());
-				auto out=table->getActionForTokenWithInput(token, leftIn, rightIn);
-				return out;
-			}
-			else
-			{
-				error.log(string() + "type "+type->getString()+" not creatable", SOURCE_ERROR, token);
-				return voidAction;
-			}
-		}
-	}
-	else
-	{
-		return out;
-	}
-}
-
-void parseIdentifierConst(Token token, Namespace table, Action rightIn)
-{
-	table->addAction(rightIn, token->getText());
-}
+*/
 
 

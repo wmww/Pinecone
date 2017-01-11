@@ -62,11 +62,7 @@
 		<Unit filename="../src/ErrorHandler.cpp" />
 		<Unit filename="../src/Lexer.cpp" />
 		<Unit filename="../src/Namespace.cpp" />
-		<Unit filename="../src/Parser.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../src/Parser2.cpp" />
+		<Unit filename="../src/Parser.cpp" />
 		<Unit filename="../src/PineconeProgram.cpp" />
 		<Unit filename="../src/PineconeStdLib.cpp" />
 		<Unit filename="../src/ResolveLiteral.cpp" />
