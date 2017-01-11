@@ -69,6 +69,16 @@ public:
 		return action;
 	}
 	
+	void dealWithConstants()
+	{
+		if (!ns)
+		{
+			throw PineconeError("tried to deal with constants before input was set", INTERNAL_ERROR);
+		}
+		
+		resolveConstant();
+	}
+	
 protected:
 	
 	AstNodeBase() {}
@@ -79,6 +89,7 @@ protected:
 	}
 	
 	virtual void resolveAction()=0;
+	virtual void resolveConstant() {};
 	
 	Type inLeftType=nullptr, inRightType=nullptr;
 	Action action=nullptr;
@@ -201,8 +212,8 @@ public:
 	
 	virtual string getString();
 	
-	virtual void resolveAction();
-	
+	void resolveConstant();
+	void resolveAction() {action=voidAction;};
 private:
 	
 	//AstNode leftIn=nullptr;
