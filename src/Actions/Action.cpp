@@ -10,7 +10,7 @@ ActionData::ActionData(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn)
 	
 	if (!returnType || !inLeftType || !inRightType)
 	{
-		error.log("ActionData created with null type", INTERNAL_ERROR);
+		throw PineconeError("ActionData created with null type", INTERNAL_ERROR);
 	}
 }
 
