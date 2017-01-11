@@ -29,6 +29,10 @@ void NamespaceData::ActionMap<KEY>::add(KEY key, Action action)
 	actions[key].push_back(action);
 }
 
+string convertToString(Operator in) {return in->getText();}
+string convertToString(Type in) {return in->getString();}
+string convertToString(string in) {return in;}
+
 template<typename KEY>
 void NamespaceData::ActionMap<KEY>::get(KEY key, vector<Action>& out)
 {
@@ -38,8 +42,12 @@ void NamespaceData::ActionMap<KEY>::get(KEY key, vector<Action>& out)
 	{
 		for (unsigned i=0; i<matches1->second.size(); i++)
 		{
-			add(key, matches1->second[i]->getAction());
+			Action resultAction=matches1->second[i]->getAction();
+			Action valAction=constGetAction(resultAction->execute(nullptr, nullptr), resultAction->getReturnType(), convertToString(key));
+			add(key, valAction);
 		}
+		
+		nodes.erase(key);
 	}
 	
 	auto matches2=actions.find(key);
