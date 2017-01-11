@@ -188,6 +188,9 @@ void populatePineconeStdLib()
 	func("print", Void, Void, Dub,
 		cout << right << endl);
 	
+	func("printc", Void, Void, Int,
+		cout << (char)right);
+	
 	/*addAction(
 		"print", Void, Void, Type(new TypeData(vector<Type>({Int, Dub}), "")),
 		LAMBDA_HEADER
