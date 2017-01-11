@@ -52,7 +52,7 @@ void AstList::resolveAction()
 	
 	for (int i=0; i<int(nodes.size()); i++)
 	{
-		nodes[i]->setInput(ns, Void, Void);
+		nodes[i]->setInput(ns, dynamic, Void, Void);
 	}
 	
 	vector<Action> actions;
@@ -107,10 +107,10 @@ void AstExpression::resolveAction()
 		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR);
 	}
 	
-	leftIn->setInput(ns, Void, Void);
-	rightIn->setInput(ns, Void, Void);
+	leftIn->setInput(ns, dynamic, Void, Void);
+	rightIn->setInput(ns, dynamic, Void, Void);
 	
-	center->setInput(ns, leftIn->getReturnType(), rightIn->getReturnType());
+	center->setInput(ns, dynamic, leftIn->getReturnType(), rightIn->getReturnType());
 	
 	//error.log("resolveAction called for "+getString(), JSYK);
 	
@@ -147,7 +147,7 @@ void AstConstExpression::resolveAction()
 	}
 	
 	//leftIn->setInput(ns, Void, Void);
-	rightIn->setInput(ns, Void, Void);
+	rightIn->setInput(ns, false, Void, Void);
 	
 	//error.log("resolveAction called for "+getString(), JSYK);
 	
@@ -155,11 +155,15 @@ void AstConstExpression::resolveAction()
 	
 	void * val=rightAction->execute(nullptr, nullptr);
 	
-	center->setInput(ns, Void, rightIn->getReturnType());
+	//center->setInput(ns, false, Void, rightIn->getReturnType());
 	
 	Action valAction=constGetAction(val, rightAction->getReturnType(), "const expression");
 	
-	action=branchAction(voidAction, center->getAction(), valAction);
+	ns->addAction(valAction, center->token->getText());
+	
+	//action=branchAction(voidAction, center->getAction(), valAction);
+	
+	action=voidAction;
 }
 
 
@@ -209,10 +213,10 @@ void AstOpWithInput::resolveAction()
 	if (token->getOp()==ops->ifOp)
 	{
 		for (int i=0; i<int(leftIn.size()); i++)
-			leftIn[i]->setInput(ns, Void, Void);
+			leftIn[i]->setInput(ns, dynamic, Void, Void);
 			
 		for (int i=0; i<int(rightIn.size()); i++)
-			rightIn[i]->setInput(ns, Void, Void);
+			rightIn[i]->setInput(ns, dynamic, Void, Void);
 			
 		if (leftIn.empty())
 		{
@@ -275,10 +279,10 @@ void AstOpWithInput::resolveAction()
 			ns=ns->makeChild();
 			
 		for (int i=0; i<int(leftIn.size()); i++)
-			leftIn[i]->setInput(ns, Void, Void);
+			leftIn[i]->setInput(ns, dynamic, Void, Void);
 			
 		for (int i=0; i<int(rightIn.size()); i++)
-			rightIn[i]->setInput(ns, Void, Void);
+			rightIn[i]->setInput(ns, dynamic, Void, Void);
 			
 		Action initAction=nullptr, conditionAction, endAction, bodyAction;
 		
@@ -381,12 +385,12 @@ void AstToken::resolveAction()
 		try
 		{
 			//error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
-			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, true);
+			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, dynamic);
 		}
 		catch (IdNotFoundError err)
 		{
 			vector<Action> actions;
-			ns->getActions(token->getText(), actions, true);
+			ns->getActions(token->getText(), actions, dynamic);
 			
 			if (actions.size()>0) // if there are actions with the requested name that didn't match the type
 			{
@@ -417,7 +421,7 @@ void AstToken::resolveAction()
 			
 			try
 			{
-				action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, true);
+				action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, dynamic);
 			}
 			catch (IdNotFoundError err)
 			{
@@ -468,7 +472,7 @@ void AstTuple::resolveAction()
 	
 	for (int i=0; i<int(nodes.size()); i++)
 	{
-		nodes[i]->setInput(ns, Void, Void);
+		nodes[i]->setInput(ns, dynamic, Void, Void);
 		actions.push_back(nodes[i]->getAction());
 	}
 	

@@ -71,7 +71,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	{
 		try
 		{
-			astRoot->setInput(stdLibNamespace, Void, Void);
+			astRoot->setInput(stdLibNamespace, true, Void, Void);
 		}
 		catch (PineconeError err)
 		{

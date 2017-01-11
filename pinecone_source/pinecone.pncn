@@ -1,13 +1,11 @@
 
-# myType :: {Int, Dub}
 
-a: 7
+b :: 4
+a :: 10
 
-myVal :: 8+a
+print: a+b
 
-myVal: myVal+1
 
-print: myVal
 
 //
 a: 0 | a<12 | a: a+1 @
