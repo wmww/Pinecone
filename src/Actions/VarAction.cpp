@@ -21,6 +21,11 @@ public:
 	
 	void* execute(void* inLeft, void* inRight)
 	{
+		if (!stackPtr)
+		{
+			throw PineconeError("something fucked up big time. VarGetAction::execute called while stack pointer is still null", RUNTIME_ERROR);
+		}
+		
 		void* out=malloc(returnType->getSize());
 		memcpy(out, (char*)stackPtr+offset, returnType->getSize());
 		return out;

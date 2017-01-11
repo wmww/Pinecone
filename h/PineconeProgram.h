@@ -16,7 +16,7 @@ using std::vector;
 using std::list;
 
 #include "msclStringFuncs.h"
-#include "Namespace2.h"
+#include "Namespace.h"
 #include "StackFrame.h"
 #include "Token.h"
 #include "AstNode.h"

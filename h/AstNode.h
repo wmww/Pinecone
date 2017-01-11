@@ -34,6 +34,7 @@ public:
 	}
 	
 	virtual bool isVoid() {return false;}
+	virtual bool isType() {return false;}
 	
 	virtual string getString()=0;
 	
@@ -251,7 +252,8 @@ private:
 
 class AstType: public AstNodeBase
 {
-	
+public:
+	bool isType() {return true;}
 };
 
 class AstVoidType: public AstType

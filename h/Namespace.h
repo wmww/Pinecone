@@ -28,18 +28,18 @@ class NamespaceData: public std::enable_shared_from_this<NamespaceData>
 {
 public:
 	
-	/// enums
-	
-	//	the different types of identifiers
-	enum IdType
+	template<typename KEY>
+	class ActionMap
 	{
-		NONE=0,		//	no identifier for the specified name
-		ACTION,		//	a generic action (not a converter or operator)
-		CONVERTER,	//	a converter, and thus also an action
-		OPERATOR,	//	an operator, and this alos an action
-		TYPE		//	a type, not an action
+	public:
+		void add(KEY key, AstNode node);
+		void add(KEY key, Action action);
+		void get(KEY key, vector<Action>& out);
+		
+	private:
+		unordered_map<KEY, vector<AstNode>> nodes;
+		unordered_map<KEY, vector<Action>> actions;
 	};
-	
 	
 	/// creation functions
 	
@@ -51,13 +51,6 @@ public:
 	
 	//	makes a child namespace with a new stack frame
 	Namespace makeChildAndFrame(string nameIn);
-	
-	
-	///	deletion functions
-	
-	//	clears out all the data this object holds
-	void clear();
-	~NamespaceData() {clear();}
 	
 	
 	///	getters
@@ -89,9 +82,11 @@ public:
 	//	add a type, throws an internal error if that type is already in the namespace, so check before trying to add
 	void addType(Type type, string id);
 	
-	//	add a constant expression
-	void addConst(Token inputToken, AstNode outputNode);
+	//	used for adding generic actions AND converters (will autodetect if converter or not)
+	void addAction(AstNode node, string id);
 	
+	// add an operator
+	void addOperator(AstNode node, Operator op);
 	
 	///	getting elements
 	
@@ -101,14 +96,14 @@ public:
 	
 	//	returns a branch action that is the action given in token with the left and right inputs
 	//	returns voidAction if it can't find a good match
-	Action getActionForTokenWithInput(Token token, Type left, Type right);
-	Action getActionForTokenWithInput(Token token, Action left, Action right);
+	Action getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic);
+	Action getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic);
 	
 	//	returns the given action with a conversion to the given type put over top of it if needed
 	Action getActionConvertedToType(Action actionIn, Type outType);
 	
 	//	addes all the matching actions in this and in all parents to out
-	void getActions(string text, vector<Action>& out);
+	void getActions(string text, vector<Action>& out, bool dynamic);
 	void getActions(Operator, vector<Action>& out);
 	
 	//Action addConverter(Action action, Type type);
@@ -135,13 +130,13 @@ private:
 	//Action makeBranchAction(vector<Action>& matches, Action left, Action right);
 	//void getAllConvertersForType(vector<Action>& convertersOut, Type type);
 	
-	template<typename T, typename U>
-	void addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap);
+	//template<typename T, typename U>
+	//void addToMap(T key, U val, unordered_map<T, vector<U>>& hashMap);
 	
-	template<typename T, typename U>
-	void getValuesFromMap(T key, vector<U>& out, unordered_map<T, vector<U>>& hashMap);
+	//template<typename T, typename U>
+	//void getValuesFromMap(T key, vector<U>& out, unordered_map<T, vector<U>>& hashMap);
 	
-	void getConvertersToType(Type typeIn, vector<Action>& out);
+	//void getConvertersToType(Type typeIn, vector<Action>& out);
 	
 	//	if there is exactly 1 action in the vector with the correct input types, returns it otherwise returns null
 	//	NOTE: can return null
@@ -160,23 +155,19 @@ private:
 	//	has the id type of every identifier in this namespace
 	//unordered_map<string, vector<IdType>> allIds;
 	
+	ActionMap<string> dynamicActions;
+	
 	//	contains all generic actions in this namespace, and all converters (but not operators)
-	unordered_map<string, vector<Action>> actions;
-	
-	//	contains all constant actions; is a subset of actions
-	unordered_map<string, vector<Action>> constantActions;
-	
-	//	contains constant actions that have not yet been resolved
-	unordered_map<string, vector<AstNode>> unresolvedConstantActions;
+	ActionMap<string> actions;
 	
 	//	contains all converters (aka constructors), is a subset of actions
-	unordered_map<Type, vector<Action>> converters;
+	//ActionMap<Type> converters;
 	
 	//	contains all operators
-	unordered_map<Operator, vector<Action>> operators;
+	ActionMap<Operator> operators;
 	
 	//	contains all types in this namespace
-	unordered_map<string, Type> types;
+	ActionMap<string> types;
 };
 
 class IdNotFoundError

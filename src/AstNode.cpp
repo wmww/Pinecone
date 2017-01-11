@@ -1,5 +1,5 @@
 #include "../h/AstNode.h"
-#include "../h/Namespace2.h"
+#include "../h/Namespace.h"
 #include "../h/ErrorHandler.h"
 #include "../h/msclStringFuncs.h"
 #include "../h/AllOperators.h"
@@ -381,12 +381,12 @@ void AstToken::resolveAction()
 		try
 		{
 			//error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
-			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+			action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, true);
 		}
 		catch (IdNotFoundError err)
 		{
 			vector<Action> actions;
-			ns->getActions(token->getText(), actions);
+			ns->getActions(token->getText(), actions, true);
 			
 			if (actions.size()>0) // if there are actions with the requested name that didn't match the type
 			{
@@ -417,7 +417,7 @@ void AstToken::resolveAction()
 			
 			try
 			{
-				action=ns->getActionForTokenWithInput(token, inLeftType, inRightType);
+				action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, true);
 			}
 			catch (IdNotFoundError err)
 			{
