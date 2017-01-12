@@ -1,4 +1,4 @@
-ary: (IntArray: 7)
+ary: IntArray: 7
 
 ary.set: (0, 12)
 
@@ -6,8 +6,3 @@ i: 0 | i<ary.size | i: i+1 @
 (
 	print: (ary.get: i)
 )
-
-val: inputInt
-
-print: val
-

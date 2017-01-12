@@ -52,8 +52,8 @@ public:
 	DECLARE_OP(	loop,		"@",	5,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	ifOp,		"?",	5,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	pipe,		"|",	15,		OperatorData::BOTH,		false	);	\
-	DECLARE_OP(	colon,		":",	25,		OperatorData::BOTH,		false	);	\
-	DECLARE_OP(	doubleColon,"::",	25,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	colon,		":",	24,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	doubleColon,"::",	24,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	comma,		",",	35,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	equal,		"=",	40,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	greater,	">",	50,		OperatorData::BOTH,		true	);	\
