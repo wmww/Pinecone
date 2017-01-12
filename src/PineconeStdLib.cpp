@@ -52,9 +52,9 @@
 #define func(nameText, returnType, leftType, rightType, lambdaBody)							\
 addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(rightType), LAMBDA_HEADER\
 {																							\
-	INSTANTIATE##_##leftType(leftType, left, GET_PTR_VAL(leftType, leftIn))									\
-	INSTANTIATE##_##rightType(rightType, right, GET_PTR_VAL(rightType, rightIn))								\
-	INSTANTIATE##_##returnType(returnType, out, ;)								\
+	INSTANTIATE##_##leftType(leftType, left, GET_PTR_VAL(leftType, leftIn))					\
+	INSTANTIATE##_##rightType(rightType, right, GET_PTR_VAL(rightType, rightIn))			\
+	INSTANTIATE##_##returnType(returnType, out, ;)											\
 	lambdaBody;																				\
 	CONCAT(RETURN, returnType)(returnType, out)												\
 })																							\
@@ -79,13 +79,23 @@ Type IntArray=nullptr;
 template<typename T>
 T getValFromTuple(void* data, Type type, string name)
 {
-	return *((T*)((char*)data+type->getSubType(name).offset));
+	OffsetAndType a=type->getSubType(name);
+	
+	if (!a.type)
+		throw PineconeError("tried to get invalid property '"+name+"' from tuple "+type->getString(), INTERNAL_ERROR);
+		
+	return *((T*)((char*)data+a.offset));
 }
 
 template<typename T>
 void setValInTuple(void* data, Type type, string name, T val)
 {
-	*((T*)((char*)data+type->getSubType(name).offset))=val;
+	OffsetAndType a=type->getSubType(name);
+	
+	if (!a.type)
+		throw PineconeError("tried to set invalid property '"+name+"' from tuple "+type->getString(), INTERNAL_ERROR);
+	
+	*((T*)((char*)data+a.offset))=val;
 }
 
 void populatePineconeStdLib()

@@ -368,7 +368,7 @@ void AstToken::resolveAction()
 			throw PineconeError("non overloadable operator in AstToken, it should have been removed and processed by the parser", INTERNAL_ERROR, token);
 		}
 		
-		if (inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type!=Unknown)
+		if (inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type)
 		{
 			if (inRightType->isVoid())
 			{

@@ -149,26 +149,11 @@ Action makeTupleAction(const std::vector<Action>& sourceActionsIn)
 	return Action(new MakeTupleAction(sourceActionsIn));
 }
 
-/*Action getElemFromTupleAction(Action source, string name)
-{
-	OffsetAndType a=source->getReturnType()->getSubType(name);
-	
-	if (a.type==Unknown)
-		throw PineconeError("could not find '"+name+"' in "+source->getReturnType()->getString(), SOURCE_ERROR);
-	
-	Action action=Action(new GetElemFromTupleAction(source->getReturnType(), a.type, a.offset));
-	
-	Action out=branchAction(source, action, voidAction);
-	
-	return out;
-}
-*/
-
 Action getElemFromTupleAction(Type source, string name)
 {
 	OffsetAndType a=source->getSubType(name);
 	
-	if (a.type==Unknown)
+	if (!a.type)
 		throw PineconeError("could not find '"+name+"' in "+source->getString(), SOURCE_ERROR);
 	
 	Action out=Action(new GetElemFromTupleAction(source, a.type, a.offset));
