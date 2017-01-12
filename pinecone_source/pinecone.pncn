@@ -1,9 +1,12 @@
+val: inputInt
+print
+
 ary: (IntArray: 6)
 
 ary.set: (0, 12)
 ary.set: (1, 1)
 ary.set: (2, 98)
-ary.set: (3, 43)
+ary.set: (3, val)
 ary.set: (4, 74)
 ary.set: (5, 935)
 
