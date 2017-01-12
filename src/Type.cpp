@@ -307,6 +307,11 @@ bool TypeBase::matches(Type other)
 	return true;
 }
 
+Type makeTuple(const vector<NamedType>& in)
+{
+	return Type(new TupleType(unique_ptr<vector<NamedType>>(new vector<NamedType>(in))));
+}
+
 TupleTypeMaker::TupleTypeMaker()
 {
 	subTypes=unique_ptr<vector<NamedType>>(new vector<NamedType>);

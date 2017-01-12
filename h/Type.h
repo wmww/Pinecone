@@ -93,6 +93,8 @@ protected:
 	virtual bool matchesSameTypeType(Type other)=0;
 };
 
+Type makeTuple(const vector<NamedType>& in);
+
 //	since types are immutable, this class is an easy way to construct a tuple type
 class TupleTypeMaker
 {

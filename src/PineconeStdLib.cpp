@@ -18,7 +18,8 @@
 #define PNCN_Int Int
 #define PNCN_Bool Bool
 #define PNCN_Void Void
-#define PNCN_Tuple(t1, t2) Type(new TypeData(vector<Type>({PNCN##_##t1, PNCN##_##t2}), ""))
+//#define PNCN_Tuple(t1, t2) Type(new TypeData(vector<Type>({PNCN##_##t1, PNCN##_##t2}), ""))
+#define PNCN_Tuple(t1, t2) makeTuple(vector<NamedType>({{"a", t1}, {"b", t2}}))
 
 #define LAMBDA_HEADER [](void* leftIn, void* rightIn)->void*
 
@@ -71,6 +72,20 @@ void addAction(string text, Type returnType, Type leftType, Type rightType, func
 void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
 	stdLibNamespace->addOperator(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
+}
+
+Type IntArray=nullptr;
+
+template<typename T>
+T getValFromTuple(void* data, Type type, string name)
+{
+	return *((T*)((char*)data+type->getSubType(name).offset));
+}
+
+template<typename T>
+void setValInTuple(void* data, Type type, string name, T val)
+{
+	*((T*)((char*)data+type->getSubType(name).offset))=val;
 }
 
 void populatePineconeStdLib()
@@ -190,6 +205,54 @@ void populatePineconeStdLib()
 	
 	func("printc", Void, Void, Int,
 		cout << (char)right);
+	
+	
+	/// int array
+	
+	TupleTypeMaker maker;
+	maker.add("size", Int);
+	maker.add("data", Dub);
+	IntArray=maker.get();
+	
+	table->addType(IntArray, "IntArray");
+	
+	//func("IntArray", IntArray, Void, Int,
+	//	retrn Tuple(right, (double)((int*)malloc(Int->getSize()*right)));
+	//);
+	
+	addAction("IntArray", IntArray, Void, Int, LAMBDA_HEADER
+		{
+			char* out=(char*)malloc(IntArray->getSize());
+			int sizeIn=*(int*)rightIn;
+			double data;
+			*(int**)(&data)=(int*)malloc(Int->getSize()*sizeIn);
+			setValInTuple<int>(out, IntArray, "size", sizeIn);
+			setValInTuple<double>(out, IntArray, "data", data);
+			return out;
+		}
+	);
+	
+	addAction("get", Void, IntArray, Int, LAMBDA_HEADER
+		{
+			int pos=*(int*)rightIn;
+			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
+			int val=*(arrayPtr+pos);
+			int* out=(int*)malloc(sizeof(int));
+			*out=val;
+			return out;
+		}
+	);
+	
+	addAction("set", Void, IntArray, PNCN_Tuple(Int, Int), LAMBDA_HEADER
+		{
+			Type rightType=PNCN_Tuple(Int, Int);
+			int pos=getValFromTuple<int>(rightIn, rightType, "a");
+			int val=getValFromTuple<int>(rightIn, rightType, "b");
+			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
+			*(arrayPtr+pos)=val;
+			return nullptr;
+		}
+	);
 	
 	/*addAction(
 		"print", Void, Void, Type(new TypeData(vector<Type>({Int, Dub}), "")),
