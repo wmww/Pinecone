@@ -65,6 +65,7 @@ public:
 	DECLARE_OP(	multiply,	"*",	70,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	divide,		"/",	70,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	mod,		"%",	70,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	notOp,		"!",	74,		OperatorData::RIGHT,	true	);	\
 	DECLARE_OP(	dot,		".",	80,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	openPeren,	"(",	100,	OperatorData::RIGHT,	false	);	\
 	DECLARE_OP(	closePeren,	")",	99,		OperatorData::LEFT,		false	);	\

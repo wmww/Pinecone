@@ -23,4 +23,5 @@ y: 0 | y<h | y: y+1 @
 
 print
 
-print: 10%5
+print: !12
+print: !!tru
