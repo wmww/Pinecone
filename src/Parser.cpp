@@ -311,8 +311,6 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		throw PineconeError("improper use of '"+op->getText()+"' operator", SOURCE_ERROR, tokens[i]);
 	}
 	
-	
-	
 	if (op==ops->pipe)
 	{
 		throw PineconeError("invalid use of '"+op->getText()+"'", SOURCE_ERROR, tokens[i]);
@@ -369,6 +367,14 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		}
 		
 		return AstConstExpression::make(move(centerNode), move(rightNode));
+	}
+	else if (op==ops->plusPlus || op==ops->minusMinus)
+	{
+		throw PineconeError("++ and -- are not yet implemented", SOURCE_ERROR, tokens[i]);
+		
+		//AstNode leftNode=parseExpression(tokens, left, i-1);
+		
+		//return AstExpression::make(AstVoid::make(), leftNode, AstExpression::make(leftNode, AstToken::make(Token)))
 	}
 	else
 	{
