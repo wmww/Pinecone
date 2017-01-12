@@ -172,6 +172,7 @@ private:
 
 class IdNotFoundError
 {
+	
 public:
 	IdNotFoundError(string idIn, bool foundMatchIn, Namespace nsIn)
 	{
