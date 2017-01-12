@@ -1,11 +1,13 @@
 w :: 8
 h :: 6
 
+meChar :: 79
+trailChar :: 43
 
 # init
 
-locX: 0
-locY: 0
+locX: w/2
+locY: h/2
 
 quit: fls
 turn: 1
@@ -20,44 +22,99 @@ y: 0 | y<h | y: y+1 @
 	)
 )
 
+
+# game loop
+
 !quit @
 (
-	i: 0 | i<6 | i: i+1 @
-		print
+	# update
 	
-	y: 0 |y<h |y: y+1 @
+	locX<0 ?
+		locX: 0
+	locX>=w ?
+		locX: w
+	locY<0 ?
+		locY: 0
+	locY>=h ?
+		locY: h
+	
+	(ary.get: locY*w+locX)=trailChar ?
 	(
+		quit: tru
+	) | (
+		
+		ary.set: locY*w+locX, trailChar
+		
+		
+		# display board
+		
+		i: 0 | i<6 | i: i+1 @
+			print
+		
+		printc: 32
+		
 		x: 0 | x<w | x: x+1 @
+			printc: 45
+		
+		print
+		
+		y: 0 |y<h |y: y+1 @
 		(
-			x=locX && y=locY ?
-				printc: 108
-			|
-				printc: ary.get: y*w+x
+			printc: 124
+			
+			x: 0 | x<w | x: x+1 @
+			(
+				x=locX && y=locY ?
+					printc: meChar
+				|
+					printc: ary.get: y*w+x
+			)
+			
+			printc: 124
+			print
 		)
 		
-		print
-	)
-	
-	valid: fls
-	
-	!valid @
-	(
-		dir: inputInt
-		valid: tru
+		printc: 32
 		
-		dir=0 ?
-			quit: tru
-		| dir=1 ?
-			locY: locY+1
-		| dir=2 ?
-			locX: locX+1
-		| dir=3 ?
-			locY: locY-1
-		| dir=4 ?
-			locX: locX-1
-		|
-			valid: fls
+		x: 0 | x<w | x: x+1 @
+			printc: 45
+		
+		print
+		
+		# get input
+		
+		valid: fls
+		
+		!valid @
+		(
+			dir: inputInt
+			valid: tru
+			
+			dir=0 ?
+				quit: tru
+			| dir=3 ?
+				locY: locY+1
+			| dir=4 ?
+				locX: locX+1
+			| dir=2 ?
+				locY: locY-1
+			| dir=1 ?
+				locX: locX-1
+			|
+				valid: fls
+		)
+		
+		turn: turn+1
 	)
-	
-	turn: turn+1
 )
+print
+printc: 88
+printc: 32
+printc: 32
+printc: 88
+print
+printc: 45
+printc: 45
+printc: 45
+printc: 45
+print
