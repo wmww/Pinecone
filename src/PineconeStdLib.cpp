@@ -232,7 +232,7 @@ void populatePineconeStdLib()
 		}
 	);
 	
-	addAction("get", Void, IntArray, Int, LAMBDA_HEADER
+	addAction("get", Int, IntArray, Int, LAMBDA_HEADER
 		{
 			int pos=*(int*)rightIn;
 			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
