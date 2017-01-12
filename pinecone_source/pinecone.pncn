@@ -1,10 +1,14 @@
-hhh: 1
+ary: (IntArray: 6)
 
-lkjkl: 9.8
+ary.set: (0, 12)
+ary.set: (1, 1)
+ary.set: (2, 98)
+ary.set: (3, 43)
+ary.set: (4, 74)
+ary.set: (5, 935)
 
-t: 9, 8, 1.7
-
-aaa: (bbb: (ccc: 8))
-
-print: fls
+i: 0 | i<ary.size | i: i+1 @
+(
+	print: (ary.get: i)
+)
 

@@ -58,8 +58,6 @@ public:
 	{
 		void * oldStackPtr=stackPtr;
 		
-		error.log("making stack frame of size "+to_string(stackFame->getSize()), JSYK);
-		
 		stackPtr=malloc(stackFame->getSize());
 		
 		if (inLeft)
