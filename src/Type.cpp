@@ -131,6 +131,11 @@ public:
 		subTypes=std::move(in);
 	}
 	
+	~TupleType()
+	{
+		
+	}
+	
 	string getString()
 	{
 		string out;
@@ -309,7 +314,8 @@ bool TypeBase::matches(Type other)
 
 Type makeTuple(const vector<NamedType>& in)
 {
-	return Type(new TupleType(unique_ptr<vector<NamedType>>(new vector<NamedType>(in))));
+	auto ptr=unique_ptr<vector<NamedType>>(new vector<NamedType>(in));
+	return Type(new TupleType(move(ptr)));
 }
 
 TupleTypeMaker::TupleTypeMaker()

@@ -136,6 +136,10 @@ void populatePineconeStdLib()
 	func(ops->divide, Int, Int, Int, retrn left/right);
 	func(ops->divide, Dub, Dub, Dub, retrn left/right);
 	
+	// %
+	func(ops->mod, Int, Int, Int, retrn left%right);
+	func(ops->mod, Dub, Dub, Dub, retrn left-int(left/right)*right);
+	
 	// =
 	func(ops->equal, Bool, Bool, Bool, retrn left==right);
 	func(ops->equal, Bool, Int, Int, retrn left==right);
@@ -250,6 +254,9 @@ void populatePineconeStdLib()
 	addAction("get", Int, IntArray, Int, LAMBDA_HEADER
 		{
 			int pos=*(int*)rightIn;
+			int size=getValFromTuple<int>(leftIn, IntArray, "size");
+			if (pos<0 || pos>=size)
+				throw PineconeError("tried to acces position "+to_string(pos)+" of array "+to_string(size)+" long", RUNTIME_ERROR);
 			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
 			int val=*(arrayPtr+pos);
 			int* out=(int*)malloc(sizeof(int));
@@ -262,6 +269,9 @@ void populatePineconeStdLib()
 		{
 			Type rightType=PNCN_Tuple(Int, Int);
 			int pos=getValFromTuple<int>(rightIn, rightType, "a");
+			int size=getValFromTuple<int>(leftIn, IntArray, "size");
+			if (pos<0 || pos>=size)
+				throw PineconeError("tried to set value at position "+to_string(pos)+" of array "+to_string(size)+" long", RUNTIME_ERROR);
 			int val=getValFromTuple<int>(rightIn, rightType, "b");
 			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
 			*(arrayPtr+pos)=val;
