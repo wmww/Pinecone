@@ -35,3 +35,12 @@ a<100 @
 	a: a+b
 	b: tmp
 )
+
+
+# compile time lazy evaluation
+
+print: c
+
+a :: 10
+c :: a+a
+b :: 4

@@ -11,12 +11,12 @@ extern Namespace stdLibNamespace;
 
 PineconeProgram::PineconeProgram()
 {
-	globalFrame=shared_ptr<StackFrame>(new StackFrame);
+	
 }
 
 void PineconeProgram::cleanUp()
 {
-	globalFrame=nullptr;
+	
 }
 
 void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
@@ -81,7 +81,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		
 		try
 		{
-			actionRoot=functionAction(astRoot->getAction(), globalFrame);
+			actionRoot=functionAction(astRoot->getAction(), stdLibNamespace->getStackFrame());
 			
 			cout << endl << putStringInBox(actionRoot->getDescription(), "action tree") << endl;
 		}

@@ -1,33 +1,10 @@
+hhh: 1
 
-
-print: c
-
-a :: 10
-c :: a-a
-b :: 4
-
-c>10 ?
-	print: 1
-	|
-	print: 2
-
-i: 0 | i<10 | i: i+1 @
-(
-	print: 0
-	print: i
-	print
-	# i: i+1
-)
+lkjkl: 9.8
 
 t: 9, 8, 1.7
 
-print: t.b
+aaa: (bbb: (ccc: 8))
 
-print
-print
-printc: 65
-printc: 65
-printc: 65
-print
-printc: 65
-printc: 65
+print: fls
+

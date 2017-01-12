@@ -45,8 +45,6 @@ private:
 	
 private:
 	
-	shared_ptr<StackFrame> globalFrame;
-	
 	SourceFile file;
 	string outCpp;
 	
