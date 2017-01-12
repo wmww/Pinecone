@@ -206,6 +206,11 @@ void populatePineconeStdLib()
 	func("printc", Void, Void, Int,
 		cout << (char)right);
 	
+	func("inputInt", Int, Void, Void,
+		int val;
+		std::cin >> val;
+		retrn val;);
+	
 	
 	/// int array
 	
