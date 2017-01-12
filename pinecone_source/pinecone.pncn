@@ -23,5 +23,5 @@ y: 0 | y<h | y: y+1 @
 
 print
 
-print: !12
+print: !12 || tru && (Bool: 0)
 print: !!tru

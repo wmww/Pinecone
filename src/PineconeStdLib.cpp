@@ -120,6 +120,14 @@ void populatePineconeStdLib()
 	
 	///operators
 	
+	// ||
+	func(ops->orOp, Bool, Bool, Bool,
+		retrn left || right);
+	
+	// &&
+	func(ops->andOp, Bool, Bool, Bool,
+		retrn left && right);
+	
 	// +
 	func(ops->plus, Int, Int, Int, retrn left+right);
 	func(ops->plus, Dub, Dub, Dub, retrn left+right);
@@ -141,9 +149,14 @@ void populatePineconeStdLib()
 	func(ops->mod, Dub, Dub, Dub, retrn left-int(left/right)*right);
 	
 	// =
-	func(ops->equal, Bool, Bool, Bool, retrn left==right);
-	func(ops->equal, Bool, Int, Int, retrn left==right);
-	func(ops->equal, Bool, Dub, Dub, retrn left==right);
+	func(ops->equal, Bool, Bool, Bool,
+		retrn left==right);
+	
+	func(ops->equal, Bool, Int, Int,
+		retrn left==right);
+	
+	func(ops->equal, Bool, Dub, Dub,
+		retrn left==right);
 	
 	// >
 	func(ops->greater, Bool, Int, Int,
