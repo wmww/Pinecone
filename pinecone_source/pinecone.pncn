@@ -1,5 +1,14 @@
-w: 8
-h: 6
+w :: 8
+h :: 6
+
+
+# init
+
+locX: 0
+locY: 0
+
+quit: fls
+turn: 1
 
 ary: IntArray: w*h
 
@@ -7,21 +16,48 @@ y: 0 | y<h | y: y+1 @
 (
 	x: 0 | x<w | x: x+1 @
 	(
-		ary.set: y*w+x, 48
+		ary.set: y*w+x, 32
 	)
 )
 
-y: 0 |y<h |y++ @
+!quit @
 (
-	x: 0 | x<w | x: x+1 @
+	i: 0 | i<6 | i: i+1 @
+		print
+	
+	y: 0 |y<h |y: y+1 @
 	(
-		printc: ary.get: y*w+x
+		x: 0 | x<w | x: x+1 @
+		(
+			x=locX && y=locY ?
+				printc: 108
+			|
+				printc: ary.get: y*w+x
+		)
+		
+		print
 	)
 	
-	print
+	valid: fls
+	
+	!valid @
+	(
+		dir: inputInt
+		valid: tru
+		
+		dir=0 ?
+			quit: tru
+		| dir=1 ?
+			locY: locY+1
+		| dir=2 ?
+			locX: locX+1
+		| dir=3 ?
+			locY: locY-1
+		| dir=4 ?
+			locX: locX-1
+		|
+			valid: fls
+	)
+	
+	turn: turn+1
 )
-
-print
-
-print: !12 || tru && (Bool: 0)
-print: !!tru

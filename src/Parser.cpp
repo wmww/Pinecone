@@ -532,17 +532,21 @@ void parseSequence(const vector<Token>& tokens, int left, int right, Operator sp
 		{
 			i=skipBrace(tokens, i);
 		}
-		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrecedence()<splitter->getPrecedence())
-		{
-			out.clear();
-			out.push_back(parseExpression(tokens, left, right));
-			return;
-		}
 		else if (tokens[i]->getOp()==splitter)
 		{
 			if (start<=i-1)
 				out.push_back(parseExpression(tokens, start, i-1));
 			start=i+1;
+		}
+		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrecedence()==splitter->getPrecedence())
+		{
+			break;
+		}
+		else if (tokens[i]->getOp() && tokens[i]->getOp()->getPrecedence()<splitter->getPrecedence())
+		{
+			out.clear();
+			out.push_back(parseExpression(tokens, left, right));
+			return;
 		}
 	}
 	

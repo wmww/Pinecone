@@ -50,8 +50,8 @@ public:
 	
 	#define ALL_OPS																\
 	DECLARE_OP(	loop,		"@",	5,		OperatorData::BOTH,		false	);	\
-	DECLARE_OP(	ifOp,		"?",	5,		OperatorData::BOTH,		false	);	\
-	DECLARE_OP(	pipe,		"|",	15,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	ifOp,		"?",	6,		OperatorData::BOTH,		false	);	\
+	DECLARE_OP(	pipe,		"|",	6,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	colon,		":",	24,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	doubleColon,"::",	24,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	comma,		",",	35,		OperatorData::BOTH,		false	);	\
