@@ -146,9 +146,6 @@ void populatePineconeStdLib()
 	func(ops->equal, Bool, Dub, Dub, retrn left==right);
 	
 	// >
-	func(ops->greater, Bool, Bool, Bool,
-		retrn !left && right);
-	
 	func(ops->greater, Bool, Int, Int,
 		retrn left>right);
 	
@@ -156,14 +153,25 @@ void populatePineconeStdLib()
 		retrn left>right);
 	
 	// <
-	func(ops->less, Bool, Bool, Bool,
-		retrn left && !right);
-	
 	func(ops->less, Bool, Int, Int,
 		retrn left<right);
 	
 	func(ops->less, Bool, Dub, Dub,
 		retrn left<right);
+	
+	// >=
+	func(ops->greaterEq, Bool, Int, Int,
+		retrn left>=right);
+	
+	func(ops->greaterEq, Bool, Dub, Dub,
+		retrn left>=right);
+	
+	// <=
+	func(ops->lessEq, Bool, Int, Int,
+		retrn left<=right);
+	
+	func(ops->lessEq, Bool, Dub, Dub,
+		retrn left<=right);
 	
 	
 	///basic types

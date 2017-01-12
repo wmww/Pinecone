@@ -58,6 +58,8 @@ public:
 	DECLARE_OP(	equal,		"=",	40,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	greater,	">",	50,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	less,		"<",	50,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	greaterEq,	">=",	50,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	lessEq,		"<=",	50,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	plus,		"+",	60,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	minus,		"-",	60,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	multiply,	"*",	70,		OperatorData::BOTH,		true	);	\
