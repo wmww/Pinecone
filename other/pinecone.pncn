@@ -1,12 +1,13 @@
 
-myFunc
+myFunc: 12
 
-myFunc :: {}:
+myFunc :: {Int}:
 (
-	printc: 119
-	printc: 103
-	printc: 99
-	print
+	print: right
+	print: right
+	print: right
 	
-	myFunc
+	right>6 ?
+		myFunc: right-1
 )
+

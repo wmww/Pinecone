@@ -200,6 +200,8 @@ void NamespaceData::getValuesFromMap(T key, vector<U>& out, unordered_map<T, vec
 
 void NamespaceData::setInput(Type left, Type right)
 {
+	error.log("input on namespace set to "+left->getString()+" . "+right->getString(), JSYK);
+	
 	if (parent && parent->getStackFrame()==stackFrame)
 	{
 		error.log("called "+FUNC+" on namespace that is not the root of a stack frame, thus it can not get input", INTERNAL_ERROR);
@@ -342,7 +344,10 @@ Type NamespaceData::getType(string name)
 	
 	if (results.empty())
 	{
-		throw IdNotFoundError(name, false, shared_from_this());
+		if (parent)
+			return parent->getType(name);
+		else
+			throw IdNotFoundError(name, false, shared_from_this());
 	}
 	else if (results.size()!=1)
 	{

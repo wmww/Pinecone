@@ -124,9 +124,12 @@ void AstExpression::resolveAction()
 		
 		Namespace subNs=ns->makeChildAndFrame("someFunction");
 		
+		center->setInput(subNs, false, Void, Void);
+		subNs->setInput(Void, Int);
+		
 		rightIn->setInput(subNs, dynamic, Void, Void);
 		
-		action=functionAction(move(rightIn), Void, Void, Void, subNs->getStackFrame());
+		action=functionAction(move(rightIn), Void, Void, Int, subNs->getStackFrame());
 	}
 	else
 	{
@@ -510,6 +513,18 @@ string AstTokenType::getString()
 	return "{"+token->getText()+"}";
 }
 
+void AstTokenType::resolveReturnType()
+{
+	try
+	{
+		returnType=ns->getType(token->getText());
+	}
+	catch (IdNotFoundError err)
+	{
+		throw err.toPineconeError(token);
+	}
+}
+
 
 /// TupleType
 
@@ -541,3 +556,23 @@ string AstTupleType::getString()
 	return out;
 }
 
+void AstTupleType::resolveReturnType()
+{
+	TupleTypeMaker maker;
+	
+	for (unsigned i=0; i<subTypes.size(); i++)
+	{
+		subTypes[i].type->setInput(ns, false, Void, Void);
+		
+		if (subTypes[i].name)
+		{
+			maker.add(subTypes[i].name->getText(), subTypes[i].type->getReturnType());
+		}
+		else
+		{
+			maker.add(subTypes[i].type->getReturnType());
+		}
+	}
+	
+	returnType=maker.get();
+}
