@@ -131,8 +131,8 @@ public:
 	}
 	
 private:
-	Action action;
-	Action rightInput;
+	Action action=nullptr;
+	Action rightInput=nullptr;
 };
 
 class LeftBranchAction: public ActionData

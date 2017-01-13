@@ -1,19 +1,12 @@
 
+myFunc
+
 myFunc :: {}:
 (
 	printc: 119
 	printc: 103
 	printc: 99
 	print
+	
+	myFunc
 )
-
-myFunc
-
-recur :: {}:
-(
-	a: 8
-	print: a
-	recur
-)
-
-recur
