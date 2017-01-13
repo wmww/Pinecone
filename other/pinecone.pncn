@@ -8,7 +8,12 @@ myFunc :: {}:
 )
 
 myFunc
-myFunc
-myFunc
-myFunc
-myFunc
+
+recur :: {}:
+(
+	a: 8
+	print: a
+	recur
+)
+
+recur
