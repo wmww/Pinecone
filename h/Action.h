@@ -26,6 +26,7 @@ public:
 	//string getText() {return text;}
 	string toString();
 	string getTypesString();
+	virtual bool isFunction() {return false;}
 	
 	Type& getReturnType() {return returnType;}
 	Type& getInLeftType() {return inLeftType;}

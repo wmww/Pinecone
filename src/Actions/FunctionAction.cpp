@@ -29,6 +29,8 @@ public:
 		return "func: " + action->getDescription();
 	}
 	
+	bool isFunction() {return true;}
+	
 	string getCSource(string inLeft, string inRight)
 	{
 		string out;
