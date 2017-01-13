@@ -16,7 +16,7 @@ int main(int argc, char ** argv)
 	if (argc>1)
 		inputFilename=string(argv[1]);
 	else
-		inputFilename="pinecone_source/pinecone.pncn";
+		inputFilename="other/pinecone.pncn";
 	
 	PineconeProgram parser;
 	

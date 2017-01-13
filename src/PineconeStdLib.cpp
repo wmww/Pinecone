@@ -275,7 +275,8 @@ void populatePineconeStdLib()
 			char* out=(char*)malloc(IntArray->getSize());
 			int sizeIn=*(int*)rightIn;
 			double data;
-			*(int**)(&data)=(int*)malloc(Int->getSize()*sizeIn);
+			int* intPtrData=(int*)malloc(Int->getSize()*sizeIn);
+			memcpy(&data, &intPtrData, sizeof(double));
 			setValInTuple<int>(out, IntArray, "size", sizeIn);
 			setValInTuple<double>(out, IntArray, "data", data);
 			return out;
@@ -296,7 +297,8 @@ void populatePineconeStdLib()
 		}
 	);
 	
-	addAction("set", Void, IntArray, PNCN_Tuple(Int, Int), LAMBDA_HEADER
+	addAction("set", Void, IntArray, PNCN_Tuple(Int, Int),
+		LAMBDA_HEADER
 		{
 			Type rightType=PNCN_Tuple(Int, Int);
 			int pos=getValFromTuple<int>(rightIn, rightType, "a");
