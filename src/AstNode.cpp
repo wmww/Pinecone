@@ -109,7 +109,7 @@ void AstExpression::resolveAction()
 		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR);
 	}
 	
-	if (rightIn->isType() || leftIn->isType())
+	if (rightIn->isType() || (leftIn->isType() && !center->isType()))
 	{
 		throw PineconeError("types must be declared as constants", SOURCE_ERROR);
 	}
@@ -117,19 +117,25 @@ void AstExpression::resolveAction()
 	{
 		// it is a function
 		
-		if (!leftIn->isVoid() || rightIn->isVoid())
+		if ((!leftIn->isVoid() && !leftIn->isType()) || rightIn->isVoid())
 		{
 			throw PineconeError("bad function defenition", SOURCE_ERROR);
 		}
 		
 		Namespace subNs=ns->makeChildAndFrame("someFunction");
 		
+		leftIn->setInput(subNs, false, Void, Void);
 		center->setInput(subNs, false, Void, Void);
-		subNs->setInput(Void, Int);
+		
+		Type funcReturn=Void;
+		Type funcLeft=leftIn->getReturnType();
+		Type funcRight=center->getReturnType();
+		
+		subNs->setInput(funcLeft, funcRight);
 		
 		rightIn->setInput(subNs, dynamic, Void, Void);
 		
-		action=functionAction(move(rightIn), Void, Void, Int, subNs->getStackFrame());
+		action=functionAction(move(rightIn), Void, funcLeft, funcRight, subNs->getStackFrame());
 	}
 	else
 	{
