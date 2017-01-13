@@ -443,11 +443,46 @@ a.b.c: 8
 a   b
 
 
+___________________________________________________
 
 
 
+i: 0 | i<100 | i: i+1 @
+(
+	# do stuff
+)
+
+(i:0; i<100; i:i+1) @
+(
+	# do stuff
+)
+
+___________________________________________________
 
 
+myFunc :: {Int}.{Int} -> {Int}:
+(
+	print: right
+	print: left
+	print
+	
+	right>6 ?
+		left.myFunc: right-1
+	
+	8
+)
+
+myFunc :: Int.Int: Int
+(
+	print: right
+	print: left
+	print
+	
+	right>6 ?
+		left.myFunc: right-1
+	
+	8
+)
 
 
 

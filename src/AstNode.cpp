@@ -124,18 +124,57 @@ void AstExpression::resolveAction()
 		
 		Namespace subNs=ns->makeChildAndFrame("someFunction");
 		
-		leftIn->setInput(subNs, false, Void, Void);
-		center->setInput(subNs, false, Void, Void);
+		AstNode* leftInNode=nullptr;
+		Type funcLeft=Void;
 		
+		AstNode* rightInNode=nullptr;
+		Type funcRight=Void;
+		
+		AstNode* returnNode=nullptr;
 		Type funcReturn=Void;
-		Type funcLeft=leftIn->getReturnType();
-		Type funcRight=center->getReturnType();
+		
+		/*if (center->isFunctionWithOutput())
+		{
+			if (!((AstOpWithInput)center)->leftIn->isType() || !((AstOpWithInput)center)->leftIn->isType())
+			
+			if (!leftIn->isVoid())
+			{
+				
+			}
+		}
+		else
+		{
+			
+		}*/
+		
+		if (!leftIn->isVoid())
+			returnNode=&leftIn;
+		if (!center->isVoid())
+			rightInNode=&center;
+		
+		if (leftInNode)
+		{
+			(*leftInNode)->setInput(subNs, false, Void, Void);
+			funcLeft=(*leftInNode)->getReturnType();
+		}
+		
+		if (rightInNode)
+		{
+			(*rightInNode)->setInput(subNs, false, Void, Void);
+			funcRight=(*rightInNode)->getReturnType();
+		}
+		
+		if (returnNode)
+		{
+			(*returnNode)->setInput(subNs, false, Void, Void);
+			funcReturn=(*returnNode)->getReturnType();
+		}
 		
 		subNs->setInput(funcLeft, funcRight);
 		
 		rightIn->setInput(subNs, dynamic, Void, Void);
 		
-		action=functionAction(move(rightIn), Void, funcLeft, funcRight, subNs->getStackFrame());
+		action=functionAction(move(rightIn), funcReturn, funcLeft, funcRight, subNs->getStackFrame());
 	}
 	else
 	{
@@ -379,6 +418,11 @@ void AstOpWithInput::resolveAction()
 	{
 		throw PineconeError("AstOpWithInput made with bad token '"+token->getText()+"'", INTERNAL_ERROR, token);
 	}
+}
+
+bool AstOpWithInput::isFunctionWithOutput()
+{
+	return false;// token->getOp()==ops->rightArw;
 }
 
 

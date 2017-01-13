@@ -36,6 +36,7 @@ public:
 	
 	virtual bool isVoid() {return false;}
 	virtual bool isType() {return false;}
+	virtual bool isFunctionWithOutput() {return false;}
 	
 	virtual string getString()=0;
 	
@@ -186,6 +187,8 @@ public:
 		return node;
 	}
 	
+	//bool isType() {return leftIn->isType() || rightIn->isType();}
+	
 	virtual string getString();
 	
 	virtual void resolveAction();
@@ -235,11 +238,12 @@ public:
 		return node;
 	}
 	
+	bool isFunctionWithOutput();
+	
 	string getString();
 	
 	void resolveAction();
 	
-private:
 	Token token=nullptr;
 	vector<AstNode> leftIn, rightIn;
 };

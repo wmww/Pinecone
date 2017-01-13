@@ -1,13 +1,14 @@
 
-7.myFunc: 12
+print: myFunc: 12
 
 myFunc :: {Int}.{Int}:
 (
 	print: right
-	print: left
 	print
 	
 	right>6 ?
-		left.myFunc: right-1
+		myFunc: right-1
+	
+	8
 )
 
