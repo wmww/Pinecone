@@ -1,0 +1,66 @@
+//
+everything in this file should work
+\\
+
+# if/then
+
+a: 12
+b: 7
+
+a=9 ?
+(
+	print: 1
+)|(
+	print: 2
+)
+
+b>3 ?
+(
+	print: 3
+)
+
+print
+
+# while loop
+
+i: 12
+
+i>3 @
+(
+	print: i
+	i: i-1
+)
+
+print
+
+# for loop
+
+i: 0 | i<10 | i: i+1 @
+(
+	print: i
+)
+
+print
+
+# Fibonacci
+
+b: 0
+a: 1
+
+a<100 @
+(
+	print: a
+	tmp: a
+	a: a+b
+	b: tmp
+)
+
+print
+
+# compile time lazy evaluation of constants
+
+print: y
+
+x :: 10
+y :: x+z
+z :: 4
