@@ -290,6 +290,8 @@ public:
 	
 	string getString() {return "{}";}
 	
+	void resolveReturnType() {returnType=Void;}
+	
 private:
 };
 
@@ -305,6 +307,8 @@ public:
 	}
 	
 	string getString();
+	
+	void resolveReturnType();
 	
 private:
 	
@@ -329,6 +333,8 @@ public:
 	}
 	
 	string getString();
+	
+	void resolveReturnType();
 	
 private:
 	
