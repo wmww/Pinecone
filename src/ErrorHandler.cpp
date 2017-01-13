@@ -42,7 +42,7 @@ string ErrorHandler::priorityToStr(ErrorPriority in)
 
 void ErrorHandler::log(string msg, ErrorPriority priority, Token token)
 {
-	if (priority==SOURCE_ERROR || priority==INTERNAL_ERROR)
+	if (priority==SOURCE_ERROR || priority==INTERNAL_ERROR || priority==RUNTIME_ERROR)
 		errorHasBeenLogged=true;
 	
 	// gcc style
