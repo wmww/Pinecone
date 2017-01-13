@@ -52,12 +52,15 @@ typedef shared_ptr<ActionData> Action;
 
 extern Action voidAction;
 
+class AstNodeBase;
+
 Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
 Action createNewVoidAction();
 
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn);
 
 Action functionAction(Action actionIn, shared_ptr<StackFrame> stackFameIn);
+Action functionAction(unique_ptr<AstNodeBase> nodeIn, Type returnTypeIn, Type leftTypeIn, Type rightTypeIn, shared_ptr<StackFrame> stackFameIn);
 
 Action ifAction(Action conditionIn, Action ifActionIn);
 Action ifElseAction(Action conditionIn, Action ifActionIn, Action elseAction);

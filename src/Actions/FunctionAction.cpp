@@ -16,6 +16,7 @@ public:
 	{
 		stackFame=stackFameIn;
 		action=actionIn;
+		node=nullptr;
 		
 		setDescription("function ("+getInLeftType()->getString()+"."+getInRightType()->getString()+" > "+getReturnType()->getString()+")");
 		
@@ -30,6 +31,7 @@ public:
 	{
 		stackFame=stackFameIn;
 		node=move(nodeIn);
+		action=nullptr;
 		
 		setDescription("function ("+getInLeftType()->getString()+"."+getInRightType()->getString()+" > "+getReturnType()->getString()+")");
 	}
@@ -51,7 +53,9 @@ public:
 	
 	string getDescription()
 	{
-		return "func: " + action->getDescription();
+		if (!action)
+			resolveAction();
+		return "func: " + description;//action->getDescription();
 	}
 	
 	bool isFunction() {return true;}

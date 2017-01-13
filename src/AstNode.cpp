@@ -126,7 +126,7 @@ void AstExpression::resolveAction()
 		
 		rightIn->setInput(subNs, dynamic, Void, Void);
 		
-		action=functionAction(rightIn->getAction(), subNs->getStackFrame());
+		action=functionAction(move(rightIn), Void, Void, Void, subNs->getStackFrame());
 	}
 	else
 	{
