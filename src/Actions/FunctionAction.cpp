@@ -2,6 +2,7 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 #include "../../h/StackFrame.h"
+#include "../../h/AstNode.h"
 
 #include <cstring> //for memcpy
 using std::memcpy;
@@ -23,7 +24,31 @@ public:
 			throw PineconeError(action->getDescription() + " put into function even though its inputs are not void", INTERNAL_ERROR);
 		}
 	}
-
+	
+	FunctionAction(AstNode nodeIn, Type returnTypeIn, Type leftTypeIn, Type rightTypeIn, shared_ptr<StackFrame> stackFameIn):
+		ActionData(returnTypeIn, leftTypeIn, rightTypeIn)
+	{
+		stackFame=stackFameIn;
+		node=move(nodeIn);
+		
+		setDescription("function ("+getInLeftType()->getString()+"."+getInRightType()->getString()+" > "+getReturnType()->getString()+")");
+	}
+	
+	void resolveAction()
+	{
+		if (!node || action)
+		{
+			throw PineconeError("FunctionAction::resolveAction called when this action is in the wrong state", INTERNAL_ERROR);
+		}
+		
+		action=node->getAction();
+		
+		if (!action->getInLeftType()->isVoid() || !action->getInRightType()->isVoid())
+		{
+			throw PineconeError(action->getDescription() + " put into function even though its inputs are not void", INTERNAL_ERROR);
+		}
+	}
+	
 	string getDescription()
 	{
 		return "func: " + action->getDescription();
@@ -33,6 +58,9 @@ public:
 	
 	string getCSource(string inLeft, string inRight)
 	{
+		if (!action)
+			resolveAction();
+		
 		string out;
 		out+="/* function C source not yet implemented, but here is the action: */";
 		out+="\n*/\n";
@@ -58,6 +86,9 @@ public:
 	
 	void* execute(void* inLeft, void* inRight)
 	{
+		if (!action)
+			resolveAction();
+		
 		void * oldStackPtr=stackPtr;
 		
 		stackPtr=malloc(stackFame->getSize());
@@ -79,10 +110,17 @@ public:
 private:
 	
 	shared_ptr<StackFrame> stackFame;
-	Action action;
+	Action action=nullptr;
+	AstNode node=nullptr;
 };
 
 Action functionAction(Action actionIn, shared_ptr<StackFrame> stackFameIn)
 {
 	return Action(new FunctionAction(actionIn, stackFameIn));
 }
+
+Action functionAction(AstNode nodeIn, Type returnTypeIn, Type leftTypeIn, Type rightTypeIn, shared_ptr<StackFrame> stackFameIn)
+{
+	return Action(new FunctionAction(move(nodeIn), returnTypeIn, leftTypeIn, rightTypeIn, stackFameIn));
+}
+
