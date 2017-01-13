@@ -29,7 +29,7 @@ string AstList::getString()
 	return out;
 }
 
-void AstList::resolveReturnType()
+/*void AstList::resolveReturnType()
 {
 	if (nodes.empty())
 	{
@@ -37,9 +37,10 @@ void AstList::resolveReturnType()
 	}
 	else
 	{
+		nodes.back()->setInput(ns, dynamic, Void, Void);
 		returnType=nodes.back()->getReturnType();
 	}
-}
+}*/
 
 void AstList::resolveAction()
 {
@@ -108,14 +109,36 @@ void AstExpression::resolveAction()
 		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR);
 	}
 	
-	leftIn->setInput(ns, dynamic, Void, Void);
-	rightIn->setInput(ns, dynamic, Void, Void);
-	
-	center->setInput(ns, dynamic, leftIn->getReturnType(), rightIn->getReturnType());
-	
-	//error.log("resolveAction called for "+getString(), JSYK);
-	
-	action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
+	if (rightIn->isType() || leftIn->isType())
+	{
+		throw PineconeError("types must be declared as constants", SOURCE_ERROR);
+	}
+	if (center->isType())
+	{
+		// it is a function
+		
+		if (!leftIn->isVoid() || rightIn->isVoid())
+		{
+			throw PineconeError("bad function defenition", SOURCE_ERROR);
+		}
+		
+		Namespace subNs=ns->makeChildAndFrame("someFunction");
+		
+		rightIn->setInput(subNs, dynamic, Void, Void);
+		
+		action=functionAction(rightIn->getAction(), subNs->getStackFrame());
+	}
+	else
+	{
+		leftIn->setInput(ns, dynamic, Void, Void);
+		rightIn->setInput(ns, dynamic, Void, Void);
+		
+		center->setInput(ns, dynamic, leftIn->getReturnType(), rightIn->getReturnType());
+		
+		//error.log("resolveAction called for "+getString(), JSYK);
+		
+		action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
+	}
 }
 
 
@@ -487,13 +510,6 @@ string AstTokenType::getString()
 	return "{"+token->getText()+"}";
 }
 
-void AstTokenType::resolveAction()
-{
-	
-	
-	action=voidAction;
-}
-
 
 /// TupleType
 
@@ -523,10 +539,5 @@ string AstTupleType::getString()
 	out+="}";
 	
 	return out;
-}
-
-void AstTupleType::resolveAction()
-{
-	action=voidAction;
 }
 

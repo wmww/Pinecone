@@ -137,7 +137,7 @@ public:
 	
 	string getString();
 	
-	void resolveReturnType();
+	//void resolveReturnType();
 	
 	void resolveAction();
 	
@@ -271,6 +271,11 @@ class AstType: public AstNodeBase
 {
 public:
 	bool isType() {return true;}
+	
+	void resolveAction()
+	{
+		throw PineconeError("AstType::resolveAction called, which it shouldn't have been", INTERNAL_ERROR);
+	}
 };
 
 class AstVoidType: public AstType
@@ -284,8 +289,6 @@ public:
 	}
 	
 	string getString() {return "{}";}
-	
-	void resolveAction() {action=voidAction;}
 	
 private:
 };
@@ -302,8 +305,6 @@ public:
 	}
 	
 	string getString();
-	
-	void resolveAction();
 	
 private:
 	
@@ -328,8 +329,6 @@ public:
 	}
 	
 	string getString();
-	
-	void resolveAction();
 	
 private:
 	
