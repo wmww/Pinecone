@@ -45,6 +45,11 @@ public:
 		
 		action=node->getAction();
 		
+		if (action->getReturnType()!=returnType)
+		{
+			throw PineconeError("function body returns "+action->getReturnType()->getString()+" instead of "+returnType->getString(), SOURCE_ERROR, node->getToken());
+		}
+		
 		if (!action->getInLeftType()->isVoid() || !action->getInRightType()->isVoid())
 		{
 			throw PineconeError(action->getDescription() + " put into function even though its inputs are not void", INTERNAL_ERROR);
