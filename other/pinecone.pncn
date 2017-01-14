@@ -1,11 +1,15 @@
 
-print: 2.myFunc: 3
+Type :: {Int, Int}
 
-myFunc :: {Int}.{Int} -> {Dub}:
+myFunc: Type
+
+Type :: {}.{} -> {Type}:
 (
-	print: left+right
-	print
-	
-	(left+right)*2
+	4, 7
+)
+
+myFunc :: {Type}:
+(
+	print: right.a
 )
 
