@@ -42,17 +42,25 @@ void NamespaceData::ActionMap<KEY>::get(KEY key, vector<Action>& out)
 	{
 		for (unsigned i=0; i<matches1->second.size(); i++)
 		{
-			Action resultAction=matches1->second[i]->getAction();
 			Action valAction;
 			
-			if (resultAction->isFunction())
+			if (matches1->second[i]->isType())
 			{
-				valAction=resultAction;
+				valAction=typeGetAction(matches1->second[i]->getReturnType());
 			}
 			else
 			{
-				void* val=resultAction->execute(nullptr, nullptr);
-				valAction=constGetAction(val, resultAction->getReturnType(), convertToString(key));
+				Action resultAction=matches1->second[i]->getAction();
+				
+				if (resultAction->isFunction())
+				{
+					valAction=resultAction;
+				}
+				else
+				{
+					void* val=resultAction->execute(nullptr, nullptr);
+					valAction=constGetAction(val, resultAction->getReturnType(), convertToString(key));
+				}
 			}
 			
 			add(key, valAction);
