@@ -1,7 +1,7 @@
 
 print: myFunc: 12
 
-myFunc :: {Int}.{Int}:
+myFunc :: {Void}.{Int} -> {Int}:
 (
 	print: right
 	print

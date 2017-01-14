@@ -23,7 +23,7 @@ public:
 	{
 		if (inputHasBeenSet)
 		{
-			throw PineconeError("tried to set input on an AST node '"+getString()+"' more then once", INTERNAL_ERROR);
+			throw PineconeError("tried to set input on an AST node '"+getString()+"' more then once", INTERNAL_ERROR, getToken());
 		}
 		
 		inputHasBeenSet=true;
@@ -46,7 +46,7 @@ public:
 		{
 			if (!inputHasBeenSet)
 			{
-				throw PineconeError("tried to get return type from AST node when input had not been set", INTERNAL_ERROR);
+				throw PineconeError("tried to get return type from AST node when input had not been set", INTERNAL_ERROR, getToken());
 			}
 			
 			resolveReturnType();
@@ -61,7 +61,7 @@ public:
 		{
 			if (!ns)
 			{
-				throw PineconeError("tried to get action from AST node when input had not been set", INTERNAL_ERROR);
+				throw PineconeError("tried to get action from AST node when input had not been set", INTERNAL_ERROR, getToken());
 			}
 			
 			resolveAction();
@@ -74,11 +74,14 @@ public:
 	{
 		if (!ns)
 		{
-			throw PineconeError("tried to deal with constants before input was set", INTERNAL_ERROR);
+			throw PineconeError("tried to deal with constants before input was set", INTERNAL_ERROR, getToken());
 		}
 		
 		resolveConstant();
 	}
+	
+	// primarily used for error throwing, can return null
+	virtual Token getToken()=0;
 	
 protected:
 	
@@ -116,11 +119,13 @@ public:
 	{
 		if (!inLeftType->isVoid() || !inRightType->isVoid())
 		{
-			throw PineconeError("AstVoid given non void input", INTERNAL_ERROR);
+			throw PineconeError("AstVoid given non void input", INTERNAL_ERROR, getToken());
 		}
 		
 		action=voidAction;
 	}
+	
+	Token getToken() {return nullptr;}
 };
 //extern AstNode astVoid;
 
@@ -141,6 +146,8 @@ public:
 	//void resolveReturnType();
 	
 	void resolveAction();
+	
+	Token getToken() {return nodes.empty()?nullptr:nodes[0]->getToken();}
 	
 private:
 	
@@ -164,6 +171,8 @@ public:
 	string getString();
 	
 	void resolveAction();
+	
+	Token getToken() {return token;}
 	
 private:
 	
@@ -193,6 +202,8 @@ public:
 	
 	virtual void resolveAction();
 	
+	Token getToken() {return center->getToken();}
+	
 private:
 	
 	AstNode leftIn=nullptr, center=nullptr, rightIn=nullptr;
@@ -217,6 +228,9 @@ public:
 	
 	void resolveConstant();
 	void resolveAction() {action=voidAction;};
+	
+	Token getToken() {return center->getToken();}
+	
 private:
 	
 	//AstNode leftIn=nullptr;
@@ -244,6 +258,8 @@ public:
 	
 	void resolveAction();
 	
+	Token getToken() {return token;}
+	
 	Token token=nullptr;
 	vector<AstNode> leftIn, rightIn;
 };
@@ -266,6 +282,8 @@ public:
 	
 	void resolveAction();
 	
+	Token getToken() {return nodes.empty()?nullptr:nodes[0]->getToken();}
+	
 private:
 	
 	vector<AstNode> nodes;
@@ -278,7 +296,7 @@ public:
 	
 	void resolveAction()
 	{
-		throw PineconeError("AstType::resolveAction called, which it shouldn't have been", INTERNAL_ERROR);
+		throw PineconeError("AstType::resolveAction called, which it shouldn't have been", INTERNAL_ERROR, getToken());
 	}
 };
 
@@ -295,6 +313,8 @@ public:
 	string getString() {return "{}";}
 	
 	void resolveReturnType() {returnType=Void;}
+	
+	Token getToken() {return nullptr;}
 	
 private:
 };
@@ -313,6 +333,8 @@ public:
 	string getString();
 	
 	void resolveReturnType();
+	
+	Token getToken() {return token;}
 	
 private:
 	
@@ -339,6 +361,8 @@ public:
 	string getString();
 	
 	void resolveReturnType();
+	
+	Token getToken() {return subTypes.empty()?nullptr:subTypes[0].name;}
 	
 private:
 	
