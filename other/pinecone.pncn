@@ -2,9 +2,11 @@ a: 8
 
 print: a
 
+\\
 func
+//
 
 func :: {}:
 (
-	
+	print: 64345
 )
