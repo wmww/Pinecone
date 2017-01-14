@@ -1,15 +1,16 @@
 
 Type :: {Int, Int}
 
-myFunc: Type
+myFunc: Type, 8.8
 
 Type :: {} -> {Type}:
 (
 	4, 7
 )
 
-myFunc :: {Type}:
+myFunc :: {Type, Dub}:
 (
-	print: right.a
+	print: in.a.a
+	print: in.b
 )
 

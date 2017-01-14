@@ -143,7 +143,7 @@ void AstExpression::resolveAction()
 			
 			if (node->leftIn.size()!=1 || node->rightIn.size()!=1 || !node->leftIn[0]->isType() || !node->rightIn[0]->isType())
 			{
-				throw PineconeError("something around that arrow is fucked up. you expect me to tell you exactly what the probelem is? well, sorry but things arn't always that easy. I have better things to do then write meaningful error messaged. fix your own damn errors.", SOURCE_ERROR, node->getToken());
+				throw PineconeError("something around that arrow is fucked up. you expect me to tell you exactly what the probelem is?\nwell, sorry but things arn't always that easy. I have better things to do then write meaningful\nerror messages. fix your own damn errors.", SOURCE_ERROR, node->getToken());
 			}
 			
 			rightInNode=&node->leftIn[0];
