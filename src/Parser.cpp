@@ -315,7 +315,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	{
 		throw PineconeError("invalid use of '"+op->getText()+"'", SOURCE_ERROR, tokens[i]);
 	}
-	else if (op==ops->ifOp || op==ops->loop)
+	else if (op==ops->ifOp || op==ops->loop || op==ops->rightArrow)
 	{
 		vector<AstNode> leftNodes;
 		vector<AstNode> rightNodes;
