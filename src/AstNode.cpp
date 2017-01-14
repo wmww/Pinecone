@@ -113,7 +113,7 @@ void AstExpression::resolveAction()
 	{
 		throw PineconeError("types must be declared as constants", SOURCE_ERROR, rightIn->getToken());
 	}
-	else if (center->isType() || leftIn->isType())
+	else if (center->isType() || center->isFunctionWithOutput() || leftIn->isType())
 	{
 		// it is a function
 		

@@ -3,7 +3,7 @@ Type :: {Int, Int}
 
 myFunc: Type
 
-Type :: {}.{} -> {Type}:
+Type :: {} -> {Type}:
 (
 	4, 7
 )
