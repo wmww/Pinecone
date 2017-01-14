@@ -178,7 +178,7 @@ void AstExpression::resolveAction()
 		
 		subNs->setInput(funcLeft, funcRight);
 		
-		rightIn->setInput(subNs, dynamic, Void, Void);
+		rightIn->setInput(subNs, true, Void, Void);
 		
 		action=functionAction(move(rightIn), funcReturn, funcLeft, funcRight, subNs->getStackFrame());
 	}
