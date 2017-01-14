@@ -113,7 +113,7 @@ void AstExpression::resolveAction()
 	{
 		throw PineconeError("types must be declared as constants", SOURCE_ERROR, rightIn->getToken());
 	}
-	else if (center->isType())
+	else if (center->isType() || leftIn->isType())
 	{
 		// it is a function
 		
@@ -128,24 +128,35 @@ void AstExpression::resolveAction()
 		AstNode* returnNode=nullptr;
 		Type funcReturn=Void;
 		
-		/*if (center->isFunctionWithOutput())
+		if (leftIn->isType())
 		{
-			if (!((AstOpWithInput)center)->leftIn->isType() || !((AstOpWithInput)center)->leftIn->isType())
+			leftInNode=&leftIn;
+		}
+		else if (!leftIn->isVoid())
+		{
+			throw PineconeError("your trying to feed a non type into a type. this is dumb.", SOURCE_ERROR, leftIn->getToken());
+		}
+		
+		if (center->isFunctionWithOutput())
+		{
+			AstOpWithInput* node=(AstOpWithInput*)(&(*center));
 			
-			if (!leftIn->isVoid())
+			if (node->leftIn.size()!=1 || node->rightIn.size()!=1 || !node->leftIn[0]->isType() || !node->rightIn[0]->isType())
 			{
-				
+				throw PineconeError("something around that arrow is fucked up. you expect me to tell you exactly what the probelem is? well, sorry but things arn't always that easy. I have better things to do then write meaningful error messaged. fix your own damn errors.", SOURCE_ERROR, node->getToken());
 			}
+			
+			rightInNode=&node->leftIn[0];
+			returnNode=&node->rightIn[0];
+		}
+		else if (center->isType())
+		{
+			rightInNode=&center;
 		}
 		else
 		{
-			
-		}*/
-		
-		if (!leftIn->isVoid())
-			returnNode=&leftIn;
-		if (!center->isVoid())
-			rightInNode=&center;
+			throw PineconeError("you fucked up. idk what you meant to do.", SOURCE_ERROR, center->getToken());
+		}
 		
 		if (leftInNode)
 		{
@@ -409,6 +420,10 @@ void AstOpWithInput::resolveAction()
 			action=listAction(actions);
 		}
 	}
+	else if (token->getOp()==ops->rightArrow)
+	{
+		throw PineconeError("AstOpWithInput::resolveAction called for token '"+token->getOp()->getText()+"', which it shouldn't have been", INTERNAL_ERROR, token);
+	}
 	else
 	{
 		throw PineconeError("AstOpWithInput made with bad token '"+token->getText()+"'", INTERNAL_ERROR, token);
@@ -417,7 +432,7 @@ void AstOpWithInput::resolveAction()
 
 bool AstOpWithInput::isFunctionWithOutput()
 {
-	return false;// token->getOp()==ops->rightArw;
+	return token->getOp()==ops->rightArrow;
 }
 
 

@@ -1,13 +1,13 @@
 
-print: myFunc: 12
+print: myFunc: 12.8
 
-myFunc :: {Void}.{Int} -> {Int}:
+myFunc :: {Void}.{Dub} -> {Int}:
 (
-	print: right
+	print: Int: right
 	print
 	
-	right>6 ?
-		myFunc: right-1
+	right>6.0 ?
+		myFunc: right-1.0
 	
 	8
 )
