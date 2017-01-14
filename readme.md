@@ -37,6 +37,7 @@ the following features are either coming soon, or implemented now but broken:
 * Proper classes (pass-by-reference needed)
 * Arrays for any type
 * Strings
+* Operator overloading
 * Transpiling to C++ (currently the language is only interpreted)
 
 __here is an example of a very simple Pinecone program:__
