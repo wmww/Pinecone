@@ -220,7 +220,7 @@ void NamespaceData::setInput(Type left, Type right)
 	
 	if (!left->isVoid())
 	{
-		string leftName="left";
+		string leftName="me";
 		size_t leftOffset=stackFrame->getLeftOffset();
 		Action leftGetAction=varGetAction(leftOffset, left, leftName);
 		Action leftSetAction=varSetAction(leftOffset, left, leftName);
@@ -230,7 +230,7 @@ void NamespaceData::setInput(Type left, Type right)
 	
 	if (!right->isVoid())
 	{
-		string rightName="right";
+		string rightName="in";
 		size_t rightOffset=stackFrame->getRightOffset();
 		Action rightGetAction=varGetAction(rightOffset, right, rightName);
 		Action rightSetAction=varSetAction(rightOffset, right, rightName);
