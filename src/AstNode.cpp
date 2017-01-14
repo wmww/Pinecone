@@ -46,7 +46,7 @@ void AstList::resolveAction()
 {
 	if (!inLeftType->isVoid() || !inRightType->isVoid())
 	{
-		throw PineconeError("AstList given non void input", INTERNAL_ERROR);
+		throw PineconeError("AstList given non void input", INTERNAL_ERROR, getToken());
 	}
 	
 	ns=ns->makeChild();
@@ -106,21 +106,16 @@ void AstExpression::resolveAction()
 {
 	if (!inLeftType->isVoid() || !inRightType->isVoid())
 	{
-		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR);
+		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR, getToken());
 	}
 	
-	if (rightIn->isType() || (leftIn->isType() && !center->isType()))
+	if (rightIn->isType())
 	{
-		throw PineconeError("types must be declared as constants", SOURCE_ERROR);
+		throw PineconeError("types must be declared as constants", SOURCE_ERROR, rightIn->getToken());
 	}
-	if (center->isType())
+	else if (center->isType())
 	{
 		// it is a function
-		
-		if ((!leftIn->isVoid() && !leftIn->isType()) || rightIn->isVoid())
-		{
-			throw PineconeError("bad function defenition", SOURCE_ERROR);
-		}
 		
 		Namespace subNs=ns->makeChildAndFrame("someFunction");
 		
@@ -215,7 +210,7 @@ void AstConstExpression::resolveConstant()
 {
 	if (!inLeftType->isVoid() || !inRightType->isVoid())
 	{
-		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR);
+		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR, getToken());
 	}
 	
 	//leftIn->setInput(ns, Void, Void);
