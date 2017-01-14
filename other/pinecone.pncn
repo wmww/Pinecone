@@ -1,16 +1,10 @@
+a: 8
 
-Type :: {Int, Int}
+print: a
 
-myFunc: Type, 8.8
+func
 
-Type :: {} -> {Type}:
+func :: {}:
 (
-	4, 7
+	
 )
-
-myFunc :: {Type, Dub}:
-(
-	print: in.a.a
-	print: in.b
-)
-
