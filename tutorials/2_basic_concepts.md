@@ -18,7 +18,7 @@ A __Bool__ can only be `tru` or `fls`. If you think it should be `true` and `fal
 
 `print: 42` is and example of a function call. __print__ is a standard function that prints what it is sent, followed by an newline. the ':' indicates that you want to sent input to print and whatever follows is the input.
 
-Functions can only take input of the exact type they are supposed to take (implicit casting will eventually be but is not yet implemented). Functions can, however be overloaded. This means there are multiple functions with the same name that are diferentiated by what type their input is.
+Functions can only take input of the exact type they are supposed to take (implicit casting will eventually be but is not yet implemented). Functions can, however be overloaded. This means there are multiple functions with the same name that are differentiated by what type their input is.
 
 print is an overloaded function, so you can also do `print: 42.1`, or even just `print` and it will compile (the latter takes no input and so it will just print an empty line).
 
@@ -32,17 +32,28 @@ myVarName: 88
 myVarName: 12
 print: myVarName
 ```
-`myVarName` can be any serias of letters, digits and underscores, as long as it doesn't start with a number. Variable names are case sensitive.
+`myVarName` can be any series of letters, digits and underscores, as long as it doesn't start with a number. Variable names are case sensitive.
 
 As you can see, creating a variable, setting a variable and calling a function with all look the same. This is a very important feature for the language, as it makes refactoring variables into calculations much easier.
 
+## Constants
+
+A __constant__ is a value that is determined at compile time. Constants are created with the constants assignment operator `::`. You can declare constants above or below where you use them. Trying to set a constants more then once will result in a compile time error. Here is an example of a simple use of constants:
+```
+a :: 3
+print: b
+b :: a+c
+c :: 2
+```
+This will compile correctly and print 5.
+
 ## Comments
 
-Comments are parts of your program that the compiler doesn't look at, so you can write notes and whatnot. In Pinecone, singel-line comments start with a `#`. Multi-line comments start with `\\` and end with `//`.
+Comments are parts of your program that the compiler doesn't look at, so you can write notes and whatnot. In Pinecone, single-line comments start with a `#`. Multi-line comments start with `\\` and end with `//`.
 
 ## Explicit Type Conversion
 
-Sometimes, you might want to send a value to a variable or function of a different type. In the future, this will just work, but for now, you must convert it explicity. To do this, call the target type's name like a function. For example:
+Sometimes, you might want to send a value to a variable or function of a different type. In the future, this will just work, but for now, you must convert it explicitly. To do this, call the target type's name like a function. For example:
 ```
 myDub: 12.7
 myDub: 32       # won't work because 32 is an Int
