@@ -14,6 +14,14 @@ __Dub__ is the same as a C++ double. It can hold decimal numbers. a Dub literal 
 
 A __Bool__ can only be `tru` or `fls`. If you think it should be `true` and `false` instead, you can email your complaints to williamwold@idontgiveafuck.com.
 
+## Operators
+
+In general, operators in Pinecone work the same as in any other language. It has all the ones you would expect with sensible order of operations. The following are the only major differences between operators in Pinecone and C-style langauges:
+* The assignment operator is `:` instead of `=`.
+* The equality operator is `=` instead of `==`.
+* There are no bitwise operators, they may be implemented at some point.
+* The short circuit aspect of boolean operators doesn't work yet, so `fls && functionReturningBool` will execute functionReturningBool. This will be fixed soon.
+
 ## Calling Functions
 
 `print: 42` is and example of a function call. __print__ is a standard function that prints what it is sent, followed by an newline. the ':' indicates that you want to sent input to print and whatever follows is the input.
