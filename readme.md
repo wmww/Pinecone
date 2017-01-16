@@ -50,9 +50,11 @@ a<100 @
 (
 	a%2=0 ?
 		print: a
-	
+
 	tmp: a
 	a: a+b
 	b: tmp
 )
 ```
+
+If you want to program in Pinecone now, see the tutorials folder for how to get started.
