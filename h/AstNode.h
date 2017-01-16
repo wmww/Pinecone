@@ -13,7 +13,7 @@ using std::vector;
 class AstNodeBase;
 typedef unique_ptr<AstNodeBase> AstNode;
 
-AstNode astNodeFromTokens(const vector<Token>&);
+AstNode astNodeFromTokens(const vector<Token>& tokens, int left, int right);
 
 class AstNodeBase
 {

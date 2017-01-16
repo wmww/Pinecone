@@ -7,6 +7,19 @@ SourceFile::SourceFile(string filenameIn, bool printOutput)
 	contents=loadEntireFile(filenameIn, printOutput);
 }
 
+string SourceFile::getDirPath()
+{
+	int i=filename.size();
+	
+	// this will break on windows
+	while (i>=0 && filename[i]!='/')
+	{
+		i--;
+	}
+	
+	return filename.substr(0, i);
+}
+
 string SourceFile::getBoxedString()
 {
 	return putStringInBox(contents, filename, true);
