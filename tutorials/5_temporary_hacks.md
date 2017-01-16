@@ -5,6 +5,9 @@ Pinecone is still under rapid development, and there are a lot of features that 
 ## Pass-by-reference
 There is not yet any pass-by-reference in Pinecone (with the exception of Int arrays). Without pass-by-reference, you can't really have classes because functions can not modify the object they are called on.
 
+## Global Variables
+Globals are broken. What I mean by that is using a variable in a function that was created outside of that function does not work. It will compile, it just will crash or give rubbish output. Don't do it.
+
 ## Arrays
 I have some very cool ideas for array syntax, but it is not ready yet. For now, you can have an array of ints with the built in class IntArray. Here is an example of how to use it:
 ```
