@@ -47,6 +47,8 @@ unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right);
 //AstNode parseSingleTypeElement(const vector<Token>& tokens, int& i, int right, string& name, Type& type);
 //Type parseTypeToken(Token token);
 
+void importFile(vector<AstNode>& nodes, string path);
+
 //AstNode parseIdentifier(Token token, AstNode leftIn, AstNode rightIn);
 
 //void parseIdentifierConst(Token token, AstNode rightIn);
@@ -432,29 +434,50 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 	
 	for (int i=left; i<=right; i++)
 	{
-		
-		if (ops->isOpenBrac(tokens[i]->getOp()))
+		if (tokens[i]->getOp()==ops->import)
+		{
+			if (i==right || tokens[i+1]->getType()!=TokenData::STRING_LITERAL)
+			{
+				throw PineconeError("'"+ops->import->getText()+"' must be followed by a string literal", SOURCE_ERROR, tokens[i]);
+			}
+			
+			string path=tokens[i+1]->getText();
+			
+			//this nonesens is required because my lexer is shit and includes the first quite but not the last one
+			//instead of hardcoding that in, I figured I'd make it flexable so I don't break everthing when I fix the lexer
+			
+			while (path.size()>0 && path[0]=='"')
+				path=path.substr(1, string::npos);
+			
+			while (path.size()>0 && path[path.size()-1]=='"')
+				path=path.substr(0, path.size()-1);
+			
+			importFile(nodes, path);
+		}
+		else if (ops->isOpenBrac(tokens[i]->getOp()))
 		{
 			i=skipBrace(tokens, i);
 		}
-		
-		bool tokenTakesRightInput=(tokens[i]->getOp() && tokens[i]->getOp()->takesRightInput());
-		int next=i+1;
-		bool nextTokenTakesLeftInput=(next<=right && tokens[next]->getOp() && tokens[next]->getOp()->takesLeftInput());
-		
-		if (i==right || (!tokenTakesRightInput && !nextTokenTakesLeftInput))
+		else
 		{
-			try
-			{
-				AstNode node=parseExpression(tokens, start, i);
-				nodes.push_back(move(node));
-			}
-			catch (PineconeError err)
-			{
-				err.log();
-			}
+			bool tokenTakesRightInput=(tokens[i]->getOp() && tokens[i]->getOp()->takesRightInput());
+			int next=i+1;
+			bool nextTokenTakesLeftInput=(next<=right && tokens[next]->getOp() && tokens[next]->getOp()->takesLeftInput());
 			
-			start=next;
+			if (i==right || (!tokenTakesRightInput && !nextTokenTakesLeftInput))
+			{
+				try
+				{
+					AstNode node=parseExpression(tokens, start, i);
+					nodes.push_back(move(node));
+				}
+				catch (PineconeError err)
+				{
+					err.log();
+				}
+				
+				start=next;
+			}
 		}
 	}
 	

@@ -72,7 +72,7 @@ public:
 	DECLARE_OP(	minusMinus,	"--",	75,		OperatorData::LEFT,		false	);	\
 	DECLARE_OP(	dot,		".",	81,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	rightArrow,	"->",	83,		OperatorData::BOTH,		false	);	\
-	DECLARE_OP(	import,		"==>",	90,		OperatorData::RIGHT,	false	);	\
+	DECLARE_OP(	import,		"==>",	90,		OperatorData::RIGHT,	false	);\
 	DECLARE_OP(	openPeren,	"(",	100,	OperatorData::RIGHT,	false	);	\
 	DECLARE_OP(	closePeren,	")",	99,		OperatorData::LEFT,		false	);	\
 	DECLARE_OP(	openSqBrac,	"[",	100,	OperatorData::BOTH,		false	);	\
