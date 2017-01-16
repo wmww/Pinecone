@@ -83,19 +83,27 @@ CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
 	
 	//	chack fo multi line comments in a special way, because they are multi character
 	
-	if (file.substr(index, 2)=="//")
-		return MULTI_LINE_COMMENT_START;
-	
-	if (index>0 && file.substr(index-1, 2)=="\\")
-		return MULTI_LINE_COMMENT_END;
-	
-	//	allow a . to be a digit character only if it is followed by a digit
-	if (index<int(file.size())-1 && file[index]=='.')
+	switch (file[index])
 	{
-		auto i=hm.find(file[index+1]);
+	case '/':
+		if (index<int(file.size())-1 && file[index+1]=='/')
+			return MULTI_LINE_COMMENT_START;
+		break;
 		
-		if (i!=hm.end() && i->second==DIGIT)
-			return DIGIT;
+	case '\\':
+		if (index>0 && file[index-1]=='\\')
+			return MULTI_LINE_COMMENT_END;
+		break;
+		
+	case '.': // allow a . to be a digit character only if it is followed by a digit
+		if (index<int(file.size())-1)
+		{
+			auto i=hm.find(file[index+1]);
+		
+			if (i!=hm.end() && i->second==DIGIT)
+				return DIGIT;
+		}
+		break;
 	}
 	
 	//	handle all other cases using the hashmap
