@@ -25,3 +25,6 @@ The output is `5`.
 
 ## Strings and Text
 Strings (and even chars) are not yet implemented. You can however print text to the screen with the `printc` function. You send it an Int and it prints the ASCII character of that Int without a newline afterwords.
+
+## Input
+Again, full support is not yet there, but you can call the function `inputInt` to get a number from the user.
