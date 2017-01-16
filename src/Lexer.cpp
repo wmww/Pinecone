@@ -128,7 +128,7 @@ TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, TokenDat
 	
 	switch (type)
 	{
-		
+	
 	case SINGLE_LINE_COMMENT:
 		return TokenData::LINE_COMMENT;
 	
@@ -195,7 +195,16 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 				}
 				else
 				{
-					tokens.push_back(makeToken(tokenTxt, &file, line, charPos-tokenTxt.size(), type));
+					Token token=makeToken(tokenTxt, &file, line, charPos-tokenTxt.size(), type);
+					
+					if (type==TokenData::UNKNOWN)
+					{
+						PineconeError("invalid token '"+tokenTxt+"'", SOURCE_ERROR, token).log();
+					}
+					else
+					{
+						tokens.push_back(token);
+					}
 				}
 			}
 			tokenTxt="";
