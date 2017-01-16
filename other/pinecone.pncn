@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ==> "../examples/snake.pncn"
+=======
+//>> "../examples/snake.pncn"\\
+>>>>>>> refs/remotes/origin/develop
 
 a: tru
 b: fls
