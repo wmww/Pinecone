@@ -7,5 +7,5 @@ Disclamer: these steps will probably work on Linux, maybe even on OSX. As for Wi
 3. Move into the Pinecone directory
 4. run the command `make`. If you get a _command not found_ error, you may need to install make or g++.
 5. If all goes well, after a few seconds you should end up with a Pinecone executable in your current directory called `pinecone`.
-6. Run it with the command `./pinecone path/to/pinecone/source.pncn`, or you can test it by just running `./pinecone` (this will run other/pinecone.pncn)
+6. Run it with the command `./pinecone path/to/pinecone/source.pncn`. If you don't have any Pinecone source yet, test it with `./pinecone other/pinecone.pncn`
 7. If it works, you can now move on to the "basic concepts" tutorial
