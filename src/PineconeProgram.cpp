@@ -54,7 +54,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	{
 		try
 		{
-			astRoot=astNodeFromTokens(tokens);
+			astRoot=astNodeFromTokens(tokens, 0, tokens.size()-1);
 		}
 		catch (PineconeError err)
 		{

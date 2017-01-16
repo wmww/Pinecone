@@ -17,6 +17,9 @@ public:
 	
 	string getFilename() {return filename;}
 	
+	// get the path to the directory this file is in
+	string getDirPath();
+	
 	const string& getContents() {return contents;}
 	
 	string getBoxedString();

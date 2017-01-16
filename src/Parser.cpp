@@ -18,6 +18,8 @@ using std::min;
 using std::max;
 using std::pair;
 
+void lexString(SourceFile& file, vector<Token>& tokens);
+
 //	unless otherwise noted, these are what the perams for the following functions mean
 //		tokens: the tokens to parse
 //		table: the table to use
@@ -26,7 +28,7 @@ using std::pair;
 //		returns: (if type is AstNode) the action pointer for that section of the program
 
 //	splits a stream of tokens into a ListAstNode and calls parseExpression on each expression
-AstNode parseTokenList(const vector<Token>& tokens, int left, int right);
+void parseTokenList(const vector<Token>& tokens, int left, int right, vector<AstNode>& nodes);
 
 //	recursivly parses a single expression (no action lists)
 AstNode parseExpression(const vector<Token>& tokens, int left, int right);
@@ -53,9 +55,24 @@ void importFile(vector<AstNode>& nodes, string path);
 
 //void parseIdentifierConst(Token token, AstNode rightIn);
 
-AstNode astNodeFromTokens(const vector<Token>& tokens)
+AstNode astNodeFromTokens(const vector<Token>& tokens, int left, int right)
 {
-	return parseTokenList(tokens, 0, tokens.size()-1);
+	vector<AstNode> nodes;
+	
+	parseTokenList(tokens, left, right, nodes);
+	
+	if (nodes.size()==0)
+	{
+		return AstVoid::make();
+	}
+	else if (nodes.size()==1)
+	{
+		return move(nodes[0]);
+	}
+	else
+	{
+		return AstList::make(nodes);
+	}
 }
 
 int skipBrace(const vector<Token>& tokens, int start)
@@ -277,7 +294,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 			{
 				if (tokens[i]->getOp()==ops->openPeren)
 				{
-					return parseTokenList(tokens, left+1, right-1);
+					return astNodeFromTokens(tokens, left+1, right-1);
 				}
 				else 
 				{
@@ -426,10 +443,8 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	}
 }
 
-AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
+void parseTokenList(const vector<Token>& tokens, int left, int right, vector<AstNode>& nodes)
 {
-	vector<AstNode> nodes;
-	
 	int start=left;
 	
 	for (int i=left; i<=right; i++)
@@ -452,7 +467,20 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 			while (path.size()>0 && path[path.size()-1]=='"')
 				path=path.substr(0, path.size()-1);
 			
-			importFile(nodes, path);
+			path=tokens[i]->getFile()->getDirPath()+"/"+path;
+			
+			try
+			{
+				importFile(nodes, path);
+			}
+			catch (PineconeError err)
+			{
+				err.log();
+			}
+			
+			
+			i+=2;
+			start=i;
 		}
 		else if (ops->isOpenBrac(tokens[i]->getOp()))
 		{
@@ -479,19 +507,6 @@ AstNode parseTokenList(const vector<Token>& tokens, int left, int right)
 				start=next;
 			}
 		}
-	}
-	
-	if (nodes.size()==0)
-	{
-		return AstVoid::make();
-	}
-	else if (nodes.size()==1)
-	{
-		return move(nodes[0]);
-	}
-	else
-	{
-		return AstList::make(nodes);
 	}
 }
 
@@ -663,4 +678,19 @@ unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 }
 */
 
+void importFile(vector<AstNode>& nodes, string path)
+{
+	SourceFile file=SourceFile(path, false);
+	
+	if (file.getContents().empty())
+	{
+		throw PineconeError("file '"+path+"' failed to open or was empty", SOURCE_ERROR);
+	}
+	
+	vector<Token> tokens;
+	
+	lexString(file, tokens);
+	
+	parseTokenList(tokens, 0, tokens.size()-1, nodes);
+}
 
