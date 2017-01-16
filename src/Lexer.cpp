@@ -20,6 +20,7 @@ public:
 		LETTER,
 		DIGIT,
 		OPERATOR,
+		STRING_QUOTE,
 		SINGLE_LINE_COMMENT,
 		MULTI_LINE_COMMENT_START,
 		MULTI_LINE_COMMENT_END,
@@ -60,6 +61,8 @@ void CharClassifier::setUp()
 		hm[c]=DIGIT;
 	
 	hm['#']=SINGLE_LINE_COMMENT;
+	
+	hm['"']=STRING_QUOTE;
 	
 	unordered_map<string, Operator>& opsMap=ops->getOpsMap();
 	
@@ -133,6 +136,14 @@ inline TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, T
 		else
 			return TokenData::BLOCK_COMMENT;
 	}
+	else if (previousType==TokenData::STRING_LITERAL)
+	{
+		if (type==STRING_QUOTE)
+			return TokenData::WHITESPACE;
+		else
+			return TokenData::STRING_LITERAL;
+		
+	}
 	
 	switch (type)
 	{
@@ -163,6 +174,9 @@ inline TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, T
 			return TokenData::LITERAL;
 		else
 			return TokenData::IDENTIFIER;
+		
+	case STRING_QUOTE:
+		return TokenData::STRING_LITERAL;
 		
 	default:
 		return TokenData::UNKNOWN;
