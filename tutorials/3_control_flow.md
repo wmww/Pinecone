@@ -1,4 +1,4 @@
-# Flow Control
+# Control Flow
 In Pinecone, control flow is done with symbols instead of keywords. There are two symbols used for control flow, `?` and `@`. `|` is used in conjunction with one of them.
 
 ## If/Then

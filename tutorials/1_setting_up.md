@@ -1,4 +1,4 @@
-# Setting up your Pinecone environment
+# Setting up your environment
 
 Disclamer: these steps will probably work on Linux, maybe even on OSX. As for Windows, I have no idea. Good luck.
 
