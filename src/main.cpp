@@ -7,48 +7,117 @@
 using std::cout;
 using std::endl;
 
+struct Flags
+{
+	vector<string> inFiles;
+	bool debug=false;
+	bool help=false;
+	bool version=false;
+	bool flagError=false;			// if to quit immediately, this is set if there is an unrecognised flag
+};
+
+Flags getFlags(int argc, char ** argv);
+
 int main(int argc, char ** argv)
 {
-	cout << "Pinecone v" << VERSION_X << "." << VERSION_Y << "." << VERSION_Z << " running..." << endl;
+	Flags flags=getFlags(argc, argv);
 	
-	string inputFilename;
+	if (flags.flagError)
+	{
+		cout << "try 'pinecone -h' for help" << endl;
+		return 0;
+	}
 	
-	if (argc>1)
-		inputFilename=string(argv[1]);
-	else
-		inputFilename="other/pinecone.pncn";
+	if (flags.help)
+	{
+		cout << "Pinecone v" << VERSION_X << "." << VERSION_Y << "." << VERSION_Z << endl;
+		cout << "usage: pinecone [options] [source file]" << endl;
+		cout << "options: " << endl;
+		cout << "-v, -version     display the version of Pinecone" << endl;
+		cout << "-debug           display debugging info and then run the program" << endl;
+		cout << "-h, -help        display this help and quit" << endl;
+		return 0;
+	}
 	
-	PineconeProgram parser;
+	if (flags.version)
+	{
+		cout << "Pinecone version " << VERSION_X << "." << VERSION_Y << "." << VERSION_Z << endl;
+		return 0;
+	}
 	
-	parser.resolveProgram(inputFilename, true);
+	PineconeProgram program;
+	
+	if (flags.inFiles.empty())
+	{
+		cout << "no source file specified" << endl;
+		cout << "try 'pinecone -h' for help" << endl;
+		return 0;
+	}
+	else if (flags.inFiles.size()>1)
+	{
+		cout << "multiple source files specified, Pinecone does not currently support this" << endl;
+		cout << "try 'pinecone -h' for help" << endl;
+		return 0;
+	}
+	
+	program.resolveProgram(flags.inFiles[0], flags.debug);
 	
 	if (error.getIfErrorLogged())
 	{
-		cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl;
+		if (flags.debug)
+			cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl;
 	}
 	else
 	{
-		cout << endl << "executing program..." << endl << endl;
+		if (flags.debug)
+			cout << endl << "executing program..." << endl << endl;
 		
-		parser.execute();
+		program.execute();
 	}
 	
-	cout << endl << "all done" << endl;
-	
-	string outputFilename;
-	
-	/*if (argc>2)
-		outputFilename=string(argv[2]);
-	else
-		outputFilename="output.cpp";
-	
-	cout << "output file:" << endl;
-	
-	cout << putStringInBox(cppSource, outputFilename) << endl;
-	
-	cout << "program done" << endl;*/
+	if (flags.debug)
+		cout << endl << "all done" << endl;
 	
 	return 0;
+}
+
+Flags getFlags(int argc, char ** argv)
+{
+	Flags flags;
+	
+	for (int i=1; i<argc; i++)
+	{
+		string arg(argv[i]);
+		
+		if (arg.size()>1 && arg[0]=='-')
+		{
+			string flag=arg.substr(1, string::npos);
+			
+			if (flag=="debug")
+			{
+				flags.debug=true;
+			}
+			else if (flag=="v" || flag=="version")
+			{
+				flags.version=true;
+			}
+			else if (flag=="h" || flag=="help")
+			{
+				flags.help=true;
+			}
+			else
+			{
+				cout << "unknown flag '"+flag+"'" << endl;
+				flags.flagError=true;
+			}
+		}
+		else
+		{
+			flags.inFiles.push_back(arg);
+		}
+	}
+	
+	return flags;
 }
 
 

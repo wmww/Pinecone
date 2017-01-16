@@ -30,7 +30,8 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	
 	if (!error.getIfErrorLogged())
 	{
-		file=SourceFile(inFilename);
+		file=SourceFile(inFilename, printOutput);
+		
 		if (printOutput)
 		{
 			cout << endl << endl << file.getBoxedString() << endl;
@@ -83,7 +84,10 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		{
 			actionRoot=functionAction(astRoot->getAction(), stdLibNamespace->getStackFrame());
 			
-			cout << endl << putStringInBox(actionRoot->getDescription(), "action tree") << endl;
+			if (printOutput)
+			{
+				cout << endl << putStringInBox(actionRoot->getDescription(), "action tree") << endl;
+			}
 		}
 		catch (PineconeError err)
 		{
