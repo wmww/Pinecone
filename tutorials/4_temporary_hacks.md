@@ -24,7 +24,17 @@ print: myArray.get: 2               # get the element at index 2
 The output is `5`.
 
 ## Strings and Text
-Strings (and even chars) are not yet implemented. You can however print text to the screen with the `printc` function. You send it an Int and it prints the ASCII character of that Int without a newline afterwords.
+Strings (and even chars) are not yet implemented. You can however print text to the screen with the `printc` function. You send it an Int and it prints the ASCII character of that Int without a newline afterwords. To make this a bit easier, you can import the letters file (see below)
 
 ## Input
 Again, full support is not yet there, but you can call the function `inputInt` to get a number from the user.
+
+## imports
+Importing works similar to how it does in Python. It simply dumps another file into your current file. Right now, the import syntx is
+```
+==> "path/to/target/file/from/current/file.pncn"
+```
+For example, to import the examples/letters file into other/pinecone, you write
+```
+==> "../examples/letters.pncn"
+```
