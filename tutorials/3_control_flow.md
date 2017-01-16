@@ -29,9 +29,9 @@ a && b<7 ?
 ```
 The output of that code is
 ```
-1
-3
-5
+> 1
+> 3
+> 5
 ```
 
 ## loops
