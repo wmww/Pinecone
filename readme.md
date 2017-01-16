@@ -1,9 +1,10 @@
 # The Pinecone Programming Language
 **_Built from the ground up to be fast, concise and intuitive._**
 
-
 ## About
 Pinecone is a programming language currently under development by Sophie Winter. Work on the language began on October 4th, 2016. Right now effort is focused on writing an interpreter in C++, although Pinecone is designed to eventually be compiled or transpiled to C++. The language is written from scratch (it includes an integrated lexer, parser and interpreter).
+
+__If you want to program in Pinecone now, see the tutorials folder for how to get started.__
 
 ## Why?
 This is probably the most common reaction to hearing about a new language. I'm not guaranteeing I can justify Pinecone's existence to you, but here is my best attempt.
@@ -55,5 +56,3 @@ a<100 @
 	b: tmp
 )
 ```
-
-If you want to program in Pinecone now, see the tutorials folder for how to get started.
