@@ -26,9 +26,9 @@ public:
 		UNKNOWN,
 	};
 	
-	static TokenData::Type getTokenType(CharClassifier::Type type, TokenData::Type previousType);
+	static inline TokenData::Type getTokenType(CharClassifier::Type type, TokenData::Type previousType);
 	
-	CharClassifier::Type get(SourceFile& file, int i);
+	inline CharClassifier::Type get(SourceFile& file, int i);
 	
 private:
 	void setUp();
@@ -75,7 +75,7 @@ void CharClassifier::setUp()
 	hasSetUp=true;
 }
 
-CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
+inline CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
 {
 	//	set up the first time this function is called
 	if (!hasSetUp)
@@ -83,19 +83,27 @@ CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
 	
 	//	chack fo multi line comments in a special way, because they are multi character
 	
-	if (file.substr(index, 2)=="//")
-		return MULTI_LINE_COMMENT_START;
-	
-	if (index>0 && file.substr(index-1, 2)=="\\")
-		return MULTI_LINE_COMMENT_END;
-	
-	//	allow a . to be a digit character only if it is followed by a digit
-	if (index<int(file.size())-1 && file[index]=='.')
+	switch (file[index])
 	{
-		auto i=hm.find(file[index+1]);
+	case '/':
+		if (index<int(file.size())-1 && file[index+1]=='/')
+			return MULTI_LINE_COMMENT_START;
+		break;
 		
-		if (i!=hm.end() && i->second==DIGIT)
-			return DIGIT;
+	case '\\':
+		if (index>0 && file[index-1]=='\\')
+			return MULTI_LINE_COMMENT_END;
+		break;
+		
+	case '.': // allow a . to be a digit character only if it is followed by a digit
+		if (index<int(file.size())-1)
+		{
+			auto i=hm.find(file[index+1]);
+		
+			if (i!=hm.end() && i->second==DIGIT)
+				return DIGIT;
+		}
+		break;
 	}
 	
 	//	handle all other cases using the hashmap
@@ -109,7 +117,7 @@ CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
 		return i->second;
 }
 
-TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, TokenData::Type previousType)
+inline TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, TokenData::Type previousType)
 {
 	if (previousType==TokenData::LINE_COMMENT)
 	{

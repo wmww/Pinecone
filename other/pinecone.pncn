@@ -1,12 +1,9 @@
-a: 8
+//>> "../examples/snake.pncn"\\
 
-print: a
+a: tru
+b: fls
 
-\\//
-func
-\\
-
-func :: {}:
-(
-	print: 64345
-)
+!a && b ?
+	print: 1
+|
+	print: 2
