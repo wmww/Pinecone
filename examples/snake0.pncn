@@ -1,6 +1,7 @@
 # this was written on Jan 12th, 2016.
 # this is the first complex pinecone program ever wretten.
-# type the numbers 1, 2, 3 and 4 followed by enter to move
+# type the numbers 1, 2, 3 and 4 followed by enter to move.
+# because of how early it was wretten, it doesn't use modern constructs, like functions.
 
 w :: 16
 h :: 8
