@@ -44,6 +44,21 @@ print: myVarName
 
 As you can see, creating a variable, setting a variable and calling a function with all look the same. This is a very important feature for the language, as it makes refactoring variables into calculations much easier.
 
+## Tuples
+
+A Tuple can be thought of as an ad hoc data structure. To construct one you simple combine several expressions with commas. The names of the elements of a tuple are `a`, `b`, `c`, etc. Elements can be accesed with the `.` operator. Here is an example:
+```
+myTuple: 6, 2.9, fls
+print: myTuple.c
+print: myTuple.a
+```
+The output of this will be
+```
+> fls
+> 6
+```
+Tuple elements are supposed to be mutable, but this functionality is currently broken.
+
 ## Constants
 
 A __constant__ is a value that is determined at compile time. Constants are created with the constants assignment operator `::`. You can declare constants above or below where you use them. Trying to set a constants more then once will result in a compile time error. Here is an example of a simple use of constants:
