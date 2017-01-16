@@ -72,7 +72,7 @@ This will compile correctly and print 5.
 
 ## Comments
 
-Comments are parts of your program that the compiler doesn't look at, so you can write notes and whatnot. In Pinecone, single-line comments start with a `#`. Multi-line comments start with `\\` and end with `//`.
+Comments are parts of your program that the compiler doesn't look at, so you can write notes and whatnot. In Pinecone, single-line comments start with a `#`. Multi-line comments start with `//` and end with `\\`.
 
 ## Explicit Type Conversion
 

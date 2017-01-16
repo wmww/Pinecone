@@ -66,6 +66,8 @@ int main(int argc, char ** argv)
 	{
 		if (flags.debug)
 			cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl;
+		else
+			cout << "program not executed due to errors" << endl;
 	}
 	else
 	{
