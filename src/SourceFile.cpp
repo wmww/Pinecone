@@ -1,10 +1,10 @@
 #include "../h/SourceFile.h"
 #include "../h/msclStringFuncs.h"
 
-SourceFile::SourceFile(string filenameIn)
+SourceFile::SourceFile(string filenameIn, bool printOutput)
 {
 	filename=filenameIn;
-	contents=loadEntireFile(filenameIn, true);
+	contents=loadEntireFile(filenameIn, printOutput);
 }
 
 string SourceFile::getBoxedString()

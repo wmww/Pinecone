@@ -4,6 +4,7 @@
 	<Project>
 		<Option title="Pinecone" />
 		<Option pch_mode="2" />
+		<Option default_target="Release" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
@@ -20,6 +21,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="-debug other/pinecone.pncn" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>

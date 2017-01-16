@@ -13,7 +13,7 @@ public:
 		contents="";
 	}
 	
-	SourceFile(string filenameIn);
+	SourceFile(string filenameIn, bool printOutput);
 	
 	string getFilename() {return filename;}
 	
