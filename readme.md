@@ -12,7 +12,7 @@ Pinecone will be similar in capabilities to modern object oriented compiled lang
 
 * Calling a function that takes no arguments is the same syntax as accessing a variable (just writing it's name).
 * Calling a function that takes one argument is the same syntax as setting a variable (`funcOrVar: input`).
-* Calling a function that takes multiple arguments is the same syntax as setting a tuple (`funcOrTuple: (input1, input2)`).
+* Calling a function that takes multiple arguments is the same syntax as setting a tuple (`funcOrTuple: input1, input2`).
 * Variable creation is implicit, just set a variable and it is created.
 * Variables are statically typed, but type deduction is automatic.
 * White space is ignored _and_ semicolons are not necessary
@@ -40,8 +40,7 @@ the following features are either coming soon, or implemented now but broken:
 * Operator overloading
 * Transpiling to C++ (currently the language is only interpreted)
 
-__here is an example of a very simple Pinecone program:__
-It prints out all the fibonacci numbers that are less then 100 and even
+here is an example of a very simple Pinecone program. It prints out all the fibonacci numbers that are less then 100 and even.
 ```
 a: 1
 b: 0
