@@ -2,9 +2,9 @@ a: 8
 
 print: a
 
-\\
-func
 //
+func
+\\
 
 func :: {}:
 (
