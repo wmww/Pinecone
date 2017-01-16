@@ -9,7 +9,7 @@ using std::endl;
 
 int main(int argc, char ** argv)
 {
-	cout << "Pinecone transpiler running..." << endl;
+	cout << "Pinecone v" << VERSION_X << "." << VERSION_Y << "." << VERSION_Z << " running..." << endl;
 	
 	string inputFilename;
 	

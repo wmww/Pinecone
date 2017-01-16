@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VERSION.h"
+
 #include <string>
 #include <iostream>
 #include <math.h>
