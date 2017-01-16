@@ -1,10 +1,4 @@
 
-==> "pineconeImport.pncn"
+==> "../examples/letters.pncn"
 
-a: tru
-b: fls
-
-!a && b ?
-	print: 1
-|
-	print: 2
+printc: h; printc: e; printc: l; printc: l; printc: o; printc: sp; printc: w; printc: o; printc: r; printc: l; printc: d; print
