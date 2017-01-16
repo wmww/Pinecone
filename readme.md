@@ -41,24 +41,18 @@ the following features are either coming soon, or implemented now but broken:
 * Transpiling to C++ (currently the language is only interpreted)
 
 __here is an example of a very simple Pinecone program:__
-
+It prints out all the fibonacci numbers that are less then 100 and even
 ```
-a: 7.6              # init a as a Dub
-b: Int              # init b as an Int with default value 0
-b: (Int: a)-(b-3)   # convert a to an Int (truncate) and add it to b minus 3
+a: 1
+b: 0
 
-b<12?               # if b is less then 12 (true)
-    print: b        # print 10
-
-a>5?                # if a is greater then 5 (false)
-    print: a        # condition failed so don't execute This
-
-print               # print blank line
-
-i: 0                # init i as Int to 0
-i<24@               # while i is less then 24
-(                   # series of statements enclosed in parentheses (not curly braces)
-    print: i        # print i
-    i: i+1          # increment i
-)                   # when done, the numbers 0-23 will be printed, each on a new line
+a<100 @
+(
+	a%2=0 ?
+		print: a
+	
+	tmp: a
+	a: a+b
+	b: tmp
+)
 ```
