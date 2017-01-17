@@ -244,8 +244,27 @@ void NamespaceData::addVar(Type type, string name)
 	size_t offset=stackFrame->getSize();
 	stackFrame->addMember(type);
 	
-	Action getAction=varGetAction(offset, type, name);
-	Action setAction=varSetAction(offset, type, name);
+	Action getAction;
+	Action setAction;
+	
+	Namespace top=shared_from_this();
+	
+	while(top->parent)
+	{
+		top=top->parent;
+	}
+	
+	if (stackFrame!=top->stackFrame)
+	{
+		getAction=varGetAction(offset, type, name);
+		setAction=varSetAction(offset, type, name);
+	}
+	else
+	{
+		getAction=globalGetAction(offset, type, name);
+		setAction=globalSetAction(offset, type, name);
+	}
+	
 	dynamicActions.add(name, getAction);
 	dynamicActions.add(name, setAction);
 }

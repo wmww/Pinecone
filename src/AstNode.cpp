@@ -7,7 +7,7 @@
 //AstNode astVoid=AstNode(new AstVoid);
 
 extern StackFrame stdLibStackFrame;
-extern Namespace stdLibNamespace;
+extern Namespace globalNamespace;
 
 Action resolveLiteral(Token token);
 

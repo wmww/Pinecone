@@ -61,17 +61,17 @@ addAction(nameText, getPncnType(returnType), getPncnType(leftType), getPncnType(
 
 Action voidAction;
 
-shared_ptr<StackFrame> stdLibStackFrame;
-Namespace stdLibNamespace;
+//shared_ptr<StackFrame> stdLibStackFrame;
+Namespace globalNamespace;
 
 void addAction(string text, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	stdLibNamespace->addAction(lambdaAction(returnType, lambda, leftType, rightType, text), text);
+	globalNamespace->addAction(lambdaAction(returnType, lambda, leftType, rightType, text), text);
 }
 
 void addAction(Operator op, Type returnType, Type leftType, Type rightType, function<void*(void*, void*)> lambda)
 {
-	stdLibNamespace->addOperator(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
+	globalNamespace->addOperator(lambdaAction(returnType, lambda, leftType, rightType, op->getText()), op);
 }
 
 Type IntArray=nullptr;
@@ -100,8 +100,7 @@ void setValInTuple(void* data, Type type, string name, T val)
 
 void populatePineconeStdLib()
 {
-	Namespace table=stdLibNamespace=NamespaceData::makeRootNamespace();
-	stdLibStackFrame=table->getStackFrame();
+	Namespace table=globalNamespace=NamespaceData::makeRootNamespace();
 	
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
 	voidAction=createNewVoidAction();
