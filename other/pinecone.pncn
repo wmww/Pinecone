@@ -8,10 +8,13 @@ print
 
 var: 10
 print: var
-func
 print: var
 
-func :: {}:
+func
+
+func :: {}.{} -> {}:
 (
-	var: 8
+	printc: w
 )
+
+afdgsdfgf: 9
