@@ -239,7 +239,7 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 		
 		type=newType;
 		
-		if (charType==CharClassifier::NEWLINE)
+		if (file.getContents()[i]=='\n')
 		{
 			line++;
 			charPos=1;
