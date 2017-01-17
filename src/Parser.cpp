@@ -270,7 +270,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 
 AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
-	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
+	error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
 	
 	if (left>right)
 	{
@@ -482,12 +482,13 @@ void parseTokenList(const vector<Token>& tokens, int left, int right, vector<Ast
 			i+=2;
 			start=i;
 		}
-		else if (ops->isOpenBrac(tokens[i]->getOp()))
-		{
-			i=skipBrace(tokens, i);
-		}
 		else
 		{
+			if (ops->isOpenBrac(tokens[i]->getOp()))
+			{
+				i=skipBrace(tokens, i);
+			}
+			
 			bool tokenTakesRightInput=(tokens[i]->getOp() && tokens[i]->getOp()->takesRightInput());
 			int next=i+1;
 			bool nextTokenTakesLeftInput=(next<=right && tokens[next]->getOp() && tokens[next]->getOp()->takesLeftInput());
