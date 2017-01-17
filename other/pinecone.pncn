@@ -14,5 +14,6 @@ print: var
 
 func :: {}.{} -> {}:
 (
-	var: w
+	print: var
+	var: 2
 )

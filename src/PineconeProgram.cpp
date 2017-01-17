@@ -7,7 +7,7 @@ void populatePineconeStdLib();
 void lexString(SourceFile& file, vector<Token>& tokens);
 Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType);
 
-extern Namespace stdLibNamespace;
+extern Namespace globalNamespace;
 
 PineconeProgram::PineconeProgram()
 {
@@ -72,7 +72,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	{
 		try
 		{
-			astRoot->setInput(stdLibNamespace, true, Void, Void);
+			astRoot->setInput(globalNamespace, true, Void, Void);
 		}
 		catch (PineconeError err)
 		{
@@ -82,7 +82,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		
 		try
 		{
-			actionRoot=functionAction(astRoot->getAction(), stdLibNamespace->getStackFrame());
+			actionRoot=astRoot->getAction();
 			
 			if (printOutput)
 			{
@@ -106,7 +106,10 @@ void PineconeProgram::execute()
 {
 	try
 	{
+		stackPtr=globalFramePtr=malloc(globalNamespace->getStackFrame()->getSize());
 		free(actionRoot->execute(nullptr, nullptr));
+		free(globalFramePtr);
+		stackPtr=globalFramePtr=nullptr;
 	}
 	catch (PineconeError err)
 	{
