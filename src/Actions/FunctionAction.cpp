@@ -45,7 +45,7 @@ public:
 		
 		action=node->getAction();
 		
-		if (!returnType->matches(action->getReturnType()))
+		if (!returnType->isVoid() && !returnType->matches(action->getReturnType()))
 		{
 			throw PineconeError("function body returns "+action->getReturnType()->getString()+" instead of "+returnType->getString(), SOURCE_ERROR, node->getToken());
 		}
