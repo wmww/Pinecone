@@ -36,7 +36,6 @@
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="../examples/letters.pncn" />
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/AllOperators.h" />
 		<Unit filename="../h/AstNode.h" />

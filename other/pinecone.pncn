@@ -1,4 +1,17 @@
 
 ==> "../examples/letters.pncn"
 
-printc: h; printc: e; printc: l; printc: l; printc: o; printc: sp; printc: w; printc: o; printc: r; printc: l; printc: d; print
+printc: h; printc: e; printc: l; printc: l; printc: o;
+printc: sp
+printc: w; printc: o; printc: r; printc: l; printc: d;
+print
+
+var: 10
+print: var
+func
+print: var
+
+func :: {}:
+(
+	var: 8
+)
