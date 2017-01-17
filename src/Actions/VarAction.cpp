@@ -6,10 +6,11 @@ class VarGetAction: public ActionData
 {
 public:
 	
-	VarGetAction(size_t in, Type typeIn, string textIn):
+	VarGetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string textIn):
 		ActionData(typeIn, Void, Void)
 	{
 		offset=in;
+		stackPtrPtr=stackPtrPtrIn;
 		
 		setDescription("get " + typeIn->getString() + " '" + textIn + "'");
 	}
@@ -21,30 +22,31 @@ public:
 	
 	void* execute(void* inLeft, void* inRight)
 	{
-		if (!stackPtr)
+		if (!(*stackPtrPtr))
 		{
 			throw PineconeError("something fucked up big time. VarGetAction::execute called while stack pointer is still null", RUNTIME_ERROR);
 		}
 		
 		void* out=malloc(returnType->getSize());
-		memcpy(out, (char*)stackPtr+offset, returnType->getSize());
+		memcpy(out, (char*)(*stackPtrPtr)+offset, returnType->getSize());
 		return out;
 	}
 	
 private:
 	
+	void ** stackPtrPtr;
 	size_t offset;
 };
 
-//an action for setting a variable, will NOT delete the data element in destructor
 class VarSetAction: public ActionData
 {
 public:
 	
-	VarSetAction(size_t in, Type typeIn, string textIn):
+	VarSetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string textIn):
 		ActionData(typeIn, Void, typeIn)
 	{
 		offset=in;
+		stackPtrPtr=stackPtrPtrIn;
 		
 		setDescription("set " + typeIn->getString() + " '" + textIn + "'");
 	}
@@ -56,22 +58,23 @@ public:
 	
 	void* execute(void* left, void* right)
 	{
-		if (!stackPtr)
+		if (!(*stackPtrPtr))
 		{
 			throw PineconeError("something fucked up big time. VarSetAction::execute called while stack pointer is still null", RUNTIME_ERROR);
 		}
 		
 		//copy data on to the stack location of the var
-		memcpy((char*)stackPtr+offset, right, inRightType->getSize());
+		memcpy((char*)(*stackPtrPtr)+offset, right, inRightType->getSize());
 		
 		//return a new copy of the data
 		void* out=malloc(returnType->getSize());
-		memcpy(out, (char*)stackPtr+offset, inRightType->getSize());
+		memcpy(out, (char*)(*stackPtrPtr)+offset, inRightType->getSize());
 		return out;
 	}
 	
 private:
 	
+	void ** stackPtrPtr;
 	size_t offset;
 };
 
@@ -112,12 +115,22 @@ private:
 
 Action varGetAction(size_t in, Type typeIn, string textIn)
 {
-	return Action(new VarGetAction(in, typeIn, textIn));
+	return Action(new VarGetAction(in, &stackPtr, typeIn, textIn));
 }
 
 Action varSetAction(size_t in, Type typeIn, string textIn)
 {
-	return Action(new VarSetAction(in, typeIn, textIn));
+	return Action(new VarSetAction(in, &stackPtr, typeIn, textIn));
+}
+
+Action globalGetAction(size_t in, Type typeIn, string textIn)
+{
+	return Action(new VarGetAction(in, &globalFramePtr, typeIn, textIn));
+}
+
+Action globalSetAction(size_t in, Type typeIn, string textIn)
+{
+	return Action(new VarSetAction(in, &globalFramePtr, typeIn, textIn));
 }
 
 Action constGetAction(void* in, Type typeIn, string textIn)

@@ -6,6 +6,7 @@ using std::vector;
 #include "Type.h"
 //#include "Action.h"
 
+extern void* globalFramePtr;
 extern void* stackPtr;
 
 class StackFrame

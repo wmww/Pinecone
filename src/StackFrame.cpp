@@ -2,7 +2,8 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
-void * stackPtr=nullptr;
+void* globalFramePtr=nullptr;
+void* stackPtr=nullptr;
 
 void StackFrame::addMember(Type in)
 {
