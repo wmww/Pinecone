@@ -2,6 +2,7 @@
 #include "../h/ErrorHandler.h"
 #include "../h/Operator.h"
 #include "../h/AllOperators.h"
+#include "../h/CppProgram.h"
 
 void populatePineconeStdLib();
 void lexString(SourceFile& file, vector<Token>& tokens);
@@ -100,6 +101,15 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		cout << endl << "C source code:\n" << astRoot->getCSource() << endl;
 	}*/
 	
+}
+
+string PineconeProgram::getCpp()
+{
+	CppProgram outProg;
+	
+	actionRoot->addCppCodeToProg(outProg);
+	
+	return outProg.getCode();
 }
 
 void PineconeProgram::execute()

@@ -11,6 +11,7 @@ struct Flags
 {
 	vector<string> inFiles;
 	bool debug=false;
+	bool showCpp=false;				// if to show transpiled C++ code
 	bool help=false;
 	bool version=false;
 	bool flagError=false;			// if to quit immediately, this is set if there is an unrecognised flag
@@ -35,6 +36,8 @@ int main(int argc, char ** argv)
 		cout << "options: " << endl;
 		cout << "-v, -version     display the version of Pinecone" << endl;
 		cout << "-debug           display debugging info and then run the program" << endl;
+		cout << "-cpp             instead of running the program, show transpiles C++ code" <<
+				"                 not yet fully implemented" << endl;
 		cout << "-h, -help        display this help and quit" << endl;
 		return 0;
 	}
@@ -69,6 +72,10 @@ int main(int argc, char ** argv)
 		else
 			cout << "program not executed due to errors" << endl;
 	}
+	else if (flags.showCpp)
+	{
+		cout << putStringInBox(program.getCpp(), "C++ code", true) << endl;
+	}
 	else
 	{
 		if (flags.debug)
@@ -98,6 +105,10 @@ Flags getFlags(int argc, char ** argv)
 			if (flag=="debug")
 			{
 				flags.debug=true;
+			}
+			else if (flag=="cpp")
+			{
+				flags.showCpp=true;
 			}
 			else if (flag=="v" || flag=="version")
 			{

@@ -33,7 +33,7 @@ public:
 	PineconeProgram();
 	~PineconeProgram() {cleanUp();}
 	
-	string getCpp() {return outCpp;}
+	string getCpp();
 	
 	void resolveProgram(string inFilename, bool printExtraOutput);
 	
@@ -48,7 +48,6 @@ private:
 private:
 	
 	SourceFile file;
-	string outCpp;
 	
 	//a list of all the tokens in the program
 	vector<Token> tokens;

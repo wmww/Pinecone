@@ -12,7 +12,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-debug other/pinecone.pncn" />
+				<Option parameters="-debug -cpp other/pinecone.pncn" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -39,6 +39,7 @@
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/AllOperators.h" />
 		<Unit filename="../h/AstNode.h" />
+		<Unit filename="../h/CppProgram.h" />
 		<Unit filename="../h/ErrorHandler.h" />
 		<Unit filename="../h/Namespace.h" />
 		<Unit filename="../h/Operator.h" />
@@ -63,6 +64,7 @@
 		<Unit filename="../src/Actions/VarAction.cpp" />
 		<Unit filename="../src/AllOperators.cpp" />
 		<Unit filename="../src/AstNode.cpp" />
+		<Unit filename="../src/CppProgram.cpp" />
 		<Unit filename="../src/ErrorHandler.cpp" />
 		<Unit filename="../src/Lexer.cpp" />
 		<Unit filename="../src/Namespace.cpp" />
