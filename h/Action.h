@@ -2,6 +2,7 @@
 
 #include "StackFrame.h"
 #include "Type.h"
+#include "CppProgram.h"
 #include <functional>
 #include <memory>
 #include <vector>
@@ -36,6 +37,7 @@ public:
 	virtual string getDescription() {return description;}
 	virtual void* execute(void* inLeft, void* inRight)=0;
 	virtual string getCSource(string inLeft="", string inRight="")=0;
+	virtual void addCppCodeToProg(CppProgram& prog) {prog.addComment("action '"+toString()+"' to cpp code not yet implemented");};
 		
 protected:
 	
