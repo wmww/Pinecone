@@ -526,7 +526,8 @@ void AstToken::resolveAction()
 	}
 	else if (token->getType()==TokenData::STRING_LITERAL)
 	{
-		throw PineconeError("strings are not yet supported", SOURCE_ERROR, token);
+		action=resolveLiteral(token);
+		//throw PineconeError("strings are not yet supported", SOURCE_ERROR, token);
 	}
 	else
 	{
