@@ -1,2 +1,8 @@
 
 print: "hello world"
+
+print: "abc".at: 0
+print: "abc".at: 1
+print: "abu".at: 2
+
+
