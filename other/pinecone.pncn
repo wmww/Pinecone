@@ -7,6 +7,12 @@ str: str+"world"
 
 print: str
 
+myStr: "enter some input please: ".input
+
+print
+
+print: myStr
+
 //
 ==> "../examples/letters.pncn"
 
