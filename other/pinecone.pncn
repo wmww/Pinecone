@@ -1,4 +1,9 @@
 
+str: "hello"
+
+print: str
+
+//
 ==> "../examples/letters.pncn"
 
 printc: h; printc: e; printc: l; printc: l; printc: o;
@@ -18,3 +23,4 @@ func :: {}.{} -> {}:
 )
 
 blah :: jsdkhs+sdhfjk
+\\

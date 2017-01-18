@@ -92,8 +92,8 @@ Action resolveStringLiteral(Token token)
 	char * strData=(char*)malloc(text.size()*sizeof(char));
 	memcpy(strData, text.c_str(), text.size()*sizeof(char));
 	
-	*((int*)((char*)obj+String->getSubType("size").offset))=text.size();
-	*((char**)((char*)obj+String->getSubType("size").offset))=strData;
+	*((int*)((char*)obj+String->getSubType("_size").offset))=text.size();
+	*((char**)((char*)obj+String->getSubType("_data").offset))=strData;
 	
 	return constGetAction(obj, String, "\""+text+"\"");
 }

@@ -14,6 +14,7 @@
 #define CPP_Bool bool
 #define CPP_Void char
 
+#define PNCN_String String
 #define PNCN_Dub Dub
 #define PNCN_Int Int
 #define PNCN_Bool Bool
@@ -36,6 +37,7 @@
 #define DO_RETURN_VAL(typeIn, varName) void* outPtr=malloc(getPncnType(typeIn)->getSize()); memcpy(outPtr, &varName, getPncnType(typeIn)->getSize()); return outPtr;
 #define DONT_RETURN_VAL(typeIn, varName) return nullptr;
 
+#define INSTANTIATE_String DO_INSTANTIATE
 #define INSTANTIATE_Dub DO_INSTANTIATE
 #define INSTANTIATE_Int DO_INSTANTIATE
 #define INSTANTIATE_Bool DO_INSTANTIATE
@@ -198,7 +200,7 @@ void populatePineconeStdLib()
 	
 	///basic types
 	
-	String=makeTuple(vector<NamedType>{NamedType{"size", Int}, NamedType{"data", Dub}});
+	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Dub}});
 	
 	table->addType(Void, "Void");
 	table->addType(Bool, "Bool");
@@ -248,6 +250,17 @@ void populatePineconeStdLib()
 	
 	func("print", Void, Void, Dub,
 		cout << right << endl);
+	
+	addAction("print", Void, Void, String, LAMBDA_HEADER
+		{
+			int len=getValFromTuple<int>(rightIn, String, "_size");
+			char * data=(char*)malloc((len+1)*sizeof(char));
+			memcpy(data, getValFromTuple<char*>(rightIn, String, "_data"), len*sizeof(char));
+			data[len]=0;
+			cout << data << endl;
+			return nullptr;
+		}
+	);
 	
 	func("printc", Void, Void, Int,
 		cout << (char)right);
