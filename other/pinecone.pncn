@@ -1,5 +1,7 @@
 
 str: "hello"
+str: str+" "
+str: str+"world"
 
 print: str
 
