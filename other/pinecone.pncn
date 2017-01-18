@@ -11,7 +11,14 @@ myStr: "enter some input please: ".input
 
 print
 
-print: myStr
+print: "your input was: '"+myStr+"'"
+
+print
+
+myStr="abc" ?
+	print: "your input was abc"
+|
+	print: "your input was not abc"
 
 //
 ==> "../examples/letters.pncn"
