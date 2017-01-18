@@ -2,9 +2,16 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
-### v0.2.1 (Jan 16 2017)
-* fixed bug introduced in v0.2.0 with functions
-* fixed bug with line numbers in error messages
+### v0.3.0 (Jan 18 2017)
+
+* Added string literal support
+* Added various functions and operators for strings
+* Fixed globals
+
+### v0.2.1 (Jan 16, 2017)
+
+* Fixed bug introduced in v0.2.0 with functions
+* Fixed bug with line numbers in error messages
 
 ## v0.2.0 (Jan 16, 2017)
 
