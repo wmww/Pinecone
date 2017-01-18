@@ -6,7 +6,7 @@ Pinecone is a programming language currently under development by Sophie Winter.
 
 __If you want to program in Pinecone now, see the tutorials folder for how to get started.__
 
-__For updates, discussion and help, take a look at the Pinecone subreddit: [](reddit.com/r/PineconeLang)__
+__For updates, discussion and help, take a look at the Pinecone subreddit: [reddit.com/r/PineconeLang](reddit.com/r/PineconeLang)__
 
 ## Why?
 This is probably the most common reaction to hearing about a new language. I'm not guaranteeing I can justify Pinecone's existence to you, but here is my best attempt.
@@ -33,13 +33,13 @@ the features that are currently implemented are as follows:
 * Lazily evaluated compile time constants
 * Tuples and data structures
 * Functions that can take left and right inputs, and can return values
+* Global variables
+* Strings
 
 the following features are either coming soon, or implemented now but broken:
-* Global variables
 * Pass-by-reference
 * Proper classes (pass-by-reference needed)
 * Arrays for any type
-* Strings
 * Operator overloading
 * Transpiling to C++ (currently the language is only interpreted)
 
