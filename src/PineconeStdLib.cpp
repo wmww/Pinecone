@@ -373,6 +373,20 @@ void populatePineconeStdLib()
 		}
 	);
 	
+	addAction("at", Int, String, Int, LAMBDA_HEADER
+		{
+			int index=*((int*)rightIn);
+			int * out=(int*)malloc(sizeof(int));
+			string str=pncnStr2CppStr(leftIn);
+			if (index<0 || index>=int(str.size()))
+			{
+				throw PineconeError("tried to access location "+to_string(index)+" in string "+to_string(str.size())+" long", RUNTIME_ERROR);
+			}
+			*out=str[index];
+			return out;
+		}
+	);
+	
 	addAction("input", String, String, Void, LAMBDA_HEADER
 		{
 			string in;
