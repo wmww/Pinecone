@@ -6,6 +6,8 @@ Pinecone is a programming language currently under development by Sophie Winter.
 
 __If you want to program in Pinecone now, see the tutorials folder for how to get started.__
 
+__For updates, discussion and help, take a look at the Pinecone subreddit: [](reddit.com/r/PineconeLang)__
+
 ## Why?
 This is probably the most common reaction to hearing about a new language. I'm not guaranteeing I can justify Pinecone's existence to you, but here is my best attempt.
 

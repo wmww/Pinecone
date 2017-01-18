@@ -11,9 +11,10 @@ print: var
 func
 print: var
 
-
 func :: {}.{} -> {}:
 (
 	print: var
 	var: 2
 )
+
+blah :: jsdkhs+sdhfjk
