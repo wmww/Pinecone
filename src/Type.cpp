@@ -275,6 +275,7 @@ const Type Void = TypeBase::makeNewVoid();
 const Type Bool = TypeBase::makeNewPrimitive(TypeBase::BOOL);
 const Type Int = TypeBase::makeNewPrimitive(TypeBase::INT);
 const Type Dub = TypeBase::makeNewPrimitive(TypeBase::DUB);
+Type String = nullptr;
 
 Type TypeBase::getMetaType()
 {

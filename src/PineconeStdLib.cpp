@@ -198,6 +198,8 @@ void populatePineconeStdLib()
 	
 	///basic types
 	
+	String=makeTuple(vector<NamedType>{NamedType{"size", Int}, NamedType{"data", Dub}});
+	
 	table->addType(Void, "Void");
 	table->addType(Bool, "Bool");
 	table->addType(Int, "Int");

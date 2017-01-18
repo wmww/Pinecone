@@ -270,7 +270,7 @@ int skipBrace(const vector<Token>& tokens, int start)
 
 AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
-	error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
+	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
 	
 	if (left>right)
 	{
@@ -458,7 +458,7 @@ void parseTokenList(const vector<Token>& tokens, int left, int right, vector<Ast
 			
 			string path=tokens[i+1]->getText();
 			
-			//this nonesens is required because my lexer is shit and includes the first quite but not the last one
+			//this nonesens is required because my lexer is shit and includes the first quote but not the last one
 			//instead of hardcoding that in, I figured I'd make it flexable so I don't break everthing when I fix the lexer
 			
 			while (path.size()>0 && path[0]=='"')

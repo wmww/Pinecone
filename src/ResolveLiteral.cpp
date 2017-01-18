@@ -2,8 +2,109 @@
 #include "../h/Token.h"
 #include "../h/ErrorHandler.h"
 
+Action resolveIntLiteral(Token token, Type type)
+{
+	string in=token->getText();
+	
+	int val=0;
+	
+	for (auto i=in.begin(); i!=in.end(); ++i)
+	{
+		if (*i<'0' || *i>'9')
+		{
+			error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
+			return nullptr;
+		}
+		
+		val=val*10+(*i-'0');
+	}
+	
+	if (type==Bool)
+	{
+		bool out=(val!=0);
+		return constGetAction(&out, type, token->getText());
+	}
+	else
+	{
+		int out=val;
+		return constGetAction(&out, type, token->getText());
+	}
+}
+
+Action resolveDubLiteral(Token token)
+{
+	string in=token->getText();
+	
+	double val=0;
+	int pointPos=0;
+	
+	for (auto i=in.begin(); i!=in.end(); ++i)
+	{
+		if (*i=='.' || *i=='_')
+		{
+			if (pointPos==0)
+			{
+				pointPos=10;
+			}
+			else
+			{
+				error.log(string() + "multiple decimal points found in number '" + in + "'", SOURCE_ERROR, token);
+				return voidAction;
+			}
+		}
+		else if (*i>='0' && *i<='9')
+		{
+			if (pointPos)
+			{
+				val+=(double)(*i-'0')/pointPos;
+				pointPos*=10;
+			}
+			else
+			{
+				val=val*10+(*i-'0');
+			}
+		}
+		else
+		{
+			error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
+			return voidAction;
+		}
+	}
+	
+	double out=val;
+	return constGetAction(&out, Dub, token->getText());
+}
+
+Action resolveStringLiteral(Token token)
+{
+	string text=token->getText();
+	
+	//this nonesens is required because my lexer is shit and includes the first quote but not the last one
+	//instead of hardcoding that in, I figured I'd make it flexable so I don't break everthing when I fix the lexer
+	
+	while (text.size()>0 && text[0]=='"')
+		text=text.substr(1, string::npos);
+	
+	while (text.size()>0 && text[text.size()-1]=='"')
+		text=text.substr(0, text.size()-1);
+	
+	void * obj=malloc(String->getSize());
+	char * strData=(char*)malloc(text.size()*sizeof(char));
+	memcpy(strData, text.c_str(), text.size()*sizeof(char));
+	
+	*((int*)((char*)obj+String->getSubType("size").offset))=text.size();
+	*((char**)((char*)obj+String->getSubType("size").offset))=strData;
+	
+	return constGetAction(obj, String, "\""+text+"\"");
+}
+
 Action resolveLiteral(Token token)
 {
+	if (token->getType()==TokenData::STRING_LITERAL)
+	{
+		return resolveStringLiteral(token);
+	}
+	
 	if (token->getType()!=TokenData::LITERAL)
 	{
 		throw PineconeError(FUNC+" called on token that is not a literal", INTERNAL_ERROR, token);
@@ -53,76 +154,16 @@ Action resolveLiteral(Token token)
 		}
 	}
 	
-	if (type==Int || type==Int)
+	if (type==Int)
 	{
-		int val=0;
-		
-		for (auto i=in.begin(); i!=in.end(); ++i)
-		{
-			if (*i<'0' || *i>'9')
-			{
-				error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
-				return nullptr;
-			}
-			
-			val=val*10+(*i-'0');
-		}
-		
-		if (type==Bool)
-		{
-			bool out=(val!=0);
-			return constGetAction(&out, type, token->getText());
-		}
-		else
-		{
-			int out=val;
-			return constGetAction(&out, type, token->getText());
-		}
+		return resolveIntLiteral(token, type);
 	}
 	else if (type==Dub) //floating point
 	{
-		double val=0;
-		int pointPos=0;
-		
-		for (auto i=in.begin(); i!=in.end(); ++i)
-		{
-			if (*i=='.' || *i=='_')
-			{
-				if (pointPos==0)
-				{
-					pointPos=10;
-				}
-				else
-				{
-					error.log(string() + "multiple decimal points found in number '" + in + "'", SOURCE_ERROR, token);
-					return voidAction;
-				}
-			}
-			else if (*i>='0' && *i<='9')
-			{
-				if (pointPos)
-				{
-					val+=(double)(*i-'0')/pointPos;
-					pointPos*=10;
-				}
-				else
-				{
-					val=val*10+(*i-'0');
-				}
-			}
-			else
-			{
-				error.log(string() + "bad character '" + *i + "' found in number '" + in + "'", SOURCE_ERROR, token);
-				return voidAction;
-			}
-		}
-		
-		double out=val;
-		return constGetAction(&out, type, token->getText());
+		return resolveDubLiteral(token);
 	}
 	else
 	{
-		error.log("tried to make literal with invalid type of " + type->getString(), INTERNAL_ERROR, token);
-		return voidAction;
+		throw PineconeError("tried to make literal with invalid type of " + type->getString(), INTERNAL_ERROR, token);
 	}
 }
