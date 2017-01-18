@@ -328,6 +328,14 @@ void populatePineconeStdLib()
 	
 	/// strings
 	
+	addAction("len", Int, String, Void, LAMBDA_HEADER
+		{
+			int* out=(int*)malloc(sizeof(int));
+			*out=getValFromTuple<int>(leftIn, String, "_size");
+			return out;
+		}
+	);
+	
 	addAction(ops->plus, String, String, String, LAMBDA_HEADER
 		{
 			int len0=getValFromTuple<int>(leftIn, String, "_size");
