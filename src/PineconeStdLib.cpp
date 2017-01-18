@@ -107,6 +107,15 @@ void populatePineconeStdLib()
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
 	voidAction=createNewVoidAction();
 	
+	///basic types
+	
+	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Dub}});
+	
+	table->addType(Void, "Void");
+	table->addType(Bool, "Bool");
+	table->addType(Int, "Int");
+	table->addType(Dub, "Dub");
+	
 	
 	///constansts
 	
@@ -196,16 +205,6 @@ void populatePineconeStdLib()
 	
 	func(ops->notOp, Bool, Void, Dub,
 		retrn right==0);
-	
-	
-	///basic types
-	
-	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Dub}});
-	
-	table->addType(Void, "Void");
-	table->addType(Bool, "Bool");
-	table->addType(Int, "Int");
-	table->addType(Dub, "Dub");
 	
 	
 	///initalizers
@@ -328,11 +327,39 @@ void populatePineconeStdLib()
 	
 	/// strings
 	
+	
+	addAction("String", String, Void, Void, LAMBDA_HEADER
+		{
+			void * obj=malloc(String->getSize());
+			setValInTuple(obj, String, "_size", 0);
+			setValInTuple(obj, String, "_data", nullptr);
+			
+			return obj;
+		}
+	);
+	
 	addAction("len", Int, String, Void, LAMBDA_HEADER
 		{
 			int* out=(int*)malloc(sizeof(int));
 			*out=getValFromTuple<int>(leftIn, String, "_size");
 			return out;
+		}
+	);
+	
+	addAction("ascii", String, Int, Void, LAMBDA_HEADER
+		{
+			void * obj=malloc(String->getSize());
+			int val=*((int*)leftIn);
+			if (val<0 || val>=256)
+			{
+				throw PineconeError("tried to make ascii string out of value "+val, RUNTIME_ERROR);
+			}
+			char* strData=(char*)malloc(sizeof(char));
+			*strData=val;
+			setValInTuple(obj, String, "_size", 1);
+			setValInTuple(obj, String, "_data", strData);
+			
+			return obj;
 		}
 	);
 	

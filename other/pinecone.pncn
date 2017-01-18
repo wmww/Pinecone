@@ -1,9 +1,11 @@
 
+str: String
+
 str: "hello"
-str: str+" "
+str: str+32.ascii
 str: str+"world"
 
-print: str.len
+print: str
 
 //
 ==> "../examples/letters.pncn"
