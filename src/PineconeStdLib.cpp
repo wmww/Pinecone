@@ -384,19 +384,15 @@ void populatePineconeStdLib()
 	
 	addAction(ops->plus, String, String, String, LAMBDA_HEADER
 		{
-			int len0=getValFromTuple<int>(leftIn, String, "_size");
-			int len1=getValFromTuple<int>(rightIn, String, "_size");
-			
-			void * obj=malloc(String->getSize());
-			char * strData=(char*)malloc((len0+len1)*sizeof(char));
-			
-			memcpy(strData, getValFromTuple<char*>(leftIn, String, "_data"), len0*sizeof(char));
-			memcpy(strData+len0*sizeof(char), getValFromTuple<char*>(rightIn, String, "_data"), len1*sizeof(char));
-			
-			setValInTuple(obj, String, "_size", len0+len1);
-			setValInTuple(obj, String, "_data", strData);
-			
-			return obj;
+			return cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
+		}
+	);
+	
+	addAction(ops->equal, Bool, String, String, LAMBDA_HEADER
+		{
+			bool* out=(bool*)malloc(sizeof(bool));
+			*out=pncnStr2CppStr(leftIn)==pncnStr2CppStr(rightIn);
+			return out;
 		}
 	);
 	
