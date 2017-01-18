@@ -375,11 +375,10 @@ void populatePineconeStdLib()
 	
 	addAction("input", String, String, Void, LAMBDA_HEADER
 		{
-			void * obj=malloc(String->getSize());
-			setValInTuple(obj, String, "_size", 0);
-			setValInTuple(obj, String, "_data", nullptr);
-			
-			return obj;
+			string in;
+			cout << pncnStr2CppStr(leftIn);
+			std::cin >> in;
+			return cppStr2PncnStr(in);
 		}
 	);
 	
