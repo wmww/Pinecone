@@ -1,5 +1,6 @@
 
 print: "hello world"
+print: "hello world".sub: 3, 8
 
 print: "abc".at: 0
 print: "abc".at: 1
