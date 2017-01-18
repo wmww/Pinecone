@@ -6,7 +6,7 @@ Pinecone is a programming language currently under development by William W Wold
 
 __If you want to program in Pinecone now, see the tutorials folder for how to get started.__
 
-__For updates, discussion and help, take a look at the Pinecone subreddit: [reddit.com/r/PineconeLang](reddit.com/r/PineconeLang)__
+__For updates, discussion and help, take a look at the Pinecone subreddit: [r/PineconeLang](https://www.reddit.com/r/PineconeLang/)__
 
 ## Why?
 This is probably the most common reaction to hearing about a new language. I'm not guaranteeing I can justify Pinecone's existence to you, but here is my best attempt.
