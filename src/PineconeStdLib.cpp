@@ -387,6 +387,20 @@ void populatePineconeStdLib()
 		}
 	);
 	
+	addAction("sub", String, String, makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}}), LAMBDA_HEADER
+		{
+			Type RightType=makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}});
+			int start=getValFromTuple<int>(rightIn, RightType, "a");
+			int end=getValFromTuple<int>(rightIn, RightType, "b");
+			string str=pncnStr2CppStr(leftIn);
+			if (start<0 || end>=int(str.size()) || start>end)
+			{
+				throw PineconeError("invalid arguments sent to String.sub", RUNTIME_ERROR);
+			}
+			return cppStr2PncnStr(str.substr(start, end-start));
+		}
+	);
+	
 	addAction("input", String, String, Void, LAMBDA_HEADER
 		{
 			string in;
