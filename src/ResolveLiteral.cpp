@@ -75,6 +75,9 @@ Action resolveDubLiteral(Token token)
 	return constGetAction(&out, Dub, token->getText());
 }
 
+string pncnStr2CppStr(void* obj);
+void* cppStr2PncnStr(string cpp);
+
 Action resolveStringLiteral(Token token)
 {
 	string text=token->getText();
@@ -88,12 +91,7 @@ Action resolveStringLiteral(Token token)
 	while (text.size()>0 && text[text.size()-1]=='"')
 		text=text.substr(0, text.size()-1);
 	
-	void * obj=malloc(String->getSize());
-	char * strData=(char*)malloc(text.size()*sizeof(char));
-	memcpy(strData, text.c_str(), text.size()*sizeof(char));
-	
-	*((int*)((char*)obj+String->getSubType("_size").offset))=text.size();
-	*((char**)((char*)obj+String->getSubType("_data").offset))=strData;
+	void* obj=cppStr2PncnStr(text);
 	
 	return constGetAction(obj, String, "\""+text+"\"");
 }
