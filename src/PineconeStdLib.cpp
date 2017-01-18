@@ -100,6 +100,28 @@ void setValInTuple(void* data, Type type, string name, T val)
 	*((T*)((char*)data+a.offset))=val;
 }
 
+string pncnStr2CppStr(void* obj)
+{
+	int len=getValFromTuple<int>(obj, String, "_size");
+	char * data=(char*)malloc((len+1)*sizeof(char));
+	memcpy(data, getValFromTuple<char*>(obj, String, "_data"), len*sizeof(char));
+	data[len]=0;
+	string out(data);
+	return out;
+}
+
+void* cppStr2PncnStr(string cpp)
+{
+	void * obj=malloc(String->getSize());
+	char * strData=(char*)malloc(cpp.size()*sizeof(char));
+	memcpy(strData, cpp.c_str(), cpp.size()*sizeof(char));
+	
+	*((int*)((char*)obj+String->getSubType("_size").offset))=cpp.size();
+	*((char**)((char*)obj+String->getSubType("_data").offset))=strData;
+	
+	return obj;
+}
+
 void populatePineconeStdLib()
 {
 	Namespace table=globalNamespace=NamespaceData::makeRootNamespace();
@@ -252,11 +274,7 @@ void populatePineconeStdLib()
 	
 	addAction("print", Void, Void, String, LAMBDA_HEADER
 		{
-			int len=getValFromTuple<int>(rightIn, String, "_size");
-			char * data=(char*)malloc((len+1)*sizeof(char));
-			memcpy(data, getValFromTuple<char*>(rightIn, String, "_data"), len*sizeof(char));
-			data[len]=0;
-			cout << data << endl;
+			cout << pncnStr2CppStr(rightIn) << endl;
 			return nullptr;
 		}
 	);
@@ -330,11 +348,7 @@ void populatePineconeStdLib()
 	
 	addAction("String", String, Void, Void, LAMBDA_HEADER
 		{
-			void * obj=malloc(String->getSize());
-			setValInTuple(obj, String, "_size", 0);
-			setValInTuple(obj, String, "_data", nullptr);
-			
-			return obj;
+			return cppStr2PncnStr("");
 		}
 	);
 	
@@ -348,16 +362,22 @@ void populatePineconeStdLib()
 	
 	addAction("ascii", String, Int, Void, LAMBDA_HEADER
 		{
-			void * obj=malloc(String->getSize());
 			int val=*((int*)leftIn);
 			if (val<0 || val>=256)
 			{
 				throw PineconeError("tried to make ascii string out of value "+val, RUNTIME_ERROR);
 			}
-			char* strData=(char*)malloc(sizeof(char));
-			*strData=val;
-			setValInTuple(obj, String, "_size", 1);
-			setValInTuple(obj, String, "_data", strData);
+			string out;
+			out+=(char)val;
+			return cppStr2PncnStr(out);
+		}
+	);
+	
+	addAction("input", String, String, Void, LAMBDA_HEADER
+		{
+			void * obj=malloc(String->getSize());
+			setValInTuple(obj, String, "_size", 0);
+			setValInTuple(obj, String, "_data", nullptr);
 			
 			return obj;
 		}
