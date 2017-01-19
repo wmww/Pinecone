@@ -1,0 +1,14 @@
+# this does not change the value of b, something is wrong.
+# tested with v0.3.0
+
+print: "hello world"
+
+a: 8
+
+b: a+1
+
+print: b
+
+tru @(
+	print: b: b * 2
+)

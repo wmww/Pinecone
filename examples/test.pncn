@@ -1,0 +1,11 @@
+print: "hello world"
+
+a: 7
+
+print: a
+
+k: 10
+b: 12
+
+c: k + b
+print: c
