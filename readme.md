@@ -5,7 +5,7 @@ Pinecone is a new programming language. Its goal is to combine the simplicity of
 
 __If you want to program in Pinecone now, see the [tutorials directory](tutorials) for how to get started.__
 
-__For updates, discussion and help, take a look at the Pinecone subreddit: [r/PineconeLang](https://www.reddit.com/r/PineconeLang/)__
+__For updates, discussion and help, take a look at the Pinecone subreddit: [/r/PineconeLang](https://www.reddit.com/r/PineconeLang/)__
 
 
 ## About
@@ -29,6 +29,7 @@ Pinecone will be similar in capabilities to modern object oriented compiled lang
 
 ## Current State
 The features that are currently implemented are as follows:
+
 * Primitive data types `Bool`, `Int` and `Dub`
 * All the operators you would expect (`+`, `*`, `%`, `:`, `=`, `>`, `<=`, `&&`, etc.)
 * Single and multi line comments
@@ -40,7 +41,8 @@ The features that are currently implemented are as follows:
 * Functions that can take left and right inputs, and can return values
 * Strings
 
-the following features are coming soon:
+the following features are coming soon:'
+
 * Pass-by-reference
 * Proper classes (pass-by-reference needed)
 * Arrays for any type
