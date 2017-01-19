@@ -3,7 +3,7 @@
 
 Pinecone is a new programming language. Its goal is to combine the simplicity of a dynamic language with the performance of a compiled one. It is under rapid development, but most of the core features are ready.
 
-__If you want to program in Pinecone now, see the [tutorials](tutorials/index) for how to get started.__
+__If you want to program in Pinecone now, see the [tutorials](tutorials/index.md) for how to get started.__
 
 __For updates, discussion and help, take a look at the Pinecone subreddit: [/r/PineconeLang](https://www.reddit.com/r/PineconeLang/)__
 
