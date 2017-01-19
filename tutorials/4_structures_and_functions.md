@@ -39,3 +39,5 @@ printNumbers :: {val1: Dub, val2: Dub}:
 ```
 
 I know the `in.` is annoying. It will be made implicit soon.
+
+[next: Temporary Hacks](5_temporary_hacks.md)
