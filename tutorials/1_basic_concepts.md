@@ -1,9 +1,11 @@
 # Basic Concepts
 
 The tutorials for most programming languages start with a hello world program, but Pinecone isn't most programming languages. Instead, lets start with a program that prints out something far more important.
+
 ```
 print: 42
 ```
+
 That's all you need in your file. No includes or boilerplate code of any sort. Just save that as a normal text file with the extension `.pncn` and run it.
 
 ## Primitive Types
@@ -37,11 +39,13 @@ Functions can also take input from the left, but we will get to that later.
 ## Variables
 
 A __variable__ is a place you can store a value. Every variable has a type, but types are deduced implicitly. To create, change and use a variable, simply do the following:
+
 ```
 myVarName: 88
 myVarName: 12
 print: myVarName
 ```
+
 `myVarName` can be any series of letters, digits and underscores, as long as it doesn't start with a number. Variable names are case sensitive.
 
 As you can see, creating a variable, setting a variable and calling a function with all look the same. This is a very important feature for the language, as it makes refactoring variables into calculations much easier.
@@ -49,27 +53,33 @@ As you can see, creating a variable, setting a variable and calling a function w
 ## Tuples
 
 A Tuple can be thought of as an ad hoc data structure. To construct one you simple combine several expressions with commas. The names of the elements of a tuple are `a`, `b`, `c`, etc. Elements can be accesed with the `.` operator. Here is an example:
+
 ```
 myTuple: 6, 2.9, fls
 print: myTuple.c
 print: myTuple.a
 ```
+
 The output of this will be
+
 ```
 > fls
 > 6
 ```
+
 Tuple elements are supposed to be mutable, but this functionality is currently broken.
 
 ## Constants
 
 A __constant__ is a value that is determined at compile time. Constants are created with the constants assignment operator `::`. You can declare constants above or below where you use them. Trying to set a constants more then once will result in a compile time error. Here is an example of a simple use of constants:
+
 ```
 a :: 3
 print: b
 b :: a+c
 c :: 2
 ```
+
 This will compile correctly and print 5.
 
 ## Comments
@@ -79,6 +89,7 @@ Comments are parts of your program that the compiler doesn't look at, so you can
 ## Explicit Type Conversion
 
 Sometimes, you might want to send a value to a variable or function of a different type. In the future, this will just work, but for now, you must convert it explicitly. To do this, call the target type's name like a function. For example:
+
 ```
 myDub: 12.7
 myDub: 32       # won't work because 32 is an Int
