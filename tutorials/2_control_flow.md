@@ -59,5 +59,5 @@ i: 0 | i<12 | i: i+1 @
 ```
 The output of this is the numbers 0-11.
 
-[next: Strings and Input](3_strings_and_input.md)
+[next: Strings and Input ->](3_strings_and_input.md)
 
