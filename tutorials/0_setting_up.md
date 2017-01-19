@@ -10,4 +10,5 @@ Disclamer: these steps will probably work on Linux, maybe even on OSX. As for Wi
 6. Run it with the command `./pinecone path/to/pinecone/source.pncn`. If you don't have any Pinecone source yet, test it with `./pinecone examples/hello_world.pncn`
 7. If it works, you can now move on to the "basic concepts" tutorial
 
-[next: Basic Concepts ->](1_basic_concepts.md)
+[index](index.md) | [next: Basic Concepts ->](1_basic_concepts.md)
+

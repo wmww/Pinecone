@@ -13,4 +13,4 @@ Like other types, there are various operators and functions that can be applied 
 
 You can get a string as an input from the user. To do this, call `String.input`. This will block execution until they type sonething in and press enter, at which time the finction will return a string. If you want to give the user a prompt, call the function like this: `"please enter some input: ".input`.
 
-[next: Structures and Functions ->](4_structures_and_functions.md)
+[index](index.md) | [next: Structures and Functions ->](4_structures_and_functions.md)

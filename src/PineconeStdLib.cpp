@@ -137,6 +137,7 @@ void populatePineconeStdLib()
 	table->addType(Bool, "Bool");
 	table->addType(Int, "Int");
 	table->addType(Dub, "Dub");
+	table->addType(String, "String");
 	
 	
 	///constansts

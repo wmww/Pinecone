@@ -1,9 +1,35 @@
 
-print: "hello world"
-print: "hello world".sub: 3, 8
+key :: "a.- b-... c-.-. d-.. e."
 
-print: "abc".at: 0
-print: "abc".at: 1
-print: "abu".at: 2
+print: letterToMorse: "c"
 
+//
+in: "enter some text".input
+out: ""
+
+i: 0 | i<key.len | i: i+1 @
+(
+	
+)
+\\
+
+letterToMorse: {String} -> {String}:
+(
+//
+	out: ""
+	
+	i: 0 | i<key.len | i: i+1 @
+	(
+		#in = (key.sub: (i, i+1)) ?
+		(
+			
+		)
+	)
+	
+	out
+	
+\\
+
+""
+)
 

@@ -85,4 +85,4 @@ myDub: 32       # won't work because 32 is an Int
 myDub: Dub: 32  # explicit conversion
 ```
 
-[next: Control Flow ->](2_control_flow.md)
+[index](index.md) | [next: Control Flow ->](2_control_flow.md)
