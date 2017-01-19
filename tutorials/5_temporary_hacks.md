@@ -36,3 +36,5 @@ For example, to import the examples/letters file into other/pinecone, you write
 ==> "../examples/letters.pncn"
 ```
 I may keep this syntax, but I'm not sure so I'm keeping it in this tutorial.
+
+[index](index.md)
