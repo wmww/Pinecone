@@ -394,7 +394,7 @@ void populatePineconeStdLib()
 			int start=getValFromTuple<int>(rightIn, RightType, "a");
 			int end=getValFromTuple<int>(rightIn, RightType, "b");
 			string str=pncnStr2CppStr(leftIn);
-			if (start<0 || end>=int(str.size()) || start>end)
+			if (start<0 || end>int(str.size()) || start>end)
 			{
 				throw PineconeError("invalid arguments sent to String.sub", RUNTIME_ERROR);
 			}
@@ -406,7 +406,7 @@ void populatePineconeStdLib()
 		{
 			string in;
 			cout << pncnStr2CppStr(leftIn);
-			std::cin >> in;
+			std::getline (std::cin, in);
 			return cppStr2PncnStr(in);
 		}
 	);
