@@ -1,5 +1,7 @@
 # Pinecone Tutorial Index
 
+[About Pinecone](../readme.md)
+
 [0. Setting Up](0_setting_up.md)
 
 [1. Basic Concepts](1_basic_concepts.md)

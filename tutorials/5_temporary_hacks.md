@@ -7,6 +7,7 @@ There is not yet any pass-by-reference in Pinecone (with the exception of Int ar
 
 ## Arrays
 I have some very cool ideas for array syntax, but it is not ready yet. For now, you can have an array of ints with the built in class IntArray. Here is an example of how to use it:
+
 ```
 myArray: IntArray: 6                # 6 is the length of the array
 
@@ -18,6 +19,7 @@ i: 0 | i<myArray.size | i: i+1 @
 print: myArray.get: 2               # get the element at index 2
 
 ```
+
 The output is `5`.
 
 ## Strings and Text
@@ -28,13 +30,17 @@ Getting string input works great (see string tutorial). Int input is not yet sta
 
 ## imports
 Importing works similar to how it does in Python. It simply dumps another file into your current file. Right now, the import syntx is
+
 ```
 ==> "path/to/target/file/from/current/file.pncn"
 ```
+
 For example, to import the examples/letters file into other/pinecone, you write
+
 ```
 ==> "../examples/letters.pncn"
 ```
+
 I may keep this syntax, but I'm not sure so I'm keeping it in this tutorial.
 
 [index](index.md)

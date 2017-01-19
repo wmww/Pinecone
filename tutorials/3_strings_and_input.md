@@ -1,6 +1,7 @@
 # Strings and Input
 
 In Pinecone, like in many langauges, a string is a series of characters of any length. To make a string, simply suround some text in double quotes:
+
 ```
 myString: "this is a string!!!"
 ```
