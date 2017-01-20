@@ -1,4 +1,5 @@
 # this is an updated version of the original Pinecone snake game
+# use WASD to move
 
 w :: 16
 h :: 8

@@ -1,6 +1,7 @@
 //
-everything in this file should work
+This file demonstrates the basic syntax constructs of Pinecone
 \\
+
 
 # if/then
 
@@ -21,6 +22,7 @@ b>3 ?
 
 print
 
+
 # while loop
 
 i: 12
@@ -33,6 +35,7 @@ i>3 @
 
 print
 
+
 # for loop
 
 i: 0 | i<10 | i: i+1 @
@@ -41,6 +44,7 @@ i: 0 | i<10 | i: i+1 @
 )
 
 print
+
 
 # Fibonacci
 
@@ -57,10 +61,13 @@ a<100 @
 
 print
 
-# compile time lazy evaluation of constants
+
+# compile time constants
 
 print: y
 
 x :: 10
 y :: x+z
 z :: 4
+
+

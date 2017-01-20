@@ -1,0 +1,17 @@
+
+print: "enter number:"
+val: inputInt
+print: func: val
+
+func :: {Int} -> {Int}:
+(
+	out: 1
+	
+	!(in=0) ?
+	(
+		out: in+(func: in-1)
+	)
+	
+	out
+)
+
