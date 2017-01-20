@@ -1,2 +1,83 @@
+//
+This file demonstrates the basic syntax constructs of Pinecone
+\\
 
-print: 1
+
+print: "if/then"
+
+a: 12
+b: 7
+
+a=9 ?
+(
+	print: 1
+)|(
+	print: 2
+)
+
+b>3 ?
+(
+	print: 3
+)
+
+print
+
+
+print: "while loop"
+
+i: 12
+
+i>3 @
+(
+	print: i
+	i: i-1
+)
+
+print
+
+
+print: "for loop"
+
+i: 0 | i<10 | i: i+1 @
+(
+	print: i
+)
+
+print
+
+
+print: "Fibonacci"s
+
+b: 0
+a: 1
+
+a<100 @
+(
+	print: a
+	tmp: a
+	a: a+b
+	b: tmp
+)
+
+print
+
+
+print: "compile time constants"
+
+print: y
+
+x :: 10
+y :: x+z
+z :: 4
+
+print
+
+
+print: "functions"
+
+print: func: 7
+
+func :: {Int} -> {Dub}:
+(
+	(Dub: in)/2.0
+)
