@@ -33,10 +33,6 @@ public:
 		inLeftType=left;
 		inRightType=right;
 	}
-a: "hello"
-b: "world"
-
-print a+" "+b
 	
 	virtual bool isVoid() {return false;}
 	virtual bool isType() {return false;}
