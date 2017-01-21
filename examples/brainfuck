@@ -1,0 +1,103 @@
+
+//
+This is an interpreter for the esoteric programming language brainfuck
+\\
+
+data: IntArray: 10000
+offset: 0
+stack: IntArray: 300
+stackEnd: 0
+error: fls
+in: ""
+out: ""
+
+print: "Sophie's brainfuck interpreter, wretten in Pinecone"
+print
+
+i: 0 | i<data.len | i: i+1 @
+	data.set: i, 0
+
+code: "enter your brainfuck code: ".input
+
+i: 0 | i<code.len && !error | i: i+1 @
+(
+	c: code.sub: i, i+1
+	
+	c = "<" ?
+	(
+		offset: offset-1
+		offset < 0 ?
+		(
+			print: "you went too far left"
+			error: tru
+		)
+	)
+	| c = ">" ?
+	(
+		offset: offset+1
+		offset >= data.len ?
+		(
+			print: "you went too far right"
+			error: tru
+		)
+	)
+	| c = "+" ?
+	(
+		data.set: (offset, (data.get: offset)+1)
+	)
+	| c = "-" ?
+	(
+		data.set: (offset, (data.get: offset)-1)
+	)
+	| c = "." ?
+	(
+		out: out+(data.get: offset).ascii
+	)
+	| c = "," ?
+	(
+		in.len = 0 @
+		(
+			in: String.input
+		)
+		
+		data.set: offset, (in.at: 0)
+		in: in.sub: 1, in.len
+	)
+	| c = "[" ?
+	(
+		stackEnd >= stack.len ?
+		(
+			print: "stack overflow"
+			error: tru
+		)|(
+			stack.set: stackEnd, i
+			stackEnd: stackEnd+1
+		)
+	)
+	| c = "]" ?
+	(
+		stackEnd = 0 ?
+		(
+			print: "']' with no matching '[' "+c
+			print: i
+			error: tru
+		)|(
+			(data.get: offset) = 0 ?
+			(
+				stackEnd: stackEnd-1
+			)|(
+				i: (stack.get: (stackEnd-1))
+			)
+		)
+	)
+)
+
+print: out
+
+error ?
+(
+	print: "program aborted due to error"
+	print: "position at exit:"
+	print: offset
+)
+
