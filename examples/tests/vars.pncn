@@ -1,0 +1,6 @@
+# Pinecone vars test
+
+a: 3
+b: 7.2
+
+print: (Dub: a)+b/2.5

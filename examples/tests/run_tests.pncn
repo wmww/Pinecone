@@ -1,16 +1,28 @@
 
-print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String+" unit tests running..."
+print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String+" unit tests running...\n"
 
-out: ""
+runTest: "vars", "5.88\n"
+runTest: "constants", "21\n"
+runTest: "conditionals", "3\n5\n"
+runTest: "loops", "4\n3\n2\n1\n\n0\n1\n2\n3\n4\n5\n"
+runTest: "funcs", "1\n6\n10\n5\n3\n2\n1\n0\n"
 
-out: runCmd: "./pinecone examples/tests/constants.pncn"
+print: "\ntests done"
 
-out = "21\n\h" ? (
-	print: "constants passed"
-)|(
-	print: "constnts failed with output:"
-	print: out
-	print
+runTest :: {name: String, target: String}:
+(
+	out: runCmd: "./pinecone examples/tests/"+in.name+".pncn"
+	
+	out = in.target ? (
+		print: ".\t"+in.name+" passed"
+	)|(
+		print: "X\t"+in.name+" failed"
+		print: divideLine
+		print: "output:"
+		print: out
+		print: "instead of:"
+		print: in.target+divideLine
+	)
 )
 
-print: "tests done"
+divideLine :: "_____________________________________________\n"

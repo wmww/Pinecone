@@ -1,0 +1,16 @@
+# Pinecone loops test
+
+i: 4
+
+i>0 @
+(
+	print: i
+	i: i-1
+)
+
+print
+
+j: 0 | j<6 | j: j+1 @
+(
+	print: j
+)

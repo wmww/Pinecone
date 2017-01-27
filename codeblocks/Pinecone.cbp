@@ -8,21 +8,21 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../PineconeDbg" prefix_auto="1" extension_auto="1" />
+				<Option output="../pinecone" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-debug examples/tests/run_tests.pncn" />
+				<Option parameters="-debug other/pinecone.pncn" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="../PineconeBin" prefix_auto="1" extension_auto="1" />
+				<Option output="../pinecone" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="other/pinecone.pncn" />
+				<Option parameters="examples/tests/run_tests.pncn " />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
