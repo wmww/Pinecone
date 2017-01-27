@@ -40,7 +40,15 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	
 	if (!error.getIfErrorLogged())
 	{
-		lexString(file, tokens);
+		try
+		{
+			lexString(file, tokens);
+		}
+		catch (PineconeError err)
+		{
+			err.log();
+			astRoot=AstVoid::make();
+		}
 		
 		if (printOutput)
 		{
