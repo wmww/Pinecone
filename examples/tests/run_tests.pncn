@@ -5,8 +5,7 @@ out: ""
 
 out: runCmd: "./pinecone examples/tests/constants.pncn"
 
-out = "21
-" ? (
+out = "21\n\h" ? (
 	print: "constants passed"
 )|(
 	print: "constnts failed with output:"
