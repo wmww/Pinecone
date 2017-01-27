@@ -446,3 +446,23 @@ string loadEntireFile(string inName, bool printOutput)
 	}
 }
 
+//NOTE: I copied this from where I copied this from somewhere on the internet. no idea how or why it works.
+string runCmd(string cmd)
+{
+	const int bufferSize=4096;
+    char buffer[bufferSize];
+    std::string result = "";
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) throw std::runtime_error("popen() failed in getOutputFromCmd");
+    try {
+        while (!feof(pipe)) {
+            if (fgets(buffer, bufferSize, pipe) != NULL)
+                result += buffer;
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
+    pclose(pipe);
+    return result;
+}
