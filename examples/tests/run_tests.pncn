@@ -1,5 +1,8 @@
 
-print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String+" unit tests running...\n"
+print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
+print
+
+print: "unit tests:"
 
 runTest: "vars", "5.88\n"
 runTest: "operators", "5\n4.75\n6\n1\n4\n2\n2.75\n2\nfls\ntru\ntru\ntru\nfls\ntru\nfls\n"
@@ -9,11 +12,23 @@ runTest: "loops", "4\n3\n2\n1\n\n0\n1\n2\n3\n4\n5\n"
 runTest: "strings", "hello\na\nbxyz\nwe\n6\n4\n"
 runTest: "funcs", "1\n6\n10\n5\n3\n2\n1\n0\n"
 
-print: "\ntests done"
+print
 
-runTest :: {name: String, target: String}:
+print: "integration tests:"
+runTest: "../morse", "pinecone\\nquit", "enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: \n"
+print
+print: "tests done"
+
+runTest :: {name: String, target: String}: (runTest: in.name, "", in.target)
+
+runTest :: {name: String, symInput: String, target: String}:
 (
-	out: runCmd: "./pinecone examples/tests/"+in.name+".pncn"
+	cmd: "./pinecone examples/tests/"+in.name+".pncn"
+	
+	in.symInput.len>0 ?
+		cmd: "printf '"+in.symInput+"' | "+cmd
+	
+	out: runCmd: cmd
 	
 	out = in.target ? (
 		print: ".\t"+in.name+" passed"

@@ -18,6 +18,8 @@ quit: fls
 		print: stringToMorse: inStr
 )
 
+print
+
 stringToMorse :: {String} -> {String}:
 (
 	out: ""
