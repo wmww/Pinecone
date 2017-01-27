@@ -1,2 +1,4 @@
 #print: "Hello World!"
-print: "hello".sub: 1, 2
+
+print: "hello " + 5.String
+print: fls.String

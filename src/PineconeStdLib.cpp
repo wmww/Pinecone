@@ -353,6 +353,31 @@ void populatePineconeStdLib()
 		}
 	);
 	
+	addAction("String", String, Int, Void, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(to_string(*((int*)leftIn)));
+		}
+	);
+	
+	addAction("String", String, Dub, Void, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(to_string(*((double*)leftIn)));
+		}
+	);
+	
+	addAction("String", String, Bool, Void, LAMBDA_HEADER
+		{
+			if (*((bool*)leftIn))
+			{
+				return cppStr2PncnStr("tru");
+			}
+			else
+			{
+				return cppStr2PncnStr("fls");
+			}
+		}
+	);
+	
 	addAction("len", Int, String, Void, LAMBDA_HEADER
 		{
 			int* out=(int*)malloc(sizeof(int));
