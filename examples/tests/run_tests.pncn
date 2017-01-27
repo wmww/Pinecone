@@ -1,2 +1,17 @@
 
 print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String+" unit tests running..."
+
+out: ""
+
+out: runCmd: "./pinecone examples/tests/constants.pncn"
+
+out = "21
+" ? (
+	print: "constants passed"
+)|(
+	print: "constnts failed with output:"
+	print: out
+	print
+)
+
+print: "tests done"

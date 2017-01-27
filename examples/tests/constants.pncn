@@ -1,0 +1,7 @@
+# Pinecone constants test
+
+print: c*3
+
+a :: 5
+c :: a+b
+b :: 2
