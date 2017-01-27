@@ -1,4 +1,5 @@
 # Pinecone constants test
+# output: "21\n"
 
 print: c*3
 

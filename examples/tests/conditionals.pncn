@@ -1,4 +1,5 @@
 # Pinecone conditionals test
+# output: "3\n5\n"
 
 a: fls
 b: 10

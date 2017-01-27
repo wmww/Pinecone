@@ -1,0 +1,9 @@
+# Pinecone strings test
+# output: "hello\na\nbxyz\nwe\n6\n4\n"
+
+myStr: "hello"
+print: myStr
+print: "a\nb"+"xyz"
+print: "qwerty".sub: 1, 3
+print: "qwerty".len
+print: 4.String
