@@ -150,6 +150,31 @@ void populatePineconeStdLib()
 	bool falseVal=false;
 	table->addAction(constGetAction(&falseVal, Bool, "fls"), "fls");
 	
+	// version constant
+	{
+		Type versionTupleType=
+			makeTuple(vector<NamedType>{
+				NamedType{"x", Int},
+				NamedType{"y", Int},
+				NamedType{"z", Int},
+			});
+		
+		void* versionTupleData=malloc(versionTupleType->getSize());
+		
+		setValInTuple(versionTupleData, versionTupleType, "x", VERSION_X);
+		setValInTuple(versionTupleData, versionTupleType, "y", VERSION_Y);
+		setValInTuple(versionTupleData, versionTupleType, "z", VERSION_Z);
+		
+		table->addAction(
+			constGetAction(
+				versionTupleData,
+				versionTupleType,
+				"VERSION"
+			),
+			"VERSION"
+		);
+	}
+	
 	
 	///operators
 	

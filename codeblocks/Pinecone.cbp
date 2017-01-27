@@ -12,7 +12,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-debug other/pinecone.pncn" />
+				<Option parameters="-debug examples/tests/run_tests.pncn" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -39,6 +39,7 @@
 		<Linker>
 			<Add option="`llvm-config --ldflags --system-libs --libs core`" />
 		</Linker>
+		<Unit filename="../examples/tests/run_tests.pncn" />
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/AllOperators.h" />
 		<Unit filename="../h/AstNode.h" />

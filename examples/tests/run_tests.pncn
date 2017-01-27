@@ -1,0 +1,2 @@
+
+print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String+" unit tests running..."
