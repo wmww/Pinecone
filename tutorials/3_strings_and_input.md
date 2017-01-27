@@ -8,7 +8,13 @@ myString: "this is a string!!!"
 
 ## Operators and Functions
 
-Like other types, there are various operators and functions that can be applied to strings. `=` checks if two strings are exactly the same and `+` combines two strings. `stringName.len` returns the length of that string. If you call the function ascii on an int (ex: `68.ascii`), It will return a string one character long containing the ascii value of that int. To get a substring, call the method `stringName.sub: start, end`. I use start and end instead of start and length because start and length is stupid.
+Like other types, there are various operators and functions that can be applied to strings.
+* `=` checks if two strings are exactly the same.
+* `+` combines two strings.
+* `stringName.len` returns the length of that string.
+* `68.ascii` will return a string one character long containing the ascii value of the int.
+* `stringName.sub: start, end` retuns a substring. I use start and end instead of start and length because start and length is stupid.
+* `84.String` will return a string with that number in base 10 (aka, normal). This can be done for Ints, Dubs and Bools.
 
 ## String input
 
