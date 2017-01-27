@@ -2,3 +2,4 @@
 
 print: "hello " + 5.String
 print: fls.String
+print: runCmd: "ls"

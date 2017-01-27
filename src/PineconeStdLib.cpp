@@ -288,6 +288,12 @@ void populatePineconeStdLib()
 		std::cin >> val;
 		retrn val;);
 	
+	addAction("runCmd", String, Void, String, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(runCmd(pncnStr2CppStr(rightIn)));
+		}
+	);
+	
 	
 	/// int array
 	
