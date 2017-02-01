@@ -1,5 +1,81 @@
-#print: "Hello World!"
+# print: "Hello World!"
 
-print: "hello " + 5.String
-print: fls.String
-print: runCmd: "ls"
+q: Queue
+main
+
+main :: {}:
+(
+	print: q
+	
+	enqueue: 1
+	enqueue: 2
+	enqueue: 3
+	enqueue: 4
+	enqueue: 5
+	enqueue: 2
+	enqueue: 2
+	enqueue: 8
+	enqueue: 2
+	enqueue: 2
+	enqueue: 2
+	enqueue: 2
+	enqueue: 19
+	
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	
+	print: q
+)
+
+Queue :: {array: IntArray, offset: Int, len: Int}
+
+Queue :: {} -> {Queue}: (
+	(IntArray: 1), 0, 0
+)
+
+enqueue :: {Int}: (
+	
+	q.len >= q.array.len ? (
+		newArray: IntArray: q.array.len*2
+		
+		i: 0 | i<q.array.len | i: i+1 @ (
+			tmp: q.array
+			newArray.set: i, (tmp.get: (i+q.offset)%q.array.len)
+		)
+		
+		q: newArray, q.offset, q.len
+	)
+	
+	tmp: q.array
+	tmp.set: (q.len+q.offset)%q.array.len, in
+	
+	q: q.array, q.offset, q.len+1
+)
+
+dequeue :: {} -> {Int}: (
+	
+	tmp: q.array
+	out: tmp.get: q.offset
+	q: q.array, q.offset+1, q.len-1
+	out
+)
+
+print :: {Queue}: (
+	
+	print: "queue {"
+	#print: "["
+	i: 0 | i<in.len | i: i+1 @ (
+		#Bool: i ?
+		#	print: ", "
+		ary: in.array
+		print: "    "+(ary.get: (i+in.offset)%in.array.len).String
+	)
+	#print: "]"
+	print: "}"
+	print
+)
+
+
+
+

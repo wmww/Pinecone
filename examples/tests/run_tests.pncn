@@ -10,7 +10,7 @@ runTest: "constants", "21\n"
 runTest: "conditionals", "3\n5\n"
 runTest: "loops", "4\n3\n2\n1\n\n0\n1\n2\n3\n4\n5\n"
 runTest: "strings", "hello\na\nbxyz\nwe\n6\n4\n"
-runTest: "funcs", "1\n6\n10\n5\n3\n2\n1\n0\n"
+runTest: "funcs", "1\n6\n10\n5\n3\n2\n1\n0\n15\n"
 
 print
 
