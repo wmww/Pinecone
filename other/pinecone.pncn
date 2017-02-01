@@ -5,6 +5,21 @@ main
 
 main :: {}:
 (
+	enqueue: 3
+	enqueue: 3
+	enqueue: 3
+	enqueue: 3
+	enqueue: 3
+	enqueue: 3
+	enqueue: 3
+	
+	print: q
+	
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	
 	print: q
 	
 	enqueue: 1
@@ -12,18 +27,25 @@ main :: {}:
 	enqueue: 3
 	enqueue: 4
 	enqueue: 5
-	enqueue: 2
-	enqueue: 2
+	enqueue: 6
+	enqueue: 7
 	enqueue: 8
-	enqueue: 2
-	enqueue: 2
-	enqueue: 2
-	enqueue: 2
-	enqueue: 19
+	enqueue: 9
+	enqueue: 9
+	enqueue: 9
+	enqueue: 9
+	enqueue: 9
+	enqueue: 9
 	
 	print: dequeue
 	print: dequeue
 	print: dequeue
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	
 	
 	print: q
 )
@@ -34,46 +56,76 @@ Queue :: {} -> {Queue}: (
 	(IntArray: 1), 0, 0
 )
 
-enqueue :: {Int}: (
+resize :: {Int}: (
 	
-	q.len >= q.array.len ? (
-		newArray: IntArray: q.array.len*2
-		
-		i: 0 | i<q.array.len | i: i+1 @ (
-			tmp: q.array
-			newArray.set: i, (tmp.get: (i+q.offset)%q.array.len)
-		)
-		
-		q: newArray, q.offset, q.len
+	newArray: IntArray: in
+	
+	i: 0 | i<q.len | i: i+1 @ (
+		tmp: q.array
+		newArray.set: i, (tmp.get: (i+q.offset)%q.array.len)
 	)
 	
-	tmp: q.array
-	tmp.set: (q.len+q.offset)%q.array.len, in
+	q: newArray, 0, q.len
+)
+
+enqueue :: {Int}: (
+	
+	q.len >= q.array.len ?
+		resize: q.array.len*2
 	
 	q: q.array, q.offset, q.len+1
+	
+	tmp: q.array
+	tmp.set: (q.offset+q.len-1)%q.array.len, in
 )
 
 dequeue :: {} -> {Int}: (
 	
 	tmp: q.array
-	out: tmp.get: q.offset
+	out: tmp.get: q.offset%q.array.len
 	q: q.array, q.offset+1, q.len-1
+	
+	q.len < q.array.len/3+1 ?
+		resize: q.array.len/3+1
+	
 	out
+)
+
+peek :: {}: (
+	tmp: q.array
+	tmp.get: q.offset%q.array.len
 )
 
 print :: {Queue}: (
 	
 	print: "queue {"
-	#print: "["
 	i: 0 | i<in.len | i: i+1 @ (
 		#Bool: i ?
 		#	print: ", "
 		ary: in.array
 		print: "    "+(ary.get: (i+in.offset)%in.array.len).String
 	)
-	#print: "]"
 	print: "}"
 	print
+	
+	//
+	print: "raw array {"
+	i: 0 | i<in.array.len | i: i+1 @ (
+		#Bool: i ?
+		#	print: ", "
+		ary: in.array
+		out: (ary.get: i).String
+		i = in.offset ?
+			out: " -> "+out
+		| i = (in.offset+in.len-1)%in.array.len ?
+			out: " -| "+out
+		|
+			out: "    "+out
+		print: out
+	)
+	print: "}"
+	print
+	\\
 )
 
 
