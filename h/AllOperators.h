@@ -62,10 +62,10 @@ public:
 	DECLARE_OP(	less,		"<",	50,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	greaterEq,	">=",	50,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	lessEq,		"<=",	50,		OperatorData::BOTH,		true	);	\
-	DECLARE_OP(	plus,		"+",	60,		OperatorData::BOTH,		true	);	\
-	DECLARE_OP(	minus,		"-",	60,		OperatorData::BOTH,		true	);	\
-	DECLARE_OP(	multiply,	"*",	70,		OperatorData::BOTH,		true	);	\
-	DECLARE_OP(	divide,		"/",	70,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	plus,		"+",	61,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	minus,		"-",	61,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	multiply,	"*",	71,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	divide,		"/",	71,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	mod,		"%",	70,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	notOp,		"!",	74,		OperatorData::RIGHT,	true	);	\
 	DECLARE_OP(	plusPlus,	"++",	75,		OperatorData::LEFT,		false	);	\
