@@ -6,6 +6,7 @@ print: "unit tests:"
 
 runTest: "vars", "5.88\n"
 runTest: "operators", "5\n4.75\n6\n1\n4\n2\n2.75\n2\nfls\ntru\ntru\ntru\nfls\ntru\nfls\n"
+runTest: "order_of_ops", "11\n3\n6\n"
 runTest: "constants", "21\n"
 runTest: "conditionals", "3\n5\n"
 runTest: "loops", "4\n3\n2\n1\n\n0\n1\n2\n3\n4\n5\n"
