@@ -17,6 +17,7 @@ print
 
 print: "integration tests:"
 runTest: "../morse", "pinecone\\nquit", "enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: \n"
+runTest: "../queue", "1\n2\n3\n4\n5\n6\nqueue {\n    7\n    8\n    9\n}\n\n"
 print
 print: "tests done"
 
