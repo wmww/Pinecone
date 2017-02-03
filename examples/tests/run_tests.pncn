@@ -16,8 +16,21 @@ runTest: "funcs", "1\n6\n10\n5\n3\n2\n1\n0\n15\n"
 print
 
 print: "integration tests:"
-runTest: "../morse", "pinecone\\nquit", "enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: \n"
-runTest: "../queue", "1\n2\n3\n4\n5\n6\nqueue {\n    7\n    8\n    9\n}\n\n"
+
+runTest:
+	"../morse",
+	"pinecone\\nquit",
+	"enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: \n"
+
+runTest:
+	"../queue",
+	"1\n2\n3\n4\n5\n6\nqueue {\n    7\n    8\n    9\n}\n\n"
+	
+runTest:
+	"../brainfuck",
+	"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.",
+	"Sophie's brainfuck interpreter, wretten in Pinecone\n\nenter your brainfuck code: Hello World!\n\n"
+	
 print
 print: "tests done"
 
