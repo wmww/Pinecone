@@ -1,2 +1,39 @@
-print: "Hello World!"
 
+Hashmap :: {keys: IntArray, vals: IntArray}
+
+Hashmap :: {} -> {Hashmap}:
+(
+	(IntArray: 10), (IntArray: 10)
+)
+
+insert :: {Hashmap}.{Int}:
+(
+	print: "hashmap insert not yet implemented"
+)
+
+len :: {Hashmap}.{} -> {Int}: me.keys.len
+
+String :: {Hashmap} -> {String}:
+(
+	out: "hashmap:\n"
+	
+	i: 0 | i<in.len | i: i+1 @
+	(
+		vals: in.vals
+		keys: in.keys
+		
+		str: 8.String
+		
+		out: out + "\t" + ((in.keys).get: i).String + ": " + (vals.get: i).String + "\n"
+	)
+
+	out
+)
+
+a: Hashmap
+
+keys: a.keys
+
+(keys.set: (3, 85))
+
+print: String: a
