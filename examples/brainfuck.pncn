@@ -78,7 +78,7 @@ i: 0 | i<code.len && !error | i: i+1 @
 	(
 		stackEnd = 0 ?
 		(
-			print: "']' with no matching '[' "+c
+			print: "']' with no matching '['"
 			print: i
 			error: tru
 		)|(
@@ -90,6 +90,76 @@ i: 0 | i<code.len && !error | i: i+1 @
 			)
 		)
 	)
+	
+	print: stackEnd
+)
+
+parseSrc :: {Int} -> {Int}: (
+	
+	i: in
+	done: fls
+	
+	!done @ (
+		
+		i >= code.len ?
+			done: tru
+		| (
+			c: code.sub: i, i+1
+			
+			c = "]" ?
+			(
+				data.get: offset = 0 ? (
+					done: tru
+					i: i+1
+				)|(
+					i: in
+				)
+			)| c = "[" ? (
+				i: (parseSrc: i+1)
+			)| c = "<" ?
+			(
+				offset: offset-1
+				offset < 0 ?
+				(
+					print: "you went too far left"
+					error: tru
+				)
+			)
+			| c = ">" ?
+			(
+				offset: offset+1
+				offset >= data.len ?
+				(
+					print: "you went too far right"
+					error: tru
+				)
+			)
+			| c = "+" ?
+			(
+				data.set: (offset, (data.get: offset)+1)
+			)
+			| c = "-" ?
+			(
+				data.set: (offset, (data.get: offset)-1)
+			)
+			| c = "." ?
+			(
+				out: out+(data.get: offset).ascii
+			)
+			| c = "," ?
+			(
+				in.len = 0 @
+				(
+					in: String.input
+				)
+		
+				data.set: offset, (in.at: 0)
+				in: in.sub: 1, in.len
+			)
+		)
+	)
+	
+	i
 )
 
 print: out
@@ -100,4 +170,6 @@ error ?
 	print: "position at exit:"
 	print: offset
 )
+
+#>++++++++[-<+++++++++>]<.>>+>-[+]++>++>+++[>[->+++<<+++>]<<]>-----.>->+++..+++.>-.<<+[>[+>+]>>]<--------------.>>.+++.------.--------.>+.>+.
 

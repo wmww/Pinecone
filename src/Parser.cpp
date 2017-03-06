@@ -272,6 +272,11 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
 	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
 	
+	if (stringFromTokens(tokens, left, right) == "( in")
+	{
+		error.log("breakpoint should be here", JSYK);
+	}
+	
 	if (left>right)
 	{
 		throw PineconeError(FUNC + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
@@ -286,6 +291,12 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	
 	for (int i=left; i<=right; i++)
 	{
+		
+		//cout << "looking at " << tokens[i]->getText() << endl;
+		if (tokens[i]->getOp())
+		{
+			//cout << "precedence: " << tokens[i]->getOp()->getPrecedence()
+		}
 		if (tokens[i]->getOp()==ops->openPeren || tokens[i]->getOp()==ops->openCrBrac)
 		{
 			int j=skipBrace(tokens, i);
@@ -407,7 +418,11 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 			{
 				Operator op=tokens[j]->getOp();
 				
-				if (op)
+				if (op==ops->closePeren)
+				{
+					j=skipBrace(tokens, j);
+				}
+				else if (op)
 				{
 					if (op==ops->dot)
 					{
