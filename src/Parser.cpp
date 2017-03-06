@@ -414,11 +414,12 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		if (op==ops->colon)
 		{
-			for (int j=i-1; j>=left; j--)
+			//for (int j=i-1; j>=left; j--)
+			for (int j=left; j<i; j++)
 			{
 				Operator op=tokens[j]->getOp();
 				
-				if (op==ops->closePeren)
+				if (op==ops->openPeren)
 				{
 					j=skipBrace(tokens, j);
 				}

@@ -19,12 +19,9 @@ String :: {Hashmap} -> {String}:
 	
 	i: 0 | i<in.len | i: i+1 @
 	(
-		vals: in.vals
-		keys: in.keys
-		
 		str: 8.String
 		
-		out: out + "\t" + ((in.keys).get: i).String + ": " + (vals.get: i).String + "\n"
+		out: out + "\t" + (in.keys.get: i).String + ": " + (in.vals.get: i).String + "\n"
 	)
 
 	out
@@ -32,8 +29,7 @@ String :: {Hashmap} -> {String}:
 
 a: Hashmap
 
-keys: a.keys
 
-(keys.set: (3, 85))
+a.keys.set: 3, 85
 
 print: String: a
