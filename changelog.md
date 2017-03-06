@@ -2,6 +2,8 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
+* Fixed behavior of accessing multiple layers of structures with do (ex. 'root.sub.func: arg' now works)
+
 ### v0.3.0 (Jan 18 2017)
 
 * Added string literal support
