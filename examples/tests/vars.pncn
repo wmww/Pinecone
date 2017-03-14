@@ -1,5 +1,5 @@
 # Pinecone vars test
-# output: "5.88\n"
+print: "5.88\n_____"
 
 a: 3
 b: 7.2

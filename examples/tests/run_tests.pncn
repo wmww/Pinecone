@@ -1,42 +1,42 @@
-
 print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
 print
 
 print: "unit tests:"
 
-runTest: "vars", "5.88\n"
-runTest: "operators", "5\n4.75\n6\n1\n4\n2\n2.75\n2\nfls\nfls\ntru\ntru\ntru\nfls\ntru\nfls\n"
-runTest: "order_of_ops", "11\n3\n6\n"
-runTest: "constants", "21\n"
-runTest: "conditionals", "3\n5\n"
-runTest: "loops", "4\n3\n2\n1\n\n0\n1\n2\n3\n4\n5\n"
-runTest: "strings", "hello\na\nbxyz\nwe\n6\n4\n"
-runTest: "funcs", "1\n6\n10\n5\n3\n2\n1\n0\n15\n"
+runTest: "vars"
+runTest: "operators"
+runTest: "order_of_ops"
+runTest: "constants"
+runTest: "conditionals"
+runTest: "loops"
+runTest: "strings"
+runTest: "funcs"
 
 print
 
 print: "integration tests:"
 
-runTest:
-	"../morse",
-	"pinecone\\nquit",
-	"enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: \n"
 
-runTest:
-	"../queue",
-	"1\n2\n3\n4\n5\n6\nqueue {\n    7\n    8\n    9\n}\n\n"
+#runTest:
+#	"../morse",
+#	"pinecone\\nquit",
+#	"enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: \n"
+
+#runTest:
+#	"../queue",
+#	"1\n2\n3\n4\n5\n6\nqueue {\n    7\n    8\n    9\n}\n\n"
 	
-runTest:
-	"../brainfuck",
-	"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.",
-	"enter your brainfuck code: Hello World!\n"
+#runTest:
+#	"../brainfuck",
+#	"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.",
+#	"enter your brainfuck code: Hello World!\n"
 	
 print
 print: "tests done"
 
-runTest :: {name: String, target: String}: (runTest: in.name, "", in.target)
+runTest :: {String}: (runTest: in, "")
 
-runTest :: {name: String, symInput: String, target: String}:
+runTest :: {name: String, symInput: String}:
 (
 	cmd: "./pinecone examples/tests/"+in.name+".pncn"
 	
@@ -45,16 +45,38 @@ runTest :: {name: String, symInput: String, target: String}:
 	
 	out: runCmd: cmd
 	
-	out = in.target ? (
+	quit: fls
+	i: 0
+	target: String
+	actual: String
+	
+	!quit @ (
+		i + splitSub.len >= out.len ? (
+			target: "no target provided"
+			actual: "no output provided"
+			quit: tru
+		)|
+		(out.sub: i, i+splitSub.len) = splitSub ? (
+			target: out.sub: 0, i
+			actual: out.sub: i+splitSub.len, out.len
+			quit: tru
+		)|(
+			i: i+1
+		)
+	)
+	
+	target = actual ? (
 		print: ".\t"+in.name+" passed"
 	)|(
 		print: "X\t"+in.name+" failed"
 		print: divideLine
 		print: "output:"
-		print: out
+		print: actual
 		print: "instead of:"
-		print: in.target+divideLine
+		print: target
+		print: divideLine
 	)
 )
 
+splitSub :: "_____\n"
 divideLine :: "_____________________________________________\n"

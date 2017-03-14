@@ -1,5 +1,5 @@
 # Pinecone operators test
-# output: "5\n4.75\n6\n1\n4\n2\n2.75\n2\nfls\nfls\ntru\ntru\ntru\nfls\ntru\nfls\n"
+print: "5\n4.75\n6\n1\n4\n2\n2.75\n2\nfls\nfls\ntru\ntru\ntru\nfls\ntru\nfls\n_____"
 
 print: 2+3
 print: 1.5+3.25
