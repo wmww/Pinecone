@@ -20,7 +20,7 @@ void CppProgram::addComment(string in)
 
 void CppProgram::pushBlock()
 {
-	code+="{\n\n";
+	code+="{\n";
 	indentationLevel++;
 }
 

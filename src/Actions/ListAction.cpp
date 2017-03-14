@@ -77,18 +77,25 @@ public:
 		return (*i)->execute(nullptr, nullptr);
 	}
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram& prog)
+	void addCppCodeToProg(Action inLeft, Action inRight, bool allowBlock, CppProgram& prog)
 	{
-		prog.addComment("list");
-		
-		prog.pushBlock();
-		
-		for (auto i: actions)
+		if (!allowBlock)
 		{
-			i->addCppCodeToProg(voidAction, voidAction, prog);
+			prog.addComment("last can not be created without a block");
 		}
-		
-		prog.popBlock();
+		else
+		{
+			prog.addComment("list");
+			
+			prog.pushBlock();
+			
+			for (auto i: actions)
+			{
+				i->addCppCodeToProg(voidAction, voidAction, true, prog);
+			}
+			
+			prog.popBlock();
+		}
 	}
 	
 	/*
