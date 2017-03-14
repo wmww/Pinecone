@@ -1,0 +1,13 @@
+# test with backslash in a block comment
+
+print: "this should print\nthis should also print\n_____"
+
+print: "this should print"
+
+//
+print: "inside a comment, so this should not print"
+print: "backslashes line \\ in string literal should not break block comment"
+\\
+
+print "this should also print"
+

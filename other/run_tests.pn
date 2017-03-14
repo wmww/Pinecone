@@ -1,19 +1,16 @@
 print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
 print
 
-allFiles: runCmd: "ls examples/tests/ | grep .pn"
+print: "unit tests:"
+print
 
-i: 0
+runTestFolder: "unit"
 
-j: 0 | j < allFiles.len | j: j+1 @ (
-	j = allFiles.len-1 || (allFiles.sub: j, j+1) = "\n" ?(
-		runTest: allFiles.sub: i, j
-		i: j+1
-	)
-)
+runTestFolder: "regression"
+
+runTestFolder: "integration"
 
 //
-print: "unit tests:"
 
 runTest: "vars"
 runTest: "operators"
@@ -52,14 +49,33 @@ print: "integration tests:"
 print
 print: "tests done"
 
-runTest :: {String}: (runTest: in, "")
-
-runTest :: {name: String, symInput: String}:
-(
-	cmd: "./pinecone examples/tests/"+in.name
+runTestFolder :: {String}: (
 	
-	in.symInput.len>0 ?
-		cmd: "printf '"+in.symInput+"' | "+cmd
+	print: in + ":"
+	
+	filepath: "examples/tests/" + in
+	
+	allFiles: runCmd: "ls " + filepath + "/ | grep .pn"
+	
+	i: 0
+
+	j: 0 | j < allFiles.len | j: j+1 @ (
+		j = allFiles.len-1 || (allFiles.sub: j, j+1) = "\n" ?(
+			name: allFiles.sub: i, j
+			runTest: filepath + "/" + name, name
+			i: j+1
+		)
+	)
+	
+	print
+)
+
+runTest :: {filepath: String, name: String}:
+(
+	cmd: "./pinecone " + in.filepath
+	
+	#in.symInput.len>0 ?
+	#	cmd: "printf '"+in.symInput+"' | "+cmd
 	
 	out: runCmd: cmd
 	
@@ -70,8 +86,11 @@ runTest :: {name: String, symInput: String}:
 	
 	!quit @ (
 		i + splitSub.len >= out.len ? (
-			target: "no target provided"
-			actual: "no output provided"
+			target: "no target"
+			out.len = 0 ?
+				actual: "no output for '" + in.filepath + "'"
+				|
+				actual: out
 			quit: tru
 		)|
 		(out.sub: i, i+splitSub.len) = splitSub ? (
