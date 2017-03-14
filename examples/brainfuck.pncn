@@ -7,13 +7,12 @@ data: IntArray: 40000
 offset: 0
 error: fls
 inText: ""
-outText: ""
 
 i: 0 | i<data.len | i: i+1 @
 	data.set: i, 0
 
-#code: "enter your brainfuck code: ".input
-code: "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++[<.>-]+++"
+code: "enter your brainfuck code: ".input
+#code: ",[.,]"
 
 processSection: code, 0, tru
 
@@ -22,8 +21,6 @@ error ?
 	print: "program aborted due to error"
 	print: "position at exit:"
 	print: offset
-)|(
-	print: outText
 )
 
 # runs a loop of bf code, returns when done 
@@ -50,20 +47,16 @@ processSection :: {src: String, start: Int, isTopLevel: Bool}: (
 			)
 		)
 		| c = "+" ? (
-			data.set: (offset, (data.get: offset)+1)
+			data.set: offset, (data.get: offset)+1
 		)
 		| c = "-" ? (
-			data.set: (offset, (data.get: offset)-1)
+			data.set: offset, (data.get: offset)-1
 		)
 		| c = "." ? (
-			outText: outText+(data.get: offset).ascii
+			printc: data.get: offset
 		)
 		| c = "," ? (
-			inText.len = 0 ? (
-				inText: String.input + "\n"
-			)
-			data.set: offset, (inText.at: 0)
-			inText: inText.sub: 1, inText.len
+			data.set: offset, inputc
 		)
 		| c = "[" ? (
 			processSection: in.src, i+1, fls
