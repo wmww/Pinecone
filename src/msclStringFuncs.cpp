@@ -20,7 +20,7 @@ bool substringMatches(const string& in, int pos, const string& subStr)
 	return true;
 }
 
-int searchInString(const string& in, int startPos, const string& pattern)
+int searchInString(const string& in, const string& pattern, int startPos)
 {
 	for (unsigned i=startPos; i<in.size(); i++)
 	{
@@ -38,7 +38,7 @@ string replaceSubstring(const string& in, const string& searchFor, const string&
 	
 	while (true)
 	{
-		int j=searchInString(in, i, searchFor);
+		int j=searchInString(in, searchFor, i);
 		
 		if (j<0)
 			break;
@@ -64,7 +64,7 @@ void sliceStringBy(const string& in, const string& pattern, vector<string>& out)
 	
 	while (start<int(in.size()))
 	{
-		int end=searchInString(in, start, pattern);
+		int end=searchInString(in, pattern, start);
 		
 		if (end<0)
 			end=in.size();

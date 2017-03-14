@@ -8,7 +8,14 @@ void CppProgram::addCode(string in)
 
 void CppProgram::addComment(string in)
 {
-	code+=indentString("/* "+in+" */\n", indent);
+	if (searchInString(in, "\n") == -1)
+	{
+		code+=indentString("// " + in, indent);
+	}
+	else
+	{
+		code+=indentString("/*\n"+in+"\n*/\n", indent);
+	}
 };
 
 void CppProgram::pushBlock()

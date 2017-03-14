@@ -23,7 +23,7 @@ bool substringMatches(const string& in, int pos, const string& subStr);
 //		startPos: where to start looking (inclusive)
 //		pattern: the single or multi character pattern to search for, wildcards are not yet supported
 //		returns: the absolute position (not the offset) of the first instance of the pattern in the input, or -1 if it can't find it
-int searchInString(const string& in, int startPos, const string& pattern);
+int searchInString(const string& in, const string& pattern, int startPos=0);
 
 //	replaces all instances of one substring with another
 //		in: the string to search
