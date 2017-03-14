@@ -34,14 +34,16 @@ The features that are currently implemented are as follows:
 * All the operators you would expect (`+`, `*`, `%`, `:`, `=`, `>`, `<=`, `&&`, etc.)
 * Single and multi line comments
 * Flow control (if, if/else, while loop, for loop)
-* Constants that can be defined in any order
+* Constants
 * Data structs
 * Tuples
 * Int arrays
-* Functions that can take left and right inputs, and can return values
-* Strings
+* Functions
+* Strings and various String operations
+* User input
+* Running system commands
 
-the following features are coming soon:'
+the following features are coming soon:
 
 * Pass-by-reference
 * Proper classes (pass-by-reference needed)

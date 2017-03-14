@@ -28,7 +28,7 @@ In general, operators in Pinecone work the same as in any other language. It has
 
 ## Calling Functions
 
-`print: 42` is and example of a function call. __print__ is a standard function that prints what it is sent, followed by an newline. the ':' indicates that you want to sent input to print and whatever follows is the input.
+`print: 42` is an example of a function call. __print__ is a standard function that prints what it is sent, followed by an newline. the ':' indicates that you want to sent input to print and whatever follows is the input.
 
 Functions can only take input of the exact type they are supposed to take (implicit casting will eventually be but is not yet implemented). Functions can, however be overloaded. This means there are multiple functions with the same name that are differentiated by what type their input is.
 
