@@ -29,7 +29,7 @@ runTest:
 runTest:
 	"../brainfuck",
 	"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.",
-	"enter your brainfuck code: Hello World!\n\n"
+	"enter your brainfuck code: Hello World!\n"
 	
 print
 print: "tests done"
