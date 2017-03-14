@@ -58,6 +58,7 @@ public:
 	DECLARE_OP(	orOp,		"||",	36,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	andOp,		"&&",	38,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	equal,		"=",	40,		OperatorData::BOTH,		true	);	\
+	DECLARE_OP(	notEqual,	"!=",	40,		OperatorData::BOTH,		false	);	\
 	DECLARE_OP(	greater,	">",	50,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	less,		"<",	50,		OperatorData::BOTH,		true	);	\
 	DECLARE_OP(	greaterEq,	">=",	50,		OperatorData::BOTH,		true	);	\

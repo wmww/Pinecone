@@ -398,6 +398,42 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		return AstConstExpression::make(move(centerNode), move(rightNode));
 	}
+	else if (op==ops->notEqual)
+	{
+		AstNode rightNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
+		AstNode leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
+		AstNode centerNode=AstToken::make(
+			makeToken(
+				tokens[i]->getText(),
+				tokens[i]->getFile(),
+				tokens[i]->getLine(),
+				tokens[i]->getCharPos(),
+				TokenData::OPERATOR,
+				ops->equal
+			)
+		);
+		
+		AstNode notNode=AstToken::make(
+			makeToken(
+				tokens[i]->getText(),
+				tokens[i]->getFile(),
+				tokens[i]->getLine(),
+				tokens[i]->getCharPos(),
+				TokenData::OPERATOR,
+				ops->notOp
+			)
+		);
+		
+		return AstExpression::make(
+			AstVoid::make(),
+			move(notNode),
+			AstExpression::make(
+				move(leftNode),
+				move(centerNode),
+				move(rightNode)
+			)
+		);
+	}
 	else if (op==ops->plusPlus || op==ops->minusMinus)
 	{
 		throw PineconeError("++ and -- are not yet implemented", SOURCE_ERROR, tokens[i]);
