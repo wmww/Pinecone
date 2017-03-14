@@ -6,7 +6,7 @@ The tutorials for most programming languages start with a hello world program, b
 print: 42
 ```
 
-That's all you need in your file. No includes or boilerplate code of any sort. Just save that as a normal text file with the extension `.pncn` and run it.
+That's all you need in your file. No includes or boilerplate code of any sort. Just save that as a normal text file with the extension `.pn` and run it.
 
 ## Primitive Types
 
