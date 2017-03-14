@@ -77,13 +77,13 @@ public:
 		return (*i)->execute(nullptr, nullptr);
 	}
 	
-	void addCppCodeToProg(CppProgram& prog)
+	void addCppCodeToProg(CppProgram& prog, Action inLeft, Action inRight)
 	{
 		prog.pushBlock();
 		
 		for (auto i: actions)
 		{
-			i->addCppCodeToProg(prog);
+			i->addCppCodeToProg(prog, voidAction, voidAction);
 		}
 		
 		prog.popBlock();
