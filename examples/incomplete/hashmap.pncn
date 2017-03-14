@@ -1,0 +1,61 @@
+
+Hashmap :: {used: IntArray, keys: IntArray, vals: IntArray}
+
+Hashmap :: {} -> {Hashmap}:
+(
+	size: 10
+	used: (IntArray: size)
+	i: 0 | i<used.len | i: i+1 @ (
+		used.set: i, 0
+	)
+	
+	used, (IntArray: size), (IntArray: size)
+)
+
+Hashmap :: {size: Int} -> {Hashmap}:
+(
+	used: (IntArray: size)
+	i: 0 | i<used.len | i: i+1 @ (
+		used.set: i, 0
+	)
+	
+	used, (IntArray: size), (IntArray: size)
+)
+
+insert :: {Hashmap}.{key: Int, val: Int}:
+(
+	i: in.key % me.used.len
+	start: i
+	
+	Bool: me.used.get: i @ (
+		i: (i+1) % me.used.len
+		#i = start ?
+		#	me.expand
+	)
+	
+	me.used.set: i, 1
+	me.keys.set: i, in.key
+	me.vals.set: i, in.val
+)
+
+len :: {Hashmap}.{} -> {Int}: me.keys.len
+
+String :: {Hashmap} -> {String}:
+(
+	out: "hashmap:\n"
+	
+	i: 0 | i<in.len | i: i+1 @
+	(
+		Bool: in.used.get: i ?
+			out: out + "\t" + (in.keys.get: i).String + ": " + (in.vals.get: i).String + "\n"
+	)
+	
+	out
+)
+
+a: Hashmap
+
+a.insert: 4, 82
+a.insert: 14, 89
+
+print: String: a
