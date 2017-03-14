@@ -1,6 +1,18 @@
 print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
 print
 
+allFiles: runCmd: "ls examples/tests/ | grep .pn"
+
+i: 0
+
+j: 0 | j < allFiles.len | j: j+1 @ (
+	j = allFiles.len-1 || (allFiles.sub: j, j+1) = "\n" ?(
+		runTest: allFiles.sub: i, j
+		i: j+1
+	)
+)
+
+//
 print: "unit tests:"
 
 runTest: "vars"
@@ -21,7 +33,7 @@ runTest: "no_newline_at_end"
 print
 
 print: "integration tests:"
-
+\\
 
 #runTest:
 #	"../morse",
@@ -44,7 +56,7 @@ runTest :: {String}: (runTest: in, "")
 
 runTest :: {name: String, symInput: String}:
 (
-	cmd: "./pinecone examples/tests/"+in.name+".pn"
+	cmd: "./pinecone examples/tests/"+in.name
 	
 	in.symInput.len>0 ?
 		cmd: "printf '"+in.symInput+"' | "+cmd
