@@ -1,0 +1,11 @@
+# test when there is a function that only has one argument which is named
+
+print: "8\n_____"
+
+myFunc: 8
+
+myFunc :: {arg: Int}: (
+	
+	print: in.arg
+)
+
