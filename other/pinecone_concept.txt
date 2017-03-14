@@ -484,9 +484,38 @@ myFunc :: Int.Int: Int
 	8
 )
 
+___________________________________________________
 
 
+myObj: MyObj: 9, 3
+
+myPtr: &myObj
+
+myObj = myPtr ? (
+	# valid
+)
+
+myObj2 = myPtr.me
+
+___________________________________________________
 
 
+myObj: MyObj.new: 9, 3
 
+myPtr: myObj.ptr
 
+myObj = myPtr ? (
+	# valid
+)
+
+myObj2 = myPtr.me
+
+___________________________________________________
+
+myFunc :: String.Int -> Dub
+[
+	
+]
+
+a: 9.7
+b: int: a

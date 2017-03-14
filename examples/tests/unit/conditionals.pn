@@ -1,0 +1,21 @@
+# Pinecone conditionals test
+print: "3\n5\n_____"
+
+a: fls
+b: 10
+
+a ?
+	print: 1
+|(
+	b<3 ? (
+		print: 2
+	)|(
+		print: 3
+		
+		6 = 9 ?
+			print: 4
+		|
+			print: 5
+	)
+)
+

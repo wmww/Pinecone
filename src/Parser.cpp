@@ -270,7 +270,12 @@ int skipBrace(const vector<Token>& tokens, int start)
 
 AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
-	error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
+	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
+	
+	if (stringFromTokens(tokens, left, right) == "( in")
+	{
+		error.log("breakpoint should be here", JSYK);
+	}
 	
 	if (left>right)
 	{
@@ -286,6 +291,12 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	
 	for (int i=left; i<=right; i++)
 	{
+		
+		//cout << "looking at " << tokens[i]->getText() << endl;
+		if (tokens[i]->getOp())
+		{
+			//cout << "precedence: " << tokens[i]->getOp()->getPrecedence()
+		}
 		if (tokens[i]->getOp()==ops->openPeren || tokens[i]->getOp()==ops->openCrBrac)
 		{
 			int j=skipBrace(tokens, i);
@@ -387,6 +398,42 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		return AstConstExpression::make(move(centerNode), move(rightNode));
 	}
+	else if (op==ops->notEqual)
+	{
+		AstNode rightNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
+		AstNode leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
+		AstNode centerNode=AstToken::make(
+			makeToken(
+				tokens[i]->getText(),
+				tokens[i]->getFile(),
+				tokens[i]->getLine(),
+				tokens[i]->getCharPos(),
+				TokenData::OPERATOR,
+				ops->equal
+			)
+		);
+		
+		AstNode notNode=AstToken::make(
+			makeToken(
+				tokens[i]->getText(),
+				tokens[i]->getFile(),
+				tokens[i]->getLine(),
+				tokens[i]->getCharPos(),
+				TokenData::OPERATOR,
+				ops->notOp
+			)
+		);
+		
+		return AstExpression::make(
+			AstVoid::make(),
+			move(notNode),
+			AstExpression::make(
+				move(leftNode),
+				move(centerNode),
+				move(rightNode)
+			)
+		);
+	}
 	else if (op==ops->plusPlus || op==ops->minusMinus)
 	{
 		throw PineconeError("++ and -- are not yet implemented", SOURCE_ERROR, tokens[i]);
@@ -403,11 +450,16 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		if (op==ops->colon)
 		{
-			for (int j=i-1; j>=left; j--)
+			//for (int j=i-1; j>=left; j--)
+			for (int j=left; j<i; j++)
 			{
 				Operator op=tokens[j]->getOp();
 				
-				if (op)
+				if (op==ops->openPeren)
+				{
+					j=skipBrace(tokens, j);
+				}
+				else if (op)
 				{
 					if (op==ops->dot)
 					{
@@ -458,7 +510,7 @@ void parseTokenList(const vector<Token>& tokens, int left, int right, vector<Ast
 			
 			string path=tokens[i+1]->getText();
 			
-			//this nonesens is required because my lexer is shit and includes the first quite but not the last one
+			//this nonesens is required because my lexer is shit and includes the first quote but not the last one
 			//instead of hardcoding that in, I figured I'd make it flexable so I don't break everthing when I fix the lexer
 			
 			while (path.size()>0 && path[0]=='"')

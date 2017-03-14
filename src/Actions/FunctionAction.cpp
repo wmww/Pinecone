@@ -65,19 +65,13 @@ public:
 	
 	bool isFunction() {return true;}
 	
-	string getCSource(string inLeft, string inRight)
+	/*
+	string getCSource()
 	{
-		if (!action)
-			resolveAction();
-		
-		string out;
-		out+="/* function C source not yet implemented, but here is the action: */";
-		out+="\n*/\n";
-		out+=action->getCSource();
-		out+="\n*/";
-		return out;
-		
-		/*string name=getGlobalCName();
+		string out = "/ " "* function to cpp not yet implemented *" "/";
+		return out
+	
+		string name=getGlobalCName();
 		
 		string globalCFunc;
 		globalCFunc+=action->getReturnType()->getCSource();
@@ -90,8 +84,9 @@ public:
 		globalCFunc+=
 		globalCFunc+=
 		action->getCSource()
-		addGlobalCSource();*/
+		addGlobalCSource();
 	}
+	*/
 	
 	void* execute(void* inLeft, void* inRight)
 	{

@@ -63,10 +63,12 @@ public:
 		return outData;
 	}
 	
+	/*
 	string getCSource(string inLeft, string inRight)
 	{
 		return action->getCSource(leftInput->getCSource("", ""), rightInput->getCSource("", ""));
 	}
+	*/
 	
 private:
 	Action action;
@@ -116,11 +118,13 @@ public:
 		else
 			return "[branch with null element]";
 	}
-
+	
+	/*
 	string getCSource(string inLeft, string inRight)
 	{
 		return action->getCSource("", rightInput->getCSource("", ""));
 	}
+	*/
 	
 	void* execute(void* inLeft, void* inRight)
 	{
@@ -173,10 +177,12 @@ public:
 			return "[branch with null element]";
 	}
 	
+	/*
 	string getCSource(string inLeft, string inRight)
 	{
 		return action->getCSource(leftInput->getCSource("", ""), "");
 	}
+	*/
 
 	void* execute(void* inLeft, void* inRight)
 	{

@@ -1,0 +1,17 @@
+# Pinecone loops test
+print: "4\n3\n2\n1\n\n0\n1\n2\n3\n4\n5\n_____"
+
+i: 4
+
+i>0 @
+(
+	print: i
+	i: i-1
+)
+
+print
+
+j: 0 | j<6 | j: j+1 @
+(
+	print: j
+)

@@ -33,6 +33,7 @@ public:
 		return "while " + condition->getDescription() + " do " + loopAction->getDescription();
 	}
 	
+	/*
 	string getCSource(string inLeft, string inRight)
 	{
 		string out;
@@ -46,6 +47,7 @@ public:
 		
 		return out;
 	}
+	*/
 	
 	void* execute(void* inLeft, void* inRight)
 	{

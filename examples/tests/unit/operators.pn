@@ -1,0 +1,20 @@
+# Pinecone operators test
+print: "5\n4.75\n6\n1\n4\n2\n2.75\n2\nfls\nfls\ntru\ntru\ntru\nfls\ntru\nfls\n_____"
+
+print: 2+3
+print: 1.5+3.25
+print: 2*3
+print: 3-2
+print: 12/3
+print: 11/4
+print: 11.0/4.0
+print: 17%5
+print: 6=4
+print: 9!=9
+print: 6>4
+print: 7<=7
+print: tru && 4=4
+print: tru && 4=2
+print: tru || 4=2
+print: !tru || 4=2
+

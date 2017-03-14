@@ -4,7 +4,7 @@
 SourceFile::SourceFile(string filenameIn, bool printOutput)
 {
 	filename=filenameIn;
-	contents=loadEntireFile(filenameIn, printOutput);
+	contents=loadEntireFile(filenameIn, printOutput)+"\n";
 }
 
 string SourceFile::getDirPath()

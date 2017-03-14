@@ -65,18 +65,6 @@ public:
 		return out;
 	}
 	
-	string getCSource(string inLeft, string inRight)
-	{
-		string out;
-		
-		for (auto i: actions)
-		{
-			out+=i->getCSource()+";\n";
-		}
-		
-		return out;
-	}
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		auto i=actions.begin();
@@ -88,8 +76,34 @@ public:
 		
 		return (*i)->execute(nullptr, nullptr);
 	}
-
-
+	
+	void addCppCodeToProg(CppProgram& prog)
+	{
+		prog.pushBlock();
+		
+		for (auto i: actions)
+		{
+			i->addCppCodeToProg(prog);
+		}
+		
+		prog.popBlock();
+	}
+	
+	/*
+	string getCSource(string inLeft, string inRight)
+	{
+		string out;
+		
+		for (auto i: actions)
+		{
+			out+=i->getCSource()+";\n";
+		}
+		
+		return out;
+	}
+	*/
+	
+	
 	
 private:
 	vector<Action> actions;
