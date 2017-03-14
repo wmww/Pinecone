@@ -14,6 +14,12 @@ runTest: "funcs"
 
 print
 
+print: "anti-regression tests:"
+
+runTest: "no_newline_at_end"
+
+print
+
 print: "integration tests:"
 
 

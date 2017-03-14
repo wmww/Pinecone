@@ -1,0 +1,3 @@
+
+a: "test"
+print: a.sub:1,2
