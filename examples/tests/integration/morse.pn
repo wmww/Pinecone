@@ -1,0 +1,8 @@
+# Tests my text to morse code converter
+
+print: "enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: .-.. .- -. --. \nenter some text or type quit: \n\n_____"
+
+symInput: "pinecone\\nlang\\nquit"
+
+print: runCmd: "printf '"+symInput+"' | ./pinecone examples/morse.pn"
+

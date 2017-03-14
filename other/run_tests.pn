@@ -4,56 +4,21 @@ print
 print: "unit tests:"
 print
 
-runTestFolder: "unit"
+runTestFolder: "unit", tru
 
-runTestFolder: "regression"
+runTestFolder: "regression", tru
 
-runTestFolder: "integration"
+runTestFolder: "integration", tru
 
-//
+runTestFolder: "unfixed", fls
 
-runTest: "vars"
-runTest: "operators"
-runTest: "order_of_ops"
-runTest: "constants"
-runTest: "conditionals"
-runTest: "loops"
-runTest: "strings"
-runTest: "funcs"
-
-print
-
-print: "anti-regression tests:"
-
-runTest: "no_newline_at_end"
-
-print
-
-print: "integration tests:"
-\\
-
-#runTest:
-#	"../morse",
-#	"pinecone\\nquit",
-#	"enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: \n"
-
-#runTest:
-#	"../queue",
-#	"1\n2\n3\n4\n5\n6\nqueue {\n    7\n    8\n    9\n}\n\n"
-	
-#runTest:
-#	"../brainfuck",
-#	"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.",
-#	"enter your brainfuck code: Hello World!\n"
-	
-print
 print: "tests done"
 
-runTestFolder :: {String}: (
+runTestFolder :: {folder: String, printDetails: Bool}: (
 	
-	print: in + ":"
+	print: in.folder + ":"
 	
-	filepath: "examples/tests/" + in
+	filepath: "examples/tests/" + in.folder
 	
 	allFiles: runCmd: "ls " + filepath + "/ | grep .pn"
 	
@@ -62,7 +27,7 @@ runTestFolder :: {String}: (
 	j: 0 | j < allFiles.len | j: j+1 @ (
 		j = allFiles.len-1 || (allFiles.sub: j, j+1) = "\n" ?(
 			name: allFiles.sub: i, j
-			runTest: filepath + "/" + name, name
+			runTest: filepath + "/" + name, (name.sub: 0, name.len-3), in.printDetails
 			i: j+1
 		)
 	)
@@ -70,12 +35,9 @@ runTestFolder :: {String}: (
 	print
 )
 
-runTest :: {filepath: String, name: String}:
+runTest :: {filepath: String, name: String, printDetails: Bool}:
 (
 	cmd: "./pinecone " + in.filepath
-	
-	#in.symInput.len>0 ?
-	#	cmd: "printf '"+in.symInput+"' | "+cmd
 	
 	out: runCmd: cmd
 	
@@ -106,12 +68,15 @@ runTest :: {filepath: String, name: String}:
 		print: ".\t"+in.name+" passed"
 	)|(
 		print: "X\t"+in.name+" failed"
-		print: divideLine
-		print: "output:"
-		print: actual
-		print: "instead of:"
-		print: target
-		print: divideLine
+		
+		in.printDetails ? (
+			print: divideLine
+			print: "output:"
+			print: actual
+			print: "instead of:"
+			print: target
+			print: divideLine
+		)
 	)
 )
 
