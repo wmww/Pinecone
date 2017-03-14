@@ -1,5 +1,5 @@
 # Pinecone strings test
-# output: "hello\na\nbxyz\nwe\n6\n4\n"
+print: "hello\na\nbxyz\nwe\n6\n4\n_____"
 
 myStr: "hello"
 print: myStr

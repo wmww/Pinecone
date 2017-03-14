@@ -12,7 +12,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-debug other/pinecone.pncn" />
+				<Option parameters="-debug other/pinecone.pn" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -22,7 +22,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="examples/tests/run_tests.pncn " />
+				<Option parameters="other/run_tests.pn" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -39,7 +39,6 @@
 		<Linker>
 			<Add option="`llvm-config --ldflags --system-libs --libs core`" />
 		</Linker>
-		<Unit filename="../examples/tests/run_tests.pncn" />
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/AllOperators.h" />
 		<Unit filename="../h/AstNode.h" />
@@ -53,8 +52,9 @@
 		<Unit filename="../h/Type.h" />
 		<Unit filename="../h/VERSION.h" />
 		<Unit filename="../h/msclStringFuncs.h" />
-		<Unit filename="../other/pinecone.pncn" />
+		<Unit filename="../other/pinecone.pn" />
 		<Unit filename="../other/pinecone_concept.txt" />
+		<Unit filename="../other/run_tests.pn" />
 		<Unit filename="../readme.md" />
 		<Unit filename="../src/Actions/Action.cpp" />
 		<Unit filename="../src/Actions/BranchAction.cpp" />

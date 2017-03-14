@@ -1,2 +1,0 @@
-bstr:"billy king"
-print: bstr.sub:1,2

@@ -505,7 +505,7 @@ Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftIn
 		{
 			if (match)
 			{
-				error.log(FUNC+"found too many overloads", INTERNAL_ERROR);
+				error.log(FUNC+" found too many overloads including " + match->getDescription() + " and " + i->getDescription(), INTERNAL_ERROR);
 				return Action(nullptr);
 			}
 			else
