@@ -38,7 +38,7 @@ runTest :: {String}: (runTest: in, "")
 
 runTest :: {name: String, symInput: String}:
 (
-	cmd: "./pinecone examples/tests/"+in.name+".pncn"
+	cmd: "./pinecone examples/tests/"+in.name+".pn"
 	
 	in.symInput.len>0 ?
 		cmd: "printf '"+in.symInput+"' | "+cmd
