@@ -115,7 +115,7 @@ string PineconeProgram::getCpp()
 {
 	CppProgram outProg;
 	
-	actionRoot->addCppCodeToProg(voidAction, voidAction, outProg);
+	actionRoot->addCppCodeToProg(voidAction, voidAction, true, outProg);
 	
 	return outProg.getCode();
 }

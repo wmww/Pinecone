@@ -37,8 +37,8 @@ public:
 	virtual string getDescription() {return description;}
 	virtual void* execute(void* inLeft, void* inRight)=0;
 	//virtual string getCSource(string inLeft="", string inRight="")=0;
-	virtual void addCppCodeToProg(shared_ptr<ActionData> inLeft, shared_ptr<ActionData> inRight, CppProgram& prog) {prog.addComment("action '"+getDescription()+"' to cpp code not yet implemented");};
-	// void addCppCodeToProg(Action inLeft, Action inRight, CppProgram& prog)
+	virtual void addCppCodeToProg(shared_ptr<ActionData> inLeft, shared_ptr<ActionData> inRight, bool allowBlock, CppProgram& prog) {prog.addComment("action '"+getDescription()+"' to cpp code not yet implemented");};
+	// void addCppCodeToProg(Action inLeft, Action inRight, bool allowBlock, CppProgram& prog)
 	
 protected:
 	
