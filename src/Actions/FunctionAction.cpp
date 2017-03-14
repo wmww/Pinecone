@@ -65,6 +65,29 @@ public:
 	
 	bool isFunction() {return true;}
 	
+	void* execute(void* inLeft, void* inRight)
+	{
+		if (!action)
+			resolveAction();
+		
+		void * oldStackPtr=stackPtr;
+		
+		stackPtr=malloc(stackFame->getSize());
+		
+		if (inLeft)
+			memcpy((char*)stackPtr+stackFame->getLeftOffset(), inLeft, getInLeftType()->getSize());
+		
+		if (inRight)
+			memcpy((char*)stackPtr+stackFame->getRightOffset(), inRight, getInRightType()->getSize());
+		
+		void* out=action->execute(nullptr, nullptr);
+		
+		free(stackPtr);
+		stackPtr=oldStackPtr;
+		
+		return out;
+	}
+	
 	/*
 	string getCSource()
 	{
@@ -88,27 +111,9 @@ public:
 	}
 	*/
 	
-	void* execute(void* inLeft, void* inRight)
+	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram& prog)
 	{
-		if (!action)
-			resolveAction();
-		
-		void * oldStackPtr=stackPtr;
-		
-		stackPtr=malloc(stackFame->getSize());
-		
-		if (inLeft)
-			memcpy((char*)stackPtr+stackFame->getLeftOffset(), inLeft, getInLeftType()->getSize());
-		
-		if (inRight)
-			memcpy((char*)stackPtr+stackFame->getRightOffset(), inRight, getInRightType()->getSize());
-		
-		void* out=action->execute(nullptr, nullptr);
-		
-		free(stackPtr);
-		stackPtr=oldStackPtr;
-		
-		return out;
+		prog.addComment("function transpiling not yet implemented");
 	}
 	
 private:

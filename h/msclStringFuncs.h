@@ -42,7 +42,7 @@ void sliceStringBy(const string& in, const string& pattern, vector<string>& out)
 //		in: the string to indent (can be multi line)
 //		indent: the string to use as the indent
 //		returns: the string indented
-string indentString(const string& in, string indent="    ");
+string indentString(const string& in, string indent="    ", int level=1);
 
 //	returns the original string with the tabs replaced by the correct number of spaces
 //		in: the string to convert

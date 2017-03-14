@@ -75,20 +75,21 @@ void sliceStringBy(const string& in, const string& pattern, vector<string>& out)
 	}
 }
 
-string indentString(const string& in, string indent)
+string indentString(const string& in, string indent, int level)
 {
 	string out;
 	int start=0;
 	
-	if (!in.empty())
+	for (int i=0; i<level; i++)
 		out+=indent;
 	
-	for (int i=0; i<int(in.size()); i++)
+	for (int i=0; i<int(in.size()-1); i++)
 	{
 		if (in[i]=='\n')
 		{
 			out+=in.substr(start, i-start+1);
-			out+=indent;
+			for (int i=0; i<level; i++)
+				out+=indent;
 			start=i+1;
 		}
 	}
