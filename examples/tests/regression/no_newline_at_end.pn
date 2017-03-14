@@ -1,0 +1,6 @@
+# Pinecone test for source file without newline at the end of the file
+# IMPORTANT: many editors will automatically insert a newline on save, so don't edit this file unless you know what you're doing
+print: "es\n_____"
+
+a: "test"
+print: a.sub: 1, 3

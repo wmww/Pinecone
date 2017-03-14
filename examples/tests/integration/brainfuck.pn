@@ -1,0 +1,8 @@
+# Tests the Pinecone brainfuck interpreter
+
+print: "enter your brainfuck code: Hello World!\n\n_____"
+
+symInput: "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+
+print: runCmd: "printf '"+symInput+"' | ./pinecone examples/brainfuck.pn"
+

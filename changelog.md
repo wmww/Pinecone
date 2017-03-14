@@ -2,7 +2,14 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
-* Fixed behavior of accessing multiple layers of structures with do (ex. 'root.sub.func: arg' now works)
+* added '!=' operator
+* Wrote more example programs including a brainfuck interpreter
+* Fixed bug that prevented accessing multiple layers of structures with dot ('struct.data.func: arg' now works)
+* Added a wide range of unit tests and integration tests
+* Added escape character support to Strings
+* Added support for running shell commands
+* Added explicit conversion of primitive types to Strings
+* Improved tutorial navigation
 
 ### v0.3.0 (Jan 18 2017)
 
