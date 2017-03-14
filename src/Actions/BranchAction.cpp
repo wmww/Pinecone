@@ -70,6 +70,11 @@ public:
 	}
 	*/
 	
+	void addCppCodeToProg(CppProgram& prog, Action inLeft, Action inRight)
+	{
+		
+	}
+	
 private:
 	Action action;
 	Action leftInput;
