@@ -70,9 +70,9 @@ public:
 	}
 	*/
 	
-	void addCppCodeToProg(CppProgram& prog, Action inLeft, Action inRight)
+	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram& prog)
 	{
-		
+		action->addCppCodeToProg(leftInput, rightInput, prog);
 	}
 	
 private:
@@ -80,6 +80,8 @@ private:
 	Action leftInput;
 	Action rightInput;
 };
+
+/*
 
 class RightBranchAction: public ActionData
 {
@@ -124,12 +126,12 @@ public:
 			return "[branch with null element]";
 	}
 	
-	/*
+	
 	string getCSource(string inLeft, string inRight)
 	{
 		return action->getCSource("", rightInput->getCSource("", ""));
 	}
-	*/
+	
 	
 	void* execute(void* inLeft, void* inRight)
 	{
@@ -182,12 +184,12 @@ public:
 			return "[branch with null element]";
 	}
 	
-	/*
+	
 	string getCSource(string inLeft, string inRight)
 	{
 		return action->getCSource(leftInput->getCSource("", ""), "");
 	}
-	*/
+	
 
 	void* execute(void* inLeft, void* inRight)
 	{
@@ -202,8 +204,13 @@ private:
 	Action action;
 };
 
+*/
+
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 {
+	return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
+	
+	/*
 	if (leftInputIn->getReturnType()->isVoid())
 	{
 		if (rightInputIn->getReturnType()->isVoid())
@@ -226,4 +233,5 @@ Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 			return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 		}
 	}
+	*/
 }

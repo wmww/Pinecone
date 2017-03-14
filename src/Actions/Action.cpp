@@ -63,7 +63,7 @@ public:
 		return lambda(inLeft, inRight);
 	}
 	
-	void addCppCodeToProg(CppProgram& prog, Action inLeft, Action inRight)
+	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram& prog)
 	{
 		prog.addComment("lambda action (not yet implemented)");
 	}
