@@ -1,0 +1,113 @@
+# this is a copy of the original file used for an intagration test
+# this is an implementation of a queue using a dynamically sized circular buffer
+# this was wretten for Pinecone v0.3, which does not yet have references, so a single global queue is used instead of a queue object
+
+print: "1\n2\n3\n4\n5\n6\nqueue {\n    7\n    8\n    9\n}\n\n_____"
+
+q: Queue
+main
+
+main :: {}:
+(
+	enqueue: 1
+	enqueue: 2
+	enqueue: 3
+	enqueue: 4
+	enqueue: 5
+	enqueue: 6
+	
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	print: dequeue
+	
+	enqueue: 7
+	enqueue: 8
+	enqueue: 9
+	
+	print: dequeue
+	print: dequeue
+	
+	print: q
+)
+
+Queue :: {array: IntArray, offset: Int, len: Int}
+
+Queue :: {} -> {Queue}: (
+	(IntArray: 1), 0, 0
+)
+
+resize :: {Int}: (
+	
+	newArray: IntArray: in
+	
+	i: 0 | i<q.len | i: i+1 @ (
+		tmp: q.array
+		newArray.set: i, (tmp.get: (i+q.offset)%q.array.len)
+	)
+	
+	q: newArray, 0, q.len
+)
+
+enqueue :: {Int}: (
+	
+	q.len >= q.array.len ?
+		resize: q.array.len*2
+	
+	q: q.array, q.offset, q.len+1
+	
+	tmp: q.array
+	tmp.set: (q.offset+q.len-1)%q.array.len, in
+)
+
+dequeue :: {} -> {Int}: (
+	
+	tmp: q.array
+	out: tmp.get: q.offset%q.array.len
+	q: q.array, q.offset+1, q.len-1
+	
+	q.len < q.array.len/3+1 ?
+		resize: q.array.len/3+1
+	
+	out
+)
+
+peek :: {}: (
+	tmp: q.array
+	tmp.get: q.offset%q.array.len
+)
+
+print :: {Queue}: (
+	
+	print: "queue {"
+	i: 0 | i<in.len | i: i+1 @ (
+		#Bool: i ?
+		#	print: ", "
+		ary: in.array
+		print: "    "+(ary.get: (i+in.offset)%in.array.len).String
+	)
+	print: "}"
+	print
+	
+	//
+	print: "raw array {"
+	i: 0 | i<in.array.len | i: i+1 @ (
+		#Bool: i ?
+		#	print: ", "
+		ary: in.array
+		out: (ary.get: i).String
+		i = in.offset ?
+			out: " -> "+out
+		| i = (in.offset+in.len-1)%in.array.len ?
+			out: " -| "+out
+		|
+			out: "    "+out
+		print: out
+	)
+	print: "}"
+	print
+	\\
+)
+
+
+
