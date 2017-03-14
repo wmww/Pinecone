@@ -8,21 +8,21 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../PineconeDbg" prefix_auto="1" extension_auto="1" />
+				<Option output="../pinecone" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-debug -cpp other/pinecone.pncn" />
+				<Option parameters="-debug -cpp other/pinecone.pn" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="../PineconeBin" prefix_auto="1" extension_auto="1" />
+				<Option output="../pinecone" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="other/pinecone.pncn" />
+				<Option parameters="other/run_tests.pn" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -36,6 +36,9 @@
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Linker>
+			<Add option="`llvm-config --ldflags --system-libs --libs core`" />
+		</Linker>
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/AllOperators.h" />
 		<Unit filename="../h/AstNode.h" />
@@ -50,8 +53,9 @@
 		<Unit filename="../h/Type.h" />
 		<Unit filename="../h/VERSION.h" />
 		<Unit filename="../h/msclStringFuncs.h" />
-		<Unit filename="../other/pinecone.pncn" />
+		<Unit filename="../other/pinecone.pn" />
 		<Unit filename="../other/pinecone_concept.txt" />
+		<Unit filename="../other/run_tests.pn" />
 		<Unit filename="../readme.md" />
 		<Unit filename="../src/Actions/Action.cpp" />
 		<Unit filename="../src/Actions/BranchAction.cpp" />

@@ -24,6 +24,7 @@ const extern Type Void;
 const extern Type Bool;
 const extern Type Int;
 const extern Type Dub;
+extern Type String;
 
 struct NamedType
 {

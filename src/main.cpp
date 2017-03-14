@@ -36,7 +36,7 @@ int main(int argc, char ** argv)
 		cout << "options: " << endl;
 		cout << "-v, -version     display the version of Pinecone" << endl;
 		cout << "-debug           display debugging info and then run the program" << endl;
-		cout << "-cpp             instead of running the program, show transpiles C++ code" <<
+		cout << "-cpp             instead of running the program, show transpiled C++ code" <<
 				"                 not yet fully implemented" << endl;
 		cout << "-h, -help        display this help and quit" << endl;
 		return 0;

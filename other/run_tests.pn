@@ -1,0 +1,84 @@
+print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
+print
+
+print: "unit tests:"
+print
+
+runTestFolder: "unit", tru
+
+runTestFolder: "regression", tru
+
+runTestFolder: "integration", tru
+
+runTestFolder: "unfixed", fls
+
+print: "tests done"
+
+runTestFolder :: {folder: String, printDetails: Bool}: (
+	
+	print: in.folder + ":"
+	
+	filepath: "examples/tests/" + in.folder
+	
+	allFiles: runCmd: "ls " + filepath + "/ | grep .pn"
+	
+	i: 0
+
+	j: 0 | j < allFiles.len | j: j+1 @ (
+		j = allFiles.len-1 || (allFiles.sub: j, j+1) = "\n" ?(
+			name: allFiles.sub: i, j
+			runTest: filepath + "/" + name, (name.sub: 0, name.len-3), in.printDetails
+			i: j+1
+		)
+	)
+	
+	print
+)
+
+runTest :: {filepath: String, name: String, printDetails: Bool}:
+(
+	cmd: "./pinecone " + in.filepath
+	
+	out: runCmd: cmd
+	
+	quit: fls
+	i: 0
+	target: String
+	actual: String
+	
+	!quit @ (
+		i + splitSub.len >= out.len ? (
+			target: "no target"
+			out.len = 0 ?
+				actual: "no output for '" + in.filepath + "'"
+				|
+				actual: out
+			quit: tru
+		)|
+		(out.sub: i, i+splitSub.len) = splitSub ? (
+			target: out.sub: 0, i
+			actual: out.sub: i+splitSub.len, out.len
+			quit: tru
+		)|(
+			i: i+1
+		)
+	)
+	
+	target = actual ? (
+		print: ".\t"+in.name+" passed"
+	)|(
+		print: "X\t"+in.name+" failed"
+		
+		in.printDetails ? (
+			print: divideLine
+			print: "output:"
+			print: actual
+			print: "instead of:"
+			print: target
+			print: divideLine
+		)
+	)
+)
+
+splitSub :: "_____\n"
+divideLine :: "_____________________________________________\n"

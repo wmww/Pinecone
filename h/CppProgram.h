@@ -7,11 +7,16 @@ class CppProgram
 public:
 	string getTypeName(Type) {return "typeName";};
 	
-	void addCode(string in) {code+=in;};
-	void addComment(string in) {code+="\n/*\n"+in+"\n/*\n";};
+	void addCode(string in);
+	void addComment(string in);
+	void pushBlock();
+	void popBlock();
+	
 	
 	string getCode() {return code;}
 	
 private:
+	string indent="    ";
+	int indentationLevel=0;
 	string code;
 };

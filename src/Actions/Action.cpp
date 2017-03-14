@@ -58,14 +58,14 @@ public:
 		setDescription(textIn);// + " (lambda action)");
 	}
 	
-	string getCSource(string inLeft, string inRight)
-	{
-		return "/* lambda action (not yet implemented) */";
-	}
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		return lambda(inLeft, inRight);
+	}
+	
+	void addCppCodeToProg(CppProgram& prog)
+	{
+		prog.addComment("lambda action (not yet implemented)");
 	}
 	
 private:

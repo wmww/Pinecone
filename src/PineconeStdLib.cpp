@@ -14,6 +14,7 @@
 #define CPP_Bool bool
 #define CPP_Void char
 
+#define PNCN_String String
 #define PNCN_Dub Dub
 #define PNCN_Int Int
 #define PNCN_Bool Bool
@@ -36,6 +37,7 @@
 #define DO_RETURN_VAL(typeIn, varName) void* outPtr=malloc(getPncnType(typeIn)->getSize()); memcpy(outPtr, &varName, getPncnType(typeIn)->getSize()); return outPtr;
 #define DONT_RETURN_VAL(typeIn, varName) return nullptr;
 
+#define INSTANTIATE_String DO_INSTANTIATE
 #define INSTANTIATE_Dub DO_INSTANTIATE
 #define INSTANTIATE_Int DO_INSTANTIATE
 #define INSTANTIATE_Bool DO_INSTANTIATE
@@ -98,12 +100,44 @@ void setValInTuple(void* data, Type type, string name, T val)
 	*((T*)((char*)data+a.offset))=val;
 }
 
+string pncnStr2CppStr(void* obj)
+{
+	int len=getValFromTuple<int>(obj, String, "_size");
+	char * data=(char*)malloc((len+1)*sizeof(char));
+	memcpy(data, getValFromTuple<char*>(obj, String, "_data"), len*sizeof(char));
+	data[len]=0;
+	string out(data);
+	return out;
+}
+
+void* cppStr2PncnStr(string cpp)
+{
+	void * obj=malloc(String->getSize());
+	char * strData=(char*)malloc(cpp.size()*sizeof(char));
+	memcpy(strData, cpp.c_str(), cpp.size()*sizeof(char));
+	
+	*((int*)((char*)obj+String->getSubType("_size").offset))=cpp.size();
+	*((char**)((char*)obj+String->getSubType("_data").offset))=strData;
+	
+	return obj;
+}
+
 void populatePineconeStdLib()
 {
 	Namespace table=globalNamespace=NamespaceData::makeRootNamespace();
 	
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
 	voidAction=createNewVoidAction();
+	
+	///basic types
+	
+	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Dub}});
+	
+	table->addType(Void, "Void");
+	table->addType(Bool, "Bool");
+	table->addType(Int, "Int");
+	table->addType(Dub, "Dub");
+	table->addType(String, "String");
 	
 	
 	///constansts
@@ -115,6 +149,31 @@ void populatePineconeStdLib()
 	
 	bool falseVal=false;
 	table->addAction(constGetAction(&falseVal, Bool, "fls"), "fls");
+	
+	// version constant
+	{
+		Type versionTupleType=
+			makeTuple(vector<NamedType>{
+				NamedType{"x", Int},
+				NamedType{"y", Int},
+				NamedType{"z", Int},
+			});
+		
+		void* versionTupleData=malloc(versionTupleType->getSize());
+		
+		setValInTuple(versionTupleData, versionTupleType, "x", VERSION_X);
+		setValInTuple(versionTupleData, versionTupleType, "y", VERSION_Y);
+		setValInTuple(versionTupleData, versionTupleType, "z", VERSION_Z);
+		
+		table->addAction(
+			constGetAction(
+				versionTupleData,
+				versionTupleType,
+				"VERSION"
+			),
+			"VERSION"
+		);
+	}
 	
 	
 	///operators
@@ -196,14 +255,6 @@ void populatePineconeStdLib()
 		retrn right==0);
 	
 	
-	///basic types
-	
-	table->addType(Void, "Void");
-	table->addType(Bool, "Bool");
-	table->addType(Int, "Int");
-	table->addType(Dub, "Dub");
-	
-	
 	///initalizers
 	
 	func("Bool", Bool, Void, Void, 
@@ -247,13 +298,29 @@ void populatePineconeStdLib()
 	func("print", Void, Void, Dub,
 		cout << right << endl);
 	
+	addAction("print", Void, Void, String, LAMBDA_HEADER
+		{
+			cout << pncnStr2CppStr(rightIn) << endl;
+			return nullptr;
+		}
+	);
+	
 	func("printc", Void, Void, Int,
 		cout << (char)right);
+	
+	func("inputc", Int, Void, Void,
+		retrn getchar());
 	
 	func("inputInt", Int, Void, Void,
 		int val;
 		std::cin >> val;
 		retrn val;);
+	
+	addAction("runCmd", String, Void, String, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(runCmd(pncnStr2CppStr(rightIn)));
+		}
+	);
 	
 	
 	/// int array
@@ -308,6 +375,112 @@ void populatePineconeStdLib()
 			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
 			*(arrayPtr+pos)=val;
 			return nullptr;
+		}
+	);
+	
+	/// strings
+	
+	
+	addAction("String", String, Void, Void, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr("");
+		}
+	);
+	
+	addAction("String", String, Int, Void, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(to_string(*((int*)leftIn)));
+		}
+	);
+	
+	addAction("String", String, Dub, Void, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(to_string(*((double*)leftIn)));
+		}
+	);
+	
+	addAction("String", String, Bool, Void, LAMBDA_HEADER
+		{
+			if (*((bool*)leftIn))
+			{
+				return cppStr2PncnStr("tru");
+			}
+			else
+			{
+				return cppStr2PncnStr("fls");
+			}
+		}
+	);
+	
+	addAction("len", Int, String, Void, LAMBDA_HEADER
+		{
+			int* out=(int*)malloc(sizeof(int));
+			*out=getValFromTuple<int>(leftIn, String, "_size");
+			return out;
+		}
+	);
+	
+	addAction("ascii", String, Int, Void, LAMBDA_HEADER
+		{
+			int val=*((int*)leftIn);
+			if (val<0 || val>=256)
+			{
+				throw PineconeError("tried to make ascii string out of value "+val, RUNTIME_ERROR);
+			}
+			string out;
+			out+=(char)val;
+			return cppStr2PncnStr(out);
+		}
+	);
+	
+	addAction("at", Int, String, Int, LAMBDA_HEADER
+		{
+			int index=*((int*)rightIn);
+			int * out=(int*)malloc(sizeof(int));
+			string str=pncnStr2CppStr(leftIn);
+			if (index<0 || index>=int(str.size()))
+			{
+				throw PineconeError("tried to access location "+to_string(index)+" in string "+to_string(str.size())+" long", RUNTIME_ERROR);
+			}
+			*out=str[index];
+			return out;
+		}
+	);
+	
+	addAction("sub", String, String, makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}}), LAMBDA_HEADER
+		{
+			Type RightType=makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}});
+			int start=getValFromTuple<int>(rightIn, RightType, "a");
+			int end=getValFromTuple<int>(rightIn, RightType, "b");
+			string str=pncnStr2CppStr(leftIn);
+			if (start<0 || end>int(str.size()) || start>end)
+			{
+				throw PineconeError("invalid arguments sent to String.sub", RUNTIME_ERROR);
+			}
+			return cppStr2PncnStr(str.substr(start, end-start));
+		}
+	);
+	
+	addAction("input", String, String, Void, LAMBDA_HEADER
+		{
+			string in;
+			cout << pncnStr2CppStr(leftIn);
+			std::getline (std::cin, in);
+			return cppStr2PncnStr(in);
+		}
+	);
+	
+	addAction(ops->plus, String, String, String, LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
+		}
+	);
+	
+	addAction(ops->equal, Bool, String, String, LAMBDA_HEADER
+		{
+			bool* out=(bool*)malloc(sizeof(bool));
+			*out=pncnStr2CppStr(leftIn)==pncnStr2CppStr(rightIn);
+			return out;
 		}
 	);
 	

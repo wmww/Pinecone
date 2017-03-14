@@ -100,3 +100,7 @@ string putStringInTable(const string& in, string tableName);
 //		returns: the contents of the file, or an empty string if there is an error
 string loadEntireFile(string inName, bool printOutput=true);
 
+//	run a shell command and return the output
+//		cmd: the command to run
+//		returns: the output of the command
+string runCmd(string cmd);

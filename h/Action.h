@@ -36,9 +36,9 @@ public:
 	
 	virtual string getDescription() {return description;}
 	virtual void* execute(void* inLeft, void* inRight)=0;
-	virtual string getCSource(string inLeft="", string inRight="")=0;
-	virtual void addCppCodeToProg(CppProgram& prog) {prog.addComment("action '"+toString()+"' to cpp code not yet implemented");};
-		
+	//virtual string getCSource(string inLeft="", string inRight="")=0;
+	virtual void addCppCodeToProg(CppProgram& prog) {prog.addComment("action '"+getDescription()+"' to cpp code not yet implemented");};
+	
 protected:
 	
 	//string text;

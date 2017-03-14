@@ -1,0 +1,45 @@
+# Pinecone funcs test
+print: "1\n6\n10\n5\n3\n2\n1\n0\n15\n_____"
+
+global: 14
+
+func0
+print: func1: 8
+print: func2: 1, 9
+print: 2.func3: 3
+func4: 3
+func5
+
+func0 :: {}:
+(
+	print: 1
+)
+
+func1 :: {Int} -> {Int}:
+(
+	in-2
+)
+
+func2 :: {v1: Int, v2: Int} -> {Int}:
+(
+	in.v1+in.v2
+)
+
+func3 :: {Int}.{Int} -> {Int}:
+(
+	me+in
+)
+
+func4 :: {Int}:
+(
+	print: in
+	in > 0 ?
+		func4: in-1
+)
+
+func5 :: {}:
+(
+	global: global+1
+	print: global
+)
+

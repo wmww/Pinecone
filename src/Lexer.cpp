@@ -234,12 +234,29 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 		
 		if (newType!=TokenData::WHITESPACE && newType!=TokenData::LINE_END)
 		{
-			tokenTxt+=file[i];
+			if (newType==TokenData::STRING_LITERAL && file[i]=='\\')
+			{
+				i++;
+				if (file[i]=='n')
+					tokenTxt+='\n';
+				else if (file[i]=='"')
+					tokenTxt+='"';
+				else if (file[i]=='t')
+					tokenTxt+='\t';
+				else if (file[i]=='\\')
+					tokenTxt+='\\';
+				else
+					throw PineconeError(string()+"invalid escape character '\\"+file[i]+"'", SOURCE_ERROR, makeToken(tokenTxt+file[i], &file, line, charPos-tokenTxt.size(), type));
+			}
+			else
+			{
+				tokenTxt+=file[i];
+			}
 		}
 		
 		type=newType;
 		
-		if (file.getContents()[i]=='\n')
+		if (file[i]=='\n')
 		{
 			line++;
 			charPos=1;
