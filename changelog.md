@@ -2,6 +2,15 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
+* added '!=' operator
+* Wrote more example programs including a brainfuck interpreter
+* Fixed bug that prevented calling functions on data in structures (ex. struct.data.func: arg wouldn't work before)
+* Added a wide range of unit tests and integration tests
+* Added escape character support to Strings
+* Added support for running shell commands
+* Added explicit conversion of primitive types to Strings
+* Improved tutorial navigation
+
 ### v0.3.0 (Jan 18 2017)
 
 * Added string literal support
