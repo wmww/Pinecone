@@ -110,7 +110,7 @@ private:
 	string cppCode;
 };
 
-Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string cppCodeIn, string textIn)
+Action lambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn, function<void*(void*,void*)> lambdaIn, string cppCodeIn, string textIn)
 {
 	return Action(new LambdaAction(returnTypeIn, lambdaIn, inLeftTypeIn, inRightTypeIn, cppCodeIn, textIn));
 }

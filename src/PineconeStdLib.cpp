@@ -67,15 +67,16 @@ Action voidAction;
 
 //shared_ptr<StackFrame> stdLibStackFrame;
 Namespace globalNamespace;
+Namespace table;
 
 void addAction(string text, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, string cpp)
 {
 	globalNamespace->addAction(lambdaAction(leftType, rightType, returnType, lambda, cpp, text), text);
 }
 
-void addAction(Operator op, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda)
+void addAction(Operator op, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, string cpp)
 {
-	globalNamespace->addOperator(lambdaAction(leftType, rightType, returnType, lambda, op->getCpp(), op->getText()), op);
+	globalNamespace->addOperator(lambdaAction(leftType, rightType, returnType, lambda, cpp, op->getText()), op);
 }
 
 Type IntArray=nullptr;
@@ -126,7 +127,7 @@ inline void* cppStr2PncnStr(string cpp)
 
 void basicSetup()
 {
-	Namespace table=globalNamespace=NamespaceData::makeRootNamespace();
+	table=globalNamespace=NamespaceData::makeRootNamespace();
 	
 	//this makes a new void action after type constants have been created, if left to the original the Void type may not be set up yet
 	voidAction=createNewVoidAction();
@@ -392,7 +393,7 @@ void populateConverters()
 	///casting
 	
 	//to bool
-	func("Bool", Bool, Void, Int,
+	func("Bool", Void, Int, Bool,
 		retrn right!=0
 	,
 		"($: != 0)"
@@ -413,7 +414,7 @@ void populateConverters()
 	func("Int", Void, Dub, Int,
 		retrn (int)right
 	,
-		"((int)$:)";
+		"((int)$:)"
 	);
 	
 	//to Dub
@@ -440,13 +441,13 @@ void populateStdFuncs()
 		""
 		);
 	
-	func("print", Void, Void, Bool,
+	func("print", Void, Bool, Void,
 			cout << (right?"tru":"fls") << endl;
 		,
 		""
 		);
 	
-	func("print", Void, Void, Int,
+	func("print", Void, Int, Void,
 			cout << right << endl;
 		,
 		""
