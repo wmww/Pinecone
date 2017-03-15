@@ -13,6 +13,10 @@ using std::to_string;
 using std::function;
 using std::vector;
 
+class ActionData;
+
+extern shared_ptr<ActionData> voidAction;
+
 class ActionData
 {
 public:
@@ -41,6 +45,7 @@ public:
 	{
 		prog->addComment("action '"+getDescription()+"' to cpp code not yet implemented");
 	}
+	void addCppCodeToProg(CppProgram* prog) {addCppCodeToProg(voidAction, voidAction, prog);}
 	// void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
 	
 protected:
@@ -56,11 +61,10 @@ protected:
 
 typedef shared_ptr<ActionData> Action;
 
-extern Action voidAction;
-
 class AstNodeBase;
 
-Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
+//Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
+Action lambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn, function<void*(void*,void*)> lambdaIn, string cppCodeIn, string textIn);
 Action createNewVoidAction();
 
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn);

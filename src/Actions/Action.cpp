@@ -2,6 +2,8 @@
 
 #include "../../h/ErrorHandler.h"
 
+#include "../../h/msclStringFuncs.h"
+
 ActionData::ActionData(Type returnTypeIn, Type inLeftTypeIn, Type inRightTypeIn)
 {
 	returnType=returnTypeIn;
@@ -52,10 +54,11 @@ public:
 class LambdaAction: public ActionData
 {
 public:
-	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn): ActionData(returnTypeIn, inLeftTypeIn, inRightTypeIn)
+	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string cppCodeIn, string textIn): ActionData(returnTypeIn, inLeftTypeIn, inRightTypeIn)
 	{
 		lambda=lambdaIn;
-		setDescription(textIn);// + " (lambda action)");
+		cppCode=cppCodeIn;
+		setDescription(textIn);
 	}
 	
 	void* execute(void* inLeft, void* inRight)
@@ -65,16 +68,51 @@ public:
 	
 	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->addComment("lambda action (not yet implemented)");
+		int start=0;
+		int i;
+		
+		do
+		{
+			i=searchInString(cppCode, "$", start);
+			
+			prog->addCode(cppCode.substr(start, (i<0?cppCode.size():i)-start));
+			
+			if (i>=0)
+			{
+				if (substringMatches(cppCode, i, "$."))
+				{
+					inLeft->addCppCodeToProg(prog);
+					start=i+string("$.").size();
+				}
+				else if (substringMatches(cppCode, i, "$:"))
+				{
+					inRight->addCppCodeToProg(prog);
+					start=i+string("$:").size();
+				}
+				else if (substringMatches(cppCode, i, "$$"))
+				{
+					prog->addCode("$");
+					start=i+string("$$").size();
+				}
+				else
+				{
+					throw PineconeError("invalid '$' escape in C++ code: "+cppCode, INTERNAL_ERROR);
+				}
+			}
+			
+		} while (i>=0);
+		
+		//prog->addComment("lambda action (not yet implemented)");
 	}
 	
 private:
 	function<void*(void*,void*)> lambda;
+	string cppCode;
 };
 
-Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn)
+Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string cppCodeIn, string textIn)
 {
-	return Action(new LambdaAction(returnTypeIn, lambdaIn, inLeftTypeIn, inRightTypeIn, textIn));
+	return Action(new LambdaAction(returnTypeIn, lambdaIn, inLeftTypeIn, inRightTypeIn, cppCodeIn, textIn));
 }
 
 Action createNewVoidAction()
