@@ -38,14 +38,14 @@ public:
 		setDescription("Void Action");
 	}
 	
-	string getCSource(string inLeft, string inRight)
-	{
-		return "/* void action */";
-	}
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		return nullptr;
+	}
+	
+	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		//prog
 	}
 };
 
@@ -63,9 +63,9 @@ public:
 		return lambda(inLeft, inRight);
 	}
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, bool allowBlock, CppProgram& prog)
+	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog.addComment("lambda action (not yet implemented)");
+		prog->addComment("lambda action (not yet implemented)");
 	}
 	
 private:
