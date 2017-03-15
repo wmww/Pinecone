@@ -113,11 +113,17 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 
 string PineconeProgram::getCpp()
 {
-	CppProgram outProg;
-	
-	actionRoot->addCppCodeToProg(voidAction, voidAction, true, outProg);
-	
-	return outProg.getCode();
+	try
+	{
+		CppProgram outProg;
+		actionRoot->addCppCodeToProg(voidAction, voidAction, true, outProg);
+		return outProg.getCode();
+	}
+	catch (PineconeError err)
+	{
+		err.log();
+		return "/* no program due to transpiling error */";
+	}
 }
 
 void PineconeProgram::execute()

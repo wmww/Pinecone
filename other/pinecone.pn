@@ -1,2 +1,4 @@
-print: "hello world"
+
+tru ? 1
+
 print: "hi"
