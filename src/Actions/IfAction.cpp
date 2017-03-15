@@ -31,13 +31,6 @@ public:
 	{
 		return "if " + condition->getDescription() + " then " + ifAction->getDescription();
 	}
-	
-	/*
-	string getCSource(string inLeft, string inRight)
-	{
-		return "if (" + condition->getCSource() + ")\n{\n" + ifAction->getCSource() + "\n}";
-	}
-	*/
 
 	void* execute(void* inLeft, void* inRight)
 	{
@@ -48,6 +41,24 @@ public:
 		}
 		free(conditionOut);
 		return nullptr;
+	}
+	
+	/*
+	string getCSource(string inLeft, string inRight)
+	{
+		return "if (" + condition->getCSource() + ")\n{\n" + ifAction->getCSource() + "\n}";
+	}
+	*/
+	
+	void addCppCodeToProg(Action inLeft, Action inRight, bool allowBlock, CppProgram& prog)
+	{
+		prog.addCode("if ");
+		prog.pushExpression();
+		condition->addCppCodeToProg(voidAction, voidAction, false, prog);
+		prog.popExpression();
+		prog.pushBlock();
+		ifAction->addCppCodeToProg(voidAction, voidAction, true, prog);
+		prog.popBlock();
 	}
 	
 private:
