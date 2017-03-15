@@ -24,6 +24,7 @@ public:
 	};
 	
 	string getText() {return text;}
+	string getCpp() {return "/* op to cpp not yet implemented */";}
 	int getPrecedence() {return precedence;}
 	bool isOverloadable() {return overloadable;}
 	bool takesLeftInput() {return input==BOTH || input==LEFT;}
