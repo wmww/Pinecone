@@ -17,13 +17,16 @@ public:
 	void pushBlock();
 	void popBlock();
 	int getExprLevel() {return exprLevel;}
+	bool getIfFreshLine() {return freshLine;}
+	int getBlockLevel() {return blockLevel;}
 	
 	string getSource() {return source;}
+	string getPrototype() {return prototype;}
 	
 private:
 	string indent="    ";
 	bool freshLine=true;
-	int indentLevel=0;
+	int blockLevel=0;
 	int exprLevel=0;
 	
 	string source;
@@ -50,7 +53,7 @@ public:
 	void popBlock()				{activeFunc->popBlock();}
 	int getExprLevel()			{return activeFunc->getExprLevel();}
 	
-	void getIfFuncExists(string name);
+	bool getIfFuncExists(string name);
 	void pushFunc(string name, vector<NamedType> args, Type returnType);
 	void popFunc();
 	
@@ -58,6 +61,7 @@ public:
 	
 private:
 	
+	string indent="    ";
 	CppFunc activeFunc;
 	vector<string> funcStack;
 	std::map<string, CppFunc> funcs;
