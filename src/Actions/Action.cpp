@@ -56,19 +56,22 @@ class LambdaAction: public ActionData
 public:
 	LambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn,
 		function<void*(void*,void*)> lambdaIn,
-		function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProgIn,
+		function<void(Action inLeft, Action inRight, CppProgram* prog)> cppWriterIn,
 		string textIn)
 			: ActionData(returnTypeIn, inLeftTypeIn, inRightTypeIn)
 	{
-		lambda=lambdaIn;
-		if (addCppToProgIn==nullptr)
+		if (cppWriterIn==nullptr)
 		{
-			//cppCode="/* lambda action '" + textIn + "' has not yet been implemented for C++ */";
+			cppWriter=[=](Action inLeft, Action inRight, CppProgram* prog)
+			{
+				prog->addComment("/* lambda action '" + textIn + "' has not yet been implemented for C++ */");
+			};
 		}
 		else
 		{
-			addCppToProg=addCppToProgIn;
+			cppWriter=cppWriterIn;
 		}
+		
 		setDescription(textIn);
 	}
 	
@@ -79,56 +82,21 @@ public:
 	
 	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		addCppToProg(inLeft, inRight, prog);
-		/*int start=0;
-		int i;
-		
-		do
-		{
-			i=searchInString(cppCode, "$", start);
-			
-			prog->addCode(cppCode.substr(start, (i<0?cppCode.size():i)-start));
-			
-			if (i>=0)
-			{
-				if (substringMatches(cppCode, i, "$."))
-				{
-					inLeft->addCppCodeToProg(prog);
-					start=i+string("$.").size();
-				}
-				else if (substringMatches(cppCode, i, "$:"))
-				{
-					inRight->addCppCodeToProg(prog);
-					start=i+string("$:").size();
-				}
-				else if (substringMatches(cppCode, i, "$$"))
-				{
-					prog->addCode("$");
-					start=i+string("$$").size();
-				}
-				else
-				{
-					throw PineconeError("invalid '$' escape in C++ code: "+cppCode, INTERNAL_ERROR);
-				}
-			}
-			
-		} while (i>=0);
-		*/
-		//prog->addComment("lambda action (not yet implemented)");
+		cppWriter(inLeft, inRight, prog);
 	}
 	
 private:
 	function<void*(void*,void*)> lambda;
-	function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg;
+	function<void(Action inLeft, Action inRight, CppProgram* prog)> cppWriter;
 	string cppCode;
 };
 
 Action lambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn,
 	function<void*(void*,void*)> lambdaIn,
-	function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProgIn,
+	function<void(Action inLeft, Action inRight, CppProgram* prog)> cppWriter,
 	string textIn)
 {
-	return Action(new LambdaAction(inLeftTypeIn, inRightTypeIn, returnTypeIn, lambdaIn, addCppToProgIn, textIn));
+	return Action(new LambdaAction(inLeftTypeIn, inRightTypeIn, returnTypeIn, lambdaIn, cppWriter, textIn));
 }
 
 Action createNewVoidAction()

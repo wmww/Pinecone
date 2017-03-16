@@ -1,4 +1,4 @@
 
-tru ? 1
+tru || fls ? 1
 
 print: "hello"
