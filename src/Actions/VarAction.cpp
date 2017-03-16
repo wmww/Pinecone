@@ -96,16 +96,16 @@ public:
 		free(data);
 	}
 	
-	string getCSource(string inLeft, string inRight)
-	{
-		return "/* const get not yet implemented */";
-	}
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(returnType->getSize());
 		memcpy(out, data, returnType->getSize());
 		return out;
+	}
+	
+	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		getReturnType()->addInstToProg(data, prog);
 	}
 	
 private:

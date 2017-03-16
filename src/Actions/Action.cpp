@@ -57,7 +57,7 @@ public:
 	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string cppCodeIn, string textIn): ActionData(returnTypeIn, inLeftTypeIn, inRightTypeIn)
 	{
 		lambda=lambdaIn;
-		if (cppCode.empty())
+		if (cppCodeIn.empty())
 		{
 			cppCode="/* lambda action '" + textIn + "' has not yet been implemented for C++ */";
 		}

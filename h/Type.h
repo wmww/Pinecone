@@ -26,6 +26,8 @@ const extern Type Int;
 const extern Type Dub;
 extern Type String;
 
+class CppProgram;
+
 struct NamedType
 {
 	string name;
@@ -73,6 +75,7 @@ public:
 	
 	static string getString(PrimitiveType in);
 	virtual string getString()=0;
+	virtual void addInstToProg(void * data, CppProgram * prog)=0;
 	
 	virtual bool isCreatable() {return true;};
 	virtual bool isVoid() {return false;};
