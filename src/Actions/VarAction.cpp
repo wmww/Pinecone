@@ -103,7 +103,7 @@ public:
 		return out;
 	}
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
 		getReturnType()->addInstToProg(data, prog);
 	}

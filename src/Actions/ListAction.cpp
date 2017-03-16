@@ -77,21 +77,21 @@ public:
 		return (*i)->execute(nullptr, nullptr);
 	}
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		if (prog->getExpressionLevel()>0)
+		if (prog->getExprLevel()>0)
 		{
-			prog->addComment("list can not be created without a block");
+			prog->comment("list can not be created without a block");
 		}
 		else
 		{
-			prog->addComment("list");
+			prog->comment("list");
 			
 			prog->pushBlock();
 			
 			for (auto i: actions)
 			{
-				i->addCppCodeToProg(voidAction, voidAction, prog);
+				i->addToProg(voidAction, voidAction, prog);
 			}
 			
 			prog->popBlock();

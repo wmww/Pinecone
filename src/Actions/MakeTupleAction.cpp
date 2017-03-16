@@ -135,10 +135,10 @@ public:
 		return out;
 	}
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		inLeft->addCppCodeToProg(prog);
-		prog->addCode("."+name);
+		inLeft->addToProg(prog);
+		prog->code("."+name);
 	}
 	
 private:

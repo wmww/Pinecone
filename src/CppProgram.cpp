@@ -3,78 +3,112 @@
 
 CppProgram::CppProgram()
 {
-	code="\n";
+	source="\n";
 }
 
-void CppProgram::addCode(string in)
+void CppProgram::code(string in)
 {
-	if (code.back()=='\n')
+	if (freshLine)
 	{
-		code+=indentString(in, indent, indentationLevel);
+		source+=indentString(in, indent, indentLevel);
+		freshLine=(in.back()=='\n');
 	}
 	else if (searchInString(in, "\n")>0)
 	{
-		code+="\n"+indentString(in, indent, indentationLevel);
+		source+="\n"+indentString(in, indent, indentLevel);
 		if (in.back()!='\n')
-			code+="\n";
+			source+="\n";
+		freshLine=true;
 	}
 	else
 	{
-		code+=in;
+		source+=in;
+		freshLine=(in.back()=='\n');
 	}
 }
 
-void CppProgram::addComment(string in)
+void CppProgram::line(string in)
+{
+	code(in);
+	endln();
+}
+
+void CppProgram::endln()
+{
+	if (exprLevel>0)
+	{
+		throw PineconeError("non zero expression level when ending line in C++ program", INTERNAL_ERROR);
+	}
+	else if (freshLine)
+	{
+		source=source.substr(0, source.size()-1) + ";\n";
+	}
+	else
+	{
+		source+=";\n";
+	}
+	
+	freshLine=true;
+}
+
+void CppProgram::comment(string in)
 {
 	if (searchInString(in, "\n")>=0)
 	{
-		code+=indentString("\n/*\n"+in+"\n*/\n", indent, indentationLevel);
+		source+=indentString("\n/*\n"+in+"\n*/\n", indent, indentLevel);
+		freshLine=true;
 	}
-	else if (expressionLevel>0 || code.back()!='\n')
+	else if (exprLevel>0 || source.back()!='\n')
 	{
-		code+="/* "+in+" */";
+		source+="/* "+in+" */";
+		freshLine=false;
 	}
 	else
 	{
-		code+=indentString("// "+in+"\n", indent, indentationLevel);
+		source+=indentString("// "+in+"\n", indent, indentLevel);
+		freshLine=true;
 	}
 };
 
-void CppProgram::pushExpression()
+void CppProgram::pushExpr()
 {
-	addCode("(");
-	expressionLevel++;
+	code("(");
+	exprLevel++;
+	freshLine=false;
 }
 
-void CppProgram::popExpression()
+void CppProgram::popExpr()
 {
-	if (expressionLevel<=0)
+	if (exprLevel<=0)
 	{
 		throw PineconeError("CppProgram::popExpression called with zero expressionLevel", INTERNAL_ERROR);
 	}
 	
-	addCode(")");
-	expressionLevel--;
+	code(")");
+	exprLevel--;
+	freshLine=false;
 }
 
 void CppProgram::pushBlock()
 {
-	if (expressionLevel>0)
+	if (exprLevel>0)
 	{
 		throw PineconeError("CppProgram::pushBlock called when expressionLevel was not zero", INTERNAL_ERROR);
 	}
 	
-	addCode("{\n");
-	indentationLevel++;
+	code("{\n");
+	indentLevel++;
+	freshLine=true;
 }
 
 void CppProgram::popBlock()
 {
-	if (indentationLevel<=0)
+	if (indentLevel<=0)
 	{
 		throw PineconeError("CppProgram::popBlock called with zero indentationLevel", INTERNAL_ERROR);
 	}
 	
-	indentationLevel--;
-	addCode("}\n\n");
+	indentLevel--;
+	code("}\n\n");
+	freshLine=true;
 }

@@ -116,8 +116,8 @@ string PineconeProgram::getCpp()
 	try
 	{
 		CppProgram outProg;
-		actionRoot->addCppCodeToProg(voidAction, voidAction, &outProg);
-		return outProg.getCode();
+		actionRoot->addToProg(voidAction, voidAction, &outProg);
+		return outProg.getSource();
 	}
 	catch (PineconeError err)
 	{

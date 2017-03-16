@@ -10,19 +10,22 @@ public:
 	
 	string getTypeName(Type) {return "typeName";};
 	
-	void addCode(string in);
-	void addComment(string in);
-	void pushExpression();
-	void popExpression();
+	void code(string in);
+	void line(string in);
+	void endln();
+	void comment(string in);
+	void pushExpr();
+	void popExpr();
 	void pushBlock();
 	void popBlock();
-	int getExpressionLevel() {return expressionLevel;}
+	int getExprLevel() {return exprLevel;}
 	
-	string getCode() {return code;}
+	string getSource() {return source;}
 	
 private:
 	string indent="    ";
-	int indentationLevel=0;
-	int expressionLevel=0;
-	string code;
+	bool freshLine=true;
+	int indentLevel=0;
+	int exprLevel=0;
+	string source;
 };
