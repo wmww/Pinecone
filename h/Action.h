@@ -64,7 +64,7 @@ typedef shared_ptr<ActionData> Action;
 class AstNodeBase;
 
 //Action lambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string textIn);
-Action lambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn, function<void*(void*,void*)> lambdaIn, string cppCodeIn, string textIn);
+Action lambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn, function<void*(void*,void*)> lambdaIn, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg, string textIn);
 Action createNewVoidAction();
 
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn);

@@ -54,16 +54,20 @@ public:
 class LambdaAction: public ActionData
 {
 public:
-	LambdaAction(Type returnTypeIn, function<void*(void*,void*)> lambdaIn, Type inLeftTypeIn, Type inRightTypeIn, string cppCodeIn, string textIn): ActionData(returnTypeIn, inLeftTypeIn, inRightTypeIn)
+	LambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn,
+		function<void*(void*,void*)> lambdaIn,
+		function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProgIn,
+		string textIn)
+			: ActionData(returnTypeIn, inLeftTypeIn, inRightTypeIn)
 	{
 		lambda=lambdaIn;
-		if (cppCodeIn.empty())
+		if (addCppToProgIn==nullptr)
 		{
-			cppCode="/* lambda action '" + textIn + "' has not yet been implemented for C++ */";
+			//cppCode="/* lambda action '" + textIn + "' has not yet been implemented for C++ */";
 		}
 		else
 		{
-			cppCode=cppCodeIn;
+			addCppToProg=addCppToProgIn;
 		}
 		setDescription(textIn);
 	}
@@ -75,7 +79,8 @@ public:
 	
 	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		int start=0;
+		addCppToProg(inLeft, inRight, prog);
+		/*int start=0;
 		int i;
 		
 		do
@@ -108,18 +113,22 @@ public:
 			}
 			
 		} while (i>=0);
-		
+		*/
 		//prog->addComment("lambda action (not yet implemented)");
 	}
 	
 private:
 	function<void*(void*,void*)> lambda;
+	function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg;
 	string cppCode;
 };
 
-Action lambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn, function<void*(void*,void*)> lambdaIn, string cppCodeIn, string textIn)
+Action lambdaAction(Type inLeftTypeIn, Type inRightTypeIn, Type returnTypeIn,
+	function<void*(void*,void*)> lambdaIn,
+	function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProgIn,
+	string textIn)
 {
-	return Action(new LambdaAction(returnTypeIn, lambdaIn, inLeftTypeIn, inRightTypeIn, cppCodeIn, textIn));
+	return Action(new LambdaAction(inLeftTypeIn, inRightTypeIn, returnTypeIn, lambdaIn, addCppToProgIn, textIn));
 }
 
 Action createNewVoidAction()
