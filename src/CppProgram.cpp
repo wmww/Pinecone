@@ -1,6 +1,11 @@
 #include "../h/CppProgram.h"
 #include "../h/msclStringFuncs.h"
 
+CppProgram::CppProgram()
+{
+	code="\n";
+}
+
 void CppProgram::addCode(string in)
 {
 	if (code.back()=='\n')
@@ -25,7 +30,7 @@ void CppProgram::addComment(string in)
 	{
 		code+=indentString("\n/*\n"+in+"\n*/\n", indent, indentationLevel);
 	}
-	else if (expressionLevel>0)
+	else if (expressionLevel>0 || code.back()!='\n')
 	{
 		code+="/* "+in+" */";
 	}

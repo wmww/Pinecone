@@ -1,5 +1,7 @@
 #include "../h/Type.h"
 #include "../h/ErrorHandler.h"
+#include "../h/CppProgram.h"
+#include "../h/msclStringFuncs.h"
 
 using std::unique_ptr;
 using std::get;
@@ -10,6 +12,11 @@ public:
 	virtual string getString()
 	{
 		return "VOID";
+	}
+	
+	void addInstToProg(void * data, CppProgram * prog)
+	{
+		prog->addCode("void");
 	}
 	
 	bool isCreatable()
@@ -46,6 +53,11 @@ public:
 	virtual string getString()
 	{
 		return "UNKNOWN";
+	}
+	
+	void addInstToProg(void * data, CppProgram * prog)
+	{
+		prog->addComment("can not instantiate unknown type");
 	}
 	
 	bool isCreatable()
@@ -90,6 +102,23 @@ public:
 		return TypeBase::getString(primType);
 	}
 	
+	void addInstToProg(void * data, CppProgram * prog)
+	{
+		string val;
+		
+		switch (primType)
+		{
+			case BOOL: val=(*(bool*)data)?"true":"false"; break;
+			case INT: val=to_string(*(int*)data); break;
+			case DUB: val=to_string(*(double*)data); break;
+			
+			default:
+				throw PineconeError("tried to convert " + getString() + " to C++ code", INTERNAL_ERROR);
+		}
+		
+		prog->addCode(val);
+	}
+	
 	size_t getSize()
 	{
 		switch (primType)
@@ -99,8 +128,7 @@ public:
 			case DUB: return sizeof(double);
 			
 			default:
-				error.log("tried to get size of " + getString(), INTERNAL_ERROR);
-				return 0;
+				throw PineconeError("tried to get size of " + getString(), INTERNAL_ERROR);
 		}
 	}
 	
@@ -153,6 +181,21 @@ public:
 		out+="} (tuple)";
 		
 		return out;
+	}
+	
+	void addInstToProg(void * data, CppProgram * prog)
+	{
+		prog->addCode("{");
+		
+		for (int i=0; i<int(subTypes->size()); i++)
+		{
+			if (i)
+				prog->addCode(", ");
+			
+			(*subTypes)[i].type->addInstToProg((char*)data+getSubType((*subTypes)[i].name).offset, prog);
+		}
+		
+		prog->addCode("}");
 	}
 	
 	size_t getSize()
@@ -228,6 +271,11 @@ public:
 	string getString()
 	{
 		return "{"+type->getString()+"} (meta type)";
+	}
+	
+	void addInstToProg(void * data, CppProgram * prog)
+	{
+		prog->addComment("can't add meta type to C++ code");
 	}
 	
 	size_t getSize()

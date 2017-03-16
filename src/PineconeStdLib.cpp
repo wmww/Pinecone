@@ -436,28 +436,28 @@ void populateStdFuncs()
 	//print
 	
 	func("print", Void, Void, Void,
-			cout << endl;
-		,
-		""
-		);
+		cout << endl;
+	,
+		"printf('\n');"
+	);
 	
 	func("print", Void, Bool, Void,
-			cout << (right?"tru":"fls") << endl;
-		,
-		""
-		);
+		cout << (right?"tru":"fls") << endl;
+	,
+		"printf($:?\"tru\":\"fls\");"
+	);
 	
 	func("print", Void, Int, Void,
-			cout << right << endl;
-		,
-		""
-		);
+		cout << right << endl;
+	,
+		"printf(\"%f\", $:);"
+	);
 	
 	func("print", Void, Dub, Void,
-			cout << right << endl;
-		,
-		""
-		);
+		cout << right << endl;
+	,
+		"printf(\"%f\", $:);"
+	);
 	
 	addAction("print", Void, String, Void,
 		LAMBDA_HEADER

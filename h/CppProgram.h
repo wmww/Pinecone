@@ -5,6 +5,9 @@
 class CppProgram
 {
 public:
+	
+	CppProgram();
+	
 	string getTypeName(Type) {return "typeName";};
 	
 	void addCode(string in);
