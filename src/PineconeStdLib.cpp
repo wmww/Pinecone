@@ -524,11 +524,11 @@ void populateStdFuncs()
 		ADD_CPP_HEADER
 		{
 			prog->pushBlock();
-				prog->addCode("int strSize=");
+				prog->addCode("int strSize = ");
 				getElemFromTupleAction(String, "_size")->addCppCodeToProg(voidAction, right, prog);
 				prog->addCode(";\n");
 				
-				prog->addCode("char* tmp =  + 1");
+				prog->addCode("char* tmp = strSize + 1");
 				
 				prog->addCode(";\n");
 				

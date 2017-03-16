@@ -113,35 +113,38 @@ class GetElemFromTupleAction: public ActionData
 {
 public:
 	
-	GetElemFromTupleAction(Type typeInIn, Type typeOutIn, size_t offsetIn):
-		ActionData(typeOutIn, typeInIn, Void)
+	GetElemFromTupleAction(Type typeInIn, string nameIn):
+		ActionData(typeInIn->getSubType(nameIn).type, typeInIn, Void)
 	{
-		typeOut=typeOutIn;
-		offset=offsetIn;
+		typeIn=typeInIn;
+		typeOut=typeInIn->getSubType(nameIn).type;
+		// if no type was found, the ActionData constructor would have already thrown an error
+		name=nameIn;
 	}
-
+	
 	string getDescription()
 	{
 		return "get element from tuple";
-		
 	}
 	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(typeOut->getSize());
-		memcpy(out, (char*)inLeft+offset, typeOut->getSize());
+		memcpy(out, (char*)inLeft+typeIn->getSubType(name).offset, typeOut->getSize());
 		
 		return out;
 	}
 	
 	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->addComment("get elem from tuple not yet implemented in C++");
+		inLeft->addCppCodeToProg(prog);
+		prog->addCode("."+name);
 	}
 	
 private:
+	Type typeIn;
 	Type typeOut;
-	size_t offset;
+	string name;
 };
 
 Action makeTupleAction(const std::vector<Action>& sourceActionsIn)
@@ -151,12 +154,10 @@ Action makeTupleAction(const std::vector<Action>& sourceActionsIn)
 
 Action getElemFromTupleAction(Type source, string name)
 {
-	OffsetAndType a=source->getSubType(name);
-	
-	if (!a.type)
+	if (!source->getSubType(name).type)
 		throw PineconeError("could not find '"+name+"' in "+source->getString(), SOURCE_ERROR);
 	
-	Action out=Action(new GetElemFromTupleAction(source, a.type, a.offset));
+	Action out=Action(new GetElemFromTupleAction(source, name));
 	
 	return out;
 }
