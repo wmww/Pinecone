@@ -47,7 +47,7 @@ public:
 	
 	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		//prog
+		prog->addCode("void");
 	}
 };
 

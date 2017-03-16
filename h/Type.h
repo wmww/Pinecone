@@ -27,6 +27,7 @@ const extern Type Dub;
 extern Type String;
 
 class CppProgram;
+class ActionData;
 
 struct NamedType
 {
