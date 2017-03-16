@@ -137,7 +137,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		inLeft->addToProg(prog);
+		inRight->addToProg(prog);
 		prog->code("."+name);
 	}
 	

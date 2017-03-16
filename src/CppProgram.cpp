@@ -1,12 +1,12 @@
 #include "../h/CppProgram.h"
 #include "../h/msclStringFuncs.h"
 
-CppProgram::CppProgram()
+CppFuncBase::CppFuncBase(string prototypeIn)
 {
-	source="\n";
+	prototype=prototypeIn;
 }
 
-void CppProgram::code(string in)
+void CppFuncBase::code(string in)
 {
 	if (freshLine)
 	{
@@ -27,13 +27,13 @@ void CppProgram::code(string in)
 	}
 }
 
-void CppProgram::line(string in)
+void CppFuncBase::line(string in)
 {
 	code(in);
 	endln();
 }
 
-void CppProgram::endln()
+void CppFuncBase::endln()
 {
 	if (exprLevel>0)
 	{
@@ -51,7 +51,7 @@ void CppProgram::endln()
 	freshLine=true;
 }
 
-void CppProgram::comment(string in)
+void CppFuncBase::comment(string in)
 {
 	if (searchInString(in, "\n")>=0)
 	{
@@ -70,14 +70,14 @@ void CppProgram::comment(string in)
 	}
 };
 
-void CppProgram::pushExpr()
+void CppFuncBase::pushExpr()
 {
 	code("(");
 	exprLevel++;
 	freshLine=false;
 }
 
-void CppProgram::popExpr()
+void CppFuncBase::popExpr()
 {
 	if (exprLevel<=0)
 	{
@@ -89,7 +89,7 @@ void CppProgram::popExpr()
 	freshLine=false;
 }
 
-void CppProgram::pushBlock()
+void CppFuncBase::pushBlock()
 {
 	if (exprLevel>0)
 	{
@@ -101,7 +101,7 @@ void CppProgram::pushBlock()
 	freshLine=true;
 }
 
-void CppProgram::popBlock()
+void CppFuncBase::popBlock()
 {
 	if (indentLevel<=0)
 	{
