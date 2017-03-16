@@ -80,38 +80,59 @@ void addAction(Operator op, Type leftType, Type rightType, Type returnType, func
 	globalNamespace->addOperator(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, op->getText()), op);
 }
 
+function<void(Action inLeft, Action inRight, CppProgram* prog)> stringToLambda(string cppCode)
+{
+	if (cppCode.empty())
+	{
+		return nullptr;
+	}
+	
+	return [=](Action inLeft, Action inRight, CppProgram* prog)
+	{
+		int start=0;
+		int i;
+		
+		do
+		{
+			i=searchInString(cppCode, "$", start);
+			
+			prog->addCode(cppCode.substr(start, (i<0?cppCode.size():i)-start));
+			
+			if (i>=0)
+			{
+				if (substringMatches(cppCode, i, "$."))
+				{
+					inLeft->addCppCodeToProg(prog);
+					start=i+string("$.").size();
+				}
+				else if (substringMatches(cppCode, i, "$:"))
+				{
+					inRight->addCppCodeToProg(prog);
+					start=i+string("$:").size();
+				}
+				else if (substringMatches(cppCode, i, "$$"))
+				{
+					prog->addCode("$");
+					start=i+string("$$").size();
+				}
+				else
+				{
+					throw PineconeError("invalid '$' escape in C++ code: "+cppCode, INTERNAL_ERROR);
+				}
+			}
+			
+		} while (i>=0);
+	};
+}
+
 void addAction(string text, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, string cpp)
 {
-	if (cpp.empty())
-	{
-		addAction(text, leftType, rightType, returnType, lambda, (function<void(Action inLeft, Action inRight, CppProgram* prog)>)nullptr);
-	}
-	else
-	{
-		addAction(text, leftType, rightType, returnType, lambda,
-			[=](Action inLeft, Action inRight, CppProgram* prog)->void
-			{
-				return prog->addCode(cpp);
-			}
-		);
-	}
+	addAction(text, leftType, rightType, returnType, lambda, stringToLambda(cpp));
 }
 
 void addAction(Operator op, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, string cpp)
 {
-	if (cpp.empty())
-	{
-		addAction(op, leftType, rightType, returnType, lambda, (function<void(Action inLeft, Action inRight, CppProgram* prog)>)nullptr);
-	}
-	else
-	{
-		addAction(op, leftType, rightType, returnType, lambda,
-			[=](Action inLeft, Action inRight, CppProgram* prog)->void
-			{
-				return prog->addCode(cpp);
-			}
-		);
-	}
+	addAction(op, leftType, rightType, returnType, lambda, stringToLambda(cpp));
 }
 
 Type IntArray=nullptr;
