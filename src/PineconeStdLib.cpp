@@ -23,6 +23,7 @@
 #define PNCN_Tuple(t1, t2) makeTuple(vector<NamedType>({{"a", t1}, {"b", t2}}))
 
 #define LAMBDA_HEADER [](void* leftIn, void* rightIn)->void*
+#define ADD_CPP_HEADER [](Action inLeft, Action inRight, CppProgram* prog)->void
 
 #define retrn out=
 
@@ -69,14 +70,48 @@ Action voidAction;
 Namespace globalNamespace;
 Namespace table;
 
+void addAction(string text, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
+{
+	globalNamespace->addAction(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, text), text);
+}
+
+void addAction(Operator op, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
+{
+	globalNamespace->addOperator(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, op->getText()), op);
+}
+
 void addAction(string text, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, string cpp)
 {
-	globalNamespace->addAction(lambdaAction(leftType, rightType, returnType, lambda, cpp, text), text);
+	if (cpp.empty())
+	{
+		addAction(text, leftType, rightType, returnType, lambda, (function<void(Action inLeft, Action inRight, CppProgram* prog)>)nullptr);
+	}
+	else
+	{
+		addAction(text, leftType, rightType, returnType, lambda,
+			[=](Action inLeft, Action inRight, CppProgram* prog)->void
+			{
+				return prog->addCode(cpp);
+			}
+		);
+	}
 }
 
 void addAction(Operator op, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, string cpp)
 {
-	globalNamespace->addOperator(lambdaAction(leftType, rightType, returnType, lambda, cpp, op->getText()), op);
+	if (cpp.empty())
+	{
+		addAction(op, leftType, rightType, returnType, lambda, (function<void(Action inLeft, Action inRight, CppProgram* prog)>)nullptr);
+	}
+	else
+	{
+		addAction(op, leftType, rightType, returnType, lambda,
+			[=](Action inLeft, Action inRight, CppProgram* prog)->void
+			{
+				return prog->addCode(cpp);
+			}
+		);
+	}
 }
 
 Type IntArray=nullptr;
@@ -465,7 +500,10 @@ void populateStdFuncs()
 			cout << pncnStr2CppStr(rightIn) << endl;
 			return nullptr;
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			
+		}
 	);
 }
 

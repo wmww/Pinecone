@@ -61,6 +61,7 @@ public:
 		DUB,
 		INT,
 		BOOL,
+		PTR,
 		TUPLE,
 		METATYPE
 	};
