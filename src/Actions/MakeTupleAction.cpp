@@ -126,17 +126,17 @@ public:
 		
 	}
 	
-	string getCSource(string inLeft, string inRight)
-	{
-		return "/* C source for GetElemFromTupleAction not yet implemented */";
-	}
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(typeOut->getSize());
 		memcpy(out, (char*)inLeft+offset, typeOut->getSize());
 		
 		return out;
+	}
+	
+	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		prog->addComment("get elem from tuple not yet implemented in C++");
 	}
 	
 private:

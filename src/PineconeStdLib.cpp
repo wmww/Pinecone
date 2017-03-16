@@ -23,7 +23,7 @@
 #define PNCN_Tuple(t1, t2) makeTuple(vector<NamedType>({{"a", t1}, {"b", t2}}))
 
 #define LAMBDA_HEADER [](void* leftIn, void* rightIn)->void*
-#define ADD_CPP_HEADER [](Action inLeft, Action inRight, CppProgram* prog)->void
+#define ADD_CPP_HEADER [](Action left, Action right, CppProgram* prog)->void
 
 #define retrn out=
 
@@ -523,7 +523,36 @@ void populateStdFuncs()
 		},
 		ADD_CPP_HEADER
 		{
-			
+			prog->pushBlock();
+				prog->addCode("int strSize=");
+				getElemFromTupleAction(String, "_size")->addCppCodeToProg(voidAction, right, prog);
+				prog->addCode(";\n");
+				
+				prog->addCode("char* tmp =  + 1");
+				
+				prog->addCode(";\n");
+				
+				prog->addCode("memcpy(tmp, &");
+				
+				prog->pushExpression();
+					getElemFromTupleAction(String, "_data")->addCppCodeToProg(voidAction, right, prog);
+				prog->popExpression();
+				
+				prog->addCode(", strSize)");
+				
+				prog->addCode(";\n");
+				
+				prog->addCode("tmp[strSize] = 0");
+				
+				prog->addCode(";\n");
+				
+				prog->addCode("printf(tmp)");
+				
+				prog->addCode(";\n");
+				
+				//prog->pushExpression();
+				//prog->popExpression();
+			prog->popBlock();
 		}
 	);
 }
