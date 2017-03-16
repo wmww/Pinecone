@@ -70,9 +70,9 @@ public:
 	}
 	*/
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		action->addCppCodeToProg(leftInput, rightInput, prog);
+		action->addToProg(leftInput, rightInput, prog);
 	}
 	
 private:

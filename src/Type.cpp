@@ -16,7 +16,7 @@ public:
 	
 	void addInstToProg(void * data, CppProgram * prog)
 	{
-		prog->addCode("void");
+		prog->code("void");
 	}
 	
 	bool isCreatable()
@@ -57,7 +57,7 @@ public:
 	
 	void addInstToProg(void * data, CppProgram * prog)
 	{
-		prog->addComment("can not instantiate unknown type");
+		prog->comment("can not instantiate unknown type");
 	}
 	
 	bool isCreatable()
@@ -116,7 +116,7 @@ public:
 				throw PineconeError("tried to convert " + getString() + " to C++ code", INTERNAL_ERROR);
 		}
 		
-		prog->addCode(val);
+		prog->code(val);
 	}
 	
 	size_t getSize()
@@ -185,17 +185,17 @@ public:
 	
 	void addInstToProg(void * data, CppProgram * prog)
 	{
-		prog->addCode("{");
+		prog->code("{");
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
 			if (i)
-				prog->addCode(", ");
+				prog->code(", ");
 			
 			(*subTypes)[i].type->addInstToProg((char*)data+getSubType((*subTypes)[i].name).offset, prog);
 		}
 		
-		prog->addCode("}");
+		prog->code("}");
 	}
 	
 	size_t getSize()
@@ -275,7 +275,7 @@ public:
 	
 	void addInstToProg(void * data, CppProgram * prog)
 	{
-		prog->addComment("can't add meta type to C++ code");
+		prog->comment("can't add meta type to C++ code");
 	}
 	
 	size_t getSize()

@@ -50,14 +50,14 @@ public:
 	}
 	*/
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->addCode("if ");
-		prog->pushExpression();
-		condition->addCppCodeToProg(voidAction, voidAction, prog);
-		prog->popExpression();
+		prog->code("if ");
+		prog->pushExpr();
+		condition->addToProg(voidAction, voidAction, prog);
+		prog->popExpr();
 		prog->pushBlock();
-		ifAction->addCppCodeToProg(voidAction, voidAction, prog);
+		ifAction->addToProg(voidAction, voidAction, prog);
 		prog->popBlock();
 	}
 	

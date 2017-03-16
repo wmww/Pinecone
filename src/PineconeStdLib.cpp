@@ -96,23 +96,27 @@ function<void(Action inLeft, Action inRight, CppProgram* prog)> stringToLambda(s
 		{
 			i=searchInString(cppCode, "$", start);
 			
-			prog->addCode(cppCode.substr(start, (i<0?cppCode.size():i)-start));
-			
-			if (i>=0)
+			if (i<0)
 			{
+				prog->code(cppCode.substr(start, cppCode.size()-start));
+			}
+			else
+			{
+				prog->code(cppCode.substr(start, i-start));
+				
 				if (substringMatches(cppCode, i, "$."))
 				{
-					inLeft->addCppCodeToProg(prog);
+					inLeft->addToProg(prog);
 					start=i+string("$.").size();
 				}
 				else if (substringMatches(cppCode, i, "$:"))
 				{
-					inRight->addCppCodeToProg(prog);
+					inRight->addToProg(prog);
 					start=i+string("$:").size();
 				}
 				else if (substringMatches(cppCode, i, "$$"))
 				{
-					prog->addCode("$");
+					prog->code("$");
 					start=i+string("$$").size();
 				}
 				else
@@ -524,31 +528,22 @@ void populateStdFuncs()
 		ADD_CPP_HEADER
 		{
 			prog->pushBlock();
-				prog->addCode("int strSize = ");
-				getElemFromTupleAction(String, "_size")->addCppCodeToProg(voidAction, right, prog);
-				prog->addCode(";\n");
+				prog->code("int strSize = ");
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, right, prog);
+				prog->endln();
 				
-				prog->addCode("char* tmp = strSize + 1");
+				prog->line("char* tmp = strSize + 1");
 				
-				prog->addCode(";\n");
+				prog->code("memcpy(tmp, &");
+				prog->pushExpr();
+				getElemFromTupleAction(String, "_data")->addToProg(voidAction, right, prog);
+				prog->popExpr();
+				prog->code(", strSize)");
+				prog->endln();
 				
-				prog->addCode("memcpy(tmp, &");
+				prog->line("tmp[strSize] = 0");
 				
-				prog->pushExpression();
-					getElemFromTupleAction(String, "_data")->addCppCodeToProg(voidAction, right, prog);
-				prog->popExpression();
-				
-				prog->addCode(", strSize)");
-				
-				prog->addCode(";\n");
-				
-				prog->addCode("tmp[strSize] = 0");
-				
-				prog->addCode(";\n");
-				
-				prog->addCode("printf(tmp)");
-				
-				prog->addCode(";\n");
+				prog->line("printf(tmp)");
 				
 				//prog->pushExpression();
 				//prog->popExpression();

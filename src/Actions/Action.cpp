@@ -45,9 +45,9 @@ public:
 		return nullptr;
 	}
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->addCode("void");
+		prog->code("void");
 	}
 };
 
@@ -64,7 +64,7 @@ public:
 		{
 			cppWriter=[=](Action inLeft, Action inRight, CppProgram* prog)
 			{
-				prog->addComment("/* lambda action '" + textIn + "' has not yet been implemented for C++ */");
+				prog->comment("/* lambda action '" + textIn + "' has not yet been implemented for C++ */");
 			};
 		}
 		else
@@ -80,7 +80,7 @@ public:
 		return lambda(inLeft, inRight);
 	}
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
 		cppWriter(inLeft, inRight, prog);
 	}

@@ -41,12 +41,12 @@ public:
 	virtual string getDescription() {return description;}
 	virtual void* execute(void* inLeft, void* inRight)=0;
 	//virtual string getCSource(string inLeft="", string inRight="")=0;
-	virtual void addCppCodeToProg(shared_ptr<ActionData> inLeft, shared_ptr<ActionData> inRight, CppProgram* prog)
+	virtual void addToProg(shared_ptr<ActionData> inLeft, shared_ptr<ActionData> inRight, CppProgram* prog)
 	{
-		prog->addComment("action '"+getDescription()+"' to cpp code not yet implemented");
+		prog->comment("action '"+getDescription()+"' to cpp code not yet implemented");
 	}
-	void addCppCodeToProg(CppProgram* prog) {addCppCodeToProg(voidAction, voidAction, prog);}
-	// void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(CppProgram* prog) {addToProg(voidAction, voidAction, prog);}
+	// void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	
 protected:
 	

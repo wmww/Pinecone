@@ -111,9 +111,9 @@ public:
 	}
 	*/
 	
-	void addCppCodeToProg(Action inLeft, Action inRight, CppProgram* prog)
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->addComment("function transpiling not yet implemented");
+		prog->comment("function transpiling not yet implemented");
 	}
 	
 private:
