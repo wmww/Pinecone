@@ -72,6 +72,13 @@ public:
 		return out;
 	}
 	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		prog->comment("something");
+		prog->code(" = ");
+		inRight->addToProg(prog);
+	}
+	
 private:
 	
 	void ** stackPtrPtr;

@@ -1,4 +1,6 @@
 
+a: 0.9, "hello", (tru, 8)
+
 tru || fls ? 1
 
 print: "hello"

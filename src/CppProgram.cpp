@@ -103,6 +103,11 @@ void CppNameContainer::addPn(const string& pn)
 	pnToCppMap[pn]=cpp;
 }
 
+bool CppNameContainer::hasPn(const string& pn)
+{
+	return pnToCppMap.find(pn)!=pnToCppMap.end();
+}
+
 bool CppNameContainer::hasCpp(const string& cpp)
 {
 	return hasCppMe(cpp) || hasCppUp(cpp) || hasCppDown(cpp);
@@ -275,7 +280,48 @@ CppProgram::CppProgram()
 
 string CppProgram::getTypeCode(Type in)
 {
-	return "/* CppProgram::getTypeCode not yet implemented */";
+	switch (in->getType())
+	{
+case TypeBase::VOID:
+		return "void";
+		
+	case TypeBase::DUB:
+		return "double";
+		
+	case TypeBase::INT:
+		return "int";
+		
+	case TypeBase::BOOL:
+		return "bool";
+		
+	case TypeBase::PTR:
+		return "*"+getTypeCode(in->getSubType());
+		
+	case TypeBase::TUPLE:
+	{
+		string compact="{"+in->getCompactString()+"}";
+		
+		if (!globalNames->hasPn(compact))
+		{
+			globalNames->addPn(compact);
+			
+			string code;
+			code+="struct ";
+			code+=globalNames->getCppForPn(compact);
+			code+="\n{\n";
+			code+=indentString("int abc\n", indent);
+			code+=indentString("double xyz\n", indent);
+			code+="}\n";
+			
+			globalCode+=code;
+		}
+		
+		return globalNames->getCppForPn(compact);
+	}
+	
+	default:
+		throw PineconeError("CppProgram::getTypeCode called with invalid type "+(TypeBase::getString(in->getType())), INTERNAL_ERROR);
+	}
 }
 
 void CppProgram::declareVar(const string& nameIn, Type typeIn)

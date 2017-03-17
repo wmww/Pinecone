@@ -14,6 +14,11 @@ public:
 		return "VOID";
 	}
 	
+	string getCompactString()
+	{
+		return "v";
+	}
+	
 	void addInstToProg(void * data, CppProgram * prog)
 	{
 		prog->code("void");
@@ -53,6 +58,11 @@ public:
 	virtual string getString()
 	{
 		return "UNKNOWN";
+	}
+	
+	string getCompactString()
+	{
+		return "u";
 	}
 	
 	void addInstToProg(void * data, CppProgram * prog)
@@ -95,6 +105,19 @@ public:
 	PrimType(PrimitiveType in)
 	{
 		primType=in;
+	}
+	
+	string getCompactString()
+	{
+		switch (primType)
+		{
+			case BOOL: return "b";
+			case INT: return "i";
+			case DUB: return "d";
+			
+			default:
+				throw PineconeError("tried to make " + getString() + " compact", INTERNAL_ERROR);
+		}
 	}
 	
 	string getString()
@@ -179,6 +202,22 @@ public:
 		}
 		
 		out+="} (tuple)";
+		
+		return out;
+	}
+	
+	string getCompactString()
+	{
+		string out;
+		
+		out+="C_";
+		
+		for (int i=0; i<int(subTypes->size()); i++)
+		{
+			out+=(*subTypes)[i].type->getCompactString();
+		}
+		
+		out+="_D";
 		
 		return out;
 	}
@@ -271,6 +310,11 @@ public:
 	string getString()
 	{
 		return "{"+type->getString()+"} (meta type)";
+	}
+	
+	string getCompactString()
+	{
+		return "m";
 	}
 	
 	void addInstToProg(void * data, CppProgram * prog)
