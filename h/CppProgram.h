@@ -34,7 +34,10 @@ public:
 	CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> globalNames);
 	
 	void code(const string& in);
+	void name(const string& in); // converts a Pinecone name to a posibly different C++ name
+	void type(Type in);
 	void line(const string& in);
+	void declareVar(const string& nameIn, Type typeIn);
 	void endln();
 	void comment(const string& in);
 	void pushExpr();
@@ -69,7 +72,10 @@ public:
 	CppProgram();
 	
 	void code(const string& in)		{activeFunc->code(in);}
+	void name(const string& in)		{activeFunc->name(in);}
+	void type(Type in)				{activeFunc->type(in);}
 	void line(const string& in)		{activeFunc->line(in);}
+	void declareVar(const string& nameIn, Type typeIn) {activeFunc->declareVar(nameIn, typeIn);}
 	void endln()					{activeFunc->endln();}
 	void comment(const string& in)	{activeFunc->comment(in);}
 	void pushExpr()					{activeFunc->pushExpr();}
