@@ -3,14 +3,12 @@
 #include <string>
 using std::string;
 
-#include <unordered_map>
-using std::unordered_map;
-
 #include <vector>
 using std::vector;
 
 #include <memory>
 using std::shared_ptr;
+using std::unique_ptr;
 
 #include <cstring>
 using std::memcpy;

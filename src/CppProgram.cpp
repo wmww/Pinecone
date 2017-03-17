@@ -1,15 +1,123 @@
 #include "../h/CppProgram.h"
 #include "../h/msclStringFuncs.h"
 
+#include <map>
+#include <unordered_set>
+
+
+/// Name Container
+
+CppNameContainer::CppNameContainer()
+{
+	
+}
+
+shared_ptr<CppNameContainer> CppNameContainer::makeRoot()
+{
+	auto out=shared_ptr<CppNameContainer>(new CppNameContainer());
+	out->parent=nullptr;
+	return out;
+}
+
+shared_ptr<CppNameContainer> CppNameContainer::makeChild()
+{
+	auto out=shared_ptr<CppNameContainer>(new CppNameContainer());
+	children.push_back(out);
+	out->parent=this;
+	return out;
+}
+
+void CppNameContainer::addPn(const string& pn)
+{
+	if (pnToCppMap.find(pn)!=pnToCppMap.end())
+	{
+		throw PineconeError("Tried to add '"+pn+"' as a pn name to a CppNameContainer but that pn name already exists", INTERNAL_ERROR);
+	}
+	
+	// now we need to find a unique C++ name, the pinecone name will almost always be unique, but there may be cases where Pinecone treats scope differently or uses a keyword or something
+	
+	string cpp=pn;
+	int attempts=0;
+	bool valid=!hasCpp(cpp);
+	
+	while (!valid )
+	{
+		string suffix;
+		
+		// I feel like this is a really bad way to do this, but I can't think of a better one
+		
+		if (attempts<10)
+		{
+			suffix=to_string(attempts); // this case should almost always happen
+		}
+		else if (attempts<120)
+		{
+			suffix=to_string(rand()%10000);
+		}
+		else
+		{
+			throw PineconeError("could not find unique name for '"+pn+"' in CppNameContainer::enterPn", INTERNAL_ERROR);
+		}
+		
+		cpp=pn+"__"+suffix;
+		attempts++;
+		valid=!hasCpp(cpp);
+	}
+	
+	pnToCppMap[pn]=cpp;
+}
+
+bool CppNameContainer::hasCpp(const string& cpp)
+{
+	return hasCppMe(cpp) || hasCppUp(cpp) || hasCppDown(cpp);
+}
+
+bool CppNameContainer::hasCppMe(const string& cpp)
+{
+	return cppSet.find(cpp)!=cppSet.end();
+}
+
+bool CppNameContainer::hasCppUp(const string& cpp)
+{
+	return parent && (parent->hasCppMe(cpp) || parent->hasCppUp(cpp));
+}
+
+bool CppNameContainer::hasCppDown(const string& cpp)
+{
+	for (auto i: children)
+	{
+		if (i->hasCppMe(cpp) || i->hasCppDown(cpp))
+			return true;
+	}
+	
+	return false;
+}
+
+string CppNameContainer::getCppForPn(const string& pn)
+{
+	auto result=pnToCppMap.find(pn);
+	
+	if (result==pnToCppMap.end())
+	{
+		if (parent)
+			return parent->getCppForPn(pn);
+		else
+			throw PineconeError("could not find C++ equivalent of '"+pn+"' in CppNameContainer::getCppForPn", INTERNAL_ERROR);
+	}
+	else
+		return result->second;
+}
+
 
 /// funcs
 
-CppFuncBase::CppFuncBase(string prototypeIn)
+CppFuncBase::CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> globalNames)
 {
 	prototype=prototypeIn;
+	namespaceStack.push_back(globalNames);
 }
 
-void CppFuncBase::code(string in)
+void CppFuncBase::code(const string& in)
 {
 	if (freshLine)
 	{
@@ -30,7 +138,7 @@ void CppFuncBase::code(string in)
 	}
 }
 
-void CppFuncBase::line(string in)
+void CppFuncBase::line(const string& in)
 {
 	code(in);
 	endln();
@@ -54,7 +162,7 @@ void CppFuncBase::endln()
 	freshLine=true;
 }
 
-void CppFuncBase::comment(string in)
+void CppFuncBase::comment(const string& in)
 {
 	if (searchInString(in, "\n")>=0)
 	{
@@ -100,6 +208,7 @@ void CppFuncBase::pushBlock()
 	}
 	
 	code("{\n");
+	namespaceStack.push_back(namespaceStack.back()->makeChild());
 	blockLevel++;
 	freshLine=true;
 }
@@ -112,6 +221,7 @@ void CppFuncBase::popBlock()
 	}
 	
 	blockLevel--;
+	namespaceStack.pop_back();
 	code("}\n\n");
 	freshLine=true;
 }
@@ -121,33 +231,39 @@ void CppFuncBase::popBlock()
 
 CppProgram::CppProgram()
 {
-	pushFunc("main", {}, Void);
+	//funcs = unique_ptr<std::map<string, CppFunc>>(new std::map<string, CppFunc>());
+	globalNames=CppNameContainer::makeRoot();
+	pushFunc(string("main"), {}, Void);
 }
 
-bool CppProgram::getIfFuncExists(string name)
+bool CppProgram::hasFunc(const string& name)
 {
 	return funcs.find(name)!=funcs.end();
 }
 
-void CppProgram::pushFunc(string name, vector<NamedType> args, Type returnType)
+void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type returnType)
 {
-	if (getIfFuncExists(name))
+	if (hasFunc(name))
 	{
 		throw PineconeError("called CppProgram::pushFunc with function name '"+name+"', which already exists", INTERNAL_ERROR);
 	}
 	
+	globalNames->addPn(name);
+	
+	string cppName=globalNames->getCppForPn(name);
+	
 	string prototype;
 	
-	prototype+=getTypeName(returnType);
+	prototype+=returnType->getString();
 	
-	prototype+=" "+name+"(";
+	prototype+=" "+cppName+"(";
 	
 	for (int i=0; i<int(args.size()); i++)
 	{
 		if (i)
 			prototype+=", ";
 		
-		prototype+=getTypeName(args[i].type);
+		prototype+=args[i].type->getString();
 		
 		prototype+=" ";
 		
@@ -161,7 +277,7 @@ void CppProgram::pushFunc(string name, vector<NamedType> args, Type returnType)
 	
 	prototype+=")";
 	
-	activeFunc=CppFunc(new CppFuncBase(prototype));
+	activeFunc=CppFunc(new CppFuncBase(prototype, globalNames));
 	funcs[name]=activeFunc;
 }
 
