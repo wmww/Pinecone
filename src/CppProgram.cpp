@@ -138,10 +138,27 @@ void CppFuncBase::code(const string& in)
 	}
 }
 
+void CppFuncBase::name(const string& in)
+{
+	comment("CppFuncBase::name not yet implemented");
+}
+
+void CppFuncBase::type(Type in)
+{
+	comment("CppFuncBase::type not yet implemented");
+}
+
 void CppFuncBase::line(const string& in)
 {
 	code(in);
 	endln();
+}
+
+void CppFuncBase::declareVar(const string& nameIn, Type typeIn)
+{
+	namespaceStack.back()->addPn(nameIn);
+	
+	type(typeIn); code(" "); name(nameIn); endln();
 }
 
 void CppFuncBase::endln()
@@ -149,10 +166,6 @@ void CppFuncBase::endln()
 	if (exprLevel>0)
 	{
 		throw PineconeError("non zero expression level when ending line in C++ program", INTERNAL_ERROR);
-	}
-	else if (freshLine)
-	{
-		source=source.substr(0, source.size()-1) + ";\n";
 	}
 	else
 	{
@@ -279,6 +292,7 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 	
 	activeFunc=CppFunc(new CppFuncBase(prototype, globalNames));
 	funcs[name]=activeFunc;
+	funcStack.push_back(name);
 }
 
 void CppProgram::popFunc()

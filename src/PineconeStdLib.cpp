@@ -527,29 +527,30 @@ void populateStdFuncs()
 		},
 		ADD_CPP_HEADER
 		{
-			//if (prog->hasFunc("i_"))
+			if (!prog->hasFunc("pnStringToCString"))
+			{
+				prog->pushFunc("pnStringToCString", {{"in", String}}, Dub);
+					
+					prog->code("int strSize = ");
+					getElemFromTupleAction(String, "_size")->addToProg(voidAction, right, prog);
+					prog->endln();
+					
+					prog->line("char* tmp = strSize + 1");
+					
+					prog->code("memcpy(tmp, &");
+					prog->pushExpr();
+					getElemFromTupleAction(String, "_data")->addToProg(voidAction, right, prog);
+					prog->popExpr();
+					prog->code(", strSize)");
+					prog->endln();
+					
+					prog->line("tmp[strSize] = 0");
+					
+					prog->line("printf(tmp)");
+				prog->popFunc();
+			}
 			
-			prog->pushBlock();
-				prog->code("int strSize = ");
-				getElemFromTupleAction(String, "_size")->addToProg(voidAction, right, prog);
-				prog->endln();
-				
-				prog->line("char* tmp = strSize + 1");
-				
-				prog->code("memcpy(tmp, &");
-				prog->pushExpr();
-				getElemFromTupleAction(String, "_data")->addToProg(voidAction, right, prog);
-				prog->popExpr();
-				prog->code(", strSize)");
-				prog->endln();
-				
-				prog->line("tmp[strSize] = 0");
-				
-				prog->line("printf(tmp)");
-				
-				//prog->pushExpression();
-				//prog->popExpression();
-			prog->popBlock();
+			prog->name("pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr();
 		}
 	);
 }
