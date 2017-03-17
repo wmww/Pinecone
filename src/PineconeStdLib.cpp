@@ -527,6 +527,8 @@ void populateStdFuncs()
 		},
 		ADD_CPP_HEADER
 		{
+			//if (prog->hasFunc("i_"))
+			
 			prog->pushBlock();
 				prog->code("int strSize = ");
 				getElemFromTupleAction(String, "_size")->addToProg(voidAction, right, prog);
