@@ -4,6 +4,41 @@
 #include <map>
 #include <unordered_set>
 
+string getValidCppId(string in)
+{
+	string cpp;
+	
+	int start=0;
+	
+	// all this should work with unicode (although it may inject random (but valid) characters into the C++ names)
+	do
+	{
+		int i=start;
+		
+		for (; i<int(in.size()) && (
+				(in[i]>='a' && in[i]<='z') ||
+				(in[i]>='A' && in[i]<='Z') ||
+				(in[i]>='0' && in[i]<='9') ||
+				in[i]=='_'
+			); i++) {}
+		
+		if (i!=start)
+		{
+			if (in[start]>='0' && in[start]<='9')
+				cpp+="_";
+			cpp+=in.substr(start, i-start);
+		}
+		
+		start=i+1;
+		
+	} while (start<int(in.size()));
+	
+	if (cpp.empty())
+		cpp="no_name";
+	
+	return cpp;
+}
+
 
 /// Name Container
 
@@ -36,11 +71,12 @@ void CppNameContainer::addPn(const string& pn)
 	
 	// now we need to find a unique C++ name, the pinecone name will almost always be unique, but there may be cases where Pinecone treats scope differently or uses a keyword or something
 	
-	string cpp=pn;
+	string cpp=getValidCppId(pn); // strip illegal chars
+	
 	int attempts=0;
 	bool valid=!hasCpp(cpp);
 	
-	while (!valid )
+	while (!valid)
 	{
 		string suffix;
 		
@@ -140,25 +176,13 @@ void CppFuncBase::code(const string& in)
 
 void CppFuncBase::name(const string& in)
 {
-	comment("CppFuncBase::name not yet implemented");
-}
-
-void CppFuncBase::type(Type in)
-{
-	comment("CppFuncBase::type not yet implemented");
+	code(namespaceStack.back()->getCppForPn(in));
 }
 
 void CppFuncBase::line(const string& in)
 {
 	code(in);
 	endln();
-}
-
-void CppFuncBase::declareVar(const string& nameIn, Type typeIn)
-{
-	namespaceStack.back()->addPn(nameIn);
-	
-	type(typeIn); code(" "); name(nameIn); endln();
 }
 
 void CppFuncBase::endln()
@@ -249,6 +273,18 @@ CppProgram::CppProgram()
 	pushFunc(string("main"), {}, Void);
 }
 
+string CppProgram::getTypeCode(Type in)
+{
+	return "/* CppProgram::getTypeCode not yet implemented */";
+}
+
+void CppProgram::declareVar(const string& nameIn, Type typeIn)
+{
+	activeFunc->namespaceStack.back()->addPn(nameIn);
+	
+	code(getTypeCode(typeIn)); code(" "); name(nameIn); endln();
+}
+
 bool CppProgram::hasFunc(const string& name)
 {
 	return funcs.find(name)!=funcs.end();
@@ -267,7 +303,7 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 	
 	string prototype;
 	
-	prototype+=returnType->getString();
+	prototype+=getTypeCode(returnType);
 	
 	prototype+=" "+cppName+"(";
 	
@@ -276,7 +312,7 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 		if (i)
 			prototype+=", ";
 		
-		prototype+=args[i].type->getString();
+		prototype+=getTypeCode(args[i].type);
 		
 		prototype+=" ";
 		
@@ -316,9 +352,12 @@ string CppProgram::getCppCode()
 {
 	string out;
 	
+	out+=globalCode+"\n";
+	
 	for (auto i: funcs)
 	{
-		out+=i.second->getPrototype()+";\n";
+		if (i.first!="main")
+			out+=i.second->getPrototype()+";\n";
 	}
 	
 	out+="\n";
@@ -332,3 +371,5 @@ string CppProgram::getCppCode()
 	
 	return out;
 }
+
+

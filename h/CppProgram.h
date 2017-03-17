@@ -6,11 +6,14 @@
 
 #include <unordered_set>
 
+// Pinecone names that are hardcoded should start with '-' so that collisions can't happen with input code
+
 class CppNameContainer
 {
 public:
 	static shared_ptr<CppNameContainer> makeRoot();
 	shared_ptr<CppNameContainer> makeChild();
+	//bool hasPn(string pn);
 	void addPn(const string& pn); // will throw an error if pnName already exists
 	string getCppForPn(const string& pn); // will throw an error if the Pinecone name doesn't exist
 	
@@ -35,9 +38,7 @@ public:
 	
 	void code(const string& in);
 	void name(const string& in); // converts a Pinecone name to a posibly different C++ name
-	void type(Type in);
 	void line(const string& in);
-	void declareVar(const string& nameIn, Type typeIn);
 	void endln();
 	void comment(const string& in);
 	void pushExpr();
@@ -61,6 +62,8 @@ private:
 	string prototype;
 	
 	vector<shared_ptr<CppNameContainer>> namespaceStack;
+	
+	friend CppProgram;
 };
 
 typedef shared_ptr<CppFuncBase> CppFunc;
@@ -73,9 +76,7 @@ public:
 	
 	void code(const string& in)		{activeFunc->code(in);}
 	void name(const string& in)		{activeFunc->name(in);}
-	void type(Type in)				{activeFunc->type(in);}
 	void line(const string& in)		{activeFunc->line(in);}
-	void declareVar(const string& nameIn, Type typeIn) {activeFunc->declareVar(nameIn, typeIn);}
 	void endln()					{activeFunc->endln();}
 	void comment(const string& in)	{activeFunc->comment(in);}
 	void pushExpr()					{activeFunc->pushExpr();}
@@ -84,6 +85,9 @@ public:
 	void popBlock()					{activeFunc->popBlock();}
 	int getExprLevel()				{return activeFunc->getExprLevel();}
 	
+	
+	string getTypeCode(Type in);
+	void declareVar(const string& nameIn, Type typeIn);
 	bool hasFunc(const string& name);
 	void pushFunc(const string&, vector<NamedType> args, Type returnType);
 	void popFunc();
@@ -93,8 +97,10 @@ public:
 private:
 	
 	string indent="    ";
+	string globalCode;
 	CppFunc activeFunc;
 	vector<string> funcStack;
 	std::map<string, CppFunc> funcs;
+	std::unordered_set<string> types;
 	shared_ptr<CppNameContainer> globalNames;
 };

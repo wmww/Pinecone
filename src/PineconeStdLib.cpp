@@ -527,9 +527,9 @@ void populateStdFuncs()
 		},
 		ADD_CPP_HEADER
 		{
-			if (!prog->hasFunc("pnStringToCString"))
+			if (!prog->hasFunc("-pnStringToCString"))
 			{
-				prog->pushFunc("pnStringToCString", {{"in", String}}, Dub);
+				prog->pushFunc("-pnStringToCString", {{"in", String}}, Dub);
 					
 					prog->code("int strSize = ");
 					getElemFromTupleAction(String, "_size")->addToProg(voidAction, right, prog);
@@ -550,7 +550,7 @@ void populateStdFuncs()
 				prog->popFunc();
 			}
 			
-			prog->name("pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr();
+			prog->name("-pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr();
 		}
 	);
 }
