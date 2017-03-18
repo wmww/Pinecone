@@ -91,6 +91,8 @@ public:
 	virtual Type getSubType() {return Void;}
 	virtual OffsetAndType getSubType(string name) {return {0, nullptr};}
 	
+	virtual vector<NamedType>* getAllSubTypes(); // will thow an error if this is not a tuple type
+	
 	// void setNameHint(const string& in) {if (nameHint.empty()) nameHint=in;} // only sets name hint on any type once, after that it fails quietly
 	// string getNameHint
 	

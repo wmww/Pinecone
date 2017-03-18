@@ -353,13 +353,16 @@ case TypeBase::VOID:
 		if (!globalNames->hasPn(compact))
 		{
 			globalNames->addPn(compact, in->nameHint);
-			
+			auto names=globalNames->makeChild();
 			string code;
 			code+="struct ";
 			code+=globalNames->getCpp(compact);
 			code+="\n{\n";
-			code+=indentString("int abc\n", indent);
-			code+=indentString("double xyz\n", indent);
+			for (auto i: *in->getAllSubTypes())
+			{
+				names->addPn(i.name);
+				code+=indentString(getTypeCode(i.type)+" "+names->getCpp(i.name)+";\n", indent);
+			}
 			code+="}\n";
 			
 			globalCode+=code;
