@@ -210,14 +210,14 @@ public:
 	{
 		string out;
 		
-		out+="C_";
+		out+="t_";
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
-			out+=(*subTypes)[i].type->getCompactString();
+			out+=(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString();
 		}
 		
-		out+="_D";
+		out+="_j";
 		
 		return out;
 	}

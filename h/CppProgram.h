@@ -14,7 +14,7 @@ public:
 	static shared_ptr<CppNameContainer> makeRoot();
 	shared_ptr<CppNameContainer> makeChild();
 	bool hasPn(const string& pn);
-	void addPn(const string& pn); // will throw an error if pnName already exists
+	void addPn(const string& pn, bool randomCpp=false); // will throw an error if pnName already exists
 	string getCppForPn(const string& pn); // will throw an error if the Pinecone name doesn't exist
 	
 private:
