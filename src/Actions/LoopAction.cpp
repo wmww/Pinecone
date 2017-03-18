@@ -33,22 +33,6 @@ public:
 		return "while " + condition->getDescription() + " do " + loopAction->getDescription();
 	}
 	
-	/*
-	string getCSource(string inLeft, string inRight)
-	{
-		string out;
-		
-		out+="while (";
-		out+=condition->getCSource();
-		out+=")\n{";
-		out+=loopAction->getCSource();
-		out+=endAction->getCSource();
-		out+="\n}";
-		
-		return out;
-	}
-	*/
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* conditionOut;
@@ -66,6 +50,37 @@ public:
 		free(conditionOut);
 		
 		return nullptr;
+	}
+	
+	/*
+	string getCSource(string inLeft, string inRight)
+	{
+		string out;
+		
+		out+="while (";
+		out+=condition->getCSource();
+		out+=")\n{";
+		out+=loopAction->getCSource();
+		out+=endAction->getCSource();
+		out+="\n}";
+		
+		return out;
+	}
+	*/
+	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		prog->code("while ");
+		
+		prog->pushExpr();
+			condition->addToProg(prog);
+		prog->popExpr();
+		
+		prog->pushBlock();
+			condition->addToProg(prog);
+			if (endAction!=voidAction)
+				endAction->addToProg(prog);
+		prog->popBlock();
 	}
 	
 private:
