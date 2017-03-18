@@ -224,7 +224,9 @@ public:
 	
 	void addInstToProg(void * data, CppProgram * prog)
 	{
-		prog->code("{");
+		prog->code(prog->getTypeCode(shared_from_this()));
+		
+		prog->pushExpr();
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
@@ -234,7 +236,7 @@ public:
 			(*subTypes)[i].type->addInstToProg((char*)data+getSubType((*subTypes)[i].name).offset, prog);
 		}
 		
-		prog->code("}");
+		prog->popExpr();
 	}
 	
 	size_t getSize()
