@@ -39,6 +39,31 @@ string getValidCppId(string in)
 	return cpp;
 }
 
+char getRandChar()
+{
+	static unsigned int seed = 1;
+	//seed = (unsigned)newseed & 0x7fffffffU;
+	
+	seed = (seed * 1103515245U + 12345U) & 0x7fffffffU;
+	
+	int num=seed%(26+26+10);
+	
+	if (num<26)
+	{
+		return num+'a';
+	}
+	else if (num<26+26)
+	{
+		return num-26+'A';
+	}
+	else if (num<26+26+10)
+	{
+		return num-26-26+'0';
+	}
+	
+	return '_';
+}
+
 
 /// Name Container
 
@@ -62,7 +87,7 @@ shared_ptr<CppNameContainer> CppNameContainer::makeChild()
 	return out;
 }
 
-void CppNameContainer::addPn(const string& pn)
+void CppNameContainer::addPn(const string& pn, bool randomCpp)
 {
 	if (pnToCppMap.find(pn)!=pnToCppMap.end())
 	{
@@ -74,28 +99,51 @@ void CppNameContainer::addPn(const string& pn)
 	string cpp=getValidCppId(pn); // strip illegal chars
 	
 	int attempts=0;
-	bool valid=!hasCpp(cpp);
+	bool valid=!randomCpp && !hasCpp(cpp);
 	
 	while (!valid)
 	{
-		string suffix;
-		
 		// I feel like this is a really bad way to do this, but I can't think of a better one
 		
-		if (attempts<10)
+		if (randomCpp)
 		{
-			suffix=to_string(attempts); // this case should almost always happen
-		}
-		else if (attempts<120)
-		{
-			suffix=to_string(rand()%10000);
+			cpp="nm_";
+			
+			if (attempts<8)
+			{
+				error.log("hay there", JSYK);
+				for (int i=0; i<6; i++)
+					cpp+=getRandChar();
+			}
+			else if (attempts<120)
+			{
+				for (int i=0; i<12; i++)
+					cpp+=getRandChar();
+			}
+			else
+			{
+				throw PineconeError("could not find unique random name in CppNameContainer::enterPn", INTERNAL_ERROR);
+			}
 		}
 		else
 		{
-			throw PineconeError("could not find unique name for '"+pn+"' in CppNameContainer::enterPn", INTERNAL_ERROR);
+			string suffix;
+			
+			if (attempts<10)
+			{
+				suffix=to_string(attempts); // this case should almost always happen
+			}
+			else if (attempts<120)
+			{
+				suffix=to_string(rand()%10000);
+			}
+			else
+			{
+				throw PineconeError("could not find unique name for '"+pn+"' in CppNameContainer::enterPn", INTERNAL_ERROR);
+			}
+			
+			cpp=pn+"__"+suffix;
 		}
-		
-		cpp=pn+"__"+suffix;
 		attempts++;
 		valid=!hasCpp(cpp);
 	}
@@ -303,7 +351,7 @@ case TypeBase::VOID:
 		
 		if (!globalNames->hasPn(compact))
 		{
-			globalNames->addPn(compact);
+			globalNames->addPn(compact, true);
 			
 			string code;
 			code+="struct ";
