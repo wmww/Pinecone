@@ -98,9 +98,11 @@ string putStringInTable(const string& in, string tableName);
 
 //	load entire file and return its contents
 //		inName: the path to the file to open
-//		printOutput: if to print status several times to stdout
+//		debug: if to print status several times to stdout
 //		returns: the contents of the file, or an empty string if there is an error
-string loadEntireFile(string inName, bool printOutput=true);
+string loadEntireFile(string inName, bool debug=false);
+
+bool writeFile(const string& filename, const string& contents, bool debug=false);
 
 //	run a shell command and return the output
 //		cmd: the command to run

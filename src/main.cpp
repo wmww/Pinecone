@@ -74,7 +74,42 @@ int main(int argc, char ** argv)
 	}
 	else if (flags.showCpp)
 	{
-		cout << endl << putStringInBox(program.getCpp(), "C++ code", true, false, -1) << endl;
+		string cppCode=program.getCpp();
+		if (error.getIfErrorLogged())
+		{
+			if (flags.debug)
+				cout << endl << ">>>>>>    transpiling abouted due to previous error    <<<<<<" << endl;
+			else
+				cout << "program not transpiled due to errors" << endl;
+		}
+		else
+		{
+			cout << endl << putStringInBox(cppCode, "C++ code", true, false, -1) << endl;
+			
+			string outSourceFile="transpiled/transpiled.cpp";
+			string outBinFile="transpiled/bin";
+			string cmd;
+			string cmdOut;
+			
+			writeFile(outSourceFile, cppCode);
+			
+			
+			cmd = "gcc -std=c++11 '"+outSourceFile+"' -o '"+outBinFile+"'";
+			
+			cout << "running '"+cmd+"'" << endl;
+			
+			cmdOut = runCmd(cmd);
+			
+			cout << cmdOut << endl;
+			
+			cmd = "./"+outBinFile;
+			
+			cout << "running '"+cmd+"'" << endl;
+			
+			cmdOut = runCmd(cmd);
+			
+			cout << cmdOut << endl;
+		}
 	}
 	else
 	{
