@@ -87,10 +87,14 @@ shared_ptr<CppNameContainer> CppNameContainer::makeChild()
 	return out;
 }
 
-void CppNameContainer::addPn(const string& pn, string cppNameHint)
+void CppNameContainer::addPn(const string& pn, const string& cppNameHint)
 {
+	string validCppHint;
+	
 	if (cppNameHint=="<- the value of that pn string please")
-		cppNameHint=pn;
+		validCppHint=getValidCppId(pn);
+	else if (!cppNameHint.empty())
+		validCppHint=getValidCppId(cppNameHint);
 	
 	if (pnToCppMap.find(pn)!=pnToCppMap.end())
 	{
@@ -100,23 +104,23 @@ void CppNameContainer::addPn(const string& pn, string cppNameHint)
 	// now we need to find a unique C++ name, the pinecone name will almost always be unique, but there may be cases where Pinecone treats scope differently or uses a keyword or something
 	
 	string cpp;
-	if (!cppNameHint.empty())
-		cpp=getValidCppId(cppNameHint); // strip illegal chars
+	if (!validCppHint.empty())
+		cpp=validCppHint; // strip illegal chars
 	
 	int attempts=0;
-	bool invalid=cppNameHint.empty() || hasCpp(cpp);
+	bool invalid=validCppHint.empty() || hasCpp(cpp);
 	
 	while (invalid)
 	{
 		// I feel like this is a really bad way to do this, but I can't think of a better one
 		
-		if (cppNameHint.empty() || attempts>=100)
+		if (validCppHint.empty() || attempts>=100)
 		{
 			cpp=
-				cppNameHint.empty() ?
+				validCppHint.empty() ?
 					"nm_"
 				:
-					cppNameHint+"_";
+					validCppHint+"_";
 			
 			if (attempts<8)
 			{
@@ -142,13 +146,14 @@ void CppNameContainer::addPn(const string& pn, string cppNameHint)
 				suffix=to_string(attempts); // this case should almost always happen
 			}
 			
-			cpp=cppNameHint+"__"+suffix;
+			cpp=validCppHint+"_"+suffix;
 		}
 		attempts++;
 		invalid=hasCpp(cpp);
 	}
 	
 	pnToCppMap[pn]=cpp;
+	cppSet.insert(cpp);
 }
 
 bool CppNameContainer::hasPn(const string& pn)
