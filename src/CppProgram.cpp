@@ -344,7 +344,6 @@ CppProgram::CppProgram()
 {
 	//funcs = unique_ptr<std::map<string, CppFunc>>(new std::map<string, CppFunc>());
 	globalNames=CppNameContainer::makeRoot();
-	pushFunc(string("main"), {}, Void);
 	setup();
 }
 
@@ -388,6 +387,8 @@ void CppProgram::setup()
 	{
 		globalNames->reserveCpp(i);
 	}
+	
+	pushFunc(string("main"), {}, Int);
 }
 
 string CppProgram::getTypeCode(Type in)

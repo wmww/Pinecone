@@ -464,6 +464,37 @@ string loadEntireFile(string inName, bool printOutput)
 	}
 }
 
+bool writeFile(const string& filename, const string& contents, bool debug)
+{
+	std::ofstream outFile;
+	
+	if (debug)
+		cout << "attempting to write to '" << filename << "'..." << endl;
+	
+	outFile.open(filename);
+	
+	if (!outFile.is_open())
+	{
+		if (debug)
+			cout << "'" << filename << "' failed to open :(" << endl;
+		return false;
+	}
+	else
+	{
+		if (debug)
+			cout << "file opended, writing to file..." << endl;
+		
+		outFile << contents;
+		
+		outFile.close();
+		
+		if (debug)
+			cout << "file reading done, '" << filename << "' closed" << endl;
+		
+		return true;
+	}
+}
+
 //NOTE: I copied this from where I copied this from somewhere on the internet. no idea how or why it works.
 string runCmd(string cmd)
 {
