@@ -249,6 +249,12 @@ void CppFuncBase::endln()
 	{
 		throw PineconeError("non zero expression level when ending line in C++ program", INTERNAL_ERROR);
 	}
+	else if (freshLine && source[source.size()-2]=='}')
+	{
+		// do nothing
+		
+		//source+=indentString("\n", indent, blockLevel);
+	}
 	else
 	{
 		source+=";\n";
@@ -317,7 +323,7 @@ void CppFuncBase::popBlock()
 	
 	blockLevel--;
 	namespaceStack.pop_back();
-	code("}\n\n");
+	code("}\n");
 	freshLine=true;
 }
 
