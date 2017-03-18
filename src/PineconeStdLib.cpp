@@ -2,6 +2,7 @@
 #include "../h/AllOperators.h"
 #include "../h/StackFrame.h"
 #include "../h/Namespace.h"
+#include "../h/CppProgram.h"
 
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
@@ -550,7 +551,7 @@ void populateStdFuncs()
 				prog->popFunc();
 			}
 			
-			prog->name("-pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr();
+			prog->name("-pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr(); prog->endln();
 		}
 	);
 }

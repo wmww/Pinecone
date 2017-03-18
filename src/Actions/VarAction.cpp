@@ -1,6 +1,7 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 #include "../../h/StackFrame.h"
+#include "../../h/CppProgram.h"
 
 class VarGetAction: public ActionData
 {
@@ -42,18 +43,14 @@ class VarSetAction: public ActionData
 {
 public:
 	
-	VarSetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string textIn):
+	VarSetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string idIn):
 		ActionData(typeIn, Void, typeIn)
 	{
 		offset=in;
 		stackPtrPtr=stackPtrPtrIn;
+		id=idIn;
 		
-		setDescription("set " + typeIn->getString() + " '" + textIn + "'");
-	}
-	
-	string getCSource(string inLeft, string inRight)
-	{
-		return "/* var="+inRight+" */";
+		setDescription("set " + typeIn->getString() + " '" + idIn + "'");
 	}
 	
 	void* execute(void* left, void* right)
@@ -74,7 +71,8 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->comment("something");
+		prog->declareVar(id, getInRightType());
+		prog->name(id);
 		prog->code(" = ");
 		inRight->addToProg(prog);
 	}
@@ -83,6 +81,7 @@ private:
 	
 	void ** stackPtrPtr;
 	size_t offset;
+	string id; // used for C++ transpiler
 };
 
 class ConstGetAction: public ActionData
@@ -125,9 +124,9 @@ Action varGetAction(size_t in, Type typeIn, string textIn)
 	return Action(new VarGetAction(in, &stackPtr, typeIn, textIn));
 }
 
-Action varSetAction(size_t in, Type typeIn, string textIn)
+Action varSetAction(size_t in, Type typeIn, string varNameIn)
 {
-	return Action(new VarSetAction(in, &stackPtr, typeIn, textIn));
+	return Action(new VarSetAction(in, &stackPtr, typeIn, varNameIn));
 }
 
 Action globalGetAction(size_t in, Type typeIn, string textIn)
