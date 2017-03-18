@@ -120,7 +120,6 @@ void CppNameContainer::addPn(const string& pn, string cppNameHint)
 			
 			if (attempts<8)
 			{
-				error.log("hay there", JSYK);
 				for (int i=0; i<6; i++)
 					cpp+=getRandChar();
 			}
