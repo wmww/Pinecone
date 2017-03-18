@@ -363,7 +363,26 @@ case TypeBase::VOID:
 				names->addPn(i.name);
 				code+=indentString(getTypeCode(i.type)+" "+names->getCpp(i.name)+";\n", indent);
 			}
-			code+="}\n";
+			code+="\n";
+			auto conNames=names->makeChild();
+			code+=indentString(globalNames->getCpp(compact), indent);
+			code+="(";
+			bool first=true;
+			for (auto i: *in->getAllSubTypes())
+			{
+				if (first) first=false; else code+=", ";
+				conNames->addPn("+"+i.name+"_in");
+				code+=getTypeCode(i.type)+" "+conNames->getCpp("+"+i.name+"_in");
+			}
+			code+=")\n";
+			code+=indentString("{\n", indent);
+			for (auto i: *in->getAllSubTypes())
+			{
+				code+=indentString(conNames->getCpp(i.name)+" = "+conNames->getCpp("+"+i.name+"_in")+";\n", indent, 2);
+			}
+			code+=indentString("}\n", indent);
+			
+			code+="};\n";
 			
 			globalCode+=code;
 		}
