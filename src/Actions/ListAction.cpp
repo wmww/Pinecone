@@ -92,6 +92,7 @@ public:
 			for (auto i: actions)
 			{
 				i->addToProg(voidAction, voidAction, prog);
+				prog->endln();
 			}
 			
 			prog->popBlock();
