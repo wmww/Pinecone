@@ -123,7 +123,7 @@ string tableStringFromTokens(const vector<Token>& tokens, string tableName)
 	lines.push_back(str);
 	lines.push_back(blw);
 	
-	return lineListToBoxedString(lines, tableName, -1, maxWidth+4);
+	return lineListToBoxedString(lines, tableName, -1, false, maxWidth+4);
 }
 
 string stringFromTokens(const vector<Token>& tokens, int left, int right)

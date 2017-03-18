@@ -3,6 +3,8 @@
 #include "../h/CppProgram.h"
 #include "../h/msclStringFuncs.h"
 
+#include <sstream>
+
 using std::unique_ptr;
 using std::get;
 
@@ -133,7 +135,13 @@ public:
 		{
 			case BOOL: val=(*(bool*)data)?"true":"false"; break;
 			case INT: val=to_string(*(int*)data); break;
-			case DUB: val=to_string(*(double*)data); break;
+			case DUB:
+			{
+				std::ostringstream ss;
+				ss << *(double*)data;
+				val=ss.str();
+			}
+			break;
 			
 			default:
 				throw PineconeError("tried to convert " + getString() + " to C++ code", INTERNAL_ERROR);

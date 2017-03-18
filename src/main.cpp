@@ -74,7 +74,7 @@ int main(int argc, char ** argv)
 	}
 	else if (flags.showCpp)
 	{
-		cout << endl << putStringInBox(program.getCpp(), "C++ code", true) << endl;
+		cout << endl << putStringInBox(program.getCpp(), "C++ code", true, false) << endl;
 	}
 	else
 	{

@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <sstream>
+#include <sys/ioctl.h> // for terminal size detection
+#include <unistd.h> // for terminal size detection
 
 using std::stringstream;
 
@@ -243,7 +245,7 @@ string getTextOfLine(const string& in, int lineNum)
 		return "";
 }
 
-string lineListToBoxedString(const vector<string>& in, string boxName, int lineNum, int maxWidth)
+string lineListToBoxedString(const vector<string>& in, string boxName, int lineNum, bool alwaysWidthMax, int maxWidth)
 {
 	string out;
 	
@@ -273,14 +275,23 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 	int extraWidth=(lineNum<0)?4:10;
 	
 	//the size of the contents (not the container)
-	int size=boxName.size()-extraWidth+6;
+	int size;
 	
-	for (auto i: in)
+	if (alwaysWidthMax)
 	{
-		size=max(size, int(i.size()));
+		size=maxWidth-extraWidth;
 	}
-	
-	size=min(maxWidth, size);
+	else
+	{
+		size=boxName.size()-extraWidth+6;
+		
+		for (auto i: in)
+		{
+			size=max(size, int(i.size()));
+		}
+		
+		size=min(maxWidth-extraWidth, size);
+	}
 	
 	if (boxName=="")
 		out+="  "+padString("", size+extraWidth, 1, "_")+"  ";
@@ -313,15 +324,20 @@ string lineListToBoxedString(const vector<string>& in, string boxName, int lineN
 	return out;
 }
 
-string putStringInBox(const string& in, string boxName, bool showLineNums, int maxWidth)
+string putStringInBox(const string& in, string boxName, bool showLineNums, bool alwaysWidthMax, int maxWidth)
 {
 	vector<string> lines;
+	
+	if (maxWidth<0)
+	{
+		maxWidth=getTermWidth()-4;
+	}
 	
 	sliceStringBy(in, "\n", lines);
 	
 	tabsToSpaces(lines);
 	
-	string out=lineListToBoxedString(lines, boxName, showLineNums?1:-1, maxWidth);
+	string out=lineListToBoxedString(lines, boxName, showLineNums?1:-1, alwaysWidthMax, maxWidth);
 	
 	return out;
 }
@@ -466,6 +482,13 @@ string runCmd(string cmd)
     }
     pclose(pipe);
     return result;
+}
+
+int getTermWidth()
+{
+	struct winsize w;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+	return w.ws_col;
 }
 
 

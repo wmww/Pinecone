@@ -75,18 +75,20 @@ string getTextOfLine(const string& in, int lineNum);
 //	takes an array of lines and puts a box around it
 //		in: an array of strings, each which will be on a new line
 //		boxName: the name of the box
-//		maxWidth: the max width of a line, will be truncated if longer
 //		lineNum: the offset of line numbers, no line nums will be displayed if -1
+//		alwaysWidthMax: if to always use the max width
+//		maxWidth: the max width of a line, will be truncated if longer
 //		returns: a string with a box around the content (must be displayed in monospace obviously)
-string lineListToBoxedString(const vector<string>& in, string boxName="", int lineNum=-1, int maxWidth=80);
+string lineListToBoxedString(const vector<string>& in, string boxName="", int lineNum=-1, bool alwaysWidthMax=false, int maxWidth=-1);
 
 //	puts the contents of a string into a well formatted
 //		in: the input stringz
-//		showLineNums: if to show line numbers
 //		boxName: the name that will appear at the top of the box
+//		showLineNums: if to show line numbers
+//		alwaysWidthMax: if to always use the max width
 //		maxWidth: the maximum width of the contents of the box (with borders it may be a bit wider), if any line is longer it will be chopped
 //		returns: the boxed string
-string putStringInBox(const string& in, string boxName="", bool showLineNums=false, int maxWidth=80);
+string putStringInBox(const string& in, string boxName="", bool showLineNums=false, bool alwaysWidthMax=false, int maxWidth=-1);
 
 //	puts the contents of a string into a table, with tabs being verticle seporators and newlines being horizontle ones
 //		in: the input string
@@ -104,3 +106,7 @@ string loadEntireFile(string inName, bool printOutput=true);
 //		cmd: the command to run
 //		returns: the output of the command
 string runCmd(string cmd);
+
+//	get width of the current terminal
+//		returns: width of the terminal
+int getTermWidth();

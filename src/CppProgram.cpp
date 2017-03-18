@@ -381,7 +381,7 @@ case TypeBase::VOID:
 			}
 			code+=indentString("}\n", indent);
 			
-			code+="};\n";
+			code+="};\n\n";
 			
 			globalCode+=code;
 		}
