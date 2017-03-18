@@ -269,6 +269,11 @@ public:
 		return {0, nullptr};
 	}
 	
+	vector<NamedType>* getAllSubTypes()
+	{
+		return &(*subTypes);
+	}
+	
 protected:
 	
 	bool matchesSameTypeType(Type other)
@@ -360,6 +365,11 @@ Type TypeBase::makeNewVoid()
 Type TypeBase::makeNewPrimitive(PrimitiveType typeIn)
 {
 	return Type(new PrimType(typeIn));
+}
+
+vector<NamedType>* TypeBase::getAllSubTypes()
+{
+	throw PineconeError("getAllSubTypes called on type that was not a tuple", INTERNAL_ERROR);
 }
 
 const Type Unknown(new UnknownType);
