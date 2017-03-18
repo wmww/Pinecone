@@ -87,8 +87,11 @@ shared_ptr<CppNameContainer> CppNameContainer::makeChild()
 	return out;
 }
 
-void CppNameContainer::addPn(const string& pn, bool randomCpp)
+void CppNameContainer::addPn(const string& pn, string cppNameHint)
 {
+	if (cppNameHint=="<- the value of that pn string please")
+		cppNameHint=pn;
+	
 	if (pnToCppMap.find(pn)!=pnToCppMap.end())
 	{
 		throw PineconeError("Tried to add '"+pn+"' as a pn name to a CppNameContainer but that pn name already exists", INTERNAL_ERROR);
@@ -96,18 +99,24 @@ void CppNameContainer::addPn(const string& pn, bool randomCpp)
 	
 	// now we need to find a unique C++ name, the pinecone name will almost always be unique, but there may be cases where Pinecone treats scope differently or uses a keyword or something
 	
-	string cpp=getValidCppId(pn); // strip illegal chars
+	string cpp;
+	if (!cppNameHint.empty())
+		cpp=getValidCppId(cppNameHint); // strip illegal chars
 	
 	int attempts=0;
-	bool valid=!randomCpp && !hasCpp(cpp);
+	bool invalid=cppNameHint.empty() || hasCpp(cpp);
 	
-	while (!valid)
+	while (invalid)
 	{
 		// I feel like this is a really bad way to do this, but I can't think of a better one
 		
-		if (randomCpp)
+		if (cppNameHint.empty() || attempts>=100)
 		{
-			cpp="nm_";
+			cpp=
+				cppNameHint.empty() ?
+					"nm_"
+				:
+					cppNameHint+"_";
 			
 			if (attempts<8)
 			{
@@ -129,23 +138,15 @@ void CppNameContainer::addPn(const string& pn, bool randomCpp)
 		{
 			string suffix;
 			
-			if (attempts<10)
+			if (attempts<100)
 			{
 				suffix=to_string(attempts); // this case should almost always happen
 			}
-			else if (attempts<120)
-			{
-				suffix=to_string(rand()%10000);
-			}
-			else
-			{
-				throw PineconeError("could not find unique name for '"+pn+"' in CppNameContainer::enterPn", INTERNAL_ERROR);
-			}
 			
-			cpp=pn+"__"+suffix;
+			cpp=cppNameHint+"__"+suffix;
 		}
 		attempts++;
-		valid=!hasCpp(cpp);
+		invalid=hasCpp(cpp);
 	}
 	
 	pnToCppMap[pn]=cpp;
@@ -182,14 +183,14 @@ bool CppNameContainer::hasCppDown(const string& cpp)
 	return false;
 }
 
-string CppNameContainer::getCppForPn(const string& pn)
+string CppNameContainer::getCpp(const string& pn)
 {
 	auto result=pnToCppMap.find(pn);
 	
 	if (result==pnToCppMap.end())
 	{
 		if (parent)
-			return parent->getCppForPn(pn);
+			return parent->getCpp(pn);
 		else
 			throw PineconeError("could not find C++ equivalent of '"+pn+"' in CppNameContainer::getCppForPn", INTERNAL_ERROR);
 	}
@@ -229,7 +230,7 @@ void CppFuncBase::code(const string& in)
 
 void CppFuncBase::name(const string& in)
 {
-	code(namespaceStack.back()->getCppForPn(in));
+	code(namespaceStack.back()->getCpp(in));
 }
 
 void CppFuncBase::line(const string& in)
@@ -351,11 +352,11 @@ case TypeBase::VOID:
 		
 		if (!globalNames->hasPn(compact))
 		{
-			globalNames->addPn(compact, true);
+			globalNames->addPn(compact, in->nameHint);
 			
 			string code;
 			code+="struct ";
-			code+=globalNames->getCppForPn(compact);
+			code+=globalNames->getCpp(compact);
 			code+="\n{\n";
 			code+=indentString("int abc\n", indent);
 			code+=indentString("double xyz\n", indent);
@@ -364,7 +365,7 @@ case TypeBase::VOID:
 			globalCode+=code;
 		}
 		
-		return globalNames->getCppForPn(compact);
+		return globalNames->getCpp(compact);
 	}
 	
 	default:
@@ -374,7 +375,7 @@ case TypeBase::VOID:
 
 void CppProgram::declareVar(const string& nameIn, Type typeIn)
 {
-	activeFunc->namespaceStack.back()->addPn(nameIn);
+	activeFunc->namespaceStack.back()->addPn(nameIn, nameIn);
 	
 	code(getTypeCode(typeIn)); code(" "); name(nameIn); endln();
 }
@@ -391,9 +392,9 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 		throw PineconeError("called CppProgram::pushFunc with function name '"+name+"', which already exists", INTERNAL_ERROR);
 	}
 	
-	globalNames->addPn(name);
+	globalNames->addPn(name, name);
 	
-	string cppName=globalNames->getCppForPn(name);
+	string cppName=globalNames->getCpp(name);
 	
 	string prototype;
 	
@@ -410,7 +411,9 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 		
 		prototype+=" ";
 		
-		prototype+="v_"+args[i].name;
+		globalNames->addPn(args[i].name, args[i].name);
+		
+		prototype+=globalNames->getCpp(args[i].name);
 	}
 	
 	if (!args.size())

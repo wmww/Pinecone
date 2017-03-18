@@ -91,9 +91,12 @@ public:
 	virtual Type getSubType() {return Void;}
 	virtual OffsetAndType getSubType(string name) {return {0, nullptr};}
 	
-protected:
+	// void setNameHint(const string& in) {if (nameHint.empty()) nameHint=in;} // only sets name hint on any type once, after that it fails quietly
+	// string getNameHint
 	
-	//string name;
+	string nameHint=""; // not reliable, will often be ""; should only be used as a hint, not depended on
+	
+protected:
 	
 	virtual bool matchesSameTypeType(Type other)=0;
 };
