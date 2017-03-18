@@ -156,6 +156,16 @@ void CppNameContainer::addPn(const string& pn, const string& cppNameHint)
 	cppSet.insert(cpp);
 }
 
+void CppNameContainer::reserveCpp(const string& cpp)
+{
+	if (hasCpp(cpp))
+	{
+		throw PineconeError("called CppNameContainer::reserveCpp with id '"+cpp+"', which already exists", INTERNAL_ERROR);
+	}
+	
+	cppSet.insert(cpp);
+}
+
 bool CppNameContainer::hasPn(const string& pn)
 {
 	return pnToCppMap.find(pn)!=pnToCppMap.end();
@@ -335,13 +345,56 @@ CppProgram::CppProgram()
 	//funcs = unique_ptr<std::map<string, CppFunc>>(new std::map<string, CppFunc>());
 	globalNames=CppNameContainer::makeRoot();
 	pushFunc(string("main"), {}, Void);
+	setup();
+}
+
+void CppProgram::setup()
+{
+	globalCode+="#include <stdio.h>";
+	
+	vector<string> cppReservedWords
+	{
+		// from C
+		"auto", "const", "double", "float", "int", "short", "struct", "unsigned", "break",
+		"continue", "else", "for", "long", "signed", "switch", "void", "case", "default",
+		"enum", "goto", "register", "sizeof", "typedef", "volatile", "char", "do", "extern",
+		"if", "return", "static", "union", "while",
+		
+		// from old C++
+		"asm", "dynamic_cast", "namespace", "reinterpret_cast", "try", "bool", "explicit",
+		"new", "static_cast", "typeid", "catch", "false", "operator", "template", "typename",
+		"class", "friend", "private", "this", "using", "const_cast", "inline", "public",
+		"throw", "virtual", "delete", "mutable", "protected", "true", "wchar_t", 
+		
+		// from C++11
+		"and", "bitand", "compl", "not_eq", "or_eq", "xor_eq", "and_eq", "bitor", "not", "or",
+		"xor",
+		
+		// something else
+		"endl", "INT_MIN", "std", "INT_MAX", "MAX_RAND", "NULL",
+	};
+	/*
+	{
+		"and", "and_eq", "asm", "auto", "bitand", "bitor", "bool", "break", "case", "catch", "char", "class", "const", "const_cast",
+		"continue", "default", "delete", "do", "double", "dynamic_cast", "else", "enum", "explicit", "export", "extern", "false", "float",
+		"for", "friend", "goto", "if", "inline", "int", "long", "mutable", "namespace", "new", "not", "not_eq", "operator", "or", "or_eq",
+		"private", "protected", "public", "register", "reinterpret_cast", "return", "short", "signed", "sizeof", "static", "static_cast",
+		"struct", "switch", "template", "this", "throw", "true", "try", "typedef", "typeid", "typename", "union", "unsigned", "using",
+		"virtual", "void", "volatile", "wchar_t", "while", "xor", "xor_eq", ""
+	};
+	*/
+		
+	for (auto i: cppReservedWords)
+	{
+		globalNames->reserveCpp(i);
+	}
 }
 
 string CppProgram::getTypeCode(Type in)
 {
 	switch (in->getType())
 	{
-case TypeBase::VOID:
+	case TypeBase::VOID:
 		return "void";
 		
 	case TypeBase::DUB:

@@ -107,13 +107,17 @@ function<void(Action inLeft, Action inRight, CppProgram* prog)> stringToLambda(s
 				
 				if (substringMatches(cppCode, i, "$."))
 				{
-					inLeft->addToProg(prog);
-					start=i+string("$.").size();
+					prog->pushExpr();
+						inLeft->addToProg(prog);
+						start=i+string("$.").size();
+					prog->popExpr();
 				}
 				else if (substringMatches(cppCode, i, "$:"))
 				{
-					inRight->addToProg(prog);
-					start=i+string("$:").size();
+					prog->pushExpr();
+						inRight->addToProg(prog);
+						start=i+string("$:").size();
+					prog->popExpr();
 				}
 				else if (substringMatches(cppCode, i, "$$"))
 				{
@@ -257,7 +261,7 @@ void populateOperators()
 	func(ops->andOp, Bool, Bool, Bool,
 		retrn left && right;
 	,
-		""
+		"$. && $:"
 	);
 	
 	
@@ -266,13 +270,13 @@ void populateOperators()
 	func(ops->plus, Int, Int, Int,
 		retrn left+right;
 	,
-		""
+		"$. + $:"
 	);
 	
 	func(ops->plus, Dub, Dub, Dub,
 		retrn left+right;
 	,
-		""
+		"$. + $:"
 	);
 	
 	
@@ -281,13 +285,13 @@ void populateOperators()
 	func(ops->minus, Int, Int, Int,
 		retrn left-right;
 	,
-		""
+		"$. - $:"
 	);
 	
 	func(ops->minus, Dub, Dub, Dub,
 		retrn left-right;
 	,
-		""
+		"$. - $:"
 	);
 	
 	
@@ -296,13 +300,13 @@ void populateOperators()
 	func(ops->multiply, Int, Int, Int,
 		retrn left*right;
 	,
-		""
+		"$. * $:"
 	);
 	
 	func(ops->multiply, Dub, Dub, Dub,
 		retrn left*right;
 	,
-		""
+		"$. * $:"
 	);
 	
 	
@@ -311,13 +315,13 @@ void populateOperators()
 	func(ops->divide, Int, Int, Int,
 		retrn left/right;
 	,
-		""
+		"$. / $:"
 	);
 	
 	func(ops->divide, Dub, Dub, Dub,
 		retrn left/right;
 	,
-		""
+		"$. / $:"
 	);
 	
 	
@@ -326,13 +330,13 @@ void populateOperators()
 	func(ops->mod, Int, Int, Int,
 		retrn left%right;
 	,
-		""
+		"$. % $:"
 	);
 	
 	func(ops->mod, Dub, Dub, Dub,
 		retrn left-int(left/right)*right;
 	,
-		""
+		"$. - int($. / $:) * $:"
 	);
 	
 	/// =
@@ -340,19 +344,19 @@ void populateOperators()
 	func(ops->equal, Bool, Bool, Bool,
 		retrn left==right;
 	,
-		""
+		"$. == $:"
 	);
 	
 	func(ops->equal, Int, Int, Bool,
 		retrn left==right;
 	,
-		""
+		"$. == $:"
 	);
 	
 	func(ops->equal, Dub, Dub, Bool,
 		retrn left==right;
 	,
-		""
+		"$. == $:"
 	);
 	
 	/// >
@@ -360,71 +364,71 @@ void populateOperators()
 	func(ops->greater, Int, Int, Bool,
 		retrn left>right;
 	,
-		""
+		"$. > $:"
 	);
 	
 	func(ops->greater, Dub, Dub, Bool,
 		retrn left>right;
 	,
-		""
+		"$. > $:"
 	);
 	
 	// <
 	func(ops->less, Int, Int, Bool,
 		retrn left<right;
 	,
-		""
+		"$. < $:"
 	);
 	
 	func(ops->less, Dub, Dub, Bool,
 		retrn left<right;
 	,
-		""
+		"$. < $:"
 	);
 	
 	// >=
 	func(ops->greaterEq, Int, Int, Bool,
 		retrn left>=right;
 	,
-		""
+		"$. >= $:"
 	);
 	
 	func(ops->greaterEq, Dub, Dub, Bool,
 		retrn left>=right;
 	,
-		""
+		"$. >= $:"
 	);
 	
 	// <=
 	func(ops->lessEq, Int, Int, Bool,
 		retrn left<=right;
 	,
-		""
+		"$. <= $:"
 	);
 	
 	func(ops->lessEq, Dub, Dub, Bool,
 		retrn left<=right;
 	,
-		""
+		"$. <= $:"
 	);
 	
 	// !
 	func(ops->notOp, Void, Bool, Bool,
 		retrn !right;
 	,
-		""
+		"!$:"
 	);
 	
 	func(ops->notOp, Void, Int, Bool,
 		retrn right==0;
 	,
-		""
+		"$: == 0"
 	);
 	
 	func(ops->notOp, Void, Dub, Bool,
 		retrn right==0;
 	,
-		""
+		"$: == 0"
 	);
 }
 
@@ -499,25 +503,25 @@ void populateStdFuncs()
 	func("print", Void, Void, Void,
 		cout << endl;
 	,
-		"printf('\n');"
+		"printf('\n')"
 	);
 	
 	func("print", Void, Bool, Void,
 		cout << (right?"tru":"fls") << endl;
 	,
-		"printf($:?\"tru\":\"fls\");"
+		"printf($:?\"tru\":\"fls\")"
 	);
 	
 	func("print", Void, Int, Void,
 		cout << right << endl;
 	,
-		"printf(\"%f\", $:);"
+		"printf(\"%f\", $:)"
 	);
 	
 	func("print", Void, Dub, Void,
 		cout << right << endl;
 	,
-		"printf(\"%f\", $:);"
+		"printf(\"%f\", $:)"
 	);
 	
 	addAction("print", Void, String, Void,
