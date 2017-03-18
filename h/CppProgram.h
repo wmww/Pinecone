@@ -13,8 +13,9 @@ class CppNameContainer
 public:
 	static shared_ptr<CppNameContainer> makeRoot();
 	shared_ptr<CppNameContainer> makeChild();
-	bool hasPn(const string& pn);
 	void addPn(const string& pn, const string& cppNameHint="<- the value of that pn string please"); // will throw an error if pnName already exists
+	bool hasPn(const string& pn);
+	void reserveCpp(const string& cpp);
 	string getCpp(const string& pn); // will throw an error if the Pinecone name doesn't exist
 	
 private:
@@ -86,6 +87,7 @@ public:
 	int getExprLevel()				{return activeFunc->getExprLevel();}
 	
 	
+	void setup();
 	string getTypeCode(Type in);
 	void declareVar(const string& nameIn, Type typeIn);
 	bool hasFunc(const string& name);
@@ -101,6 +103,5 @@ private:
 	CppFunc activeFunc;
 	vector<string> funcStack;
 	std::map<string, CppFunc> funcs;
-	std::unordered_set<string> types;
 	shared_ptr<CppNameContainer> globalNames;
 };
