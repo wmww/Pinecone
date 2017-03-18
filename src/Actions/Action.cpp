@@ -47,7 +47,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->code("void");
+		prog->comment("void");
 	}
 };
 
