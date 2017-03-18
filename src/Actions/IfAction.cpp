@@ -43,13 +43,6 @@ public:
 		return nullptr;
 	}
 	
-	/*
-	string getCSource(string inLeft, string inRight)
-	{
-		return "if (" + condition->getCSource() + ")\n{\n" + ifAction->getCSource() + "\n}";
-	}
-	*/
-	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
 		prog->code("if ");
@@ -58,6 +51,7 @@ public:
 		prog->popExpr();
 		prog->pushBlock();
 		ifAction->addToProg(voidAction, voidAction, prog);
+		prog->endln();
 		prog->popBlock();
 	}
 	

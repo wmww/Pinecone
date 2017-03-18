@@ -551,7 +551,7 @@ void populateStdFuncs()
 				prog->popFunc();
 			}
 			
-			prog->name("-pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr(); prog->endln();
+			prog->name("-pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr();
 		}
 	);
 }
