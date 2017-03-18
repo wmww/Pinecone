@@ -81,11 +81,6 @@ public:
 		return out;*/
 	}
 	
-	string getCSource(string inLeft, string inRight)
-	{
-		return "/* C source for MakeTupleAction not yet implemented */";
-	}
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* out=malloc(getReturnType()->getSize());
@@ -101,8 +96,22 @@ public:
 		
 		return out;
 	}
-
-
+	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		prog->code(prog->getTypeCode(getReturnType()));
+		prog->pushExpr();
+		bool start=true;
+		for (auto i: sourceActions)
+		{
+			if (!start) prog->code(", ");
+			start=false;
+			
+			i->addToProg(prog);
+		}
+		prog->popExpr();
+	}
+	
 	
 private:
 	
