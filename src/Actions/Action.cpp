@@ -64,12 +64,24 @@ public:
 		{
 			cppWriter=[=](Action inLeft, Action inRight, CppProgram* prog)
 			{
-				prog->comment("/* lambda action '" + textIn + "' has not yet been implemented for C++ */");
+				prog->comment("/* lambda action '"+textIn+"' has not yet been implemented for C++ */");
 			};
 		}
 		else
 		{
 			cppWriter=cppWriterIn;
+		}
+		
+		if (lambdaIn==nullptr)
+		{
+			lambdaIn=[=](void* inLeft, void* inRight)->void*
+			{
+				throw PineconeError("action '"+textIn+"' has not yet been implemented for the interpreter", RUNTIME_ERROR);
+			};
+		}
+		else
+		{
+			lambda=lambdaIn;
 		}
 		
 		setDescription(textIn);
