@@ -1,6 +1,4 @@
 #==> "../examples/morse.pn"
 
-i: 0
-i<10 | i: i+1 @ (
-	print: i
-)
+a: inputInt
+print: a+3

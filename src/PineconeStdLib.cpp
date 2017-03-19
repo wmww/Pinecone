@@ -756,13 +756,13 @@ void populateNonStdFuncs()
 	func("printc", Void, Int, Void,
 			cout << (char)right
 		,
-		""
+			"putchar($:)"
 		);
 	
 	func("inputc", Void, Void, Int,
 			retrn getchar()
 		,
-		""
+			"getchar()"
 		);
 	
 	func("inputInt", Void, Void, Int,
@@ -770,7 +770,24 @@ void populateNonStdFuncs()
 			std::cin >> val;
 			retrn val;
 		,
-		""
+			ADD_CPP_HEADER
+			{
+				prog->pushFunc("-getIntInput", {}, Int);
+					prog->declareVar("tmp", Int);
+					prog->code("scanf");
+					prog->pushExpr();
+						prog->code("\"%d\", &");
+						prog->name("tmp");
+					prog->popExpr();
+					prog->endln();
+					prog->code("return ");
+					prog->name("tmp");
+					prog->endln();
+				prog->popFunc();
+				
+				prog->name("-getIntInput");
+				prog->code("()");
+			}
 		);
 	
 	addAction("runCmd", Void, String, String,
