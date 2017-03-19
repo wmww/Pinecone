@@ -129,7 +129,38 @@ public:
 		}
 		else
 		{
-			prog->code(prog->getTypeCode(getReturnType()));
+			if (!prog->hasFunc("-pnStr"))
+			{
+				prog->pushFunc("-pnStr", {{"const char *", "-in"}}, String);
+					prog->declareVar("-i", Int, "0");
+					prog->code("while ");
+					prog->pushExpr();
+						prog->name("-in");
+						prog->code("[");
+						prog->pushExpr();
+							prog->name("-i");
+						prog->popExpr();
+						prog->code("]");
+					prog->popExpr();
+					prog->pushBlock();
+						prog->name("-i");
+						prog->code("++");
+						prog->endln();
+					prog->popBlock();
+					prog->code("return ");
+					prog->code(prog->getTypeCode(String));
+					prog->pushExpr();
+						prog->name("-i");
+						prog->code(", ");
+						prog->code("(unsigned char *)");
+						prog->name("-in");
+					prog->popExpr();
+					prog->endln();
+				prog->popFunc();
+			}
+			
+			//prog->code(prog->getTypeCode(getReturnType()));
+			prog->name("-pnStr");
 			prog->pushExpr();
 				auto sizeInfo=getReturnType()->getSubType("_size");
 				auto dataInfo=getReturnType()->getSubType("_data");
@@ -137,8 +168,9 @@ public:
 				{
 					throw PineconeError("ConstGetAction::addToProg failed to access string properties", INTERNAL_ERROR);
 				}
-				prog->code(Int->getCppLiteral((char*)data+sizeInfo.offset, prog));
-				prog->code(", (unsigned char*)\"");
+				//prog->code(Int->getCppLiteral((char*)data+sizeInfo.offset, prog));
+				//prog->code(", (unsigned char*)\"");
+				prog->code("\"");
 				int len=*(int*)((char*)data+sizeInfo.offset);
 				for (int i=0; i<len; i++)
 				{

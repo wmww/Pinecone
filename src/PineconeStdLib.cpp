@@ -199,45 +199,45 @@ inline void* cppStr2PncnStr(string cpp)
 
 void addPnStringToCStringToProg(CppProgram * prog)
 {
-	if (!prog->hasFunc("-pnStringToCString"))
+	if (!prog->hasFunc("-cStr"))
 	{
-		prog->pushFunc("-pnStringToCString", {{"in", String}}, Byte->getPtr());
+		prog->pushFunc("-cStr", {{prog->getTypeCode(String), "-in"}}, Byte->getPtr());
 			
 			//prog->code("int strSize = ");
 			//getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
 			//prog->endln();
 			
-			prog->declareVar("tmp", Byte->getPtr());
+			prog->declareVar("-tmp", Byte->getPtr());
 			
-			prog->name("tmp");
+			prog->name("-tmp");
 			prog->code(" = (unsigned char*)malloc");
 			prog->pushExpr();
-				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
 				prog->code(" + 1");
 			prog->popExpr();
 			prog->endln();
 			
 			prog->code("memcpy");
 			prog->pushExpr();
-				prog->name("tmp");
+				prog->name("-tmp");
 				prog->code(", ");
 				prog->pushExpr();
-					getElemFromTupleAction(String, "_data")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+					getElemFromTupleAction(String, "_data")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
 				prog->popExpr();
 				prog->code(", ");
-				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
 			prog->popExpr();
 			prog->endln();
-			prog->name("tmp");
+			prog->name("-tmp");
 			prog->code("[");
 			prog->pushExpr();
-				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
 			prog->popExpr();
 			prog->code("] = 0");
 			prog->endln();
 			
 			prog->code("return ");
-			prog->name("tmp");
+			prog->name("-tmp");
 			prog->endln();
 		prog->popFunc();
 	}
@@ -616,7 +616,7 @@ void populateStdFuncs()
 			prog->code("printf");
 			prog->pushExpr();
 				prog->code("\"%s\\n\", ");
-				prog->name("-pnStringToCString");
+				prog->name("-cStr");
 				prog->pushExpr();
 					right->addToProg(prog);
 				prog->popExpr();
