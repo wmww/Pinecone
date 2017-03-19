@@ -416,7 +416,7 @@ string CppProgram::getTypeCode(Type in)
 		return "bool";
 		
 	case TypeBase::PTR:
-		return "*"+getTypeCode(in->getSubType());
+		return getTypeCode(in->getSubType())+" *";
 		
 	case TypeBase::TUPLE:
 	{
@@ -482,6 +482,23 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn)
 	activeFunc->namespaceStack.back()->addPn(nameIn, nameIn);
 	
 	code(getTypeCode(typeIn)); code(" "); name(nameIn); endln();
+}
+
+void CppProgram::declareGlobal(const string& nameIn, Type typeIn, string initialValue)
+{
+	string code;
+	code+=getTypeCode(typeIn);
+	code+=" ";
+	globalNames->addPn(nameIn);
+	code+=globalNames->getCpp(nameIn);
+	if (!initialValue.empty())
+	{
+		code+=" = ";
+		code+=initialValue;
+	}
+	code+=";\n";
+	
+	globalCode+=code;
 }
 
 bool CppProgram::hasFunc(const string& name)
