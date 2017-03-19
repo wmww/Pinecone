@@ -408,7 +408,10 @@ string CppProgram::getTypeCode(Type in)
 		
 	case TypeBase::INT:
 		return "int";
-		
+	
+	case TypeBase::BYTE:
+		return "unsigned char";
+	
 	case TypeBase::BOOL:
 		return "bool";
 		

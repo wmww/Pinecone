@@ -114,6 +114,7 @@ public:
 		switch (primType)
 		{
 			case BOOL: return "b";
+			case BYTE: return "y";
 			case INT: return "i";
 			case DUB: return "d";
 			
@@ -134,6 +135,7 @@ public:
 		switch (primType)
 		{
 			case BOOL: val=(*(bool*)data)?"true":"false"; break;
+			case BYTE: val=to_string(*(unsigned char*)data); break;
 			case INT: val=to_string(*(int*)data); break;
 			case DUB:
 			{
@@ -155,6 +157,7 @@ public:
 		switch (primType)
 		{
 			case BOOL: return sizeof(bool);
+			case BYTE: return sizeof(unsigned char);
 			case INT: return sizeof(int);
 			case DUB: return sizeof(double);
 			
@@ -222,7 +225,7 @@ public:
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
-			out+=(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString()+"_";
+			out+=(*subTypes)[i].name.size()+"_"+(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString()+"_";
 		}
 		
 		out+="tT";
@@ -434,6 +437,7 @@ vector<NamedType>* TypeBase::getAllSubTypes()
 const Type Unknown(new UnknownType);
 const Type Void = TypeBase::makeNewVoid();
 const Type Bool = TypeBase::makeNewPrimitive(TypeBase::BOOL);
+const Type Byte = TypeBase::makeNewPrimitive(TypeBase::BYTE);
 const Type Int = TypeBase::makeNewPrimitive(TypeBase::INT);
 const Type Dub = TypeBase::makeNewPrimitive(TypeBase::DUB);
 Type String = nullptr;
@@ -458,6 +462,7 @@ string TypeBase::getString(PrimitiveType in)
 		case UNKNOWN: return "UNKNOWN_TYPE";
 		case VOID: return "VOID";
 		case BOOL: return "BOOL";
+		case BYTE: return "BYTE";
 		case INT: return "INT";
 		case DUB: return "DUB";
 		case TUPLE: return "TUPLE";
