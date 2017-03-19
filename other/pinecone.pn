@@ -1,6 +1,4 @@
 
-tru?1|2
+print: "hello world"
 
-a: inputInt
-b: inputInt
-print: a%b
+print: "bye"

@@ -65,6 +65,17 @@ public:
 		METATYPE
 	};
 	
+	/* type compact forms
+	Void: v
+	Unknown: u
+	Bool: b
+	Int: i
+	Dub: d
+	Ptr: Pp_..._pP
+	Meta: Mm_..._mM
+	Tuple: Tt_name_type..._tT
+	*/
+	
 	static Type makeNewVoid();
 	static Type makeNewPrimitive(PrimitiveType typeIn);
 	//static Type makeNew(unordered_map<string, Type>, string nameIn);
@@ -72,6 +83,7 @@ public:
 	//TypeBase(string nameIn) {name=nameIn;}
 	
 	Type getMetaType();
+	Type getPtr();
 	
 	static string getString(PrimitiveType in);
 	virtual string getString()=0;
@@ -101,6 +113,8 @@ public:
 protected:
 	
 	virtual bool matchesSameTypeType(Type other)=0;
+	
+	Type ptrToMe=nullptr;
 };
 
 Type makeTuple(const vector<NamedType>& in);

@@ -218,14 +218,14 @@ public:
 	{
 		string out;
 		
-		out+="t_";
+		out+="Tt_";
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
-			out+=(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString();
+			out+=(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString()+"_";
 		}
 		
-		out+="_j";
+		out+="tT";
 		
 		return out;
 	}
@@ -313,6 +313,55 @@ private:
 	unique_ptr<vector<NamedType>> subTypes;
 };
 
+class PtrType: public TypeBase
+{
+public:
+	
+	PtrType(Type in)
+	{
+		type=in;
+	}
+	
+	string getString()
+	{
+		return "-> "+type->getString()+" (pointer)";
+	}
+	
+	string getCompactString()
+	{
+		return "Pp_"+type->getCompactString()+"_pP";
+	}
+	
+	void addInstToProg(void * data, CppProgram * prog)
+	{
+		prog->comment("pointer type to C++ not implemented");
+	}
+	
+	size_t getSize()
+	{
+		return sizeof(void*);
+	}
+	
+	PrimitiveType getType()
+	{
+		return PTR;
+	}
+	
+	Type getSubType()
+	{
+		return type;
+	}
+	
+protected:
+	
+	Type type;
+	
+	bool matchesSameTypeType(Type other)
+	{
+		return ((PtrType*)(&(*other)))->type->matches(type);
+	}
+};
+
 class MetaType: public TypeBase
 {
 public:
@@ -329,7 +378,7 @@ public:
 	
 	string getCompactString()
 	{
-		return "m";
+		return "Mm_"+type->getCompactString()+"_mM";
 	}
 	
 	void addInstToProg(void * data, CppProgram * prog)
@@ -392,6 +441,14 @@ Type String = nullptr;
 Type TypeBase::getMetaType()
 {
 	return Type(new MetaType(shared_from_this()));
+}
+
+Type TypeBase::getPtr()
+{
+	if (!ptrToMe)
+		ptrToMe=Type(new PtrType(shared_from_this()));
+	
+	return ptrToMe;
 }
 
 string TypeBase::getString(PrimitiveType in)

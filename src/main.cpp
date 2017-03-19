@@ -93,6 +93,7 @@ int main(int argc, char ** argv)
 			
 			writeFile(outSourceFile, cppCode);
 			
+			remove(outBinFile.c_str());
 			
 			cmd = "gcc -std=c++11 '"+outSourceFile+"' -o '"+outBinFile+"'";
 			
