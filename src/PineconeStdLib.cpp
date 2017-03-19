@@ -197,6 +197,52 @@ inline void* cppStr2PncnStr(string cpp)
 	return obj;
 }
 
+void addPnStringToCStringToProg(CppProgram * prog)
+{
+	if (!prog->hasFunc("-pnStringToCString"))
+	{
+		prog->pushFunc("-pnStringToCString", {{"in", String}}, Byte->getPtr());
+			
+			//prog->code("int strSize = ");
+			//getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+			//prog->endln();
+			
+			prog->declareVar("tmp", Byte->getPtr());
+			
+			prog->name("tmp");
+			prog->code(" = (unsigned char*)malloc");
+			prog->pushExpr();
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+				prog->code(" + 1");
+			prog->popExpr();
+			prog->endln();
+			
+			prog->code("memcpy");
+			prog->pushExpr();
+				prog->name("tmp");
+				prog->code(", ");
+				prog->pushExpr();
+					getElemFromTupleAction(String, "_data")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+				prog->popExpr();
+				prog->code(", ");
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+			prog->popExpr();
+			prog->endln();
+			prog->name("tmp");
+			prog->code("[");
+			prog->pushExpr();
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+			prog->popExpr();
+			prog->code("] = 0");
+			prog->endln();
+			
+			prog->code("return ");
+			prog->name("tmp");
+			prog->endln();
+		prog->popFunc();
+	}
+}
+
 void basicSetup()
 {
 	table=globalNamespace=NamespaceData::makeRootNamespace();
@@ -565,31 +611,16 @@ void populateStdFuncs()
 		},
 		ADD_CPP_HEADER
 		{
-			if (!prog->hasFunc("-pnStringToCString"))
-			{
-				prog->pushFunc("-pnStringToCString", {{"in", String}}, Dub);
-					
-					prog->code("int strSize = ");
-					getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
-					prog->endln();
-					
-					prog->line("char* tmp = (char*)malloc(strSize + 2)");
-					
-					prog->code("memcpy(tmp, &");
-					prog->pushExpr();
-					getElemFromTupleAction(String, "_data")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
-					prog->popExpr();
-					prog->code(", strSize)");
-					prog->endln();
-					
-					prog->line("tmp[strSize] = '\\n'");
-					prog->line("tmp[strSize+1] = 0");
-					
-					prog->line("printf(tmp)");
-				prog->popFunc();
-			}
+			addPnStringToCStringToProg(prog);
 			
-			prog->name("-pnStringToCString"); prog->pushExpr(); right->addToProg(prog); prog->popExpr();
+			prog->code("printf");
+			prog->pushExpr();
+				prog->code("\"%s\\n\", ");
+				prog->name("-pnStringToCString");
+				prog->pushExpr();
+					right->addToProg(prog);
+				prog->popExpr();
+			prog->popExpr();
 		}
 	);
 }
