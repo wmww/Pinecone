@@ -131,6 +131,9 @@ function<void(Action inLeft, Action inRight, CppProgram* prog)> stringToLambda(s
 			}
 			
 		} while (i>=0);
+		
+		//if (prog->getExprLevel()==0)
+		//	prog->endln();
 	};
 }
 
@@ -503,25 +506,25 @@ void populateStdFuncs()
 	func("print", Void, Void, Void,
 		cout << endl;
 	,
-		"printf('\n')"
+		"printf('\\n')"
 	);
 	
 	func("print", Void, Bool, Void,
 		cout << (right?"tru":"fls") << endl;
 	,
-		"printf($:?\"tru\":\"fls\")"
+		"printf($:?\"tru\\n\":\"fls\\n\")"
 	);
 	
 	func("print", Void, Int, Void,
 		cout << right << endl;
 	,
-		"printf(\"%f\", $:)"
+		"printf(\"%d\\n\", $:)"
 	);
 	
 	func("print", Void, Dub, Void,
-		cout << right << endl;
+		printf("%f\n", right);
 	,
-		"printf(\"%f\", $:)"
+		"printf(\"%f\\n\", $:)"
 	);
 	
 	addAction("print", Void, String, Void,
@@ -540,7 +543,7 @@ void populateStdFuncs()
 					getElemFromTupleAction(String, "_size")->addToProg(voidAction, right, prog);
 					prog->endln();
 					
-					prog->line("char* tmp = strSize + 1");
+					prog->line("char* tmp = strSize + 2");
 					
 					prog->code("memcpy(tmp, &");
 					prog->pushExpr();
@@ -549,7 +552,8 @@ void populateStdFuncs()
 					prog->code(", strSize)");
 					prog->endln();
 					
-					prog->line("tmp[strSize] = 0");
+					prog->line("tmp[strSize] = '\\n'");
+					prog->line("tmp[strSize+1] = 0");
 					
 					prog->line("printf(tmp)");
 				prog->popFunc();

@@ -7,13 +7,14 @@ class VarGetAction: public ActionData
 {
 public:
 	
-	VarGetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string textIn):
+	VarGetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string idIn):
 		ActionData(typeIn, Void, Void)
 	{
 		offset=in;
 		stackPtrPtr=stackPtrPtrIn;
+		id=idIn;
 		
-		setDescription("get " + typeIn->getString() + " '" + textIn + "'");
+		setDescription("get " + typeIn->getString() + " '" + idIn + "'");
 	}
 	
 	string getCSource(string inLeft, string inRight)
@@ -33,10 +34,17 @@ public:
 		return out;
 	}
 	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		prog->declareVar(id, getInRightType());
+		prog->name(id);
+	}
+	
 private:
 	
 	void ** stackPtrPtr;
 	size_t offset;
+	string id; // used for C++ transpiler
 };
 
 class VarSetAction: public ActionData
@@ -74,7 +82,11 @@ public:
 		prog->declareVar(id, getInRightType());
 		prog->name(id);
 		prog->code(" = ");
+		prog->pushExpr();
 		inRight->addToProg(prog);
+		prog->popExpr();
+		//if (prog->getExprLevel()==0)
+		//	prog->endln();
 	}
 	
 private:
