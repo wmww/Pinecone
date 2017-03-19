@@ -115,6 +115,23 @@ public:
 		return nullptr;
 	}
 	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		prog->code("if ");
+		prog->pushExpr();
+			condition->addToProg(voidAction, voidAction, prog);
+		prog->popExpr();
+		prog->pushBlock();
+			ifAction->addToProg(voidAction, voidAction, prog);
+			prog->endln();
+		prog->popBlock();
+		prog->code("else");
+		prog->pushBlock();
+			elseAction->addToProg(voidAction, voidAction, prog);
+			prog->endln();
+		prog->popBlock();
+	}
+	
 private:
 	
 	Action condition;

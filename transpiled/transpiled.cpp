@@ -2,6 +2,8 @@
 // Pinecone v0.3.0 was used
 
 #include <stdio.h>
+
+
 int getIntInput();
 
 int getIntInput()
@@ -15,9 +17,19 @@ int main()
 {
     // list
     {
+        if (true)
+        {
+            1;
+        }
+        else
+        {
+            2;
+        }
         int a;
         a = (getIntInput());
-        printf("%d\n", ((a) + (3)));
+        int b;
+        b = (getIntInput());
+        printf("%d\n", ((a) % (b)));
     }
 }
 

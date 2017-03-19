@@ -64,7 +64,7 @@ public:
 		{
 			cppWriter=[=](Action inLeft, Action inRight, CppProgram* prog)
 			{
-				prog->comment("/* lambda action '"+textIn+"' has not yet been implemented for C++ */");
+				prog->comment("lambda action '"+textIn+"' has not yet been implemented for C++");
 			};
 		}
 		else

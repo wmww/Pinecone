@@ -772,18 +772,21 @@ void populateNonStdFuncs()
 		,
 			ADD_CPP_HEADER
 			{
-				prog->pushFunc("-getIntInput", {}, Int);
-					prog->declareVar("tmp", Int);
-					prog->code("scanf");
-					prog->pushExpr();
-						prog->code("\"%d\", &");
+				if (!prog->hasFunc("-getIntInput"))
+				{
+					prog->pushFunc("-getIntInput", {}, Int);
+						prog->declareVar("tmp", Int);
+						prog->code("scanf");
+						prog->pushExpr();
+							prog->code("\"%d\", &");
+							prog->name("tmp");
+						prog->popExpr();
+						prog->endln();
+						prog->code("return ");
 						prog->name("tmp");
-					prog->popExpr();
-					prog->endln();
-					prog->code("return ");
-					prog->name("tmp");
-					prog->endln();
-				prog->popFunc();
+						prog->endln();
+					prog->popFunc();
+				}
 				
 				prog->name("-getIntInput");
 				prog->code("()");

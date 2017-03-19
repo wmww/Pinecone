@@ -1,4 +1,6 @@
-#==> "../examples/morse.pn"
+
+tru?1|2
 
 a: inputInt
-print: a+3
+b: inputInt
+print: a%b

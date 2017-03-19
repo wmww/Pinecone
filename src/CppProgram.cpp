@@ -352,7 +352,7 @@ void CppProgram::setup()
 	globalCode+="// this C++ code is transpiled from Pinecone\n";
 	globalCode+="// Pinecone v"+to_string(VERSION_X)+"."+to_string(VERSION_Y)+"."+to_string(VERSION_Z)+" was used\n";
 	
-	globalCode+="\n#include <stdio.h>";
+	globalCode+="\n#include <stdio.h>\n\n";
 	
 	vector<string> cppReservedWords
 	{
