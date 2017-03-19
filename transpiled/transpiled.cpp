@@ -1,16 +1,23 @@
-#include <stdio.h>
+// this C++ code is transpiled from Pinecone
+// Pinecone v0.3.0 was used
 
-int main(void)
+#include <stdio.h>
+int getIntInput();
+
+int getIntInput()
 {
-    /* list */
+    int tmp;
+    scanf("%d", &tmp);
+    return tmp;
+}
+
+int main()
+{
+    // list
     {
-        int i;
-        i = (0);
-        while ((i) < (10))
-        {
-            printf("%d\n", (i));
-            i = ((i) + (1));
-        }
+        int a;
+        a = (getIntInput());
+        printf("%d\n", ((a) + (3)));
     }
 }
 

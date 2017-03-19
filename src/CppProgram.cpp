@@ -280,7 +280,7 @@ void CppFuncBase::comment(const string& in)
 		source+=indentString("\n/*\n"+in+"\n*/\n", indent, blockLevel);
 		freshLine=true;
 	}
-	else if (exprLevel>0 || source.back()!='\n')
+	else if (exprLevel>0 || !freshLine)
 	{
 		source+="/* "+in+" */";
 		freshLine=false;
@@ -349,7 +349,10 @@ CppProgram::CppProgram()
 
 void CppProgram::setup()
 {
-	globalCode+="#include <stdio.h>";
+	globalCode+="// this C++ code is transpiled from Pinecone\n";
+	globalCode+="// Pinecone v"+to_string(VERSION_X)+"."+to_string(VERSION_Y)+"."+to_string(VERSION_Z)+" was used\n";
+	
+	globalCode+="\n#include <stdio.h>";
 	
 	vector<string> cppReservedWords
 	{
@@ -510,11 +513,6 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 		globalNames->addPn(args[i].name, args[i].name);
 		
 		prototype+=globalNames->getCpp(args[i].name);
-	}
-	
-	if (!args.size())
-	{
-		prototype+="void";
 	}
 	
 	prototype+=")";
