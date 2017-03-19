@@ -123,7 +123,54 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->code(getReturnType()->getCppLiteral(data, prog));
+		if (getReturnType()!=String)
+		{
+			prog->code(getReturnType()->getCppLiteral(data, prog));
+		}
+		else
+		{
+			prog->code(prog->getTypeCode(getReturnType()));
+			prog->pushExpr();
+				auto sizeInfo=getReturnType()->getSubType("_size");
+				auto dataInfo=getReturnType()->getSubType("_data");
+				if (sizeInfo.type!=Int || dataInfo.type!=Byte->getPtr())
+				{
+					throw PineconeError("ConstGetAction::addToProg failed to access string properties", INTERNAL_ERROR);
+				}
+				prog->code(Int->getCppLiteral((char*)data+sizeInfo.offset, prog));
+				prog->code(", (unsigned char*)\"");
+				int len=*(int*)((char*)data+sizeInfo.offset);
+				for (int i=0; i<len; i++)
+				{
+					char c=*((*(char**)((char*)data+dataInfo.offset))+i);
+					if (c=='"')
+					{
+						prog->code("\\\"");
+					}
+					else if (c=='\\')
+					{
+						prog->code("\\\\");
+					}
+					else if (c==0)
+					{
+						prog->code("\0");
+					}
+					else if (c>=32 && c<=126)
+					{
+						prog->code(string()+c);
+					}
+					else
+					{
+						prog->code("\\x");
+						char buf[8];
+						sprintf(buf, "%02X", c);
+						prog->code(string()+buf);
+					}
+					
+				}
+				prog->code("\"");
+			prog->popExpr();
+		}
 	}
 	
 private:
