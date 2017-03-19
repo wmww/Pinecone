@@ -63,13 +63,6 @@ public:
 		return outData;
 	}
 	
-	/*
-	string getCSource(string inLeft, string inRight)
-	{
-		return action->getCSource(leftInput->getCSource("", ""), rightInput->getCSource("", ""));
-	}
-	*/
-	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
 		action->addToProg(leftInput, rightInput, prog);
@@ -80,8 +73,6 @@ private:
 	Action leftInput;
 	Action rightInput;
 };
-
-/*
 
 class RightBranchAction: public ActionData
 {
@@ -126,19 +117,17 @@ public:
 			return "[branch with null element]";
 	}
 	
-	
-	string getCSource(string inLeft, string inRight)
-	{
-		return action->getCSource("", rightInput->getCSource("", ""));
-	}
-	
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		void* rightData=rightInput->execute(nullptr, nullptr);
 		void* outData=action->execute(nullptr, rightData);
 		free(rightData);
 		return outData;
+	}
+	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		action->addToProg(voidAction, rightInput, prog);
 	}
 	
 private:
@@ -183,13 +172,6 @@ public:
 		else
 			return "[branch with null element]";
 	}
-	
-	
-	string getCSource(string inLeft, string inRight)
-	{
-		return action->getCSource(leftInput->getCSource("", ""), "");
-	}
-	
 
 	void* execute(void* inLeft, void* inRight)
 	{
@@ -199,18 +181,20 @@ public:
 		return outData;
 	}
 	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		action->addToProg(leftInput, voidAction, prog);
+	}
+	
 private:
 	Action leftInput;
 	Action action;
 };
 
-*/
-
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 {
-	return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
+	//return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 	
-	/*
 	if (leftInputIn->getReturnType()->isVoid())
 	{
 		if (rightInputIn->getReturnType()->isVoid())
@@ -233,5 +217,4 @@ Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 			return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 		}
 	}
-	*/
 }
