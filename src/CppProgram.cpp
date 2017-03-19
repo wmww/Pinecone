@@ -215,10 +215,10 @@ string CppNameContainer::getCpp(const string& pn)
 
 /// funcs
 
-CppFuncBase::CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> globalNames)
+CppFuncBase::CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> myNames)
 {
 	prototype=prototypeIn;
-	namespaceStack.push_back(globalNames);
+	namespaceStack.push_back(myNames);
 }
 
 void CppFuncBase::code(const string& in)
@@ -467,8 +467,9 @@ string CppProgram::getTypeCode(Type in)
 	}
 }
 
-void CppProgram::declareVar(const string& nameIn, Type typeIn)
+void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialValue)
 {
+	/*
 	CppNameContainer* names=&*activeFunc->namespaceStack.back();
 	
 	while (names)
@@ -478,10 +479,22 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn)
 		
 		names=names->getParent();
 	}
+	*/
+	
+	if (activeFunc->namespaceStack.back()->hasPnMe(nameIn))
+		return;
 	
 	activeFunc->namespaceStack.back()->addPn(nameIn, nameIn);
 	
-	code(getTypeCode(typeIn)); code(" "); name(nameIn); endln();
+	code(getTypeCode(typeIn));
+	code(" ");
+	name(nameIn);
+	if (!initialValue.empty())
+	{
+		code(" = ");
+		code(initialValue);
+	}
+	endln();
 }
 
 void CppProgram::declareGlobal(const string& nameIn, Type typeIn, string initialValue)
@@ -506,7 +519,7 @@ bool CppProgram::hasFunc(const string& name)
 	return funcs.find(name)!=funcs.end();
 }
 
-void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type returnType)
+void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> args, Type returnType)
 {
 	if (hasFunc(name))
 	{
@@ -516,6 +529,8 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 	globalNames->addPn(name, name);
 	
 	string cppName=globalNames->getCpp(name);
+	
+	auto funcNames=globalNames->makeChild();
 	
 	string prototype;
 	
@@ -528,18 +543,19 @@ void CppProgram::pushFunc(const string& name, vector<NamedType> args, Type retur
 		if (i)
 			prototype+=", ";
 		
-		prototype+=getTypeCode(args[i].type);
+		prototype+=args[i].first;
 		
 		prototype+=" ";
 		
-		globalNames->addPn(args[i].name, args[i].name);
+		funcNames->addPn(args[i].second, args[i].second);
 		
-		prototype+=globalNames->getCpp(args[i].name);
+		prototype+=funcNames->getCpp(args[i].second);
+		error.log("found " + args[i].second, JSYK);
 	}
 	
 	prototype+=")";
 	
-	activeFunc=CppFunc(new CppFuncBase(prototype, globalNames));
+	activeFunc=CppFunc(new CppFuncBase(prototype, funcNames));
 	funcs[name]=activeFunc;
 	funcStack.push_back(name);
 }

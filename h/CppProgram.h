@@ -36,7 +36,7 @@ private:
 class CppFuncBase
 {
 public:
-	CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> globalNames);
+	CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> myNames);
 	
 	void code(const string& in);
 	void name(const string& in); // converts a Pinecone name to a posibly different C++ name
@@ -90,10 +90,11 @@ public:
 	
 	void setup();
 	string getTypeCode(Type in);
-	void declareVar(const string& nameIn, Type typeIn);
-	void declareGlobal(const string& nameIn, Type typeIn, string initialValue);
+	void declareVar(const string& nameIn, Type typeIn, string initialValue="");
+	void declareGlobal(const string& nameIn, Type typeIn, string initialValue="");
 	bool hasFunc(const string& name);
-	void pushFunc(const string&, vector<NamedType> args, Type returnType);
+	void pushFunc(const string&, vector<std::pair<string, string>> args, Type returnType);
+	//void pushFunc(const string&, vector<NamedType> args, Type returnType);
 	void popFunc();
 	
 	string getCppCode();
@@ -109,3 +110,5 @@ private:
 	std::map<string, CppFunc> funcs;
 	shared_ptr<CppNameContainer> globalNames;
 };
+
+
