@@ -11,6 +11,7 @@
 #define getCppType(typeIn) CONCAT(CPP, typeIn)
 
 #define CPP_Dub double
+#define CPP_Byte unsigned char
 #define CPP_Int int
 #define CPP_Bool bool
 #define CPP_Void char
@@ -18,6 +19,7 @@
 #define PNCN_String String
 #define PNCN_Dub Dub
 #define PNCN_Int Int
+#define PNCN_Byte Byte
 #define PNCN_Bool Bool
 #define PNCN_Void Void
 //#define PNCN_Tuple(t1, t2) Type(new TypeData(vector<Type>({PNCN##_##t1, PNCN##_##t2}), ""))
@@ -42,6 +44,7 @@
 #define INSTANTIATE_String DO_INSTANTIATE
 #define INSTANTIATE_Dub DO_INSTANTIATE
 #define INSTANTIATE_Int DO_INSTANTIATE
+#define INSTANTIATE_Byte DO_INSTANTIATE
 #define INSTANTIATE_Bool DO_INSTANTIATE
 #define INSTANTIATE_Void DONT_INSTANTIATE
 #define INSTANTIATE_Tuple__(typeIn, varOutName, valIn) INSTANTIATE_CPP_TUPLE(typeIn, varOutName, valIn)
@@ -50,6 +53,7 @@
 
 #define RETURN_Dub DO_RETURN_VAL
 #define RETURN_Int DO_RETURN_VAL
+#define RETURN_Byte DO_RETURN_VAL
 #define RETURN_Bool DO_RETURN_VAL
 #define RETURN_Void DONT_RETURN_VAL
 
@@ -207,6 +211,7 @@ void populateBasicTypes()
 	
 	table->addType(Void, "Void");
 	table->addType(Bool, "Bool");
+	table->addType(Byte, "Byte");
 	table->addType(Int, "Int");
 	table->addType(Dub, "Dub");
 	table->addType(String, "String");
@@ -472,11 +477,30 @@ void populateConverters()
 		"($: != 0.0)"
 	);
 	
+	//to Byte
+	func("Byte", Void, Bool, Byte,
+		retrn (right?1:0)
+	,
+		"($: ? 1 : 0)"
+	);
+	
+	func("Byte", Void, Int, Byte,
+		retrn (unsigned char)right
+	,
+		"((unsigned char)$:)"
+	);
+	
 	//to Int
 	func("Int", Void, Bool, Int,
 		retrn (right?1:0)
 	,
 		"($: ? 1 : 0)"
+	);
+	
+	func("Int", Void, Byte, Int,
+		retrn (int)right
+	,
+		"((int)$:)"
 	);
 	
 	func("Int", Void, Dub, Int,
@@ -513,6 +537,12 @@ void populateStdFuncs()
 		cout << (right?"tru":"fls") << endl;
 	,
 		"printf($:?\"tru\\n\":\"fls\\n\")"
+	);
+	
+	func("print", Void, Byte, Void,
+		cout << right << endl;
+	,
+		"printf(\"%c\", $:)"
 	);
 	
 	func("print", Void, Int, Void,
