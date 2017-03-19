@@ -91,11 +91,14 @@ public:
 	void setup();
 	string getTypeCode(Type in);
 	void declareVar(const string& nameIn, Type typeIn);
+	void declareGlobal(const string& nameIn, Type typeIn, string initialValue);
 	bool hasFunc(const string& name);
 	void pushFunc(const string&, vector<NamedType> args, Type returnType);
 	void popFunc();
 	
 	string getCppCode();
+	
+	shared_ptr<CppNameContainer> getGlobalNames() {return globalNames;};
 	
 private:
 	

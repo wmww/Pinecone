@@ -123,7 +123,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		getReturnType()->addInstToProg(data, prog);
+		prog->code(getReturnType()->getCppLiteral(data, prog));
 	}
 	
 private:

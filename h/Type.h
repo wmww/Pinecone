@@ -91,7 +91,7 @@ public:
 	static string getString(PrimitiveType in);
 	virtual string getString()=0;
 	virtual string getCompactString()=0; // returns a string that is unique, only shared with other types that match this one
-	virtual void addInstToProg(void * data, CppProgram * prog)=0;
+	virtual string getCppLiteral(void * data, CppProgram * prog)=0;
 	
 	virtual bool isCreatable() {return true;};
 	virtual bool isVoid() {return false;};

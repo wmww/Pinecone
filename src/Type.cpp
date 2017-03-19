@@ -21,9 +21,9 @@ public:
 		return "v";
 	}
 	
-	void addInstToProg(void * data, CppProgram * prog)
+	string getCppLiteral(void * data, CppProgram * prog)
 	{
-		prog->code("void");
+		return "void";
 	}
 	
 	bool isCreatable()
@@ -67,9 +67,9 @@ public:
 		return "u";
 	}
 	
-	void addInstToProg(void * data, CppProgram * prog)
+	string getCppLiteral(void * data, CppProgram * prog)
 	{
-		prog->comment("can not instantiate unknown type");
+		return "/* can not instantiate unknown type */";
 	}
 	
 	bool isCreatable()
@@ -128,7 +128,7 @@ public:
 		return TypeBase::getString(primType);
 	}
 	
-	void addInstToProg(void * data, CppProgram * prog)
+	string getCppLiteral(void * data, CppProgram * prog)
 	{
 		string val;
 		
@@ -149,7 +149,7 @@ public:
 				throw PineconeError("tried to convert " + getString() + " to C++ code", INTERNAL_ERROR);
 		}
 		
-		prog->code(val);
+		return val;
 	}
 	
 	size_t getSize()
@@ -233,21 +233,24 @@ public:
 		return out;
 	}
 	
-	void addInstToProg(void * data, CppProgram * prog)
+	string getCppLiteral(void * data, CppProgram * prog)
 	{
-		prog->code(prog->getTypeCode(shared_from_this()));
+		string out;
+		out+=prog->getTypeCode(shared_from_this());
 		
-		prog->pushExpr();
+		out+="(";
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
 			if (i)
-				prog->code(", ");
+				out+=", ";
 			
-			(*subTypes)[i].type->addInstToProg((char*)data+getSubType((*subTypes)[i].name).offset, prog);
+			out+=(*subTypes)[i].type->getCppLiteral((char*)data+getSubType((*subTypes)[i].name).offset, prog);
 		}
 		
-		prog->popExpr();
+		out+=")";
+		
+		return out;
 	}
 	
 	size_t getSize()
@@ -335,9 +338,12 @@ public:
 		return "Pp_"+type->getCompactString()+"_pP";
 	}
 	
-	void addInstToProg(void * data, CppProgram * prog)
+	string getCppLiteral(void * data, CppProgram * prog)
 	{
-		prog->comment("pointer type to C++ not implemented");
+		string name=to_string((long long)data);
+		prog->declareGlobal(name, type, type->getCppLiteral(*(void**)data, prog));
+		string out="&"+prog->getGlobalNames()->getCpp(name);
+		return out;
 	}
 	
 	size_t getSize()
@@ -384,9 +390,9 @@ public:
 		return "Mm_"+type->getCompactString()+"_mM";
 	}
 	
-	void addInstToProg(void * data, CppProgram * prog)
+	string getCppLiteral(void * data, CppProgram * prog)
 	{
-		prog->comment("can't add meta type to C++ code");
+		return "/* can't add meta type to C++ code */";
 	}
 	
 	size_t getSize()

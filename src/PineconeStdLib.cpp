@@ -207,7 +207,7 @@ void basicSetup()
 
 void populateBasicTypes()
 {
-	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Dub}});
+	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Byte->getPtr()}});
 	
 	table->addType(Void, "Void");
 	table->addType(Bool, "Bool");
