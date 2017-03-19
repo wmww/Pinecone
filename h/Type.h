@@ -20,6 +20,7 @@ typedef shared_ptr<TypeBase> Type;
 const extern Type Unknown;
 const extern Type Void;
 const extern Type Bool;
+const extern Type Byte;
 const extern Type Int;
 const extern Type Dub;
 extern Type String;
@@ -44,7 +45,7 @@ class TypeBase: public std::enable_shared_from_this<TypeBase>
 public:
 	
 	///steps to adding a new type (these may be old):
-	///	1. Add to the enum (remember that order matters as operators will return the highest type involved
+	///	1. Add to the enum
 	///	2. add it to toString in Type.cpp
 	///	3. add it to isCreatable in Type.cpp
 	///	4. if it has a literal, add a class for that in LiteralElement.h
@@ -55,25 +56,27 @@ public:
 	
 	enum PrimitiveType
 	{
-		UNKNOWN,
-		VOID,
+		UNKNOWN ,
+		VOID ,
+		BYTE,
 		DUB,
 		INT,
 		PTR,
 		BOOL,
 		TUPLE,
-		METATYPE
+		METATYPE,
 	};
 	
 	/* type compact forms
 	Void: v
 	Unknown: u
 	Bool: b
+	Byte: y
 	Int: i
 	Dub: d
 	Ptr: Pp_..._pP
 	Meta: Mm_..._mM
-	Tuple: Tt_name_type..._tT
+	Tuple: Tt_[size of name]_name_type..._tT
 	*/
 	
 	static Type makeNewVoid();
