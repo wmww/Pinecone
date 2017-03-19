@@ -166,7 +166,7 @@ void CppNameContainer::reserveCpp(const string& cpp)
 	cppSet.insert(cpp);
 }
 
-bool CppNameContainer::hasPn(const string& pn)
+bool CppNameContainer::hasPnMe(const string& pn)
 {
 	return pnToCppMap.find(pn)!=pnToCppMap.end();
 }
@@ -414,7 +414,7 @@ string CppProgram::getTypeCode(Type in)
 	{
 		string compact="{"+in->getCompactString()+"}";
 		
-		if (!globalNames->hasPn(compact))
+		if (!globalNames->hasPnMe(compact))
 		{
 			globalNames->addPn(compact, in->nameHint);
 			auto names=globalNames->makeChild();
@@ -461,6 +461,16 @@ string CppProgram::getTypeCode(Type in)
 
 void CppProgram::declareVar(const string& nameIn, Type typeIn)
 {
+	CppNameContainer* names=&*activeFunc->namespaceStack.back();
+	
+	while (names)
+	{
+		if (names->hasPnMe(nameIn))
+			return;
+		
+		names=names->getParent();
+	}
+	
 	activeFunc->namespaceStack.back()->addPn(nameIn, nameIn);
 	
 	code(getTypeCode(typeIn)); code(" "); name(nameIn); endln();

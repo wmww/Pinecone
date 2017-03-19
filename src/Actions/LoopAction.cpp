@@ -77,9 +77,13 @@ public:
 		prog->popExpr();
 		
 		prog->pushBlock();
-			condition->addToProg(prog);
+			loopAction->addToProg(prog);
+			prog->endln();
 			if (endAction!=voidAction)
+			{
 				endAction->addToProg(prog);
+				prog->endln();
+			}
 		prog->popBlock();
 	}
 	

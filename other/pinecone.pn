@@ -1,11 +1,6 @@
 #==> "../examples/morse.pn"
 
-print: 8+3 > 5
-print: 8.9
-
-for: 3
-public: tru
-(
-	xor: 8.2
-	a: 8
+i: 0
+i<10 | i: i+1 @ (
+	print: i
 )

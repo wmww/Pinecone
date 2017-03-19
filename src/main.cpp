@@ -104,7 +104,7 @@ int main(int argc, char ** argv)
 			
 			cmd = "./"+outBinFile;
 			
-			cout << "running '"+cmd+"'" << endl;
+			cout << "running '"+cmd+"'" << endl << endl;
 			
 			cmdOut = runCmd(cmd);
 			
