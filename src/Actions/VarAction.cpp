@@ -129,38 +129,9 @@ public:
 		}
 		else
 		{
-			if (!prog->hasFunc("-pnStr"))
-			{
-				prog->pushFunc("-pnStr", {{"const char *", "-in"}}, String);
-					prog->declareVar("-i", Int, "0");
-					prog->code("while ");
-					prog->pushExpr();
-						prog->name("-in");
-						prog->code("[");
-						prog->pushExpr();
-							prog->name("-i");
-						prog->popExpr();
-						prog->code("]");
-					prog->popExpr();
-					prog->pushBlock();
-						prog->name("-i");
-						prog->code("++");
-						prog->endln();
-					prog->popBlock();
-					prog->code("return ");
-					prog->code(prog->getTypeCode(String));
-					prog->pushExpr();
-						prog->name("-i");
-						prog->code(", ");
-						prog->code("(unsigned char *)");
-						prog->name("-in");
-					prog->popExpr();
-					prog->endln();
-				prog->popFunc();
-			}
-			
 			//prog->code(prog->getTypeCode(getReturnType()));
-			prog->name("-pnStr");
+			addToProgPnStr(prog);
+			prog->name("$pnStr");
 			prog->pushExpr();
 				auto sizeInfo=getReturnType()->getSubType("_size");
 				auto dataInfo=getReturnType()->getSubType("_data");

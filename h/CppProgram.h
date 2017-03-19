@@ -8,6 +8,17 @@
 
 // Pinecone names that are hardcoded should start with '-' so that collisions can't happen with input code
 
+/* naming conventions for hardcoded Pineocne name prefixes
+these go in frount of any names that are hardcoded for the transpiler, since they are not valid identifier
+cars they can not collide with names from pn source and they will be removed before they get to C++ source
+
+global funcs: $
+global vars: *
+local vars: -
+types: surounded by {}
+
+*/
+
 class CppNameContainer
 {
 public:
@@ -111,4 +122,6 @@ private:
 	shared_ptr<CppNameContainer> globalNames;
 };
 
+void addToProgPnStr(CppProgram * prog);
+void addToProgCStr(CppProgram * prog);
 

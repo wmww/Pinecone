@@ -64,7 +64,6 @@ char getRandChar()
 	return '_';
 }
 
-
 /// Name Container
 
 CppNameContainer::CppNameContainer()
@@ -550,7 +549,6 @@ void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> 
 		funcNames->addPn(args[i].second, args[i].second);
 		
 		prototype+=funcNames->getCpp(args[i].second);
-		error.log("found " + args[i].second, JSYK);
 	}
 	
 	prototype+=")";
@@ -601,4 +599,85 @@ string CppProgram::getCppCode()
 	return out;
 }
 
+
+/// add common funcs
+
+void addToProgPnStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$pnStr"))
+	{
+		prog->pushFunc("$pnStr", {{"const char *", "-in"}}, String);
+			prog->declareVar("-i", Int, "0");
+			prog->code("while ");
+			prog->pushExpr();
+				prog->name("-in");
+				prog->code("[");
+				prog->pushExpr();
+					prog->name("-i");
+				prog->popExpr();
+				prog->code("]");
+			prog->popExpr();
+			prog->pushBlock();
+				prog->name("-i");
+				prog->code("++");
+				prog->endln();
+			prog->popBlock();
+			prog->code("return ");
+			prog->code(prog->getTypeCode(String));
+			prog->pushExpr();
+				prog->name("-i");
+				prog->code(", ");
+				prog->code("(unsigned char *)");
+				prog->name("-in");
+			prog->popExpr();
+			prog->endln();
+		prog->popFunc();
+	}
+}
+
+void addToProgCStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$cStr"))
+	{
+		prog->pushFunc("$cStr", {{prog->getTypeCode(String), "-in"}}, Byte->getPtr());
+			
+			//prog->code("int strSize = ");
+			//getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
+			//prog->endln();
+			
+			prog->declareVar("-tmp", Byte->getPtr());
+			
+			prog->name("-tmp");
+			prog->code(" = (unsigned char*)malloc");
+			prog->pushExpr();
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
+				prog->code(" + 1");
+			prog->popExpr();
+			prog->endln();
+			
+			prog->code("memcpy");
+			prog->pushExpr();
+				prog->name("-tmp");
+				prog->code(", ");
+				prog->pushExpr();
+					getElemFromTupleAction(String, "_data")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
+				prog->popExpr();
+				prog->code(", ");
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
+			prog->popExpr();
+			prog->endln();
+			prog->name("-tmp");
+			prog->code("[");
+			prog->pushExpr();
+				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
+			prog->popExpr();
+			prog->code("] = 0");
+			prog->endln();
+			
+			prog->code("return ");
+			prog->name("-tmp");
+			prog->endln();
+		prog->popFunc();
+	}
+}
 
