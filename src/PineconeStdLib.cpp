@@ -540,14 +540,14 @@ void populateStdFuncs()
 				prog->pushFunc("-pnStringToCString", {{"in", String}}, Dub);
 					
 					prog->code("int strSize = ");
-					getElemFromTupleAction(String, "_size")->addToProg(voidAction, right, prog);
+					getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
 					prog->endln();
 					
-					prog->line("char* tmp = strSize + 2");
+					prog->line("char* tmp = (char*)malloc(strSize + 2)");
 					
 					prog->code("memcpy(tmp, &");
 					prog->pushExpr();
-					getElemFromTupleAction(String, "_data")->addToProg(voidAction, right, prog);
+					getElemFromTupleAction(String, "_data")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
 					prog->popExpr();
 					prog->code(", strSize)");
 					prog->endln();
