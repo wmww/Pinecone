@@ -1,14 +1,5 @@
 
-print: 867 .String
-
-print: String
+print: "hello".at: 3
 
 print
-
-print: 8.0 .String
-
-print: 2.649 .String
-
-print: tru .String
-
 

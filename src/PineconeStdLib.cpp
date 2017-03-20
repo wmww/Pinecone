@@ -617,7 +617,15 @@ void populateStringFuncs()
 		{
 			return cppStr2PncnStr(to_string(*((double*)leftIn)));
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgDoubleToStr(prog);
+			
+			prog->name("$doubleToStr");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 	
 	addAction("String", Bool, Void, String,
@@ -632,7 +640,18 @@ void populateStringFuncs()
 				return cppStr2PncnStr("fls");
 			}
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgPnStr(prog);
+			
+			prog->name("$pnStr");
+			prog->pushExpr();
+				prog->pushExpr();
+					left->addToProg(prog);
+				prog->popExpr();
+				prog->code(" ? \"tru\" : \"fls\"");
+			prog->popExpr();
+		}
 	);
 	
 	addAction("len", String, Void, Int,
@@ -642,7 +661,10 @@ void populateStringFuncs()
 			*out=getValFromTuple<int>(leftIn, String, "_size");
 			return out;
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			getElemFromTupleAction(String, "_size")->addToProg(voidAction, left, prog);
+		}
 	);
 	
 	addAction("ascii", Int, Void, String,
@@ -657,7 +679,15 @@ void populateStringFuncs()
 			out+=(char)val;
 			return cppStr2PncnStr(out);
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgAsciiToStr(prog);
+			
+			prog->name("$asciiToStr");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 	
 	addAction("at", String, Int, Int,
@@ -673,7 +703,16 @@ void populateStringFuncs()
 			*out=str[index];
 			return out;
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			prog->code("(int)");
+			getElemFromTupleAction(String, "_data")->addToProg(voidAction, left, prog);
+			prog->code("[");
+			prog->pushExpr();
+				right->addToProg(prog);
+			prog->popExpr();
+			prog->code("]");
+		}
 	);
 	
 	addAction("sub", String, makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}}), String,
