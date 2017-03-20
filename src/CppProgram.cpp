@@ -632,9 +632,22 @@ string CppProgram::getCppCode()
 	
 	for (auto i: funcs)
 	{
-		out+=i.second->getPrototype()+"\n{\n";
-		out+=indentString(i.second->getSource(), indent);
-		out+="}\n\n";
+		out+=i.second->getPrototype();
+		
+		string funcSrc=i.second->getSource();
+		
+		if (funcSrc.substr(0, 1)=="{")
+		{
+			out+="\n"+funcSrc;
+		}
+		else
+		{
+			out+="\n{\n";
+			out+=indentString(funcSrc, indent);
+			if (funcSrc.substr(funcSrc.size()-2, 2)!=";\n")
+				out+=";\n";
+			out+="}\n\n";
+		}
 	}
 	
 	return out;

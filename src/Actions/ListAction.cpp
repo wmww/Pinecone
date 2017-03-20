@@ -85,8 +85,6 @@ public:
 		}
 		else
 		{
-			prog->comment("list");
-			
 			prog->pushBlock();
 			
 			for (auto i: actions)
