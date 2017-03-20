@@ -812,7 +812,7 @@ void addToProgDoubleToString(CppProgram * prog)
 }
 */
 
-void addToProgDoubleToString(CppProgram * prog)
+void addToProgDoubleToStr(CppProgram * prog)
 {
 	if (!prog->hasFunc("$doubleToStr"))
 	{
@@ -834,6 +834,20 @@ void addToProgDoubleToString(CppProgram * prog)
 			"	in*=10;\n"
 			"}\n"
 			"return "+concat+"("+concat+"("+intToStr+"(a), "+pnStr+"(\".\")), "+intToStr+"((int)in));\n"
+		);
+	}
+}
+
+void addToProgAsciiToStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$asciiToStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$asciiToStr", {{"int", "in"}}, strType,
+			"unsigned char * data = (unsigned char *)malloc(1);\n"
+			"*data = in;\n"
+			"return "+strType+"(1, data);\n"
 		);
 	}
 }

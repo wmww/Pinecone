@@ -128,6 +128,8 @@ private:
 void addToProgPnStr(CppProgram * prog);
 void addToProgCStr(CppProgram * prog);
 void addToProgIntToStr(CppProgram * prog);
+void addToProgDoubleToStr(CppProgram * prog);
 void addToProgConcatStr(CppProgram * prog);
+void addToProgAsciiToStr(CppProgram * prog);
 string doubleToString(double in);
 
