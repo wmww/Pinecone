@@ -530,7 +530,7 @@ void populateStdFuncs()
 	func("print", Void, Void, Void,
 		cout << endl;
 	,
-		"printf('\\n')"
+		"printf(\"\\n\")"
 	);
 	
 	func("print", Void, Bool, Void,
@@ -586,7 +586,14 @@ void populateStringFuncs()
 		{
 			return cppStr2PncnStr("");
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgPnStr(prog);
+			prog->name("$pnStr");
+			prog->pushExpr();
+				prog->code("\"\"");
+			prog->popExpr();
+		}
 	);
 	
 	addAction("String", Int, Void, String,
@@ -594,7 +601,15 @@ void populateStringFuncs()
 		{
 			return cppStr2PncnStr(to_string(*((int*)leftIn)));
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgIntToStr(prog);
+			
+			prog->name("$intToStr");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 	
 	addAction("String", Dub, Void, String,
