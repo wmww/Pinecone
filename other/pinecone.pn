@@ -1,5 +1,3 @@
 
-print: "hello".at: 3
-
+print: "Hello" + " " + "World! " + 785.97.String
 print
-

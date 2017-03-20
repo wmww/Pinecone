@@ -722,6 +722,22 @@ void addToProgCStr(CppProgram * prog)
 	}
 }
 
+void addToProgSubStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$subStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$subStr", {{strType, "in"}, {"int", "a"}, {"int", "b"}}, strType,
+			"int size = b - a;\n"
+			"unsigned char * data = (unsigned char *)malloc(size);\n"
+			"memcpy(data, in._data + a, size);\n"
+			"return "+strType+"(size, data);\n"
+		);
+	}
+}
+
+
 void addToProgIntToStr(CppProgram * prog)
 {
 	if (!prog->hasFunc("$intToStr"))

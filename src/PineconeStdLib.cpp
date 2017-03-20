@@ -728,7 +728,19 @@ void populateStringFuncs()
 			}
 			return cppStr2PncnStr(str.substr(start, end-start));
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgSubStr(prog);
+			
+			prog->name("$subStr");
+			prog->pushExpr();
+				left->addToProg(prog);
+				prog->code(", ");
+				getElemFromTupleAction(right->getReturnType(), "a")->addToProg(voidAction, right, prog);
+				prog->code(", ");
+				getElemFromTupleAction(right->getReturnType(), "b")->addToProg(voidAction, right, prog);
+			prog->popExpr();
+		}
 	);
 	
 	addAction("input", String, Void, String,
@@ -747,7 +759,17 @@ void populateStringFuncs()
 		{
 			return cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgConcatStr(prog);
+			
+			prog->name("$concatStr");
+			prog->pushExpr();
+				left->addToProg(prog);
+				prog->code(", ");
+				right->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 	
 	addAction(ops->equal, String, String, Bool,
