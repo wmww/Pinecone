@@ -336,6 +336,11 @@ void CppFuncBase::popBlock()
 	freshLine=true;
 }
 
+string CppFuncBase::pnToCpp(const string& in)
+{
+	return namespaceStack.back()->getCpp(in);
+}
+
 
 /// program
 
@@ -518,6 +523,42 @@ bool CppProgram::hasFunc(const string& name)
 	return funcs.find(name)!=funcs.end();
 }
 
+void CppProgram::addFunc(const string& name, vector<std::pair<string, string>> args, string returnType, string contents)
+{
+	if (hasFunc(name))
+	{
+		throw PineconeError("called CppProgram::addFunc with function name '"+name+"', which already exists", INTERNAL_ERROR);
+	}
+	
+	globalNames->addPn(name, name);
+	
+	string cppName=globalNames->getCpp(name);
+	
+	string prototype;
+	
+	prototype+=returnType;
+	
+	prototype+=" "+cppName+"(";
+	
+	for (int i=0; i<int(args.size()); i++)
+	{
+		if (i)
+			prototype+=", ";
+		
+		prototype+=args[i].first;
+		
+		prototype+=" ";
+		
+		prototype+=args[i].second;
+	}
+	
+	prototype+=")";
+	
+	auto func=CppFunc(new CppFuncBase(prototype, globalNames->makeChild()));
+	funcs[name]=func;
+	func->code(contents);
+}
+
 void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> args, Type returnType)
 {
 	if (hasFunc(name))
@@ -679,5 +720,134 @@ void addToProgCStr(CppProgram * prog)
 			prog->endln();
 		prog->popFunc();
 	}
+}
+
+void addToProgIntToStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$intToStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$intToStr", {{"int", "in"}}, prog->getTypeCode(String),
+			"bool neg = in < 0;\n"
+			"if (neg) in *= -1;\n"
+			"int val = in;\n"
+			"int size=0;\n"
+			"while (val)\n"
+			"{\n"
+			"	size++;\n"
+			"	val /= 10;\n"
+			"}\n"
+			"if (size == 0)\n\tsize = 1;\n"
+			"if (neg)\n\tsize++;\n"
+			"unsigned char * data = (unsigned char *)malloc(size);\n"
+			"val = in;\n"
+			"for (int i=0; i<(neg ? size-1 : size); i++)\n"
+			"{\n"
+			"	data[size-i-1] = (val % 10) + '0';\n"
+			"	val /= 10;\n"
+			"}\n"
+			"if (neg)\n\tdata[0] = '-';\n"
+			"return "+strType+"(size, data);\n"
+		);
+	}
+}
+
+void addToProgConcatStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$concatStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$concatStr", {{strType, "a"}, {strType, "b"}}, strType,
+			"int newSize = a._size + b._size;\n"
+			"unsigned char * newData = (unsigned char *)malloc(newSize);\n"
+			"memcpy(newData, a._data, a._size);\n"
+			"memcpy(newData + a._size, b._data, b._size);\n"
+			"return "+strType+"(newSize, newData);\n"
+		);
+	}
+}
+
+/*
+void addToProgDoubleToString(CppProgram * prog)
+{
+	if (!prog->hasFunc("$doubleToStr"))
+	{
+		prog->pushFunc("$doubleToStr", {{"double", "-in"}}, String)
+			prog->declareVar("-a", Int);
+			
+			prog->name("-a");
+			prog->code(" = ");
+			prog->name("-in");
+			prog->endln();
+			
+			@c("if ");
+			@p->pushExpr();
+				@n("-in");
+				@c(" < 0");
+			@p->popExpr();
+			@p->pushBlock();
+				@n("-in");
+				@c(" *= -1");
+				@el();
+			@->popBlock();
+			
+			@c("while ");
+			@p->pushExpr();
+				@n("-in");
+				@c(" - (long long)");
+				@n("-in");
+				@c(" > 0.000000001");
+			@p->popExpr();
+			@p->pushBlock();
+				@n("-in");
+				@c(" *= 10");
+				@el();
+			@->popBlock();
+			
+			@c("return ");
+		prog->popFunc();
+	}
+}
+*/
+
+void addToProgDoubleToString(CppProgram * prog)
+{
+	if (!prog->hasFunc("$doubleToStr"))
+	{
+		addToProgIntToStr(prog);
+		addToProgConcatStr(prog);
+		addToProgPnStr(prog);
+		
+		string intToStr=prog->pnToCpp("$intToStr");
+		string concat=prog->pnToCpp("$concatStr");
+		string pnStr=prog->pnToCpp("$pnStr");
+		
+		prog->addFunc("$doubleToStr", {{"double", "in"}}, prog->getTypeCode(String),
+			"long long a=in;\n"
+			"in-=a;\n"
+			"if (in<0)\n"
+			"	in*=-1;\n"
+			"while (in-(long long)in>0.000000001)\n"
+			"{\n"
+			"	in*=10;\n"
+			"}\n"
+			"return "+concat+"("+concat+"("+intToStr+"(a), "+pnStr+"(\".\")), "+intToStr+"((int)in));\n"
+		);
+	}
+}
+
+string doubleToString(double in)
+{
+	long long a=in;
+	in-=a;
+	if (in<0)
+		in*=-1;
+	while (in-(long long)in>0.000000001)
+	{
+		in*=10;
+	}
+	return to_string(a)+"."+to_string((long long)in);
 }
 

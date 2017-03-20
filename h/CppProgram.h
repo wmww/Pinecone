@@ -58,6 +58,7 @@ public:
 	void popExpr();
 	void pushBlock();
 	void popBlock();
+	string pnToCpp(const string& in);
 	int getExprLevel() {return exprLevel;}
 	bool getIfFreshLine() {return freshLine;}
 	int getBlockLevel() {return blockLevel;}
@@ -96,6 +97,7 @@ public:
 	void popExpr()					{activeFunc->popExpr();}
 	void pushBlock()				{activeFunc->pushBlock();}
 	void popBlock()					{activeFunc->popBlock();}
+	string pnToCpp(const string& in){return activeFunc->pnToCpp(in);}
 	int getExprLevel()				{return activeFunc->getExprLevel();}
 	
 	
@@ -104,6 +106,7 @@ public:
 	void declareVar(const string& nameIn, Type typeIn, string initialValue="");
 	void declareGlobal(const string& nameIn, Type typeIn, string initialValue="");
 	bool hasFunc(const string& name);
+	void addFunc(const string&, vector<std::pair<string, string>> args, string returnType, string contents);
 	void pushFunc(const string&, vector<std::pair<string, string>> args, Type returnType);
 	//void pushFunc(const string&, vector<NamedType> args, Type returnType);
 	void popFunc();
@@ -124,4 +127,7 @@ private:
 
 void addToProgPnStr(CppProgram * prog);
 void addToProgCStr(CppProgram * prog);
+void addToProgIntToStr(CppProgram * prog);
+void addToProgConcatStr(CppProgram * prog);
+string doubleToString(double in);
 

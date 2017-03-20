@@ -137,13 +137,13 @@ public:
 			case BOOL: val=(*(bool*)data)?"true":"false"; break;
 			case BYTE: val=to_string(*(unsigned char*)data); break;
 			case INT: val=to_string(*(int*)data); break;
-			case DUB:
-			{
+			case DUB: val=doubleToString(*(double*)data); break;
+			/*{
 				std::ostringstream ss;
 				ss << *(double*)data;
 				val=ss.str();
 			}
-			break;
+			break;*/
 			
 			default:
 				throw PineconeError("tried to convert " + getString() + " to C++ code", INTERNAL_ERROR);

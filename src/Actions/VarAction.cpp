@@ -146,6 +146,7 @@ public:
 				for (int i=0; i<len; i++)
 				{
 					char c=*((*(char**)((char*)data+dataInfo.offset))+i);
+					
 					if (c=='"')
 					{
 						prog->code("\\\"");

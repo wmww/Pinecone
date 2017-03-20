@@ -1,4 +1,14 @@
 
-print: "hello world"
+print: 867 .String
 
-print: "bye"
+print: String
+
+print
+
+print: 8.0 .String
+
+print: 2.649 .String
+
+print: tru .String
+
+
