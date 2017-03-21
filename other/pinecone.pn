@@ -1,3 +1,21 @@
 
-print: "Hello" + " " + "World! " + 785.97.String
-print
+str: ""
+
+str != "quit" @
+(
+	str: "enter your input > ".input
+)
+
+#a: "enter your input > ".input
+
+#print: a
+
+//
+betterNumToStr :: {Int} -> {String}: (
+	out: in.String
+	out: out+" is the number"
+	out
+)
+
+print: betterNumToStr: 9
+\\

@@ -99,17 +99,17 @@ int main(int argc, char ** argv)
 			
 			cout << "running '"+cmd+"'" << endl;
 			
-			cmdOut = runCmd(cmd);
+			cmdOut = runCmd(cmd, true);
 			
-			cout << cmdOut << endl;
+			cout << endl;
 			
 			cmd = "./"+outBinFile;
 			
 			cout << "running '"+cmd+"'" << endl << endl;
 			
-			cmdOut = runCmd(cmd);
+			cmdOut = runCmd(cmd, true);
 			
-			cout << cmdOut << endl;
+			cout << endl;
 		}
 	}
 	else

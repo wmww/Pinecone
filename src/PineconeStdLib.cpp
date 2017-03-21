@@ -197,6 +197,208 @@ inline void* cppStr2PncnStr(string cpp)
 	return obj;
 }
 
+
+/// add C++ funcs to program
+
+void addToProgPnStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$pnStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$pnStr", {{"const char *", "in"}}, prog->getTypeCode(String),
+			"int size = 0;\n"
+			"while (in[size]) size++;\n"
+			"unsigned char * data = (unsigned char *)malloc(size);\n"
+			"memcpy(data, in, size);\n"
+			"return "+strType+"(size, data);\n"
+		);
+	}
+}
+
+void addToProgCStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$cStr"))
+	{
+		if (prog->hasFunc("$cStr"))
+			return;
+		
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$cStr", {{strType, "in"}}, "char *",
+			"char * out = (char *)malloc(in._size+1);\n"
+			"memcpy(out, in._data, in._size);\n"
+			"out[in._size] = 0;\n"
+			"return out;\n"
+		);
+	}
+}
+
+void addToProgSubStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$subStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$subStr", {{strType, "in"}, {"int", "a"}, {"int", "b"}}, strType,
+			"int size = b - a;\n"
+			"unsigned char * data = (unsigned char *)malloc(size);\n"
+			"memcpy(data, in._data + a, size);\n"
+			"return "+strType+"(size, data);\n"
+		);
+	}
+}
+
+void addToProgIntToStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$intToStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$intToStr", {{"int", "in"}}, prog->getTypeCode(String),
+			"bool neg = in < 0;\n"
+			"if (neg) in *= -1;\n"
+			"int val = in;\n"
+			"int size=0;\n"
+			"while (val)\n"
+			"{\n"
+			"	size++;\n"
+			"	val /= 10;\n"
+			"}\n"
+			"if (size == 0)\n\tsize = 1;\n"
+			"if (neg)\n\tsize++;\n"
+			"unsigned char * data = (unsigned char *)malloc(size);\n"
+			"val = in;\n"
+			"for (int i=0; i<(neg ? size-1 : size); i++)\n"
+			"{\n"
+			"	data[size-i-1] = (val % 10) + '0';\n"
+			"	val /= 10;\n"
+			"}\n"
+			"if (neg)\n\tdata[0] = '-';\n"
+			"return "+strType+"(size, data);\n"
+		);
+	}
+}
+
+void addToProgConcatStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$concatStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$concatStr", {{strType, "a"}, {strType, "b"}}, strType,
+			"int newSize = a._size + b._size;\n"
+			"unsigned char * newData = (unsigned char *)malloc(newSize);\n"
+			"memcpy(newData, a._data, a._size);\n"
+			"memcpy(newData + a._size, b._data, b._size);\n"
+			"return "+strType+"(newSize, newData);\n"
+		);
+	}
+}
+
+void addToProgDoubleToStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$doubleToStr"))
+	{
+		addToProgIntToStr(prog);
+		addToProgConcatStr(prog);
+		addToProgPnStr(prog);
+		
+		string intToStr=prog->pnToCpp("$intToStr");
+		string concat=prog->pnToCpp("$concatStr");
+		string pnStr=prog->pnToCpp("$pnStr");
+		
+		prog->addFunc("$doubleToStr", {{"double", "in"}}, prog->getTypeCode(String),
+			"long long a=in;\n"
+			"in-=a;\n"
+			"if (in<0)\n"
+			"	in*=-1;\n"
+			"while (in-(long long)in>0.000000001)\n"
+			"{\n"
+			"	in*=10;\n"
+			"}\n"
+			"return "+concat+"("+concat+"("+intToStr+"(a), "+pnStr+"(\".\")), "+intToStr+"((int)in));\n"
+		);
+	}
+}
+
+void addToProgAsciiToStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$asciiToStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$asciiToStr", {{"int", "in"}}, strType,
+			"unsigned char * data = (unsigned char *)malloc(1);\n"
+			"*data = in;\n"
+			"return "+strType+"(1, data);\n"
+		);
+	}
+}
+
+void addToProgGetInputLine(CppProgram * prog)
+{
+	if (!prog->hasFunc("$getInputLine"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		addToProgCStr(prog);
+		
+		prog->addFunc("$getInputLine", {{strType, "prompt"}}, strType,
+			"printf("+prog->pnToCpp("$cStr")+"(prompt));\n"
+			"fflush(stdout);\n"
+			"size_t bufferSize = 4096;\n"
+			"char buffer[bufferSize];\n"
+			"if (fgets(buffer, bufferSize, stdin))\n"
+			"{\n"
+			"	int size = strlen(buffer) - 1; // remove null\n"
+			"	unsigned char * data = (unsigned char *)malloc(size);\n"
+			"	memcpy(data, buffer, size);\n"
+			"	return "+strType+"(size, data);\n"
+			"}\nelse\n{\n"
+			"	return "+strType+"(0, NULL);\n"
+			"}"
+		);
+	}
+}
+
+void addToProgEqStr(CppProgram * prog)
+{
+	if (!prog->hasFunc("$eqStr"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$eqStr", {{strType, "a"}, {strType, "b"}}, "bool",
+			"if (a._size != b._size)\n"
+			"	return false;\n"
+			"int size = a._size;\n"
+			"for (int i = 0; i < size; i++)\n"
+			"{\n"
+			"	if (a._data[i] != b._data[i])\n"
+			"		return false;\n"
+			"}\n"
+			"return true;\n"
+		);
+	}
+}
+
+
+string doubleToString(double in)
+{
+	long long a=in;
+	in-=a;
+	if (in<0)
+		in*=-1;
+	while (in-(long long)in>0.000000001)
+	{
+		in*=10;
+	}
+	return to_string(a)+"."+to_string((long long)in);
+}
+
+
+/// setup Pinecone std lib
+
 void basicSetup()
 {
 	table=globalNamespace=NamespaceData::makeRootNamespace();
@@ -751,7 +953,15 @@ void populateStringFuncs()
 			std::getline (std::cin, in);
 			return cppStr2PncnStr(in);
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgGetInputLine(prog);
+			
+			prog->name("$getInputLine");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 	
 	addAction(ops->plus, String, String, String,
@@ -779,7 +989,17 @@ void populateStringFuncs()
 			*out=pncnStr2CppStr(leftIn)==pncnStr2CppStr(rightIn);
 			return out;
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgEqStr(prog);
+			
+			prog->name("$eqStr");
+			prog->pushExpr();
+				left->addToProg(prog);
+				prog->code(", ");
+				right->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 }
 
@@ -905,4 +1125,5 @@ void populatePineconeStdLib()
 	populateIntArrayAndFuncs();
 	populateNonStdFuncs();
 }
+
 

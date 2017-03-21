@@ -107,7 +107,7 @@ bool writeFile(const string& filename, const string& contents, bool debug=false)
 //	run a shell command and return the output
 //		cmd: the command to run
 //		returns: the output of the command
-string runCmd(string cmd);
+string runCmd(string cmd, bool printOutput=false);
 
 //	get width of the current terminal
 //		returns: width of the terminal
