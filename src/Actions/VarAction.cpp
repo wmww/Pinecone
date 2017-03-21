@@ -155,13 +155,17 @@ public:
 					{
 						prog->code("\\\\");
 					}
+					else if (c>=32 && c<=126)
+					{
+						prog->code(string()+c);
+					}
 					else if (c==0)
 					{
 						prog->code("\0");
 					}
-					else if (c>=32 && c<=126)
+					else if (c=='\n')
 					{
-						prog->code(string()+c);
+						prog->code("\\n");
 					}
 					else
 					{

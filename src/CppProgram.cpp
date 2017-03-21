@@ -170,6 +170,11 @@ bool CppNameContainer::hasPnMe(const string& pn)
 	return pnToCppMap.find(pn)!=pnToCppMap.end();
 }
 
+bool CppNameContainer::hasPn(const string& pn)
+{
+	return hasPnMe(pn) || (parent && parent->hasPn(pn));
+}
+
 bool CppNameContainer::hasCpp(const string& cpp)
 {
 	return hasCppMe(cpp) || hasCppUp(cpp) || hasCppDown(cpp);
@@ -426,7 +431,7 @@ string CppProgram::getTypeCode(Type in)
 	{
 		string compact="{"+in->getCompactString()+"}";
 		
-		if (!globalNames->hasPnMe(compact))
+		if (!globalNames->hasPn(compact))
 		{
 			globalNames->addPn(compact, in->nameHint);
 			auto names=globalNames->makeChild();
@@ -439,6 +444,11 @@ string CppProgram::getTypeCode(Type in)
 				names->addPn(i.name);
 				code+=indentString(getTypeCode(i.type)+" "+names->getCpp(i.name)+";\n", indent);
 			}
+			
+			code+="\n";
+			code+=indentString(globalNames->getCpp(compact), indent);
+			code+="() {}\n";
+			
 			code+="\n";
 			auto conNames=names->makeChild();
 			code+=indentString(globalNames->getCpp(compact), indent);
@@ -485,7 +495,7 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialVal
 	}
 	*/
 	
-	if (activeFunc->namespaceStack.back()->hasPnMe(nameIn))
+	if (activeFunc->namespaceStack.back()->hasPn(nameIn))
 		return;
 	
 	activeFunc->namespaceStack.back()->addPn(nameIn, nameIn);
@@ -653,244 +663,4 @@ string CppProgram::getCppCode()
 	return out;
 }
 
-
-/// add common funcs
-
-void addToProgPnStr(CppProgram * prog)
-{
-	if (!prog->hasFunc("$pnStr"))
-	{
-		prog->pushFunc("$pnStr", {{"const char *", "-in"}}, String);
-			prog->declareVar("-i", Int, "0");
-			prog->code("while ");
-			prog->pushExpr();
-				prog->name("-in");
-				prog->code("[");
-				prog->pushExpr();
-					prog->name("-i");
-				prog->popExpr();
-				prog->code("]");
-			prog->popExpr();
-			prog->pushBlock();
-				prog->name("-i");
-				prog->code("++");
-				prog->endln();
-			prog->popBlock();
-			prog->code("return ");
-			prog->code(prog->getTypeCode(String));
-			prog->pushExpr();
-				prog->name("-i");
-				prog->code(", ");
-				prog->code("(unsigned char *)");
-				prog->name("-in");
-			prog->popExpr();
-			prog->endln();
-		prog->popFunc();
-	}
-}
-
-void addToProgCStr(CppProgram * prog)
-{
-	if (!prog->hasFunc("$cStr"))
-	{
-		prog->pushFunc("$cStr", {{prog->getTypeCode(String), "-in"}}, Byte->getPtr());
-			
-			//prog->code("int strSize = ");
-			//getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "in"), prog);
-			//prog->endln();
-			
-			prog->declareVar("-tmp", Byte->getPtr());
-			
-			prog->name("-tmp");
-			prog->code(" = (unsigned char*)malloc");
-			prog->pushExpr();
-				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
-				prog->code(" + 1");
-			prog->popExpr();
-			prog->endln();
-			
-			prog->code("memcpy");
-			prog->pushExpr();
-				prog->name("-tmp");
-				prog->code(", ");
-				prog->pushExpr();
-					getElemFromTupleAction(String, "_data")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
-				prog->popExpr();
-				prog->code(", ");
-				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
-			prog->popExpr();
-			prog->endln();
-			prog->name("-tmp");
-			prog->code("[");
-			prog->pushExpr();
-				getElemFromTupleAction(String, "_size")->addToProg(voidAction, varGetAction(0, String, "-in"), prog);
-			prog->popExpr();
-			prog->code("] = 0");
-			prog->endln();
-			
-			prog->code("return ");
-			prog->name("-tmp");
-			prog->endln();
-		prog->popFunc();
-	}
-}
-
-void addToProgSubStr(CppProgram * prog)
-{
-	if (!prog->hasFunc("$subStr"))
-	{
-		string strType=prog->getTypeCode(String);
-		
-		prog->addFunc("$subStr", {{strType, "in"}, {"int", "a"}, {"int", "b"}}, strType,
-			"int size = b - a;\n"
-			"unsigned char * data = (unsigned char *)malloc(size);\n"
-			"memcpy(data, in._data + a, size);\n"
-			"return "+strType+"(size, data);\n"
-		);
-	}
-}
-
-
-void addToProgIntToStr(CppProgram * prog)
-{
-	if (!prog->hasFunc("$intToStr"))
-	{
-		string strType=prog->getTypeCode(String);
-		
-		prog->addFunc("$intToStr", {{"int", "in"}}, prog->getTypeCode(String),
-			"bool neg = in < 0;\n"
-			"if (neg) in *= -1;\n"
-			"int val = in;\n"
-			"int size=0;\n"
-			"while (val)\n"
-			"{\n"
-			"	size++;\n"
-			"	val /= 10;\n"
-			"}\n"
-			"if (size == 0)\n\tsize = 1;\n"
-			"if (neg)\n\tsize++;\n"
-			"unsigned char * data = (unsigned char *)malloc(size);\n"
-			"val = in;\n"
-			"for (int i=0; i<(neg ? size-1 : size); i++)\n"
-			"{\n"
-			"	data[size-i-1] = (val % 10) + '0';\n"
-			"	val /= 10;\n"
-			"}\n"
-			"if (neg)\n\tdata[0] = '-';\n"
-			"return "+strType+"(size, data);\n"
-		);
-	}
-}
-
-void addToProgConcatStr(CppProgram * prog)
-{
-	if (!prog->hasFunc("$concatStr"))
-	{
-		string strType=prog->getTypeCode(String);
-		
-		prog->addFunc("$concatStr", {{strType, "a"}, {strType, "b"}}, strType,
-			"int newSize = a._size + b._size;\n"
-			"unsigned char * newData = (unsigned char *)malloc(newSize);\n"
-			"memcpy(newData, a._data, a._size);\n"
-			"memcpy(newData + a._size, b._data, b._size);\n"
-			"return "+strType+"(newSize, newData);\n"
-		);
-	}
-}
-
-/*
-void addToProgDoubleToString(CppProgram * prog)
-{
-	if (!prog->hasFunc("$doubleToStr"))
-	{
-		prog->pushFunc("$doubleToStr", {{"double", "-in"}}, String)
-			prog->declareVar("-a", Int);
-			
-			prog->name("-a");
-			prog->code(" = ");
-			prog->name("-in");
-			prog->endln();
-			
-			@c("if ");
-			@p->pushExpr();
-				@n("-in");
-				@c(" < 0");
-			@p->popExpr();
-			@p->pushBlock();
-				@n("-in");
-				@c(" *= -1");
-				@el();
-			@->popBlock();
-			
-			@c("while ");
-			@p->pushExpr();
-				@n("-in");
-				@c(" - (long long)");
-				@n("-in");
-				@c(" > 0.000000001");
-			@p->popExpr();
-			@p->pushBlock();
-				@n("-in");
-				@c(" *= 10");
-				@el();
-			@->popBlock();
-			
-			@c("return ");
-		prog->popFunc();
-	}
-}
-*/
-
-void addToProgDoubleToStr(CppProgram * prog)
-{
-	if (!prog->hasFunc("$doubleToStr"))
-	{
-		addToProgIntToStr(prog);
-		addToProgConcatStr(prog);
-		addToProgPnStr(prog);
-		
-		string intToStr=prog->pnToCpp("$intToStr");
-		string concat=prog->pnToCpp("$concatStr");
-		string pnStr=prog->pnToCpp("$pnStr");
-		
-		prog->addFunc("$doubleToStr", {{"double", "in"}}, prog->getTypeCode(String),
-			"long long a=in;\n"
-			"in-=a;\n"
-			"if (in<0)\n"
-			"	in*=-1;\n"
-			"while (in-(long long)in>0.000000001)\n"
-			"{\n"
-			"	in*=10;\n"
-			"}\n"
-			"return "+concat+"("+concat+"("+intToStr+"(a), "+pnStr+"(\".\")), "+intToStr+"((int)in));\n"
-		);
-	}
-}
-
-void addToProgAsciiToStr(CppProgram * prog)
-{
-	if (!prog->hasFunc("$asciiToStr"))
-	{
-		string strType=prog->getTypeCode(String);
-		
-		prog->addFunc("$asciiToStr", {{"int", "in"}}, strType,
-			"unsigned char * data = (unsigned char *)malloc(1);\n"
-			"*data = in;\n"
-			"return "+strType+"(1, data);\n"
-		);
-	}
-}
-
-string doubleToString(double in)
-{
-	long long a=in;
-	in-=a;
-	if (in<0)
-		in*=-1;
-	while (in-(long long)in>0.000000001)
-	{
-		in*=10;
-	}
-	return to_string(a)+"."+to_string((long long)in);
-}
 

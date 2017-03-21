@@ -495,8 +495,9 @@ bool writeFile(const string& filename, const string& contents, bool debug)
 	}
 }
 
+/*
 //NOTE: I copied this from where I copied this from somewhere on the internet. no idea how or why it works.
-string runCmd(string cmd)
+string runCmd(string cmd, bool printOutput) // if print output is false, nothing will be printed unil the entire command is done
 {
 	const int bufferSize=4096;
     char buffer[bufferSize];
@@ -506,7 +507,42 @@ string runCmd(string cmd)
     try {
         while (!feof(pipe)) {
             if (fgets(buffer, bufferSize, pipe) != NULL)
+			{
                 result += buffer;
+                if (printOutput)
+				{
+					cout << buffer;
+					cout.flush();
+				}
+			}
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
+    pclose(pipe);
+    return result;
+}
+*/
+
+string runCmd(string cmd, bool printOutput) // if print output is false, nothing will be printed unil the entire command is done
+{
+    std::string result = "";
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) throw std::runtime_error("popen() failed in getOutputFromCmd");
+    try {
+        while (!feof(pipe)) {
+			char c;
+            if ((c=getc(pipe)) != EOF)
+			{
+                result += c;
+                
+                if (printOutput)
+				{
+					cout << c;
+					cout.flush();
+				}
+			}
         }
     } catch (...) {
         pclose(pipe);

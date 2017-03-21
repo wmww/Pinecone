@@ -26,12 +26,13 @@ public:
 	shared_ptr<CppNameContainer> makeChild();
 	void addPn(const string& pn, const string& cppNameHint="<- the value of that pn string please"); // will throw an error if pnName already exists
 	void reserveCpp(const string& cpp);
-	bool hasPnMe(const string& pn);
+	bool hasPn(const string& pn);
 	string getCpp(const string& pn); // will throw an error if the Pinecone name doesn't exist
 	CppNameContainer* getParent() {return parent;}
 	
 private:
 	
+	bool hasPnMe(const string& pn);
 	CppNameContainer();
 	bool hasCpp(const string& cpp);
 	bool hasCppMe(const string& cpp);
@@ -132,5 +133,6 @@ void addToProgIntToStr(CppProgram * prog);
 void addToProgDoubleToStr(CppProgram * prog);
 void addToProgConcatStr(CppProgram * prog);
 void addToProgAsciiToStr(CppProgram * prog);
+void addToProgGetInputLine(CppProgram * prog);
 string doubleToString(double in);
 
