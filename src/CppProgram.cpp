@@ -418,7 +418,7 @@ void CppProgram::setup()
 		globalNames->reserveCpp(i);
 	}
 	
-	pushFunc(string("main"), {}, Int);
+	pushFunc(string("main"), Void, Void, Int);
 }
 
 string CppProgram::getTypeCode(Type in)
@@ -514,6 +514,13 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialVal
 	if (activeFunc->namespaceStack.back()->hasPn(nameIn))
 		return;
 	
+	if (getExprLevel()>0)
+	{
+		throw PineconeError("tried to declare C++ var when expression level was not 0", INTERNAL_ERROR);
+	}
+	
+	endln();
+	
 	activeFunc->namespaceStack.back()->addPn(nameIn, nameIn);
 	
 	code(getTypeCode(typeIn));
@@ -585,7 +592,8 @@ void CppProgram::addFunc(const string& name, vector<std::pair<string, string>> a
 	func->code(contents);
 }
 
-void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> args, Type returnType)
+//void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> args, Type returnType)
+void CppProgram::pushFunc(const string& name, Type leftIn, Type rightIn, Type returnType)
 {
 	if (hasFunc(name))
 	{
@@ -604,6 +612,22 @@ void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> 
 	
 	prototype+=" "+cppName+"(";
 	
+	if (leftIn->isCreatable())
+	{
+		prototype+=getTypeCode(leftIn)+" me";
+		funcNames->addPn("me");
+	}
+	
+	if (rightIn->isCreatable())
+	{
+		if (leftIn->isCreatable())
+			prototype+=", ";
+		
+		prototype+=getTypeCode(rightIn)+" in";
+		funcNames->addPn("in");
+	}
+	
+	/*
 	for (int i=0; i<int(args.size()); i++)
 	{
 		if (i)
@@ -617,6 +641,7 @@ void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> 
 		
 		prototype+=funcNames->getCpp(args[i].second);
 	}
+	*/
 	
 	prototype+=")";
 	

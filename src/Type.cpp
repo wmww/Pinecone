@@ -23,7 +23,7 @@ public:
 	
 	string getCppLiteral(void * data, CppProgram * prog)
 	{
-		return "void";
+		throw PineconeError("tried to get the literal value of 'void;", INTERNAL_ERROR);
 	}
 	
 	bool isCreatable()

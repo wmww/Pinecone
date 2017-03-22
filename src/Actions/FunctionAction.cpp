@@ -101,6 +101,7 @@ public:
 		
 		if (!prog->hasFunc(name))
 		{
+			/*
 			vector<std::pair<string, string>> args;
 			
 			if (getInLeftType()->getType()==TypeBase::TUPLE)
@@ -134,8 +135,9 @@ public:
 			{
 				args.push_back({prog->getTypeCode(getInRightType()), "in"});
 			}
+			*/
 			
-			prog->pushFunc(name, args, getReturnType());
+			prog->pushFunc(name, getInLeftType(), getInRightType(), getReturnType());
 				action->addToProg(prog);
 				prog->endln();
 			prog->popFunc();
@@ -144,6 +146,7 @@ public:
 		prog->name(name);
 		
 		prog->pushExpr();
+			/*
 			bool hasStarted=false;
 			if (getInLeftType()->getType()==TypeBase::TUPLE)
 			{
@@ -152,7 +155,7 @@ public:
 					if (hasStarted)
 						prog->code(", ");
 					hasStarted=true;
-					getElemFromTupleAction(getInLeftType(), i.name)->addToProg(voidAction, inLeft, prog);
+					getElemFromTupleAction(getInLeftType(), i.name)->addToProg(inLeft, voidAction, prog);
 				}
 			}
 			else if (!getInLeftType()->isCreatable())
@@ -174,7 +177,7 @@ public:
 					if (hasStarted)
 						prog->code(", ");
 					hasStarted=true;
-					getElemFromTupleAction(getInRightType(), i.name)->addToProg(voidAction, inRight, prog);
+					getElemFromTupleAction(getInRightType(), i.name)->addToProg(inRight, voidAction, prog);
 				}
 			}
 			else if (!getInRightType()->isCreatable())
@@ -188,8 +191,22 @@ public:
 				hasStarted=true;
 				inRight->addToProg(prog);
 			}
+			*/
 			//prog->code(", ");
 			//inRight->addToProg(prog);
+			
+			if (getInLeftType()->isCreatable())
+			{
+				inLeft->addToProg(prog);
+			}
+			
+			if (getInRightType()->isCreatable())
+			{
+				if (getInLeftType()->isCreatable())
+					prog->code(", ");
+				inRight->addToProg(prog);
+			}
+			
 		prog->popExpr();
 		
 		//prog->comment("function transpiling not yet implemented");

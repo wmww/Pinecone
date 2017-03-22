@@ -271,8 +271,6 @@ void NamespaceData::addVar(Type type, string name)
 
 void NamespaceData::addAction(Action action, string id)
 {
-	error.log(id, JSYK);
-		
 	if (action->getReturnType()->getType()==TypeBase::METATYPE)
 	{
 		try

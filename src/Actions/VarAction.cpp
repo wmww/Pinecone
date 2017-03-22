@@ -12,7 +12,7 @@ public:
 	{
 		offset=in;
 		stackPtrPtr=stackPtrPtrIn;
-		id=idIn;
+		nameHint=idIn;
 		
 		setDescription("get " + typeIn->getString() + " '" + idIn + "'");
 	}
@@ -36,15 +36,14 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->declareVar(id, getInRightType());
-		prog->name(id);
+		prog->declareVar(nameHint, getInRightType());
+		prog->name(nameHint);
 	}
 	
 private:
 	
 	void ** stackPtrPtr;
 	size_t offset;
-	string id; // used for C++ transpiler
 };
 
 class VarSetAction: public ActionData
@@ -56,7 +55,7 @@ public:
 	{
 		offset=in;
 		stackPtrPtr=stackPtrPtrIn;
-		id=idIn;
+		nameHint=idIn;
 		
 		setDescription("set " + typeIn->getString() + " '" + idIn + "'");
 	}
@@ -79,8 +78,8 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->declareVar(id, getInRightType());
-		prog->name(id);
+		prog->declareVar(nameHint, getInRightType());
+		prog->name(nameHint);
 		prog->code(" = ");
 		prog->pushExpr();
 		inRight->addToProg(prog);
@@ -93,7 +92,6 @@ private:
 	
 	void ** stackPtrPtr;
 	size_t offset;
-	string id; // used for C++ transpiler
 };
 
 class ConstGetAction: public ActionData
