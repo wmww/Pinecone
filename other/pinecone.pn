@@ -1,11 +1,12 @@
 
 
-printNum :: {Int}: (
-	print: in
-	print: in
-	print: in
+printNum :: {Int, Dub}: (
+	print: in.a
+	print: in.b
 )
 
-printNum: 9
-printNum: 9
-printNum: 9
+printNum: 4, 5.3
+printNum: 4, 5.3
+printNum: 4, 5.3
+
+print: 3

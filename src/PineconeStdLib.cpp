@@ -741,13 +741,17 @@ void populateStdFuncs()
 		ADD_CPP_HEADER
 		{
 			addToProgDoubleToStr(prog);
+			addToProgCStr(prog);
 			
 			prog->code("printf");
 			prog->pushExpr();
 				prog->code("\"%s\\n\", ");
-				prog->name("$doubleToStr");
+				prog->name("$cStr");
 				prog->pushExpr();
-					right->addToProg(prog);
+					prog->name("$doubleToStr");
+					prog->pushExpr();
+						right->addToProg(prog);
+					prog->popExpr();
 				prog->popExpr();
 			prog->popExpr();
 		}
@@ -859,7 +863,7 @@ void populateStringFuncs()
 		},
 		ADD_CPP_HEADER
 		{
-			getElemFromTupleAction(String, "_size")->addToProg(voidAction, left, prog);
+			getElemFromTupleAction(String, "_size")->addToProg(left, voidAction, prog);
 		}
 	);
 	
@@ -902,7 +906,7 @@ void populateStringFuncs()
 		ADD_CPP_HEADER
 		{
 			prog->code("(int)");
-			getElemFromTupleAction(String, "_data")->addToProg(voidAction, left, prog);
+			getElemFromTupleAction(String, "_data")->addToProg(left, voidAction, prog);
 			prog->code("[");
 			prog->pushExpr();
 				right->addToProg(prog);
@@ -932,9 +936,9 @@ void populateStringFuncs()
 			prog->pushExpr();
 				left->addToProg(prog);
 				prog->code(", ");
-				getElemFromTupleAction(right->getReturnType(), "a")->addToProg(voidAction, right, prog);
+				getElemFromTupleAction(right->getReturnType(), "a")->addToProg(right, voidAction, prog);
 				prog->code(", ");
-				getElemFromTupleAction(right->getReturnType(), "b")->addToProg(voidAction, right, prog);
+				getElemFromTupleAction(right->getReturnType(), "b")->addToProg(right, voidAction, prog);
 			prog->popExpr();
 		}
 	);
@@ -1033,7 +1037,7 @@ void populateIntArrayAndFuncs()
 		},
 		ADD_CPP_HEADER
 		{
-			getElemFromTupleAction(IntArray, "_size")->addToProg(voidAction, left, prog);
+			getElemFromTupleAction(IntArray, "_size")->addToProg(left, voidAction, prog);
 		}
 	);
 	
@@ -1092,7 +1096,7 @@ void populateNonStdFuncs()
 			{
 				if (!prog->hasFunc("-getIntInput"))
 				{
-					prog->pushFunc("-getIntInput", {}, Int);
+					prog->pushFunc("-getIntInput", Void, Void, Int);
 						prog->declareVar("tmp", Int);
 						prog->code("scanf");
 						prog->pushExpr();

@@ -129,6 +129,8 @@ public:
 		typeOut=typeInIn->getSubType(nameIn).type;
 		// if no type was found, the ActionData constructor would have already thrown an error
 		name=nameIn;
+		size=typeOut->getSize();
+		offset=typeIn->getSubType(name).offset;
 	}
 	
 	string getDescription()
@@ -138,21 +140,22 @@ public:
 	
 	void* execute(void* inLeft, void* inRight)
 	{
-		void* out=malloc(typeOut->getSize());
-		memcpy(out, (char*)inLeft+typeIn->getSubType(name).offset, typeOut->getSize());
-		
+		void* out=malloc(size);
+		memcpy(out, (char*)inLeft+offset, size);
 		return out;
 	}
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		inRight->addToProg(prog);
+		inLeft->addToProg(prog);
 		prog->code("."+name);
 	}
 	
 private:
 	Type typeIn;
 	Type typeOut;
+	int offset;
+	size_t size;
 	string name;
 };
 
