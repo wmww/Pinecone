@@ -259,7 +259,7 @@ void addToProgIntToStr(CppProgram * prog)
 			"bool neg = in < 0;\n"
 			"if (neg) in *= -1;\n"
 			"int val = in;\n"
-			"int size=0;\n"
+			"int size = 0;\n"
 			"while (val)\n"
 			"{\n"
 			"	size++;\n"
@@ -269,7 +269,7 @@ void addToProgIntToStr(CppProgram * prog)
 			"if (neg)\n\tsize++;\n"
 			"unsigned char * data = (unsigned char *)malloc(size);\n"
 			"val = in;\n"
-			"for (int i=0; i<(neg ? size-1 : size); i++)\n"
+			"for (int i = 0; i<(neg ? size-1 : size); i++)\n"
 			"{\n"
 			"	data[size-i-1] = (val % 10) + '0';\n"
 			"	val /= 10;\n"
@@ -312,7 +312,7 @@ void addToProgDoubleToStr(CppProgram * prog)
 			
 			"unsigned long long b = (in - (long long)in) * 10000000000 * (in>=0 ? 1 : -1);\n"
 			"if (b % 10 == 9)\n\tb += 1;\n"
-			"while (b>0 && !(b%10))\n\tb /= 10;\n"
+			"while (b>0 && !(b % 10))\n\tb /= 10;\n"
 			"return "+concat+"("+concat+"("+intToStr+"((int)in), "+pnStr+"(\".\")), "+intToStr+"(b));\n"
 		);
 	}
@@ -736,7 +736,7 @@ void populateStdFuncs()
 	);
 	
 	func("print", Void, Dub, Void,
-		printf("%f\n", right);
+		cout << doubleToString(right) << endl;
 	,
 		ADD_CPP_HEADER
 		{
@@ -811,7 +811,7 @@ void populateStringFuncs()
 	addAction("String", Dub, Void, String,
 		LAMBDA_HEADER
 		{
-			return cppStr2PncnStr(to_string(*((double*)leftIn)));
+			return cppStr2PncnStr(doubleToString(*((double*)leftIn)));
 		},
 		ADD_CPP_HEADER
 		{
@@ -1000,8 +1000,8 @@ void populateStringFuncs()
 void populateIntArrayAndFuncs()
 {
 	TupleTypeMaker maker;
-	maker.add("size", Int);
-	maker.add("data", Dub);
+	maker.add("_size", Int);
+	maker.add("_data", Dub);
 	IntArray=maker.get();
 	
 	table->addType(IntArray, "IntArray");
@@ -1017,20 +1017,33 @@ void populateIntArrayAndFuncs()
 			double data;
 			int* intPtrData=(int*)malloc(Int->getSize()*sizeIn);
 			memcpy(&data, &intPtrData, sizeof(double));
-			setValInTuple<int>(out, IntArray, "size", sizeIn);
-			setValInTuple<double>(out, IntArray, "data", data);
+			setValInTuple<int>(out, IntArray, "_size", sizeIn);
+			setValInTuple<double>(out, IntArray, "_data", data);
 			return out;
 		},
 		""
 	);
 	
+	addAction("len", IntArray, Void, Int,
+		LAMBDA_HEADER
+		{
+			int* out=(int*)malloc(sizeof(int));
+			*out=getValFromTuple<int>(leftIn, IntArray, "_size");
+			return out;
+		},
+		ADD_CPP_HEADER
+		{
+			getElemFromTupleAction(IntArray, "_size")->addToProg(voidAction, left, prog);
+		}
+	);
+	
 	addAction("get", IntArray, Int, Int, LAMBDA_HEADER
 		{
 			int pos=*(int*)rightIn;
-			int size=getValFromTuple<int>(leftIn, IntArray, "size");
+			int size=getValFromTuple<int>(leftIn, IntArray, "_size");
 			if (pos<0 || pos>=size)
 				throw PineconeError("tried to acces position "+to_string(pos)+" of array "+to_string(size)+" long", RUNTIME_ERROR);
-			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
+			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "_data");
 			int val=*(arrayPtr+pos);
 			int* out=(int*)malloc(sizeof(int));
 			*out=val;
@@ -1044,11 +1057,11 @@ void populateIntArrayAndFuncs()
 		{
 			Type rightType=PNCN_Tuple(Int, Int);
 			int pos=getValFromTuple<int>(rightIn, rightType, "a");
-			int size=getValFromTuple<int>(leftIn, IntArray, "size");
+			int size=getValFromTuple<int>(leftIn, IntArray, "_size");
 			if (pos<0 || pos>=size)
 				throw PineconeError("tried to set value at position "+to_string(pos)+" of array "+to_string(size)+" long", RUNTIME_ERROR);
 			int val=getValFromTuple<int>(rightIn, rightType, "b");
-			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "data");
+			int* arrayPtr=getValFromTuple<int*>(leftIn, IntArray, "_data");
 			*(arrayPtr+pos)=val;
 			return nullptr;
 		},
