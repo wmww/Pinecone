@@ -1,16 +1,11 @@
 
 
-#a: "enter your input > ".input
+printNum :: {Int}: (
+	print: in
+	print: in
+	print: in
+)
 
-#print: a
-
-A :: {x: Int, y: Dub}
-B :: {z: Int, w: Dub}
-
-A :: {Int, Dub} -> {A}: in.a, in.b
-B :: {Int, Dub} -> {B}: in.a, in.b
-
-a: A: 5, 9.3
-a: B: 6, 2.6
-
-0
+printNum: 9
+printNum: 9
+printNum: 9

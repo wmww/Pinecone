@@ -22,7 +22,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="other/run_tests.pn" />
+				<Option parameters="-cpp other/run_tests.pn" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>

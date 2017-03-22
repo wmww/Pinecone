@@ -47,7 +47,8 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->comment("void");
+		if (prog->getExprLevel()>0)
+			prog->comment("void");
 	}
 };
 
