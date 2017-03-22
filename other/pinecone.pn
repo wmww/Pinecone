@@ -1,9 +1,11 @@
 
-
 printNum :: {Int, Dub}: (
 	print: in.a
 	print: in.b
+	print: global
 )
+
+global: 83
 
 printNum: 4, 5.3
 printNum: 4, 5.3
