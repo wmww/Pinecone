@@ -48,6 +48,8 @@ public:
 	void addToProg(CppProgram* prog) {addToProg(voidAction, voidAction, prog);}
 	// void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	
+	string nameHint="";
+	
 protected:
 	
 	//string text;

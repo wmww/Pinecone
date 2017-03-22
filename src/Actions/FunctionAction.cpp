@@ -88,29 +88,6 @@ public:
 		return out;
 	}
 	
-	/*
-	string getCSource()
-	{
-		string out = "/ " "* function to cpp not yet implemented *" "/";
-		return out
-	
-		string name=getGlobalCName();
-		
-		string globalCFunc;
-		globalCFunc+=action->getReturnType()->getCSource();
-		globalCFunc+=" ";
-		globalCFunc+=name;
-		globalCFunc+="("
-		if (!inLeft.empty())
-			globalCFunc+=inLeft+","
-		globalCFunc+=
-		globalCFunc+=
-		globalCFunc+=
-		action->getCSource()
-		addGlobalCSource();
-	}
-	*/
-	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
 		if (!action)
@@ -118,7 +95,11 @@ public:
 			resolveAction();
 		}
 		
-		if (!prog->hasFunc("func_"+to_string((long)&*action)))
+		string name=nameHint;
+		if (name.empty())
+			name="func_"+to_string((long)&*action);
+		
+		if (!prog->hasFunc(name))
 		{
 			vector<std::pair<string, string>> args;
 			
@@ -154,13 +135,13 @@ public:
 				args.push_back({prog->getTypeCode(getInRightType()), "in"});
 			}
 			
-			prog->pushFunc("func_"+to_string((long)&*action), args, getReturnType());
+			prog->pushFunc(name, args, getReturnType());
 				action->addToProg(prog);
 				prog->endln();
 			prog->popFunc();
 		}
 		
-		prog->name("func_"+to_string((long)&*action));
+		prog->name(name);
 		
 		prog->pushExpr();
 			bool hasStarted=false;

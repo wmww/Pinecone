@@ -271,6 +271,8 @@ void NamespaceData::addVar(Type type, string name)
 
 void NamespaceData::addAction(Action action, string id)
 {
+	error.log(id, JSYK);
+		
 	if (action->getReturnType()->getType()==TypeBase::METATYPE)
 	{
 		try
@@ -326,6 +328,9 @@ void NamespaceData::addType(Type type, string id)
 
 void NamespaceData::addAction(AstNode node, string id)
 {
+	if (node->nameHint.empty())
+		node->nameHint=id;
+	
 	if (node->isType())
 	{
 		types.add(id, move(node));
