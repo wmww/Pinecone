@@ -23,7 +23,7 @@
 #define PNCN_Bool Bool
 #define PNCN_Void Void
 //#define PNCN_Tuple(t1, t2) Type(new TypeData(vector<Type>({PNCN##_##t1, PNCN##_##t2}), ""))
-#define PNCN_Tuple(t1, t2) makeTuple(vector<NamedType>({{"a", t1}, {"b", t2}}))
+#define PNCN_Tuple(t1, t2) makeTuple(vector<NamedType>({{"a", t1}, {"b", t2}}), true)
 
 #define LAMBDA_HEADER [](void* leftIn, void* rightIn)->void*
 #define ADD_CPP_HEADER [](Action left, Action right, CppProgram* prog)->void
@@ -391,7 +391,7 @@ void basicSetup()
 
 void populateBasicTypes()
 {
-	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Byte->getPtr()}});
+	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Byte->getPtr()}}, false);
 	
 	table->addType(Void, "Void");
 	table->addType(Bool, "Bool");
@@ -418,7 +418,7 @@ void populateConstants()
 				NamedType{"x", Int},
 				NamedType{"y", Int},
 				NamedType{"z", Int},
-			});
+			}, false);
 		
 		void* versionTupleData=malloc(versionTupleType->getSize());
 		
@@ -911,10 +911,10 @@ void populateStringFuncs()
 		}
 	);
 	
-	addAction("sub", String, makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}}), String,
+	addAction("sub", String, makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}}, true), String,
 		LAMBDA_HEADER
 		{
-			Type RightType=makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}});
+			Type RightType=makeTuple(vector<NamedType>{NamedType{"a", Int}, NamedType{"b", Int}}, true);
 			int start=getValFromTuple<int>(rightIn, RightType, "a");
 			int end=getValFromTuple<int>(rightIn, RightType, "b");
 			string str=pncnStr2CppStr(leftIn);
@@ -1002,7 +1002,7 @@ void populateIntArrayAndFuncs()
 	TupleTypeMaker maker;
 	maker.add("_size", Int);
 	maker.add("_data", Dub);
-	IntArray=maker.get();
+	IntArray=maker.get(false);
 	
 	table->addType(IntArray, "IntArray");
 	

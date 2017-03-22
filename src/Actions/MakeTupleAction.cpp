@@ -20,7 +20,7 @@ public:
 					tuple.add((*i)->getReturnType());
 				}
 				
-				return tuple.get();
+				return tuple.get(true);
 			}(),
 			
 			Void, Void

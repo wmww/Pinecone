@@ -185,12 +185,13 @@ class TupleType: public TypeBase
 {
 public:
 	
-	TupleType(unique_ptr<vector<NamedType>> in)
+	TupleType(unique_ptr<vector<NamedType>> in, bool isAnonymousIn)
 	{
 		if (in==nullptr)
 			error.log(FUNC+" sent null input, compiler will likely shit itself in the near future", INTERNAL_ERROR);
 		
 		subTypes=std::move(in);
+		isAnonymous=isAnonymousIn;
 	}
 	
 	~TupleType()
@@ -296,6 +297,9 @@ protected:
 	{
 		auto o=(TupleType*)(&(*other));
 		
+		if (!isAnonymous && !o->isAnonymous)
+			return false;
+		
 		if (subTypes->size()!=o->subTypes->size())
 			return false;
 		
@@ -317,6 +321,7 @@ protected:
 private:
 	
 	unique_ptr<vector<NamedType>> subTypes;
+	bool isAnonymous=true;
 };
 
 class PtrType: public TypeBase
@@ -479,6 +484,9 @@ string TypeBase::getString(PrimitiveType in)
 
 bool TypeBase::matches(Type other)
 {
+	if (other==shared_from_this())
+		return true;
+	
 	auto otherType=other->getType();
 	
 	if (otherType!=getType())
@@ -489,14 +497,16 @@ bool TypeBase::matches(Type other)
 	{
 		return false;
 	}
-	
-	return true;
+	else
+	{
+		return true;
+	}
 }
 
-Type makeTuple(const vector<NamedType>& in)
+Type makeTuple(const vector<NamedType>& in, bool isAnonymous)
 {
 	auto ptr=unique_ptr<vector<NamedType>>(new vector<NamedType>(in));
-	return Type(new TupleType(move(ptr)));
+	return Type(new TupleType(move(ptr), isAnonymous));
 }
 
 TupleTypeMaker::TupleTypeMaker()
@@ -526,10 +536,10 @@ void TupleTypeMaker::add(Type type)
 	}
 }
 
-Type TupleTypeMaker::get()
+Type TupleTypeMaker::get(bool isAnonymous)
 {
 	if (subTypes)
-		return Type(new TupleType(std::move(subTypes)));
+		return Type(new TupleType(std::move(subTypes), isAnonymous));
 	else
 		error.log(FUNC+"called after type has been created", INTERNAL_ERROR);
 	

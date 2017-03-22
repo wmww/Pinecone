@@ -120,7 +120,7 @@ protected:
 	Type ptrToMe=nullptr;
 };
 
-Type makeTuple(const vector<NamedType>& in);
+Type makeTuple(const vector<NamedType>& in, bool isAnonymous);
 
 //	since types are immutable, this class is an easy way to construct a tuple type
 class TupleTypeMaker
@@ -130,7 +130,7 @@ public:
 	void add(string name, Type type);
 	void add(Type type);
 	
-	Type get();
+	Type get(bool isAnonymous);
 	
 private:
 	
