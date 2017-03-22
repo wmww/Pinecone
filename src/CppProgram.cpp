@@ -374,13 +374,11 @@ CppProgram::CppProgram()
 
 void CppProgram::setup()
 {
-	globalCode+="// this C++ code is transpiled from Pinecone\n";
-	globalCode+="// Pinecone v"+to_string(VERSION_X)+"."+to_string(VERSION_Y)+"."+to_string(VERSION_Z)+" was used\n";
-	globalCode+="\n";
-	globalCode+="#include <string.h>\n";
-	globalCode+="#include <stdlib.h>\n";
-	globalCode+="#include <stdio.h>\n";
-	globalCode+="\n";
+	globalTopCode+="// this C++ code is transpiled from Pinecone\n";
+	globalTopCode+="// Pinecone v"+to_string(VERSION_X)+"."+to_string(VERSION_Y)+"."+to_string(VERSION_Z)+" was used\n";
+	globalIncludesCode+="#include <string.h>\n";
+	globalIncludesCode+="#include <stdlib.h>\n";
+	globalIncludesCode+="#include <stdio.h>\n";
 	vector<string> cppReservedWords
 	{
 		// from C
@@ -484,9 +482,11 @@ string CppProgram::getTypeCode(Type in)
 			}
 			code+=indentString("}\n", indent);
 			
-			code+="};\n\n";
+			code+="};\n";
 			
-			globalCode+=code;
+			if (!globalTypesCode.empty())
+				globalTypesCode+="\n";
+			globalTypesCode+=code;
 		}
 		
 		return globalNames->getCpp(compact);
@@ -511,6 +511,12 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialVal
 	}
 	*/
 	
+	if (isMain())
+	{
+		declareGlobal(nameIn, typeIn, initialValue);
+		return;
+	}
+	
 	if (activeFunc->namespaceStack.back()->hasPn(nameIn))
 		return;
 	
@@ -521,7 +527,7 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialVal
 	
 	endln();
 	
-	activeFunc->namespaceStack.back()->addPn(nameIn, nameIn);
+	activeFunc->namespaceStack.back()->addPn(nameIn);
 	
 	code(getTypeCode(typeIn));
 	code(" ");
@@ -536,6 +542,9 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialVal
 
 void CppProgram::declareGlobal(const string& nameIn, Type typeIn, string initialValue)
 {
+	if (globalNames->hasPn(nameIn))
+		return;
+	
 	string code;
 	code+=getTypeCode(typeIn);
 	code+=" ";
@@ -548,7 +557,7 @@ void CppProgram::declareGlobal(const string& nameIn, Type typeIn, string initial
 	}
 	code+=";\n";
 	
-	globalCode+=code;
+	globalVarCode+=code;
 }
 
 bool CppProgram::hasFunc(const string& name)
@@ -671,7 +680,9 @@ string CppProgram::getCppCode()
 {
 	string out;
 	
-	out+=globalCode+"\n";
+	out+=globalTopCode+"\n";
+	out+=globalIncludesCode+"\n";
+	out+=globalTypesCode+"\n";
 	
 	for (auto i: funcs)
 	{
@@ -680,6 +691,8 @@ string CppProgram::getCppCode()
 	}
 	
 	out+="\n";
+	
+	out+=globalVarCode+"\n";
 	
 	for (auto i: funcs)
 	{

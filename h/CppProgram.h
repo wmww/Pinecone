@@ -125,7 +125,10 @@ public:
 private:
 	
 	string indent="\t";
-	string globalCode;
+	string globalTopCode;
+	string globalIncludesCode;
+	string globalVarCode;
+	string globalTypesCode;
 	CppFunc activeFunc;
 	vector<string> funcStack;
 	std::map<string, CppFunc> funcs;
