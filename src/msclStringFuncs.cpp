@@ -4,6 +4,7 @@
 #include <sstream>
 #include <sys/ioctl.h> // for terminal size detection
 #include <unistd.h> // for terminal size detection
+#include <stdlib.h>
 #include <termcap.h>
 
 using std::stringstream;
@@ -554,27 +555,18 @@ string runCmd(string cmd, bool printOutput) // if print output is false, nothing
 
 int getTermWidth()
 {
-	static char termbuf[2048];
+	// reports inacurate size if the terminal is new, as is the case when running from an IDE
+	static bool firstTime=true;
+	if (firstTime)
+	{
+		usleep(20000);
+		firstTime=false;
+	}
 	
-	char *termtype = getenv("TERM");
-
-    if (tgetent(termbuf, termtype) < 0) {
-        cout << "error getting terminal size" << endl;
-        return 80;
-    }
-
-    //int lines = tgetnum("li");
-    int columns = tgetnum("co");
-	
-	//cout << "width measured as " << columns << endl;
-	return columns;
-	
-	/*
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-	cout << "width measured as " << w.ws_col << endl;
+	//cout << "width measured as " << w.ws_col << endl;
 	return w.ws_col;
-	*/
 }
 
 
