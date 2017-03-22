@@ -219,10 +219,12 @@ string CppNameContainer::getCpp(const string& pn)
 
 /// funcs
 
-CppFuncBase::CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> myNames)
+CppFuncBase::CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> myNames, bool returnsValIn)
 {
 	prototype=prototypeIn;
 	namespaceStack.push_back(myNames);
+	freshLine=true;
+	returnsVal=returnsValIn;
 }
 
 void CppFuncBase::code(const string& in)
@@ -263,7 +265,7 @@ void CppFuncBase::endln()
 	{
 		throw PineconeError("non zero expression level when ending line in C++ program, code so far:\n"+indentString(source), INTERNAL_ERROR);
 	}
-	else if (freshLine && source[source.size()-2]=='}')
+	else if (freshLine && (source.size()<2 || source[source.size()-2]==';' || source[source.size()-2]=='}' || source[source.size()-2]=='{'))
 	{
 		// do nothing
 		
@@ -322,23 +324,37 @@ void CppFuncBase::pushBlock()
 		throw PineconeError("CppProgram::pushBlock called when expressionLevel was not zero", INTERNAL_ERROR);
 	}
 	
-	code("{\n");
-	namespaceStack.push_back(namespaceStack.back()->makeChild());
-	blockLevel++;
-	freshLine=true;
+	if (source.empty())
+	{
+		fakeStartBlock=true;
+	}
+	else
+	{
+		code("{\n");
+		namespaceStack.push_back(namespaceStack.back()->makeChild());
+		blockLevel++;
+		freshLine=true;
+	}
 }
 
 void CppFuncBase::popBlock()
 {
-	if (blockLevel<=0)
+	if (fakeStartBlock)
 	{
-		throw PineconeError("CppProgram::popBlock called with zero indentationLevel", INTERNAL_ERROR);
+		fakeStartBlock=false;
 	}
-	
-	blockLevel--;
-	namespaceStack.pop_back();
-	code("}\n");
-	freshLine=true;
+	else
+	{
+		if (blockLevel<=0)
+		{
+			throw PineconeError("CppProgram::popBlock called with zero indentationLevel", INTERNAL_ERROR);
+		}
+		
+		blockLevel--;
+		namespaceStack.pop_back();
+		code("}\n");
+		freshLine=true;
+	}
 }
 
 string CppFuncBase::pnToCpp(const string& in)
@@ -564,7 +580,7 @@ void CppProgram::addFunc(const string& name, vector<std::pair<string, string>> a
 	
 	prototype+=")";
 	
-	auto func=CppFunc(new CppFuncBase(prototype, globalNames->makeChild()));
+	auto func=CppFunc(new CppFuncBase(prototype, globalNames->makeChild(), (returnType!="" && returnType!="void")));
 	funcs[name]=func;
 	func->code(contents);
 }
@@ -604,7 +620,7 @@ void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> 
 	
 	prototype+=")";
 	
-	activeFunc=CppFunc(new CppFuncBase(prototype, funcNames));
+	activeFunc=CppFunc(new CppFuncBase(prototype, funcNames, returnType->isCreatable()));
 	funcs[name]=activeFunc;
 	funcStack.push_back(name);
 }
@@ -650,16 +666,14 @@ string CppProgram::getCppCode()
 		{
 			out+="\n{\n\t// empty function\n}\n\n";
 		}
-		else if (funcSrc.substr(0, 1)=="{")
-		{
-			out+="\n"+funcSrc;
-		}
 		else
 		{
 			out+="\n{\n";
 			out+=indentString(funcSrc, indent);
-			if (funcSrc.substr(funcSrc.size()-2, 2)!=";\n")
-				out+=";\n";
+			if (i.first=="main")
+				out+=indentString("return 0;\n", indent);
+			//if (out.substr(out.size()-2, 2)!=";\n")
+			//	out+=";\n";
 			out+="}\n\n";
 		}
 	}

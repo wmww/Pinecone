@@ -48,7 +48,7 @@ private:
 class CppFuncBase
 {
 public:
-	CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> myNames);
+	CppFuncBase(string prototypeIn, shared_ptr<CppNameContainer> myNames, bool returnsValIn);
 	
 	void code(const string& in);
 	void name(const string& in); // converts a Pinecone name to a posibly different C++ name
@@ -63,6 +63,7 @@ public:
 	int getExprLevel() {return exprLevel;}
 	bool getIfFreshLine() {return freshLine;}
 	int getBlockLevel() {return blockLevel;}
+	bool getIfReturnsVal() {return returnsVal;}
 	
 	string getSource() {return source;}
 	string getPrototype() {return prototype;}
@@ -75,6 +76,8 @@ private:
 	
 	string source;
 	string prototype;
+	bool returnsVal=false;
+	bool fakeStartBlock=false;
 	
 	vector<shared_ptr<CppNameContainer>> namespaceStack;
 	
@@ -101,6 +104,7 @@ public:
 	string pnToCpp(const string& in){return activeFunc->pnToCpp(in);}
 	int getExprLevel()				{return activeFunc->getExprLevel();}
 	int getBlockLevel()				{return activeFunc->getBlockLevel();}
+	int getIfReturnsVal()			{return activeFunc->getIfReturnsVal();}
 	
 	
 	void setup();
@@ -112,6 +116,7 @@ public:
 	void pushFunc(const string&, vector<std::pair<string, string>> args, Type returnType);
 	//void pushFunc(const string&, vector<NamedType> args, Type returnType);
 	void popFunc();
+	bool isMain() {return funcStack.size()==1;}
 	
 	string getCppCode();
 	
