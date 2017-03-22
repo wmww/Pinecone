@@ -639,5 +639,5 @@ void AstTupleType::resolveReturnType()
 		}
 	}
 	
-	returnType=maker.get();
+	returnType=maker.get(false);
 }
