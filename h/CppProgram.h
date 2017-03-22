@@ -128,5 +128,4 @@ private:
 };
 
 void addToProgPnStr(CppProgram * prog);
-string doubleToString(double in);
 

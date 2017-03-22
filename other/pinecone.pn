@@ -4,11 +4,5 @@
 
 #print: a
 
-betterNumToStr :: {Int} -> {String}: (
-	out: in.String
-	out: out+" is the number"
-	out
-)
-
-print: betterNumToStr: 9
+print: 8.948.String
 
