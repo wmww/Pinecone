@@ -127,7 +127,7 @@ public:
 		{
 			prog->code(getReturnType()->getCppLiteral(data, prog));
 		}
-		else
+		else // getReturnType()==String
 		{
 			//prog->code(prog->getTypeCode(getReturnType()));
 			addToProgPnStr(prog);
