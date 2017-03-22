@@ -261,7 +261,7 @@ void CppFuncBase::endln()
 {
 	if (exprLevel>0)
 	{
-		throw PineconeError("non zero expression level when ending line in C++ program", INTERNAL_ERROR);
+		throw PineconeError("non zero expression level when ending line in C++ program, code so far:\n"+indentString(source), INTERNAL_ERROR);
 	}
 	else if (freshLine && source[source.size()-2]=='}')
 	{
@@ -646,7 +646,11 @@ string CppProgram::getCppCode()
 		
 		string funcSrc=i.second->getSource();
 		
-		if (funcSrc.substr(0, 1)=="{")
+		if (funcSrc.size()<2)
+		{
+			out+="\n{\n\t// empty function\n}\n\n";
+		}
+		else if (funcSrc.substr(0, 1)=="{")
 		{
 			out+="\n"+funcSrc;
 		}

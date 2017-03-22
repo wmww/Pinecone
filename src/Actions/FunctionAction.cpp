@@ -113,7 +113,107 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->comment("function transpiling not yet implemented");
+		if (!action)
+		{
+			resolveAction();
+		}
+		
+		if (!prog->hasFunc("func_"+to_string((long)&*action)))
+		{
+			vector<std::pair<string, string>> args;
+			
+			if (getInLeftType()->getType()==TypeBase::TUPLE)
+			{
+				for (auto i: *getInLeftType()->getAllSubTypes())
+				{
+					args.push_back({prog->getTypeCode(i.type), i.name});
+				}
+			}
+			else if (!getInLeftType()->isCreatable())
+			{
+				// do nothing
+			}
+			else
+			{
+				args.push_back({prog->getTypeCode(getInLeftType()), "me"});
+			}
+			
+			if (getInRightType()->getType()==TypeBase::TUPLE)
+			{
+				for (auto i: *getInRightType()->getAllSubTypes())
+				{
+					args.push_back({prog->getTypeCode(i.type), i.name});
+				}
+			}
+			else if (!getInRightType()->isCreatable())
+			{
+				// do nothing
+			}
+			else
+			{
+				args.push_back({prog->getTypeCode(getInRightType()), "in"});
+			}
+			
+			prog->pushFunc("func_"+to_string((long)&*action), args, getReturnType());
+				action->addToProg(prog);
+				prog->endln();
+			prog->popFunc();
+		}
+		
+		prog->name("func_"+to_string((long)&*action));
+		
+		prog->pushExpr();
+			bool hasStarted=false;
+			if (getInLeftType()->getType()==TypeBase::TUPLE)
+			{
+				for (auto i: *getInLeftType()->getAllSubTypes())
+				{
+					if (hasStarted)
+						prog->code(", ");
+					hasStarted=true;
+					getElemFromTupleAction(getInLeftType(), i.name)->addToProg(voidAction, inLeft, prog);
+				}
+			}
+			else if (!getInLeftType()->isCreatable())
+			{
+				// do nothing
+			}
+			else
+			{
+				if (hasStarted)
+					prog->code(", ");
+				hasStarted=true;
+				inLeft->addToProg(prog);
+			}
+			
+			if (getInRightType()->getType()==TypeBase::TUPLE)
+			{
+				for (auto i: *getInRightType()->getAllSubTypes())
+				{
+					if (hasStarted)
+						prog->code(", ");
+					hasStarted=true;
+					getElemFromTupleAction(getInRightType(), i.name)->addToProg(voidAction, inRight, prog);
+				}
+			}
+			else if (!getInRightType()->isCreatable())
+			{
+				// do nothing
+			}
+			else
+			{
+				if (hasStarted)
+					prog->code(", ");
+				hasStarted=true;
+				inRight->addToProg(prog);
+			}
+			//prog->code(", ");
+			//inRight->addToProg(prog);
+		prog->popExpr();
+		
+		//prog->comment("function transpiling not yet implemented");
+		
+		
 	}
 	
 private:

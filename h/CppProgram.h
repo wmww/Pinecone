@@ -68,7 +68,7 @@ public:
 	string getPrototype() {return prototype;}
 	
 private:
-	string indent="    ";
+	string indent="\t";
 	bool freshLine=true;
 	int blockLevel=0;
 	int exprLevel=0;
@@ -100,6 +100,7 @@ public:
 	void popBlock()					{activeFunc->popBlock();}
 	string pnToCpp(const string& in){return activeFunc->pnToCpp(in);}
 	int getExprLevel()				{return activeFunc->getExprLevel();}
+	int getBlockLevel()				{return activeFunc->getBlockLevel();}
 	
 	
 	void setup();
@@ -118,7 +119,7 @@ public:
 	
 private:
 	
-	string indent="    ";
+	string indent="\t";
 	string globalCode;
 	CppFunc activeFunc;
 	vector<string> funcStack;

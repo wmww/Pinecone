@@ -85,10 +85,14 @@ public:
 		}
 		else
 		{
+			bool shouldReturn=prog->getBlockLevel()==0;
+			
 			prog->pushBlock();
 			
 			for (auto i: actions)
 			{
+				if (shouldReturn && i==actions.back())
+					prog->code("return ");
 				i->addToProg(voidAction, voidAction, prog);
 				prog->endln();
 			}
