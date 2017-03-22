@@ -193,6 +193,11 @@ void AstExpression::resolveAction()
 		
 		action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
 	}
+	
+	if (action->nameHint.empty())
+		action->nameHint=nameHint;
+	
+	error.log("my name hint is "+nameHint, JSYK);
 }
 
 

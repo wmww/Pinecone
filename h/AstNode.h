@@ -83,6 +83,8 @@ public:
 	// primarily used for error throwing, can return null
 	virtual Token getToken()=0;
 	
+	string nameHint="";
+	
 protected:
 	
 	AstNodeBase() {}
