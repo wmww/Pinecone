@@ -309,15 +309,11 @@ void addToProgDoubleToStr(CppProgram * prog)
 		string pnStr=prog->pnToCpp("$pnStr");
 		
 		prog->addFunc("$doubleToStr", {{"double", "in"}}, prog->getTypeCode(String),
-			"long long a=in;\n"
-			"in-=a;\n"
-			"if (in<0)\n"
-			"	in*=-1;\n"
-			"while (in-(long long)in>0.000000001)\n"
-			"{\n"
-			"	in*=10;\n"
-			"}\n"
-			"return "+concat+"("+concat+"("+intToStr+"(a), "+pnStr+"(\".\")), "+intToStr+"((int)in));\n"
+			
+			"unsigned long long b = (in - (long long)in) * 10000000000 * (in>=0 ? 1 : -1);\n"
+			"if (b % 10 == 9)\n\tb += 1;\n"
+			"while (b>0 && !(b%10))\n\tb /= 10;\n"
+			"return "+concat+"("+concat+"("+intToStr+"((int)in), "+pnStr+"(\".\")), "+intToStr+"(b));\n"
 		);
 	}
 }
@@ -380,20 +376,6 @@ void addToProgEqStr(CppProgram * prog)
 			"return true;\n"
 		);
 	}
-}
-
-
-string doubleToString(double in)
-{
-	long long a=in;
-	in-=a;
-	if (in<0)
-		in*=-1;
-	while (in-(long long)in>0.000000001)
-	{
-		in*=10;
-	}
-	return to_string(a)+"."+to_string((long long)in);
 }
 
 
@@ -756,7 +738,19 @@ void populateStdFuncs()
 	func("print", Void, Dub, Void,
 		printf("%f\n", right);
 	,
-		"printf(\"%f\\n\", $:)"
+		ADD_CPP_HEADER
+		{
+			addToProgDoubleToStr(prog);
+			
+			prog->code("printf");
+			prog->pushExpr();
+				prog->code("\"%s\\n\", ");
+				prog->name("$doubleToStr");
+				prog->pushExpr();
+					right->addToProg(prog);
+				prog->popExpr();
+			prog->popExpr();
+		}
 	);
 	
 	addAction("print", Void, String, Void,

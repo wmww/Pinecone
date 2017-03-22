@@ -96,6 +96,9 @@ string putStringInBox(const string& in, string boxName="", bool showLineNums=fal
 //		returns: a string that looks like a table
 string putStringInTable(const string& in, string tableName);
 
+//	converts a double to a string, with always at least one zero before and after the decimal
+string doubleToString(double in);
+
 //	load entire file and return its contents
 //		inName: the path to the file to open
 //		debug: if to print status several times to stdout
