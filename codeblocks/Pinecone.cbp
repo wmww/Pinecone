@@ -36,9 +36,6 @@
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Linker>
-			<Add option="`llvm-config --ldflags --system-libs --libs core`" />
-		</Linker>
 		<Unit filename="../h/Action.h" />
 		<Unit filename="../h/AllOperators.h" />
 		<Unit filename="../h/AstNode.h" />
