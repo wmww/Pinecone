@@ -125,64 +125,6 @@ private:
 	friend CppTupleCastAction;
 };
 
-class GetElemFromTupleAction: public ActionData
-{
-public:
-	
-	GetElemFromTupleAction(Type typeInIn, string nameIn):
-		ActionData(typeInIn->getSubType(nameIn).type, typeInIn, Void)
-	{
-		typeIn=typeInIn;
-		typeOut=typeInIn->getSubType(nameIn).type;
-		// if no type was found, the ActionData constructor would have already thrown an error
-		name=nameIn;
-		size=typeOut->getSize();
-		offset=typeIn->getSubType(name).offset;
-	}
-	
-	string getDescription()
-	{
-		return "get element from tuple";
-	}
-	
-	void* execute(void* inLeft, void* inRight)
-	{
-		void* out=malloc(size);
-		memcpy(out, (char*)inLeft+offset, size);
-		return out;
-	}
-	
-	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
-	{
-		if (typeid(*inLeft)==typeid(MakeTupleAction))
-		{
-			MakeTupleAction * realLeft=(MakeTupleAction*)&*inLeft;
-			auto types=*inLeft->getReturnType()->getAllSubTypes();
-			
-			for (int i=0; i<int(types.size()); i++)
-			{
-				if (types[i].name==name)
-				{
-					realLeft->sourceActions[i]->addToProg(prog);
-					break;
-				}
-			}
-		}
-		else
-		{
-			inLeft->addToProg(prog);
-			prog->code("."+name);
-		}
-	}
-	
-private:
-	Type typeIn;
-	Type typeOut;
-	int offset;
-	size_t size;
-	string name;
-};
-
 class CppTupleCastAction: public ActionData
 {
 public:
@@ -268,6 +210,90 @@ public:
 private:
 	
 	Action action;
+	
+	friend GetElemFromTupleAction;
+};
+
+class GetElemFromTupleAction: public ActionData
+{
+public:
+	
+	GetElemFromTupleAction(Type typeInIn, string nameIn):
+		ActionData(typeInIn->getSubType(nameIn).type, typeInIn, Void)
+	{
+		typeIn=typeInIn;
+		typeOut=typeInIn->getSubType(nameIn).type;
+		// if no type was found, the ActionData constructor would have already thrown an error
+		name=nameIn;
+		size=typeOut->getSize();
+		offset=typeIn->getSubType(name).offset;
+	}
+	
+	string getDescription()
+	{
+		return "get element from tuple";
+	}
+	
+	void* execute(void* inLeft, void* inRight)
+	{
+		void* out=malloc(size);
+		memcpy(out, (char*)inLeft+offset, size);
+		return out;
+	}
+	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		
+		MakeTupleAction * makeTupleAction=nullptr;
+		
+		if (typeid(*inLeft)==typeid(MakeTupleAction))
+		{
+			makeTupleAction=(MakeTupleAction *)&*inLeft;
+		}
+		
+		else if (typeid(*inLeft)==typeid(CppTupleCastAction))
+		{
+			Action castAction=((CppTupleCastAction *)&*inLeft)->action;
+			
+			if (typeid(*castAction)==typeid(MakeTupleAction))
+			{
+				makeTupleAction=(MakeTupleAction *)&*castAction;
+			}
+		}
+		
+		if (makeTupleAction)
+		{
+			auto types=*inLeft->getReturnType()->getAllSubTypes();
+			
+			for (int i=0; i<int(types.size()); i++)
+			{
+				if (types[i].name==name)
+				{
+					makeTupleAction->sourceActions[i]->addToProg(prog);
+					break;
+				}
+			}
+		}
+		else
+		{
+			if (inLeft->nameHint=="in" || inLeft->nameHint=="me")
+			{
+				prog->code(name);
+			}
+			else
+			{
+				inLeft->addToProg(prog);
+				prog->code("."+name);
+			}
+		}
+	}
+	
+private:
+	Type typeIn;
+	Type typeOut;
+	int offset;
+	size_t size;
+	string name;
 };
 
 Action makeTupleAction(const std::vector<Action>& sourceActionsIn)

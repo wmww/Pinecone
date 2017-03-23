@@ -621,36 +621,73 @@ void CppProgram::pushFunc(const string& name, const string& cppNameHint, Type le
 	
 	prototype+=" "+cppName+"(";
 	
-	if (leftIn->isCreatable())
-	{
-		prototype+=getTypeCode(leftIn)+" me";
-		funcNames->addPn("me");
-	}
-	
-	if (rightIn->isCreatable())
+	if (false)
 	{
 		if (leftIn->isCreatable())
-			prototype+=", ";
+		{
+			prototype+=getTypeCode(leftIn)+" me";
+			funcNames->addPn("me");
+		}
 		
-		prototype+=getTypeCode(rightIn)+" in";
-		funcNames->addPn("in");
+		if (rightIn->isCreatable())
+		{
+			if (leftIn->isCreatable())
+				prototype+=", ";
+			
+			prototype+=getTypeCode(rightIn)+" in";
+			funcNames->addPn("in");
+		}
 	}
-	
-	/*
-	for (int i=0; i<int(args.size()); i++)
+	else
 	{
-		if (i)
-			prototype+=", ";
+		vector<std::pair<string, string>> args;
 		
-		prototype+=args[i].first;
+		if (leftIn->getType()==TypeBase::TUPLE)
+		{
+			for (auto i: *leftIn->getAllSubTypes())
+			{
+				args.push_back({getTypeCode(i.type), i.name});
+			}
+		}
+		else if (!leftIn->isCreatable())
+		{
+			// do nothing
+		}
+		else
+		{
+			args.push_back({getTypeCode(leftIn), "me"});
+		}
 		
-		prototype+=" ";
+		if (rightIn->getType()==TypeBase::TUPLE)
+		{
+			for (auto i: *rightIn->getAllSubTypes())
+			{
+				args.push_back({getTypeCode(i.type), i.name});
+			}
+		}
+		else if (!rightIn->isCreatable())
+		{
+			// do nothing
+		}
+		else
+		{
+			args.push_back({getTypeCode(rightIn), "in"});
+		}
 		
-		funcNames->addPn(args[i].second, args[i].second);
-		
-		prototype+=funcNames->getCpp(args[i].second);
+		for (int i=0; i<int(args.size()); i++)
+		{
+			if (i)
+				prototype+=", ";
+			
+			prototype+=args[i].first;
+			
+			prototype+=" ";
+			
+			funcNames->addPn(args[i].second, args[i].second);
+			
+			prototype+=funcNames->getCpp(args[i].second);
+		}
 	}
-	*/
 	
 	prototype+=")";
 	
