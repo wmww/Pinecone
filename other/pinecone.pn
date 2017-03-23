@@ -4,14 +4,10 @@ Struct :: {
 	Bool
 }
 
-func0 :: {} -> {Int, Bool}: (
-	
-	6, tru
-)
-
 func :: {} -> {Struct}: (
 	
-	func0
+	print: "hay"
+	6, tru
 )
 
 print: func.a

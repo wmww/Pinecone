@@ -9,6 +9,9 @@ using std::vector;
 class GetElemFromTupleAction;
 class CppTupleCastAction;
 
+class ListAction;
+void addListToProgWithCppCasting(ListAction* list, Type returnType, CppProgram* prog);
+
 class MakeTupleAction: public ActionData
 {
 public:
@@ -165,6 +168,10 @@ public:
 						prog->code(", ");
 				}
 			prog->popExpr();
+		}
+		else if (typeid(*action)==typeid(*listAction({voidAction, voidAction})))
+		{
+			addListToProgWithCppCasting((ListAction*)&*action, getReturnType(), prog);
 		}
 		else
 		{
