@@ -79,6 +79,11 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		addToProg(prog, getReturnType());
+	}
+	
+	void addToProg(CppProgram* prog, Type returnType)
+	{
 		if (prog->getExprLevel()>0)
 		{
 			prog->comment("list can not be created without a block");
@@ -94,11 +99,11 @@ public:
 				if (shouldReturn && i==actions.back() && !prog->isMain())
 				{
 					prog->code("return ");
-					//if (i->getReturnType()!=returnType)
-					//{
-					//	cppTupleCastAction(i, returnType)->addToProg(prog)
-					//}
-					//else
+					if (i->getReturnType()!=returnType)
+					{
+						cppTupleCastAction(i, returnType)->addToProg(prog);
+					}
+					else
 					{
 						i->addToProg(prog);
 					}
@@ -133,6 +138,11 @@ public:
 private:
 	vector<Action> actions;
 };
+
+void addListToProgWithCppCasting(ListAction* list, Type returnType, CppProgram* prog)
+{
+	list->addToProg(prog, returnType);
+}
 
 Action listAction(const vector<Action>& actionsIn)
 {
