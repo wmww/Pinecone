@@ -1,0 +1,13 @@
+# tests when there are multiple left inputs to a function
+# original but was caused to failing to skip {} in parsing an a.b: c structure
+
+print: "7\ntru\n_____"
+
+
+func :: {Int, Bool}.{}: (
+	print: me.a
+	print: me.b
+)
+
+(7, tru).func
+
