@@ -2,76 +2,6 @@
 #include "../../h/ErrorHandler.h"
 #include "../../h/CppProgram.h"
 
-class CppCastAction: public ActionData
-{
-public:
-	
-	CppCastAction(Type inType, Type returnType, Action actionIn):
-		ActionData(returnType, Void, inType)
-	{
-		action=actionIn;
-	}
-	
-	string getDescription()
-	{
-		return "C++ cast";
-	}
-	
-	void* execute(void* inLeft, void* inRight)
-	{
-		throw PineconeError("CppCastAction was executed in the interpreter, which shouldn't happen", INTERNAL_ERROR);
-	}
-	
-	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
-	{
-		if (getInRightType()->getType()!=TypeBase::TUPLE || getReturnType()->getType()!=TypeBase::TUPLE || !getInRightType()->matches(getInRightType()))
-		{
-			throw PineconeError("CppCastAction was only designed to cast matching tuples, which is not how it is being used", INTERNAL_ERROR);
-		}
-		
-		string funcName=getInRightType()->getCompactString()+"=>"+getReturnType()->getCompactString();
-		
-		if (!prog->hasFunc(funcName))
-		{
-			prog->pushFunc(funcName, "", Void, getInRightType(), getReturnType());
-				prog->declareVar("-out", getReturnType());
-				
-				auto inTypes=*getInRightType()->getAllSubTypes();
-				auto outTypes=*getReturnType()->getAllSubTypes();
-				
-				for (int i=0; i<int(inTypes.size()); i++)
-				{
-					//if (inTypes[i].type==outTypes[i].type)
-					{
-						prog->name("-out");
-						prog->code(".");
-						prog->code(outTypes[i].name);
-						prog->code(" = ");
-						prog->name("in");
-						prog->code(".");
-						prog->code(inTypes[i].name);
-						prog->endln();
-					}
-				}
-				
-				prog->code("return ");
-				prog->name("-out");
-				prog->endln();
-				
-			prog->popFunc();
-		}
-		
-		prog->name(funcName);
-		prog->pushExpr();
-			action->addToProg(prog);
-		prog->popExpr();
-	}
-	
-private:
-	
-	Action action;
-};
-
 class BranchAction: public ActionData
 {
 public:
@@ -137,10 +67,10 @@ public:
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
 		if (leftInput->getReturnType()!=action->getInLeftType())
-			leftInput=Action(new CppCastAction(leftInput->getReturnType(), action->getInLeftType(), leftInput));
+			leftInput=cppTupleCastAction(leftInput, action->getInLeftType());
 		
 		if (rightInput->getReturnType()!=action->getInRightType())
-			rightInput=Action(new CppCastAction(rightInput->getReturnType(), action->getInRightType(), rightInput));
+			rightInput=cppTupleCastAction(rightInput, action->getInRightType());
 		
 		action->addToProg(leftInput, rightInput, prog);
 	}
