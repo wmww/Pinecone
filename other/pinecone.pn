@@ -1,14 +1,17 @@
 
-func0 :: {} -> {String}: (
-	"hay"
+Struct :: {
+	Int,
+	Bool
+}
+
+func0 :: {} -> {Int, Bool}: (
+	
+	6, tru
 )
 
-func1 :: {} -> {String}: (
-	"hay"
-	"yo"
+func :: {} -> {Struct}: (
+	
+	func0
 )
 
-func0
-
-func1
- 
+print: func.a

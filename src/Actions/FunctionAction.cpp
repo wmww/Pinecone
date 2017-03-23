@@ -95,14 +95,21 @@ public:
 			resolveAction();
 		}
 		
-		string name=nameHint;
+		string name="%"+nameHint;
 		if (name.empty())
-			name="func_"+to_string((long)&*action);
+			name="^func_"+to_string((long)&*action);
 		
 		if (!prog->hasFunc(name))
 		{
 			prog->pushFunc(name, getInLeftType(), getInRightType(), getReturnType());
-				action->addToProg(prog);
+				if (getReturnType()->isCreatable() && action->getReturnType()!=getReturnType())
+				{
+					cppTupleCastAction(action, getReturnType())->addToProg(prog);
+				}
+				else
+				{
+					action->addToProg(prog);
+				}
 				prog->endln();
 			prog->popFunc();
 		}

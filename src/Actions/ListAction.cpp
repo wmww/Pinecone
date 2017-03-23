@@ -92,8 +92,21 @@ public:
 			for (auto i: actions)
 			{
 				if (shouldReturn && i==actions.back() && !prog->isMain())
+				{
 					prog->code("return ");
-				i->addToProg(voidAction, voidAction, prog);
+					//if (i->getReturnType()!=returnType)
+					//{
+					//	cppTupleCastAction(i, returnType)->addToProg(prog)
+					//}
+					//else
+					{
+						i->addToProg(prog);
+					}
+				}
+				else
+				{
+					i->addToProg(prog);
+				}
 				prog->endln();
 			}
 			

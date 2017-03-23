@@ -172,7 +172,9 @@ public:
 			
 			if (!prog->hasFunc(funcName))
 			{
-				prog->pushFunc(funcName, "", Void, action->getReturnType(), getReturnType());
+				Type argType=makeTuple({{"in", action->getReturnType()}}, true);
+				
+				prog->pushFunc(funcName, "", Void, argType, getReturnType());
 					prog->declareVar("-out", getReturnType());
 					
 					auto inTypes=*action->getReturnType()->getAllSubTypes();
