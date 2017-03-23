@@ -680,19 +680,28 @@ string CppProgram::getCppCode()
 {
 	string out;
 	
-	out+=globalTopCode+"\n";
-	out+=globalIncludesCode+"\n";
-	out+=globalTypesCode+"\n";
+	if (!globalTopCode.empty())
+		out+=globalTopCode+"\n";
 	
-	for (auto i: funcs)
+	if (!globalIncludesCode.empty())
+		out+=globalIncludesCode+"\n";
+	
+	if (!globalTypesCode.empty())
+		out+=globalTypesCode+"\n";
+	
+	if (funcs.size()>1)
 	{
-		if (i.first!="main")
-			out+=i.second->getPrototype()+";\n";
+		for (auto i: funcs)
+		{
+			if (i.first!="main")
+				out+=i.second->getPrototype()+";\n";
+		}
+		
+		out+="\n";
 	}
 	
-	out+="\n";
-	
-	out+=globalVarCode+"\n";
+	if (!globalVarCode.empty())
+		out+=globalVarCode+"\n";
 	
 	for (auto i: funcs)
 	{
@@ -708,6 +717,8 @@ string CppProgram::getCppCode()
 		{
 			out+="\n{\n";
 			out+=indentString(funcSrc, indent);
+			if (!out.empty() && out.back()!='\n')
+				out+=";\n";
 			if (i.first=="main")
 				out+=indentString("return 0;\n", indent);
 			//if (out.substr(out.size()-2, 2)!=";\n")

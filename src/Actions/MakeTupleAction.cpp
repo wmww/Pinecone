@@ -2,8 +2,11 @@
 #include "../../h/ErrorHandler.h"
 
 #include <vector>
+#include <typeinfo>
 
 using std::vector;
+
+class GetElemFromTupleAction;
 
 class MakeTupleAction: public ActionData
 {
@@ -116,6 +119,8 @@ public:
 private:
 	
 	vector<Action> sourceActions;
+	
+	friend GetElemFromTupleAction;
 };
 
 class GetElemFromTupleAction: public ActionData
@@ -147,8 +152,25 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		inLeft->addToProg(prog);
-		prog->code("."+name);
+		if (typeid(*inLeft)==typeid(MakeTupleAction))
+		{
+			MakeTupleAction * realLeft=(MakeTupleAction*)&*inLeft;
+			auto types=*inLeft->getReturnType()->getAllSubTypes();
+			
+			for (int i=0; i<int(types.size()); i++)
+			{
+				if (types[i].name==name)
+				{
+					realLeft->sourceActions[i]->addToProg(prog);
+					break;
+				}
+			}
+		}
+		else
+		{
+			inLeft->addToProg(prog);
+			prog->code("."+name);
+		}
 	}
 	
 private:

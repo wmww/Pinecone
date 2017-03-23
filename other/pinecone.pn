@@ -1,14 +1,11 @@
 
-printNum :: {Int, Dub}: (
-	print: in.a
-	print: in.b
-	print: global
+//
+func :: {x: Int, y: Dub}: (
+	print: in.x
+	print: in.y
 )
 
-global: 83
+func: 4, 7.3
+\\
 
-printNum: 4, 5.3
-printNum: 4, 5.3
-printNum: 4, 5.3
-
-print: 3
+print: (1, 2).a
