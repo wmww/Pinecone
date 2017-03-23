@@ -206,7 +206,7 @@ void addToProgPnStr(CppProgram * prog)
 	{
 		string strType=prog->getTypeCode(String);
 		
-		prog->addFunc("$pnStr", {{"const char *", "in"}}, prog->getTypeCode(String),
+		prog->addFunc("$pnStr", {{"const char *", "in"}}, strType,
 			"int size = 0;\n"
 			"while (in[size]) size++;\n"
 			"unsigned char * data = (unsigned char *)malloc(size);\n"
@@ -407,6 +407,18 @@ void addToProgRunCmd(CppProgram * prog)
 	}
 }
 
+void addToProgMakeIntArray(CppProgram * prog)
+{
+	if (!prog->hasFunc("$makeIntArray"))
+	{
+		string aryType=prog->getTypeCode(IntArray);
+		
+		prog->addFunc("$makeIntArray", {{"int", "size"}}, aryType,
+			"int * data = (int *)malloc(size * sizeof(int));\n"
+			"return "+aryType+"(size, data);\n"
+		);
+	}
+}
 
 
 
@@ -1036,7 +1048,7 @@ void populateIntArrayAndFuncs()
 {
 	TupleTypeMaker maker;
 	maker.add("_size", Int);
-	maker.add("_data", Byte->getPtr());
+	maker.add("_data", Int->getPtr());
 	IntArray=maker.get(false);
 	
 	table->addType(IntArray, "IntArray");
@@ -1049,14 +1061,19 @@ void populateIntArrayAndFuncs()
 		{
 			char* out=(char*)malloc(IntArray->getSize());
 			int sizeIn=*(int*)rightIn;
-			double data;
-			int* intPtrData=(int*)malloc(Int->getSize()*sizeIn);
-			memcpy(&data, &intPtrData, sizeof(double));
+			int* intPtrData=(int *)malloc(Int->getSize()*sizeIn);
 			setValInTuple<int>(out, IntArray, "_size", sizeIn);
-			setValInTuple<double>(out, IntArray, "_data", data);
+			setValInTuple<int *>(out, IntArray, "_data", intPtrData);
 			return out;
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgMakeIntArray(prog);
+			prog->name("$makeIntArray");
+			prog->pushExpr();
+				right->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 	
 	addAction("len", IntArray, Void, Int,
@@ -1084,7 +1101,15 @@ void populateIntArrayAndFuncs()
 			*out=val;
 			return out;
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			getElemFromTupleAction(IntArray, "_data")->addToProg(left, voidAction, prog);
+			prog->code("[");
+			prog->pushExpr();
+				right->addToProg(prog);
+			prog->popExpr();
+			prog->code("]");
+		}
 	);
 	
 	addAction("set", IntArray, PNCN_Tuple(Int, Int), Void,
@@ -1100,7 +1125,17 @@ void populateIntArrayAndFuncs()
 			*(arrayPtr+pos)=val;
 			return nullptr;
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			getElemFromTupleAction(IntArray, "_data")->addToProg(left, voidAction, prog);
+			prog->code("[");
+			prog->pushExpr();
+				getElemFromTupleAction(right->getReturnType(), "a")->addToProg(right, voidAction, prog);
+			prog->popExpr();
+			prog->code("]");
+			prog->code(" = ");
+			getElemFromTupleAction(right->getReturnType(), "b")->addToProg(right, voidAction, prog);
+		}
 	);
 }
 

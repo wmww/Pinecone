@@ -12,7 +12,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-debug other/pinecone.pn" />
+				<Option parameters="-debug -cpp other/pinecone.pn" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
