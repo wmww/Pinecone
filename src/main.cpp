@@ -84,7 +84,8 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			cout << endl << putStringInBox(cppCode, "C++ code", true, false, -1) << endl;
+			if (flags.debug)
+				cout << endl << putStringInBox(cppCode, "C++ code", true, false, -1) << endl;
 			
 			string outSourceFile="transpiled/transpiled.cpp";
 			string outBinFile="transpiled/bin";
@@ -97,19 +98,23 @@ int main(int argc, char ** argv)
 			
 			cmd = "gcc -std=c++11 '"+outSourceFile+"' -o '"+outBinFile+"'";
 			
-			cout << "running '"+cmd+"'" << endl;
+			if (flags.debug)
+				cout << "running '"+cmd+"'" << endl;
 			
 			cmdOut = runCmd(cmd, true);
 			
-			cout << endl;
+			if (flags.debug)
+				cout << endl;
 			
 			cmd = "./"+outBinFile;
 			
-			cout << "running '"+cmd+"'" << endl << endl;
+			if (flags.debug)
+				cout << "running '"+cmd+"'" << endl << endl;
 			
 			cmdOut = runCmd(cmd, true);
 			
-			cout << endl;
+			if (flags.debug)
+				cout << endl;
 		}
 	}
 	else
