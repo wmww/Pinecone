@@ -378,6 +378,37 @@ void addToProgEqStr(CppProgram * prog)
 	}
 }
 
+void addToProgRunCmd(CppProgram * prog)
+{
+	if (!prog->hasFunc("$runCmd"))
+	{
+		addToProgPnStr(prog);
+		addToProgCStr(prog);
+		addToProgConcatStr(prog);
+		addToProgAsciiToStr(prog);
+				
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$runCmd", {{strType, "cmd"}}, strType,
+			strType+" result = "+prog->pnToCpp("$pnStr")+"(\"\");\n"
+			"FILE* pipe = popen(cStr(cmd), \"r\");\n"
+			"if (!pipe)\n"
+			"	return result;\n"
+			"while (!feof(pipe)) {\n"
+			"	char c;\n"
+			"	if ((c=getc(pipe)) != EOF)\n"
+			"	{\n"
+			"		result="+prog->pnToCpp("$concatStr")+"(result, "+prog->pnToCpp("$asciiToStr")+"(c));\n"
+			"	}\n"
+			"}\n"
+			"pclose(pipe);\n"
+			"return result;\n"
+		);
+	}
+}
+
+
+
 
 /// setup Pinecone std lib
 
@@ -1120,7 +1151,14 @@ void populateNonStdFuncs()
 		{
 			return cppStr2PncnStr(runCmd(pncnStr2CppStr(rightIn)));
 		},
-		""
+		ADD_CPP_HEADER
+		{
+			addToProgRunCmd(prog);
+			prog->name("$runCmd");
+			prog->pushExpr();
+				right->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 }
 
