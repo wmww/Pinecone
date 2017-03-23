@@ -101,42 +101,6 @@ public:
 		
 		if (!prog->hasFunc(name))
 		{
-			/*
-			vector<std::pair<string, string>> args;
-			
-			if (getInLeftType()->getType()==TypeBase::TUPLE)
-			{
-				for (auto i: *getInLeftType()->getAllSubTypes())
-				{
-					args.push_back({prog->getTypeCode(i.type), i.name});
-				}
-			}
-			else if (!getInLeftType()->isCreatable())
-			{
-				// do nothing
-			}
-			else
-			{
-				args.push_back({prog->getTypeCode(getInLeftType()), "me"});
-			}
-			
-			if (getInRightType()->getType()==TypeBase::TUPLE)
-			{
-				for (auto i: *getInRightType()->getAllSubTypes())
-				{
-					args.push_back({prog->getTypeCode(i.type), i.name});
-				}
-			}
-			else if (!getInRightType()->isCreatable())
-			{
-				// do nothing
-			}
-			else
-			{
-				args.push_back({prog->getTypeCode(getInRightType()), "in"});
-			}
-			*/
-			
 			prog->pushFunc(name, getInLeftType(), getInRightType(), getReturnType());
 				action->addToProg(prog);
 				prog->endln();
@@ -146,7 +110,6 @@ public:
 		prog->name(name);
 		
 		prog->pushExpr();
-			/*
 			bool hasStarted=false;
 			if (getInLeftType()->getType()==TypeBase::TUPLE)
 			{
@@ -191,10 +154,10 @@ public:
 				hasStarted=true;
 				inRight->addToProg(prog);
 			}
-			*/
 			//prog->code(", ");
 			//inRight->addToProg(prog);
 			
+			/*
 			if (getInLeftType()->isCreatable())
 			{
 				inLeft->addToProg(prog);
@@ -206,6 +169,7 @@ public:
 					prog->code(", ");
 				inRight->addToProg(prog);
 			}
+			*/
 			
 		prog->popExpr();
 		
