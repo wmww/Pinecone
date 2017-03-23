@@ -7,6 +7,7 @@
 using std::vector;
 
 class GetElemFromTupleAction;
+class CppTupleCastAction;
 
 class MakeTupleAction: public ActionData
 {
@@ -121,6 +122,7 @@ private:
 	vector<Action> sourceActions;
 	
 	friend GetElemFromTupleAction;
+	friend CppTupleCastAction;
 };
 
 class GetElemFromTupleAction: public ActionData
@@ -181,6 +183,93 @@ private:
 	string name;
 };
 
+class CppTupleCastAction: public ActionData
+{
+public:
+	
+	CppTupleCastAction(Action actionIn, Type returnType):
+		ActionData(returnType, Void, Void)
+	{
+		if (actionIn->getReturnType()->getType()!=TypeBase::TUPLE || getReturnType()->getType()!=TypeBase::TUPLE || !actionIn->getReturnType()->matches(getReturnType()))
+		{
+			throw PineconeError("CppCastAction was only designed to cast matching tuples, which is not how it is being used", INTERNAL_ERROR);
+		}
+		
+		action=actionIn;
+	}
+	
+	string getDescription()
+	{
+		return "C++ cast";
+	}
+	
+	void* execute(void* inLeft, void* inRight)
+	{
+		throw PineconeError("CppCastAction was executed in the interpreter, which shouldn't happen", INTERNAL_ERROR);
+	}
+	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		if (typeid(*action)==typeid(MakeTupleAction))
+		{
+			MakeTupleAction * realAction=(MakeTupleAction*)&*action;
+			
+			prog->code(prog->getTypeCode(getReturnType()));
+			prog->pushExpr();
+				for (auto i: realAction->sourceActions)
+				{
+					i->addToProg(prog);
+					if (i!=realAction->sourceActions.back())
+						prog->code(", ");
+				}
+			prog->popExpr();
+		}
+		else
+		{
+			string funcName=action->getReturnType()->getCompactString()+"=>"+getReturnType()->getCompactString();
+			
+			if (!prog->hasFunc(funcName))
+			{
+				prog->pushFunc(funcName, "", Void, action->getReturnType(), getReturnType());
+					prog->declareVar("-out", getReturnType());
+					
+					auto inTypes=*action->getReturnType()->getAllSubTypes();
+					auto outTypes=*getReturnType()->getAllSubTypes();
+					
+					for (int i=0; i<int(inTypes.size()); i++)
+					{
+						//if (inTypes[i].type==outTypes[i].type)
+						{
+							prog->name("-out");
+							prog->code(".");
+							prog->code(outTypes[i].name);
+							prog->code(" = ");
+							prog->name("in");
+							prog->code(".");
+							prog->code(inTypes[i].name);
+							prog->endln();
+						}
+					}
+					
+					prog->code("return ");
+					prog->name("-out");
+					prog->endln();
+					
+				prog->popFunc();
+			}
+			
+			prog->name(funcName);
+			prog->pushExpr();
+				action->addToProg(prog);
+			prog->popExpr();
+		}
+	}
+	
+private:
+	
+	Action action;
+};
+
 Action makeTupleAction(const std::vector<Action>& sourceActionsIn)
 {
 	return Action(new MakeTupleAction(sourceActionsIn));
@@ -194,5 +283,10 @@ Action getElemFromTupleAction(Type source, string name)
 	Action out=Action(new GetElemFromTupleAction(source, name));
 	
 	return out;
+}
+
+Action cppTupleCastAction(Action actionIn, Type returnType)
+{
+	return Action(new CppTupleCastAction(actionIn, returnType));
 }
 
