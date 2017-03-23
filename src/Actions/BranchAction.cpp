@@ -1,6 +1,36 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
+class CppCastAction: public ActionData
+{
+public:
+	
+	CppCastAction(Type inType, Type returnType, Action actionIn):
+		ActionData(returnType, Void, inType)
+	{
+		action=actionIn;
+	}
+	
+	string getDescription()
+	{
+		return "C++ cast";
+	}
+	
+	void* execute(void* inLeft, void* inRight)
+	{
+		throw PineconeError("CppCastAction was executed in the interpreter, which shouldn't happen", INTERNAL_ERROR);
+	}
+	
+	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
+	{
+		action->addToProg(prog);
+	}
+	
+private:
+	
+	Action action;
+};
+
 class BranchAction: public ActionData
 {
 public:
@@ -65,6 +95,12 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		if (leftInput->getReturnType()!=action->getInLeftType())
+			leftInput=Action(new CppCastAction(leftInput->getReturnType(), action->getInLeftType(), leftInput));
+		
+		if (rightInput->getReturnType()!=action->getInRightType())
+			rightInput=Action(new CppCastAction(rightInput->getReturnType(), action->getInRightType(), rightInput));
+		
 		action->addToProg(leftInput, rightInput, prog);
 	}
 	
@@ -193,8 +229,9 @@ private:
 
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 {
-	//return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
+	return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 	
+	/*
 	if (leftInputIn->getReturnType()->isVoid())
 	{
 		if (rightInputIn->getReturnType()->isVoid())
@@ -217,4 +254,5 @@ Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 			return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 		}
 	}
+	*/
 }
