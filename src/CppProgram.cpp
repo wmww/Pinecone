@@ -602,14 +602,14 @@ void CppProgram::addFunc(const string& name, vector<std::pair<string, string>> a
 }
 
 //void CppProgram::pushFunc(const string& name, vector<std::pair<string, string>> args, Type returnType)
-void CppProgram::pushFunc(const string& name, Type leftIn, Type rightIn, Type returnType)
+void CppProgram::pushFunc(const string& name, const string& cppNameHint, Type leftIn, Type rightIn, Type returnType)
 {
 	if (hasFunc(name))
 	{
 		throw PineconeError("called CppProgram::pushFunc with function name '"+name+"', which already exists", INTERNAL_ERROR);
 	}
 	
-	globalNames->addPn(name, name);
+	globalNames->addPn(name, cppNameHint);
 	
 	string cppName=globalNames->getCpp(name);
 	

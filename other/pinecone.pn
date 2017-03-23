@@ -1,11 +1,9 @@
 
-//
+
 func :: {x: Int, y: Dub}: (
 	print: in.x
 	print: in.y
 )
 
 func: 4, 7.3
-\\
 
-print: (1, 2).a
