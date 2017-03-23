@@ -1036,7 +1036,7 @@ void populateIntArrayAndFuncs()
 {
 	TupleTypeMaker maker;
 	maker.add("_size", Int);
-	maker.add("_data", Dub);
+	maker.add("_data", Byte->getPtr());
 	IntArray=maker.get(false);
 	
 	table->addType(IntArray, "IntArray");
