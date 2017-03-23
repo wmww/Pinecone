@@ -37,7 +37,7 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 
 runTest :: {filepath: String, name: String, printDetails: Bool}:
 (
-	cmd: "./pinecone " + in.filepath
+	cmd: "./pinecone -cpp " + in.filepath
 	
 	out: runCmd: cmd
 	

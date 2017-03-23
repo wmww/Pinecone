@@ -1,13 +1,12 @@
 
-Struct ::
-{
-	Int,
-	Bool
-};
+a: 4
 
-func1 :: {Int, Bool}.{}: (
-	print: me.a
+a>0 @ (
+	tru ? (
+		print: 1
+		print: 2
+	) | (
+		print: 3
+	)
+	a: a-1
 )
-
-(2, tru).func1
-
