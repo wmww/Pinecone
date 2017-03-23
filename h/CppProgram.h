@@ -112,8 +112,9 @@ public:
 	void declareVar(const string& nameIn, Type typeIn, string initialValue="");
 	void declareGlobal(const string& nameIn, Type typeIn, string initialValue="");
 	bool hasFunc(const string& name);
-	void addFunc(const string&, vector<std::pair<string, string>> args, string returnType, string contents);
-	void pushFunc(const string&, Type leftIn, Type rightIn, Type returnType);
+	void addFunc(const string& name, vector<std::pair<string, string>> args, string returnType, string contents);
+	void pushFunc(const string& name, const string& cppNameHint, Type leftIn, Type rightIn, Type returnType);
+	void pushFunc(const string& name, Type leftIn, Type rightIn, Type returnType) {pushFunc(name, name, leftIn, rightIn, returnType);}
 	//void pushFunc(const string&, vector<NamedType> args, Type returnType);
 	void popFunc();
 	bool isMain() {return funcStack.size()==1;}
