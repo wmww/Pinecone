@@ -1,9 +1,13 @@
 
+Struct ::
+{
+	Int,
+	Bool
+};
 
-func :: {x: Int, y: Dub}: (
-	print: in.x
-	print: in.y
+func1 :: {Int, Bool}.{}: (
+	print: me.a
 )
 
-func: 4, 7.3
+(2, tru).func1
 

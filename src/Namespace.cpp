@@ -208,8 +208,6 @@ void NamespaceData::getValuesFromMap(T key, vector<U>& out, unordered_map<T, vec
 
 void NamespaceData::setInput(Type left, Type right)
 {
-	//error.log("input on namespace set to "+left->getString()+" . "+right->getString(), JSYK);
-	
 	if (parent && parent->getStackFrame()==stackFrame)
 	{
 		error.log("called "+FUNC+" on namespace that is not the root of a stack frame, thus it can not get input", INTERNAL_ERROR);

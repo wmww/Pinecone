@@ -88,6 +88,7 @@ public:
 	
 	// returns if the given operator is an opening bracket or peren
 	bool isOpenBrac(Operator op);
+	bool isCloseBrac(Operator op);
 	
 private:
 	

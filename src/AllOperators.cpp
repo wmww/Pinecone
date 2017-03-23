@@ -66,6 +66,11 @@ bool AllOperators::isOpenBrac(Operator op)
 	return op==openPeren || op==openSqBrac || op==openCrBrac;
 }
 
+bool AllOperators::isCloseBrac(Operator op)
+{
+	return op==closePeren || op==closeSqBrac || op==closeCrBrac;
+}
+
 /*
 // this is the only way to make an operator, and should only be called when setting up all the global operators at the top of Operator.cpp
 Operator opCreate(string textIn, int leftPrecedenceIn, int rightPrecedenceIn, bool overloadableIn)

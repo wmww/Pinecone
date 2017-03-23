@@ -272,11 +272,6 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
 	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
 	
-	if (stringFromTokens(tokens, left, right) == "( in")
-	{
-		error.log("breakpoint should be here", JSYK);
-	}
-	
 	if (left>right)
 	{
 		throw PineconeError(FUNC + " sent left higher then right", INTERNAL_ERROR, tokens[left]);
@@ -455,7 +450,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 			{
 				Operator op=tokens[j]->getOp();
 				
-				if (op==ops->openPeren)
+				if (ops->isOpenBrac(op))
 				{
 					j=skipBrace(tokens, j);
 				}

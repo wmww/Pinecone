@@ -189,7 +189,10 @@ void AstExpression::resolveAction()
 		
 		center->setInput(ns, dynamic, leftIn->getReturnType(), rightIn->getReturnType());
 		
-		//error.log("resolveAction called for "+getString(), JSYK);
+		//error.log("left: " + leftIn->getString(), JSYK);
+		//error.log("center: " + center->getString(), JSYK);
+		//error.log("right: " + rightIn->getString(), JSYK);
+		//error.log("", JSYK);
 		
 		action=branchAction(leftIn->getAction(), center->getAction(), rightIn->getAction());
 	}
@@ -578,7 +581,7 @@ void AstTuple::resolveAction()
 
 string AstTokenType::getString()
 {
-	return "{"+token->getText()+"}";
+	return "AstTokenType{"+token->getText()+"}";
 }
 
 void AstTokenType::resolveReturnType()
@@ -600,7 +603,7 @@ string AstTupleType::getString()
 {
 	string out;
 	
-	out+="{";
+	out+="AstTupleType{";
 	
 	for (int i=0; i<int(subTypes.size()); i++)
 	{
@@ -642,5 +645,7 @@ void AstTupleType::resolveReturnType()
 		}
 	}
 	
-	returnType=maker.get(false);
+	returnType=maker.get(true);
 }
+
+
