@@ -1,9 +1,14 @@
 
-ary: IntArray: 3
+func0 :: {} -> {String}: (
+	"hay"
+)
 
-ary.set: 0, 1
-ary.set: 2, 5
-ary.set: 1, 3
+func1 :: {} -> {String}: (
+	"hay"
+	"yo"
+)
 
-i: 0 | i<ary.len | i: i+1 @
-	print: ary.get: i
+func0
+
+func1
+ 

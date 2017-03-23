@@ -752,6 +752,8 @@ string CppProgram::getCppCode()
 		}
 		else
 		{
+			if (i.second->getIfReturnsVal() && funcSrc[0]!='{' && searchInString(funcSrc, ";")==int(funcSrc.size())-2)
+				funcSrc="return "+funcSrc;
 			out+="\n{\n";
 			out+=indentString(funcSrc, indent);
 			if (!out.empty() && out.back()!='\n')
