@@ -48,7 +48,7 @@ runTest :: {filepath: String, name: String, printDetails: Bool}:
 	
 	out: runCmd: cmd
 	
-	print: "\t\tcommand: " + cmd
+	#print: "\t\tcommand: " + cmd
 	
 	quit: fls
 	i: 0

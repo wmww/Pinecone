@@ -1148,7 +1148,7 @@ void populateIntArrayAndFuncs()
 void populateNonStdFuncs()
 {
 	func("printc", Void, Int, Void,
-			cout << (char)right
+			putchar((char)right)
 		,
 			"putchar($:)"
 		);

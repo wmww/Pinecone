@@ -74,6 +74,7 @@ private:
 	int blockLevel=0;
 	int exprLevel=0;
 	
+	string varDeclareSource;
 	string source;
 	string prototype;
 	bool returnsVal=false;

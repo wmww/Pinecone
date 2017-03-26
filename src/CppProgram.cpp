@@ -470,26 +470,18 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialVal
 	}
 	
 	if (activeFunc->namespaceStack.back()->hasPn(nameIn))
-		return;
-	
-	if (getExprLevel()>0)
 	{
-		throw PineconeError("tried to declare C++ var when expression level was not 0", INTERNAL_ERROR);
+		return;
 	}
-	
-	endln();
 	
 	activeFunc->namespaceStack.back()->addPn(nameIn);
 	
-	code(getTypeCode(typeIn));
-	code(" ");
-	name(nameIn);
+	activeFunc->varDeclareSource+=getTypeCode(typeIn)+" "+pnToCpp(nameIn);
 	if (!initialValue.empty())
 	{
-		code(" = ");
-		code(initialValue);
+		activeFunc->varDeclareSource+=" = "+initialValue;
 	}
-	endln();
+	activeFunc->varDeclareSource+=";\n";
 }
 
 void CppProgram::declareGlobal(const string& nameIn, Type typeIn, string initialValue)
@@ -707,6 +699,8 @@ string CppProgram::getCppCode()
 			if (i.second->getIfReturnsVal() && funcSrc[0]!='{' && searchInString(funcSrc, ";")==int(funcSrc.size())-2)
 				funcSrc="return "+funcSrc;
 			out+="\n{\n";
+			if (!i.second->varDeclareSource.empty())
+				out+=indentString(i.second->varDeclareSource+"\n", indent);
 			out+=indentString(funcSrc, indent);
 			if (!out.empty() && out.back()!='\n')
 				out+=";\n";

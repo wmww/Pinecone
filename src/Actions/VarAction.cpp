@@ -17,11 +17,6 @@ public:
 		setDescription("get " + typeIn->getString() + " '" + idIn + "'");
 	}
 	
-	string getCSource(string inLeft, string inRight)
-	{
-		return "/* variable: "+getDescription()+" */";
-	}
-	
 	void* execute(void* inLeft, void* inRight)
 	{
 		if (!(*stackPtrPtr))
@@ -36,8 +31,25 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->declareVar(nameHint, getInRightType());
-		prog->name(nameHint);
+		if ((nameHint=="me" || nameHint=="in") && getReturnType()->getType()==TypeBase::TUPLE)
+		{
+			prog->code(prog->getTypeCode(getReturnType()));
+			prog->pushExpr();
+				bool isFirst=true;
+				for (auto i: *getReturnType()->getAllSubTypes())
+				{
+					if (!isFirst)
+						prog->code(", ");
+					isFirst=false;
+					prog->name(i.name);
+				}
+			prog->popExpr();
+		}
+		else
+		{
+			prog->declareVar(nameHint, getReturnType());
+			prog->name(nameHint);
+		}
 	}
 	
 private:
@@ -78,14 +90,44 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->declareVar(nameHint, getInRightType());
-		prog->name(nameHint);
-		prog->code(" = ");
-		prog->pushExpr();
-		inRight->addToProg(prog);
-		prog->popExpr();
-		//if (prog->getExprLevel()==0)
-		//	prog->endln();
+		if ((nameHint=="me" || nameHint=="in") && getReturnType()->getType()==TypeBase::TUPLE)
+		{
+			if (prog->getExprLevel()>0)
+			{
+				throw PineconeError("can not set 'in' or 'me' inside expression in C++ because of some really dumb reason", INTERNAL_ERROR);
+			}
+			
+			prog->pushBlock();
+				prog->code(prog->getTypeCode(inRight->getReturnType()));
+				prog->code(" tmp = ");
+				prog->pushExpr();
+					inRight->addToProg(prog);
+				prog->popExpr();
+				prog->endln();
+				auto subs=*getReturnType()->getAllSubTypes();
+				for (int i=0; i<(int)subs.size(); i++)
+				{
+					prog->name(subs[i].name);
+					prog->code(" = ");
+					prog->code("tmp."+(*inRight->getReturnType()->getAllSubTypes())[i].name);
+					//prog->pushExpr();
+						//getElemFromTupleAction(inRight->getReturnType(), (*inRight->getReturnType()->getAllSubTypes())[i].name)->addToProg(var, voidAction, prog);
+					//prog->popExpr();
+					prog->endln();
+				}
+			prog->popBlock();
+		}
+		else
+		{
+			prog->declareVar(nameHint, getInRightType());
+			prog->name(nameHint);
+			prog->code(" = ");
+			prog->pushExpr();
+			inRight->addToProg(prog);
+			prog->popExpr();
+			//if (prog->getExprLevel()==0)
+			//	prog->endln();
+		}
 	}
 	
 private:
