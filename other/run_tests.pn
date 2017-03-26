@@ -1,3 +1,5 @@
+options :: "-cpp "
+
 print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
 print
 
@@ -37,7 +39,7 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 
 runTest :: {filepath: String, name: String, printDetails: Bool}:
 (
-	cmd: "./pinecone -cpp " + in.filepath
+	cmd: "./pinecone " + options + in.filepath
 	
 	out: runCmd: cmd
 	

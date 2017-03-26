@@ -1,0 +1,7 @@
+# tests the if statement as a ternary operator, I think problem is if return type may always be void
+
+print: "yes\n_____"
+
+a: tru
+print: (a ? "yes" | "no")
+
