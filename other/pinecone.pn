@@ -1,13 +1,2 @@
 
-Struct :: {
-	Int,
-	Bool
-}
-
-func :: {} -> {Struct}: (
-	
-	print: "hay"
-	6, tru
-)
-
-print: func.a
+print: "hay"
