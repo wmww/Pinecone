@@ -8,8 +8,8 @@ offset: 0
 error: fls
 inText: ""
 
-i: 0 | i<data.len | i: i+1 @
-	data.set: i, 0
+j: 0 | j<data.len | j: j+1 @
+	data.set: j, 0
 
 code: "enter your brainfuck code: ".input
 #code: ",[.,]"

@@ -12,7 +12,7 @@
 				<Option working_dir="../" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-debug examples/morse.pn" />
+				<Option parameters="other/pinecone.pn -debug -e" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>

@@ -1,5 +1,5 @@
 # Pinecone strings test
-print: "hello\na\nbxyz\nwe\n6\n4\n_____"
+print: "hello\na\nbxyz\nwe\n6\n4\n89.342\ntru\nfls\nfls\n_____"
 
 myStr: "hello"
 print: myStr
@@ -7,3 +7,7 @@ print: "a\nb"+"xyz"
 print: "qwerty".sub: 1, 3
 print: "qwerty".len
 print: 4.String
+print: 89.342.String
+print: "abc" = "abc"
+print: "abc" = "xyz"
+print: "abc" = "abcd"
