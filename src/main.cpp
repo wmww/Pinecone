@@ -9,11 +9,15 @@ using std::endl;
 
 struct Flags
 {
-	vector<string> inFiles;
-	bool debug=false;
-	bool showCpp=false;				// if to show transpiled C++ code
-	bool help=false;
-	bool version=false;
+	string myPath;					// path to the pinecone exeutable that is now running
+	vector<string> inFiles;			// all the input files
+	bool debug=false;				// if to show debugging info
+	bool help=false;				// if to show help message
+	bool version=false;				// if to show version message
+	bool runInterpreted=true;		// if to run the program in the interpreter
+	string cppOutFile="";			// output file for transpiled C++ code, empty if flag not set
+	string binOutFile="";			// binary executable output file, empty if flag not set
+	bool runCompiled=false;			// if to run the program compiled
 	bool flagError=false;			// if to quit immediately, this is set if there is an unrecognised flag
 };
 
@@ -37,13 +41,13 @@ int main(int argc, char ** argv)
 		cout << "-v, -version      display the version of Pinecone" << endl;
 		cout << "-d, -debug        display debugging info before running the program" << endl;
 		cout << "-r, -run          run the program with the interpreter" << endl;
-		cout << "                  active by default if no transpiling commands are present" << endl;
-		cout << "                  currently, anything after -r is ignored" << endl;
+		cout << "                    active by default if no transpiling commands are present" << endl;
+		cout << "                    currently, anything after -r is ignored" << endl;
 		cout << "-cpp [file]       transpile to C++ and save the output in the given file" << endl;
 		cout << "-bin [file]       transpile, compile with GCC and save the binary" << endl;
 		cout << "-e, -execute      transpile, compile and execute the binary" << endl;
-		cout << "                  any combination of -cpp, -bin and -e can be used" << endl;
-		cout << "                  like -r, anything after -e is ignored" << endl;
+		cout << "                    any combination of -cpp, -bin and -e can be used" << endl;
+		cout << "                    like -r, anything after -e is ignored" << endl;
 		cout << "-h, -help         display this help and quit" << endl;
 		cout << endl;
 		cout << endl;
@@ -74,64 +78,82 @@ int main(int argc, char ** argv)
 	
 	program.resolveProgram(flags.inFiles[0], flags.debug);
 	
-	if (error.getIfErrorLogged())
+	if (flags.runInterpreted)
 	{
-		if (flags.debug)
-			cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl;
-		else
-			cout << "program not executed due to errors" << endl;
-	}
-	else if (flags.showCpp)
-	{
-		string cppCode=program.getCpp();
 		if (error.getIfErrorLogged())
 		{
 			if (flags.debug)
-				cout << endl << ">>>>>>    transpiling aborted due to previous error    <<<<<<" << endl;
+				cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl;
 			else
-				cout << "program not transpiled due to errors" << endl;
+				cout << "program not executed due to errors" << endl;
 		}
 		else
 		{
 			if (flags.debug)
-				cout << endl << putStringInBox(cppCode, "C++ code", true, false, -1) << endl;
+				cout << endl << "running program..." << endl << endl;
 			
-			string outSourceFile="transpiled/transpiled.cpp";
-			string outBinFile="transpiled/bin";
-			string cmd;
-			string cmdOut;
-			
-			writeFile(outSourceFile, cppCode);
-			
-			remove(outBinFile.c_str());
-			
-			cmd = "gcc -std=c++11 '"+outSourceFile+"' -o '"+outBinFile+"'";
-			
-			if (flags.debug)
-				cout << "running '"+cmd+"'" << endl;
-			
-			cmdOut = runCmd(cmd, true);
-			
-			if (flags.debug)
-				cout << endl;
-			
-			cmd = "./"+outBinFile;
-			
-			if (flags.debug)
-				cout << "running '"+cmd+"'" << endl << endl;
-			
-			cmdOut = runCmd(cmd, true);
-			
-			if (flags.debug)
-				cout << endl;
+			program.execute();
 		}
 	}
-	else
+	
+	if (!flags.cppOutFile.empty() || !flags.binOutFile.empty() || flags.runCompiled)
 	{
-		if (flags.debug)
-			cout << endl << "executing program..." << endl << endl;
+		string cppCode=program.getCpp();
 		
-		program.execute();
+		if (error.getIfErrorLogged())
+		{
+			if (flags.debug)
+				cout << endl << ">>>>>>    transpiling failed    <<<<<<" << endl;
+			else
+				cout << "transpiling failed" << endl;
+		}
+		else
+		{
+			string cppFileName=flags.cppOutFile;
+			
+			if (cppFileName.empty())
+				cppFileName="tmp_pn_transpiled.cpp";
+			
+			if (flags.debug)
+				cout << endl << putStringInBox(cppCode, "C++ code", true, false, -1) << endl;
+			
+			writeFile(cppFileName, cppCode, flags.debug);
+			
+			if (!flags.binOutFile.empty() || flags.runCompiled)
+			{
+				string binFileName=flags.binOutFile;
+				
+				if (binFileName.empty())
+					binFileName="tmp_pn_compiledZ";
+				
+				string cmd;
+				cmd="gcc -std=c++11 '"+cppFileName+"' -o '"+binFileName+"'";
+				
+				if (flags.debug)
+					cout << "running '"+cmd+"'" << endl;
+				
+				runCmd(cmd, true);
+				
+				if (flags.runCompiled)
+				{
+					if (flags.debug)
+						cout << endl;
+					
+					cmd = "./"+binFileName;
+					
+					if (flags.debug)
+						cout << "running '"+cmd+"'" << endl << endl;
+					
+					runCmd(cmd, true);
+				}
+				
+				if (flags.binOutFile.empty())
+					remove(binFileName.c_str());
+			}
+			
+			if (flags.cppOutFile.empty())
+				remove(cppFileName.c_str());
+		}
 	}
 	
 	if (flags.debug)
@@ -156,10 +178,6 @@ Flags getFlags(int argc, char ** argv)
 			{
 				flags.debug=true;
 			}
-			else if (flag=="cpp")
-			{
-				flags.showCpp=true;
-			}
 			else if (flag=="v" || flag=="version")
 			{
 				flags.version=true;
@@ -167,6 +185,46 @@ Flags getFlags(int argc, char ** argv)
 			else if (flag=="h" || flag=="help")
 			{
 				flags.help=true;
+			}
+			else if (flag=="r" || flag=="run")
+			{
+				flags.runCompiled=false;
+				flags.runInterpreted=true;
+				i=argc;
+			}
+			else if (flag=="cpp")
+			{
+				if (i+1>=argc)
+				{
+					cout << "output file must follow '-cpp' flag";
+					flags.flagError=true;
+				}
+				
+				flags.runInterpreted=false;
+				
+				flags.cppOutFile=string(argv[i+1]);
+				
+				i++;
+			}
+			else if (flag=="bin")
+			{
+				if (i+1>=argc)
+				{
+					cout << "output file must follow '-bin' flag";
+					flags.flagError=true;
+				}
+				
+				flags.runInterpreted=false;
+				
+				flags.binOutFile=string(argv[i+1]);
+				
+				i++;
+			}
+			else if (flag=="e" || flag=="execute")
+			{
+				flags.runCompiled=true;
+				flags.runInterpreted=false;
+				i=argc;
 			}
 			else
 			{
