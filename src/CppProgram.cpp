@@ -39,30 +39,6 @@ string getValidCppId(string in)
 	return cpp;
 }
 
-char getRandChar()
-{
-	static unsigned int seed = 1;
-	//seed = (unsigned)newseed & 0x7fffffffU;
-	
-	seed = (seed * 1103515245U + 12345U) & 0x7fffffffU;
-	
-	int num=seed%(26+26+10);
-	
-	if (num<26)
-	{
-		return num+'a';
-	}
-	else if (num<26+26)
-	{
-		return num-26+'A';
-	}
-	else if (num<26+26+10)
-	{
-		return num-26-26+'0';
-	}
-	
-	return '_';
-}
 
 /// Name Container
 
@@ -103,52 +79,28 @@ void CppNameContainer::addPn(const string& pn, const string& cppNameHint)
 	// now we need to find a unique C++ name, the pinecone name will almost always be unique, but there may be cases where Pinecone treats scope differently or uses a keyword or something
 	
 	string cpp;
-	if (!validCppHint.empty())
-		cpp=validCppHint; // strip illegal chars
 	
-	int attempts=0;
-	bool invalid=validCppHint.empty() || hasCpp(cpp);
-	
-	while (invalid)
+	if (validCppHint.empty())
 	{
-		// I feel like this is a really bad way to do this, but I can't think of a better one
-		
-		if (validCppHint.empty() || attempts>=100)
-		{
-			cpp=
-				validCppHint.empty() ?
-					"nm_"
-				:
-					validCppHint+"_";
-			
-			if (attempts<8)
-			{
-				for (int i=0; i<6; i++)
-					cpp+=getRandChar();
-			}
-			else if (attempts<120)
-			{
-				for (int i=0; i<12; i++)
-					cpp+=getRandChar();
-			}
-			else
-			{
-				throw PineconeError("could not find unique random name in CppNameContainer::enterPn", INTERNAL_ERROR);
-			}
-		}
-		else
-		{
-			string suffix;
-			
-			if (attempts<100)
-			{
-				suffix=to_string(attempts); // this case should almost always happen
-			}
-			
-			cpp=validCppHint+"_"+suffix;
-		}
-		attempts++;
-		invalid=hasCpp(cpp);
+		cpp=getUniqueString(
+				"nm",
+				[this](string in) -> bool
+				{
+					return !hasCpp(in);
+				},
+				true
+			);
+	}
+	else
+	{
+		cpp=getUniqueString(
+				validCppHint,
+				[this](string in) -> bool
+				{
+					return !hasCpp(in);
+				},
+				false
+			);
 	}
 	
 	pnToCppMap[pn]=cpp;
