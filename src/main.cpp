@@ -32,13 +32,22 @@ int main(int argc, char ** argv)
 	if (flags.help)
 	{
 		cout << "Pinecone v" << VERSION_X << "." << VERSION_Y << "." << VERSION_Z << endl;
-		cout << "usage: pinecone [options] [source file]" << endl;
+		cout << "usage: pinecone [options] [source file] [options]" << endl;
 		cout << "options: " << endl;
-		cout << "-v, -version     display the version of Pinecone" << endl;
-		cout << "-d, -debug       display debugging info and then run the program" << endl;
-		cout << "-cpp             instead of running the program, show transpiled C++ code" <<
-				"                 not yet fully implemented" << endl;
-		cout << "-h, -help        display this help and quit" << endl;
+		cout << "-v, -version      display the version of Pinecone" << endl;
+		cout << "-d, -debug        display debugging info before running the program" << endl;
+		cout << "-r, -run          run the program with the interpreter" << endl;
+		cout << "                  active by default if no transpiling commands are present" << endl;
+		cout << "                  currently, anything after -r is ignored" << endl;
+		cout << "-cpp [file]       transpile to C++ and save the output in the given file" << endl;
+		cout << "-bin [file]       transpile, compile with GCC and save the binary" << endl;
+		cout << "-e, -execute      transpile, compile and execute the binary" << endl;
+		cout << "                  any combination of -cpp, -bin and -e can be used" << endl;
+		cout << "                  like -r, anything after -e is ignored" << endl;
+		cout << "-h, -help         display this help and quit" << endl;
+		cout << endl;
+		cout << endl;
+		
 		return 0;
 	}
 	
@@ -78,7 +87,7 @@ int main(int argc, char ** argv)
 		if (error.getIfErrorLogged())
 		{
 			if (flags.debug)
-				cout << endl << ">>>>>>    transpiling abouted due to previous error    <<<<<<" << endl;
+				cout << endl << ">>>>>>    transpiling aborted due to previous error    <<<<<<" << endl;
 			else
 				cout << "program not transpiled due to errors" << endl;
 		}
