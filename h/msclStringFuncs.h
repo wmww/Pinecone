@@ -9,6 +9,9 @@ using std::to_string;
 #include <vector>
 using std::vector;
 
+#include <functional>
+using std::string;
+
 //	returns if the substring matches the input
 //	nothing needed for unicode
 //		in: the string to check against
@@ -106,6 +109,14 @@ string doubleToString(double in);
 string loadEntireFile(string inName, bool debug=false);
 
 bool writeFile(const string& filename, const string& contents, bool debug=false);
+
+// returns a random character that can be an upper case letter, a lower case letter or a digit
+char getRandChar();
+
+// given a hint name and a function to check if a name is unique, returns a unique string
+// checker should return true if the given name IS valid
+// if alwaysAppendRandom, it will always append a number of random digits
+string getUniqueString(string hint, std::function<bool (string)> checker, bool alwaysAppendRandom=false);
 
 //	run a shell command and return the output
 //		cmd: the command to run

@@ -539,6 +539,65 @@ string runCmd(string cmd, bool printOutput) // if print output is false, nothing
 }
 */
 
+char getRandChar()
+{
+	static unsigned int seed = 1;
+	//seed = (unsigned)newseed & 0x7fffffffU;
+	
+	seed = (seed * 1103515245U + 12345U) & 0x7fffffffU;
+	
+	int num=seed%(26+26+10);
+	
+	if (num<26)
+	{
+		return num+'a';
+	}
+	else if (num<26+26)
+	{
+		return num-26+'A';
+	}
+	else if (num<26+26+10)
+	{
+		return num-26-26+'0';
+	}
+	
+	return '_'; // if I did my arithmetic right, this shouldn't happen
+}
+
+string getUniqueString(string hint, std::function<bool (string)> checker, bool alwaysAppendRandom)
+{
+	string out=hint;
+	
+	int attempts=0;
+	bool invalid=out.empty() || !checker(out) || alwaysAppendRandom;
+	
+	while (invalid)
+	{
+		if (alwaysAppendRandom || attempts>=10)
+		{
+			out=hint+"_";
+			
+			if (attempts>20)
+			{
+				throw PineconeError("could not find unique random name", INTERNAL_ERROR);
+			}
+			
+			for (int i=0; i<3; i++)
+				out+=getRandChar();
+		}
+		else
+		{
+			string suffix=to_string(attempts);
+			
+			out=hint+"_"+suffix;
+		}
+		attempts++;
+		invalid=!checker(out);
+	}
+	
+	return out;
+}
+
 string runCmd(string cmd, bool printOutput) // if print output is false, nothing will be printed unil the entire command is done
 {
     std::string result = "";

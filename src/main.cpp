@@ -35,7 +35,7 @@ int main(int argc, char ** argv)
 		cout << "usage: pinecone [options] [source file]" << endl;
 		cout << "options: " << endl;
 		cout << "-v, -version     display the version of Pinecone" << endl;
-		cout << "-debug           display debugging info and then run the program" << endl;
+		cout << "-d, -debug       display debugging info and then run the program" << endl;
 		cout << "-cpp             instead of running the program, show transpiled C++ code" <<
 				"                 not yet fully implemented" << endl;
 		cout << "-h, -help        display this help and quit" << endl;
@@ -143,7 +143,7 @@ Flags getFlags(int argc, char ** argv)
 		{
 			string flag=arg.substr(1, string::npos);
 			
-			if (flag=="debug")
+			if (flag=="d" || flag=="debug")
 			{
 				flags.debug=true;
 			}
