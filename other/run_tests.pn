@@ -1,4 +1,7 @@
-options :: "-cpp "
+options: ""
+
+IS_TRANSPILED ?
+	options: options+" -e"
 
 print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
 print
@@ -22,7 +25,9 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 	
 	filepath: "examples/tests/" + in.folder
 	
-	allFiles: runCmd: "ls " + filepath + "/ | grep .pn"
+	cmd: "ls " + filepath + "/ | grep .pn"
+	
+	allFiles: runCmd: cmd
 	
 	i: 0
 
@@ -39,9 +44,11 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 
 runTest :: {filepath: String, name: String, printDetails: Bool}:
 (
-	cmd: "./pinecone " + options + in.filepath
+	cmd: "./pinecone " + in.filepath + options
 	
 	out: runCmd: cmd
+	
+	print: "\t\tcommand: " + cmd
 	
 	quit: fls
 	i: 0

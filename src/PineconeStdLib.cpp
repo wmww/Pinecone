@@ -478,6 +478,12 @@ void populateConstants()
 			"VERSION"
 		);
 	}
+	
+	func("IS_TRANSPILED", Void, Void, Bool,
+		retrn false;
+	,
+		"true"
+	);
 }
 
 void populateOperators()
