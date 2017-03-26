@@ -2,6 +2,8 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
+### v0.4.0 (Mar 26 2017)
+
 * Added command line options for transpileing
 * **Fully implemented transpiler to C++**
 * Disabled implicit conversion between two structs (if neither is an anonymous tuple)
