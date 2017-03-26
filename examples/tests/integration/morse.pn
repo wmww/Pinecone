@@ -4,5 +4,12 @@ print: "enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some te
 
 symInput: "pinecone\\nlang\\nquit"
 
-print: runCmd: "printf '"+symInput+"' | ./pinecone examples/morse.pn"
+options: ""
+
+IS_TRANSPILED ?
+	options: options+" -e"
+
+cmd: "printf '"+symInput+"' | ./pinecone examples/morse.pn" + options
+
+print: runCmd: cmd
 

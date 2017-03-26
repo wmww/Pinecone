@@ -124,7 +124,7 @@ int main(int argc, char ** argv)
 				string binFileName=flags.binOutFile;
 				
 				if (binFileName.empty())
-					binFileName="tmp_pn_compiledZ";
+					binFileName="tmp_pn_compiled";
 				
 				string cmd;
 				cmd="gcc -std=c++11 '"+cppFileName+"' -o '"+binFileName+"'";
