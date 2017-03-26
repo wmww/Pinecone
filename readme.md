@@ -9,12 +9,12 @@ __For updates, discussion and help, take a look at the Pinecone subreddit: [/r/P
 
 
 ## About
-Pinecone is a brand new, easy to learn, general purpose, multi-paradigm, high performence programming language created by Sophie Winter. Work on the language began on October 4th, 2016. Right now effort is focused on the Pinecone interpreter, but development will soon begin on a compiler using LLVM. The language is written from scratch (it includes an integrated lexer, parser and interpreter).
+Pinecone is a brand new, easy to learn, general purpose, multi-paradigm, high performance programming language created by Sophie Winter. Work on the language began on October 4th, 2016. Pinecone can now be interpreted or transpiled to C++. The language is written from scratch (it includes an integrated lexer, parser and interpreter, etc.).
 
 ## Why?
 This is probably the most common reaction to hearing about a new language. I realize that there are a __lot__ of programming languages, and that the reason for that is that there are so many assholes like me who keep making them. I do truly think, though, that Pinecoe fills a previously empty niche.
 
-Pinecone will be similar in capabilities to modern object oriented compiled languages such as C++, Swift and Rust. It's primary attraction is the simplicity and consistency of it's syntax. Here are some examples of how Pinecone is different from other popular languages:
+Pinecone aims to have similar capabilities to modern object oriented compiled languages such as C++, Swift and Rust. It's primary attraction is the simplicity and consistency of it's syntax. Here are some examples of how Pinecone is different from other popular languages:
 
 * Variable creation is implicit, just set a variable and it is created.
 * Variables are statically typed, but type deduction is automatic.
@@ -42,16 +42,17 @@ The features that are currently implemented are as follows:
 * Strings and various String operations
 * User input
 * Running system commands
+* Interpreter for rapid development and simplicity
+* Transpiler to C++ for max performance
 
 the following features are coming soon:
 
 * Pass-by-reference
 * Proper classes (pass-by-reference needed)
-* Arrays for any type
+* Arrays of any type
 * Operator overloading
-* Transpiling to C++, or compiling using LLVM
 
-here is an example of a very simple Pinecone program. It prints out all the fibonacci numbers that are less then 100 and even.
+here is an example of a very simple Pinecone program. It prints out all the fibonacci numbers that are less then 100 and even. For more complex examples, see the examples directory or the tutorials.
 
 ```
 a: 1
