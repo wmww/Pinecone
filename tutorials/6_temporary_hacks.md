@@ -1,6 +1,6 @@
 # Temporary Hacks
 
-Pinecone is still under rapid development, and there are a lot of features that are broken or not yet implemented. This tutorial explains what is coming and what you can use until then. many of the functions described here may be depricated/removed as soon as better replacements are ready.
+Pinecone is still under rapid development, and there are a lot of features that are not yet implemented. This tutorial explains what is coming and what you can use until then. many of the functions described here may be depricated/removed as soon as better replacements are ready.
 
 ## Pass-by-reference
 There is not yet any pass-by-reference in Pinecone (with the exception of Int arrays and strings (though the latter is immutable)). Without pass-by-reference, you can't really have classes because functions can not modify the object they are called on.
