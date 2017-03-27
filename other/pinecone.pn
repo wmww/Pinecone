@@ -1,6 +1,9 @@
 
-func :: {a: Int, b: Whatev}: (
-	print: a
+func :: {String}.{a: Int, b: Int}: (
+	
+	print: in.a
+	print: me
 )
 
-func: 8, 3.9
+"hi".func: 8, 3
+

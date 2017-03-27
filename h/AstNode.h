@@ -183,6 +183,33 @@ private:
 	Token token=nullptr;
 };
 
+class AstFuncBody: public AstNodeBase
+{
+public:
+	
+	static AstNode make(AstNode leftTypeIn, AstNode rightTypeIn, AstNode returnTypeIn, AstNode bodyIn)
+	{
+		auto node=new AstFuncBody();
+		
+		node->leftTypeNode=move(leftTypeIn);
+		node->rightTypeNode=move(rightTypeIn);
+		node->returnTypeNode=move(returnTypeIn);
+		node->bodyNode=move(bodyIn);
+		
+		return AstNode(node);
+	}
+	
+	string getString();
+	
+	void resolveAction();
+	
+	Token getToken() {return bodyNode->getToken();}
+	
+private:
+	
+	AstNode leftTypeNode, rightTypeNode, returnTypeNode, bodyNode;
+};
+
 class AstExpression: public AstNodeBase
 {
 public:
@@ -200,13 +227,11 @@ public:
 	
 	//bool isType() {return leftIn->isType() || rightIn->isType();}
 	
-	virtual string getString();
+	string getString();
 	
-	virtual void resolveAction();
+	void resolveAction();
 	
 	Token getToken() {return center->getToken();}
-	
-private:
 	
 	AstNode leftIn=nullptr, center=nullptr, rightIn=nullptr;
 };
@@ -226,7 +251,7 @@ public:
 		return node;
 	}
 	
-	virtual string getString();
+	string getString();
 	
 	void resolveConstant();
 	void resolveAction() {action=voidAction;};

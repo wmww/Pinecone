@@ -191,6 +191,16 @@ public:
 			error.log(FUNC+" sent null input, compiler will likely shit itself in the near future", INTERNAL_ERROR);
 		
 		subTypes=std::move(in);
+		
+		for (auto i: *subTypes)
+		{
+			if (i.type->isWhatev())
+			{
+				hasWhatev=true;
+				break;
+			}
+		}
+		
 		isAnonymous=isAnonymousIn;
 	}
 	
@@ -291,6 +301,11 @@ public:
 		return &(*subTypes);
 	}
 	
+	bool isWhatev()
+	{
+		return hasWhatev;
+	}
+	
 protected:
 	
 	bool matchesSameTypeType(Type other)
@@ -322,6 +337,7 @@ private:
 	
 	unique_ptr<vector<NamedType>> subTypes;
 	bool isAnonymous=true;
+	bool hasWhatev=false;
 };
 
 class PtrType: public TypeBase
