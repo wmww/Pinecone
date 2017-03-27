@@ -1,8 +1,6 @@
-a :: "a"
-comp :: {String} -> {Bool}:
-(	
-	in: "hello"
-	
-	fls
+
+func :: {a: Int, b: Whatev}: (
+	print: a
 )
-print: comp: "a"
+
+func: 8, 3.9

@@ -430,6 +430,57 @@ protected:
 	}
 };
 
+class WhatevType: public TypeBase
+{
+public:
+	
+	WhatevType() {}
+	
+	string getString()
+	{
+		return "(whatev type)";
+	}
+	
+	string getCompactString()
+	{
+		return "W";
+	}
+	
+	string getCppLiteral(void * data, CppProgram * prog)
+	{
+		throw PineconeError("getCppLiteral called on whatev type, wich should not have happened", INTERNAL_ERROR);
+	}
+	
+	size_t getSize()
+	{
+		throw PineconeError("getSize called on whatev type, wich should not have happened", INTERNAL_ERROR);
+	}
+	
+	PrimitiveType getType()
+	{
+		return GENERIC;
+	}
+	
+	bool isWhatev()
+	{
+		return true;
+	}
+	
+	Type getSubType()
+	{
+		throw PineconeError("getSubType called on whatev type, wich should not have happened", INTERNAL_ERROR);
+	}
+	
+protected:
+	
+	Type type;
+	
+	bool matchesSameTypeType(Type other)
+	{
+		return true;
+	}
+};
+
 Type TypeBase::makeNewVoid()
 {
 	return Type(new VoidType);
@@ -440,6 +491,11 @@ Type TypeBase::makeNewPrimitive(PrimitiveType typeIn)
 	return Type(new PrimType(typeIn));
 }
 
+Type TypeBase::makeNewWhatev()
+{
+	return Type(new WhatevType());
+}
+
 vector<NamedType>* TypeBase::getAllSubTypes()
 {
 	throw PineconeError("getAllSubTypes called on type that was not a tuple", INTERNAL_ERROR);
@@ -447,6 +503,7 @@ vector<NamedType>* TypeBase::getAllSubTypes()
 
 const Type Unknown(new UnknownType);
 const Type Void = TypeBase::makeNewVoid();
+const Type Whatev = TypeBase::makeNewWhatev();
 const Type Bool = TypeBase::makeNewPrimitive(TypeBase::BOOL);
 const Type Byte = TypeBase::makeNewPrimitive(TypeBase::BYTE);
 const Type Int = TypeBase::makeNewPrimitive(TypeBase::INT);

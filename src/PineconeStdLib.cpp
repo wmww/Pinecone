@@ -442,6 +442,7 @@ void populateBasicTypes()
 	table->addType(Int, "Int");
 	table->addType(Dub, "Dub");
 	table->addType(String, "String");
+	table->addType(Whatev, "Whatev");
 }
 
 void populateConstants()
