@@ -446,7 +446,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		if (op==ops->colon)
 		{
 			//for (int j=i-1; j>=left; j--)
-			for (int j=left; j<i; j++)
+			/*for (int j=left; j<i; j++)
 			{
 				Operator op=tokens[j]->getOp();
 				
@@ -472,13 +472,24 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 						break;
 					}
 				}
-			}
+			}*/
 			
-			if (!leftNode)
+			//if (!leftNode)
 				leftNode=AstVoid::make();
 			
-			if (!centerNode)
+			//if (!centerNode)
 				centerNode=parseExpression(tokens, left, i-1);
+			
+			if (typeid(*centerNode)==typeid(AstExpression))
+			{
+				AstExpression * exprNode=(AstExpression*)&*centerNode;
+				
+				if (!exprNode->leftIn->isVoid() && !exprNode->center->isVoid() && exprNode->rightIn->isVoid())
+				{
+					leftNode=move(exprNode->leftIn);
+					centerNode=move(exprNode->center);
+				}
+			}
 		}
 		else
 		{
