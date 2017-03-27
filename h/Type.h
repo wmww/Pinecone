@@ -18,6 +18,7 @@ class TypeBase;
 typedef shared_ptr<TypeBase> Type;
 
 const extern Type Unknown;
+const extern Type Whatev;
 const extern Type Void;
 const extern Type Bool;
 const extern Type Byte;
@@ -64,6 +65,7 @@ public:
 		PTR,
 		BOOL,
 		TUPLE,
+		GENERIC,
 		METATYPE,
 	};
 	
@@ -75,12 +77,14 @@ public:
 	Int: i
 	Dub: d
 	Ptr: Pp_..._pP
-	Meta: Mm_..._mM
 	Tuple: Tt_[size of name]_name_type..._tT
+	Whatev: W
+	Meta: Mm_..._mM
 	*/
 	
 	static Type makeNewVoid();
 	static Type makeNewPrimitive(PrimitiveType typeIn);
+	static Type makeNewWhatev();
 	//static Type makeNew(unordered_map<string, Type>, string nameIn);
 	
 	//TypeBase(string nameIn) {name=nameIn;}
@@ -95,6 +99,7 @@ public:
 	
 	virtual bool isCreatable() {return true;};
 	virtual bool isVoid() {return false;};
+	virtual bool isWhatev() {return false;};
 	
 	virtual size_t getSize()=0;
 	//string getName() {return name;}

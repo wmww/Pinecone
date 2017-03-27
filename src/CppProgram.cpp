@@ -391,7 +391,10 @@ string CppProgram::getTypeCode(Type in)
 		return "bool";
 		
 	case TypeBase::PTR:
-		return getTypeCode(in->getSubType())+" *";
+		if (in->getSubType()->isWhatev())
+			return "void *";
+		else
+			return getTypeCode(in->getSubType())+" *";
 		
 	case TypeBase::TUPLE:
 	{
