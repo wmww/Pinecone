@@ -80,24 +80,17 @@ void AstList::resolveAction()
 string AstExpression::getString()
 {
 	string out;
-	
-	out+="(";
-	
 	if (!leftIn->isVoid())
 	{
-		out+=leftIn->getString();
-		out+=" -> ";
+		out+=indentString(leftIn->getString(), "  ")+"\n";
 	}
 	
-	out+=center->getString();
+	out+=center->getString()+"\n";
 	
 	if (!rightIn->isVoid())
 	{
-		out+=" <- ";
-		out+=rightIn->getString();
+		out+=indentString(rightIn->getString(), "  ");
 	}
-	
-	out+=")";
 	
 	return out;
 }

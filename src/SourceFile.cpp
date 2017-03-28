@@ -22,7 +22,7 @@ string SourceFile::getDirPath()
 
 string SourceFile::getBoxedString()
 {
-	return putStringInBox(contents, filename, true);
+	return str::getBoxedString(contents, filename, true);
 }
 
 string SourceFile::getLine(int lineNum)
