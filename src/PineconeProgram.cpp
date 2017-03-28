@@ -73,7 +73,8 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		
 		if (printOutput)
 		{
-			cout << endl << putStringInBox(astRoot->getString(), "abstract syntax tree") << endl;
+			//cout << endl << putStringInBox(astRoot->getString(), "abstract syntax tree") << endl;
+			cout << endl << str::getBoxedString(astRoot->getString(), "abstract syntax tree") << endl;
 		}
 	}
 	

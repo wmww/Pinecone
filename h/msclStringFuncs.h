@@ -12,6 +12,8 @@ using std::vector;
 #include <functional>
 using std::string;
 
+#include "utils/StringUtils.h"
+
 //	returns if the substring matches the input
 //	nothing needed for unicode
 //		in: the string to check against
@@ -98,6 +100,9 @@ string putStringInBox(const string& in, string boxName="", bool showLineNums=fal
 //		tableName: the name that will apear at the top of the table
 //		returns: a string that looks like a table
 string putStringInTable(const string& in, string tableName);
+
+// assembles one section of a tree
+string assembleTreeString(const string& root, vector<string>& leaves);
 
 //	converts a double to a string, with always at least one zero before and after the decimal
 string doubleToString(double in);

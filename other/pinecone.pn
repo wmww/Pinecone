@@ -1,9 +1,11 @@
 
-func :: {String}.{a: Int, b: Int}: (
+func :: {String}.{a: Int, b: Int} -> {Int}: (
 	
 	print: in.a
 	print: me
+	
+	in.b
 )
 
-"hi".func: 8, 3
+print: ("hi".func: 8, 3)
 

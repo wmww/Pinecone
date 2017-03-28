@@ -50,6 +50,9 @@
 		<Unit filename="../h/Type.h" />
 		<Unit filename="../h/VERSION.h" />
 		<Unit filename="../h/msclStringFuncs.h" />
+		<Unit filename="../h/utils/StringArray.h" />
+		<Unit filename="../h/utils/StringDrawing.h" />
+		<Unit filename="../h/utils/StringUtils.h" />
 		<Unit filename="../other/pinecone.pn" />
 		<Unit filename="../other/pinecone_concept.txt" />
 		<Unit filename="../other/run_tests.pn" />
@@ -79,6 +82,9 @@
 		<Unit filename="../src/Type.cpp" />
 		<Unit filename="../src/main.cpp" />
 		<Unit filename="../src/msclStringFuncs.cpp" />
+		<Unit filename="../src/utils/StringArray.cpp" />
+		<Unit filename="../src/utils/StringDrawing.cpp" />
+		<Unit filename="../src/utils/StringUtils.cpp" />
 		<Unit filename="../tutorials/0_setting_up.md" />
 		<Unit filename="../tutorials/1_basic_concepts.md" />
 		<Unit filename="../tutorials/2_control_flow.md" />
