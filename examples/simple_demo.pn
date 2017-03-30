@@ -63,6 +63,15 @@ a<100 @
 print
 
 
+print: "Recursive Fibonacci"
+
+fib :: {Int}: (
+	
+	(fib: in - 1) + (fib: in - 2)
+)
+
+print: fib: 4
+
 print: "compile time constants"
 
 print: y

@@ -60,16 +60,6 @@ string getBoxedString(const string& in, string boxName, bool showLineNums, bool 
 		lines[i]=" ┃ "+lines[i]+" ┃ ";
 	}
 	
-	string underline;
-	for (int i=0; i<nameWidth; i++)
-	{
-		underline+="─";
-	}
-	
-	lines.insert(lines.begin(), " ┃"+pad(underline,	width+2, ALIGNMENT_CENTER, " ", "╰─", "─╯")+"┃ ");
-	lines.insert(lines.begin(), " ┏"+pad(boxName,	width+2, ALIGNMENT_CENTER, "━", "┥ ", " ┝")+"┓ ");
-	lines.insert(lines.begin(), "  "+pad(underline,	width+2, ALIGNMENT_CENTER, " ", "╭─", "─╮")+"  ");
-	
 	string bottom;
 	string emptyLn;
 	
@@ -79,12 +69,36 @@ string getBoxedString(const string& in, string boxName, bool showLineNums, bool 
 		emptyLn+=" ";
 	}
 	
+	if (boxName.empty())
+	{
+		lines.insert(lines.begin(), " ┃ "+bottom+ " ┃ ");
+		lines.insert(lines.begin(), " ┏━"+emptyLn+"━┓ ");
+	}
+	else
+	{
+		string underline;
+		for (int i=0; i<nameWidth; i++)
+		{
+			underline+="─";
+		}
+		
+		lines.insert(lines.begin(), " ┃"+pad(underline,	width+2, ALIGNMENT_CENTER, " ", "╰─", "─╯")+"┃ ");
+		lines.insert(lines.begin(), " ┏"+pad(boxName,	width+2, ALIGNMENT_CENTER, "━", "┥ ", " ┝")+"┓ ");
+		lines.insert(lines.begin(), "  "+pad(underline,	width+2, ALIGNMENT_CENTER, " ", "╭─", "─╮")+"  ");
+	}
+	
+	
 	lines.push_back(" ┃ "+emptyLn+" ┃ ");
 	lines.push_back(" ┗━"+bottom +"━┛ ");
 	
 	
 	
 	return join(lines);
+}
+
+string makeTreeSection(const string& root, vector<string>& leaves)
+{
+	return "makeTreeSection not yet implemented";
 }
 
 }
