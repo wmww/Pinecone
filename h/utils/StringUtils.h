@@ -30,6 +30,9 @@ inline bool hasPrefix(const string& in, const string& prefix);
 
 inline bool hasSuffix(const string& in, const string& suffix);
 
+// returns the BYTE location (not glyph location), or -1 if pattern doesn't appear
+//int searchFor(const string& in, string pattern, int startByte);
+
 string tabsToSpaces(const string& in, int tabWidth=4);
 
 enum StringPadAlignment {ALIGNMENT_LEFT=1, ALIGNMENT_CENTER=0, ALIGNMENT_RIGHT=-1};
