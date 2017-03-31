@@ -12,7 +12,7 @@ __For updates, discussion and help, take a look at the Pinecone subreddit: [/r/P
 Pinecone is a brand new, easy to learn, general purpose, multi-paradigm, high performance programming language created by William W Wold. Work on the language began on October 4th, 2016. Pinecone can now be interpreted or transpiled to C++. The language is written from scratch (it includes an integrated lexer, parser and interpreter, etc.).
 
 ## Why?
-This is probably the most common reaction to hearing about a new language. I realize that there are a __lot__ of programming languages, and that the reason for that is that there are so many assholes like me who keep making them. I do truly think, though, that Pinecoe fills a previously empty niche.
+This is probably the most common reaction to hearing about a new language. I realize that there are a __lot__ of programming languages, and that the reason for that is that there are so many assholes like me who keep making them. I do truly think, though, that Pinecone fills a previously empty niche.
 
 Pinecone aims to have similar capabilities to modern object oriented compiled languages such as C++, Swift and Rust. It's primary attraction is the simplicity and consistency of it's syntax. Here are some examples of how Pinecone is different from other popular languages:
 
@@ -22,7 +22,7 @@ Pinecone aims to have similar capabilities to modern object oriented compiled la
 * Calling a function that takes one argument is the same syntax as setting or creating a variable (`funcOrVar: input`).
 * Calling a function that takes multiple arguments is the same syntax as setting or creating a tuple (`funcOrTuple: input1, input2`).
 * White space is ignored _and_ semicolons are not necessary
-* `:` is used for assignment, which leaves `=` free for comparison, rather then the often confusing `==`.
+* `:` is used for assignment, which leaves `=` free for comparison, rather than the often confusing `==`.
 * Tuples, structs and classes are all basically the same thing
 * Functions can be sent arguments from the left side, right side or both (`inputLeft.function: inputRight`), which is used for class methods but can also allow you to define functions for any type (even primitive).
 * Program control is done with operators instead of keywords (`?` instead of `if`)
