@@ -1,8 +1,1 @@
-a :: "a"
-comp :: {String} -> {Bool}:
-(	
-	in: "hello"
-	
-	fls
-)
-print: comp: "a"
+print: "Hello, World!"
