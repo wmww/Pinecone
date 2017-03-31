@@ -1,6 +1,7 @@
 # Setting up your environment
 
-Disclamer: these steps will probably work on Linux, maybe even on OSX. Windows is not yet supported. For updates on Windows support, see [](https://github.com/william01110111/Pinecone/issues/2)
+Disclamer: these steps work on Linux, and usually on OSX. Windows is not yet supported. For updates on Windows support, see [this issue](https://github.com/william01110111/Pinecone/issues/2).
+
 1. Open a terminal and navigate to where you want the Pinecone folder to go
 2. Run the command `git clone https://github.com/william01110111/Pinecone.git`. This will download the Pinecone source code
 3. Move into the Pinecone directory
