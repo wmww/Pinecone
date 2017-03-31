@@ -1,0 +1,6 @@
+# This error is hard to write a test for and should not regress when fixed, so this is just a placeholder file
+# the problem is that when you import a file, and that file has an error in it, the compiler crashes
+# I think this is because it tries to reference info about the imported file, but that file's data has been freed.
+
+print: "This is simply a placeholder file, see crash_on_error_in_import.pn for details\n_____"
+
