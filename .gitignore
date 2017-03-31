@@ -17,3 +17,5 @@ PineconeBin
 Pinecone
 pinecone
 
+# stupid OSX stuff
+*.DS_Store

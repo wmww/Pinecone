@@ -52,19 +52,32 @@ the following features are coming soon:
 * Arrays of any type
 * Operator overloading
 
-here is an example of a very simple Pinecone program. It prints out all the fibonacci numbers that are less then 100 and even. For more complex examples, see the examples directory or the tutorials.
+here is the common demo program FizzBuzz wretten in Pinecone. It prints the numbers from 1 to 20, but it prints "Fizz" if the number is divisable by 3, "Buzz" if it is divisable by 5 and "FizzBuzz" if it is divisable by both. You can find more samples in the examples directory or the tutorials.
 
 ```
-a: 1
-b: 0
+# FizzBuzz
 
-a<100 @
-(
-	a%2=0 ?
-		print: a
+# call the function defined below
+fizzBuzz: 1, 20
 
-	tmp: a
-	a: a+b
-	b: tmp
+# define the FizzBuzz function
+fizzBuzz :: {start: Int, end: Int}: (
+
+	# loop i from start to end
+	i: in.start | i <= in.end | i: i+1 @ (
+
+		# use conditionals to print the right thing
+
+		i % 3 = 0 && i % 5 = 0 ?
+		print: "FizzBuzz"
+		|
+		i % 3 = 0 ?
+		print: "Fizz"
+		|
+		i % 5 = 0 ?
+		print: "Buzz"
+		|
+		print: i
+	)
 )
 ```
