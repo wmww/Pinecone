@@ -76,15 +76,15 @@ fizzBuzz :: {start: Int, end: Int}: (
 		# use conditionals to print the right thing
 
 		i % 3 = 0 && i % 5 = 0 ?
-		print: "FizzBuzz"
+			print: "FizzBuzz"
 		|
 		i % 3 = 0 ?
-		print: "Fizz"
+			print: "Fizz"
 		|
 		i % 5 = 0 ?
-		print: "Buzz"
+			print: "Buzz"
 		|
-		print: i
+			print: i
 	)
 )
 ```
