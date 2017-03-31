@@ -14,6 +14,6 @@
 
 [5. Transpiling to C++](5_transpiling_to_cpp.md)
 
-[6. Temporary Hacks]6_temporary_hacks.md)
+[6. Temporary Hacks](6_temporary_hacks.md)
 
 
