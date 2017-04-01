@@ -2,7 +2,7 @@
 
 ## Types
 
-Since types for variables are implicit you usually don't have to specify them. The exception is when creating your own data structures and functions. When Types are always enclosed in {}.
+Since types for variables are implicit, you usually don't have to specify them. The exception is when creating your own data structures and functions, when types are always enclosed in {}.
 
 ## Data Structures
 
@@ -15,10 +15,11 @@ myType :: {Int, Dub}
 The comma that seporates them is only for readability. It could be a semicolon, newline or just a space (NOTE: inside types is the only place a comma is interchangable with anything else). The elements in a data structure always have names. If none is specified, they are given the names `a`, `b`, `c`, etc. like tuples. You can specify your own names with `:`. For example:
 
 ```
-myType :: {name1: Int, name2: Bool}
+myType :: {
+	name1: Int
+	name2: Bool
+}
 ```
-
-As long as the types match up, tuples and structures can be implicitly converted to eachother.
 
 ## Functions
 
@@ -30,6 +31,8 @@ The left input and return type can be omitted, in wich case they are `Void`. If 
 ### Examples
 
 ```
+# declaring functions (can be done above or below calling them)
+
 addOne :: {Int} -> {Int}:
 (
     a: in+1
@@ -41,6 +44,26 @@ printNumbers :: {val1: Dub, val2: Dub}:
     print: in.val1
     print: in.val2
 )
+
+leftInput :: {Int}.{} -> {String}:(
+	print: me
+	"return str"
+)
+
+noArgs :: {}: (
+	print: "Hello"
+)
+
+
+# calling functions
+
+print: addOne: 8
+
+printNumbers: 7, 12
+
+print: 8.leftInput
+
+noArgs
 ```
 
 I know the `in.` is annoying. It will be made implicit soon.
