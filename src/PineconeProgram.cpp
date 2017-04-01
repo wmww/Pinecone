@@ -120,7 +120,7 @@ string PineconeProgram::getCpp()
 		actionRoot->addToProg(voidAction, voidAction, &outProg);
 		return outProg.getCppCode();
 	}
-	catch (PineconeError err)
+ 	catch (PineconeError err)
 	{
 		err.log();
 		return "/* no program due to transpiling error */";

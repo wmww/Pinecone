@@ -65,12 +65,20 @@ print
 
 print: "Recursive Fibonacci"
 
-fib :: {Int}: (
+fib :: {Int} -> {Int}: (
+	out: Int
 	
-	(fib: in - 1) + (fib: in - 2)
+	in <= 1 ?
+		out: 1
+	|
+		out: (fib: in - 1) + (fib: in - 2)
+	
+	out
 )
 
-print: fib: 4
+print: fib: 8
+
+print
 
 print: "compile time constants"
 
