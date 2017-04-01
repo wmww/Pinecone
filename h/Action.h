@@ -6,6 +6,8 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <string>
+
 
 using std::shared_ptr;
 using std::unique_ptr;
