@@ -479,6 +479,30 @@ void populateConstants()
 		);
 	}
 	
+	// OS
+	bool isLinux=false;
+	bool isWindows=false;
+	bool isUnix=false;
+	bool isMac=false;
+	
+	#ifdef __linux__
+		isLinux=true;
+		isUnix=true;
+	
+	#elifdef _WIN32 //works forboth 32 and 64 bit systems
+		isWindows=true;
+	
+	#elifdef __APPLE__
+		isMac=true;
+		isUnix=true;
+	
+	#endif
+	
+	table->addAction(constGetAction(&isLinux, Bool, "OS_IS_LINUX"), "OS_IS_LINUX");
+	table->addAction(constGetAction(&isWindows, Bool, "OS_IS_WINDOWS"), "OS_IS_WINDOWS");
+	table->addAction(constGetAction(&isMac, Bool, "OS_IS_MAC"), "OS_IS_MAC");
+	table->addAction(constGetAction(&isUnix, Bool, "OS_IS_UNIX"), "OS_IS_UNIX");
+	
 	func("IS_TRANSPILED", Void, Void, Bool,
 		retrn false;
 	,

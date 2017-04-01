@@ -5,13 +5,13 @@
 		<Option title="Pinecone" />
 		<Option pch_mode="2" />
 		<Option default_target="Release" />
-		<Option compiler="gcc" />
+		<Option compiler="copy_of_gnu_gcc_compiler_64_bit" />
 		<Build>
 			<Target title="Debug">
 				<Option output="../pinecone" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="copy_of_gnu_gcc_compiler_64_bit" />
 				<Option parameters="other/pinecone.pn -d -r" />
 				<Compiler>
 					<Add option="-g" />
@@ -21,8 +21,8 @@
 				<Option output="../pinecone" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../" />
 				<Option type="1" />
-				<Option compiler="gcc" />
-				<Option parameters="other/run_tests.pn -e" />
+				<Option compiler="copy_of_gnu_gcc_compiler_64_bit" />
+				<Option parameters="other/run_tests.pn -r" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
