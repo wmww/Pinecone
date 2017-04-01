@@ -47,7 +47,7 @@ private:
 	
 private:
 	
-	SourceFile file;
+	shared_ptr<SourceFile> file=nullptr;
 	
 	//a list of all the tokens in the program
 	vector<Token> tokens;

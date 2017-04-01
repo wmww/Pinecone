@@ -32,7 +32,7 @@ public:
 		UNKNOWN
 	};
 	
-	TokenData(string textIn, SourceFile* fileIn, int lineIn, int charPosIn, Type tokenTypeIn, Operator opIn=Operator(nullptr))
+	TokenData(string textIn, shared_ptr<SourceFile> fileIn, int lineIn, int charPosIn, Type tokenTypeIn, Operator opIn=Operator(nullptr))
 	{
 		text=textIn;
 		file=fileIn;
@@ -43,7 +43,7 @@ public:
 	}
 	
 	string getText() const {return text;}
-	SourceFile* getFile() const {return file;}
+	shared_ptr<SourceFile> getFile() const {return file;}
 	int getLine() const {return line;}
 	int getCharPos() const {return charPos;}
 	TokenData::Type getType() const {return tokenType;}
@@ -57,7 +57,7 @@ public:
 private:
 	
 	string text;
-	SourceFile* file;
+	shared_ptr<SourceFile> file;
 	int line;
 	int charPos;
 	Type tokenType;
@@ -66,7 +66,7 @@ private:
 
 typedef shared_ptr<TokenData> Token;
 
-Token makeToken(string textIn, SourceFile* fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn=Operator(nullptr));
+Token makeToken(string textIn, shared_ptr<SourceFile> fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn=Operator(nullptr));
 
 string stringFromTokens(const vector<Token>& tokens, int left, int right);
 string tableStringFromTokens(const vector<Token>& tokens, string tableName);
