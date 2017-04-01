@@ -18,7 +18,7 @@ using std::min;
 using std::max;
 using std::pair;
 
-void lexString(SourceFile& file, vector<Token>& tokens);
+void lexString(shared_ptr<SourceFile> file, vector<Token>& tokens);
 
 //	unless otherwise noted, these are what the perams for the following functions mean
 //		tokens: the tokens to parse
@@ -739,9 +739,9 @@ unique_ptr<AstType> parseType(const vector<Token>& tokens, int left, int right)
 
 void importFile(vector<AstNode>& nodes, string path)
 {
-	SourceFile file=SourceFile(path, false);
+	auto file=shared_ptr<SourceFile>(new SourceFile(path, false));
 	
-	if (file.getContents().empty())
+	if (file->getContents().empty())
 	{
 		throw PineconeError("file '"+path+"' failed to open or was empty", SOURCE_ERROR);
 	}

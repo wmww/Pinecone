@@ -5,7 +5,7 @@
 #include "../h/CppProgram.h"
 
 void populatePineconeStdLib();
-void lexString(SourceFile& file, vector<Token>& tokens);
+void lexString(shared_ptr<SourceFile> file, vector<Token>& tokens);
 Action parseFunction(const vector<Token>& tokens, int left, int right, Type leftInType, Type rightInType);
 
 extern Namespace globalNamespace;
@@ -31,11 +31,11 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	
 	if (!error.getIfErrorLogged())
 	{
-		file=SourceFile(inFilename, printOutput);
+		file=shared_ptr<SourceFile>(new SourceFile(inFilename, printOutput));
 		
 		if (printOutput)
 		{
-			cout << endl << endl << file.getBoxedString() << endl;
+			cout << endl << endl << file->getBoxedString() << endl;
 		}
 	}
 	

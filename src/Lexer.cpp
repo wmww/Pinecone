@@ -29,7 +29,7 @@ public:
 	
 	static inline TokenData::Type getTokenType(CharClassifier::Type type, TokenData::Type previousType);
 	
-	inline CharClassifier::Type get(SourceFile& file, int i);
+	inline CharClassifier::Type get(shared_ptr<SourceFile> file, int i);
 	
 private:
 	void setUp();
@@ -78,7 +78,7 @@ void CharClassifier::setUp()
 	hasSetUp=true;
 }
 
-inline CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
+inline CharClassifier::Type CharClassifier::get(shared_ptr<SourceFile> file, int index)
 {
 	//	set up the first time this function is called
 	if (!hasSetUp)
@@ -86,22 +86,22 @@ inline CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
 	
 	//	chack fo multi line comments in a special way, because they are multi character
 	
-	switch (file[index])
+	switch ((*file)[index])
 	{
 	case '/':
-		if (index<int(file.size())-1 && file[index+1]=='/')
+		if (index<int(file->size())-1 && (*file)[index+1]=='/')
 			return MULTI_LINE_COMMENT_START;
 		break;
 		
 	case '\\':
-		if (index>0 && file[index-1]=='\\')
+		if (index>0 && (*file)[index-1]=='\\')
 			return MULTI_LINE_COMMENT_END;
 		break;
 		
 	case '.': // allow a . to be a digit character only if it is followed by a digit
-		if (index<int(file.size())-1)
+		if (index<int(file->size())-1)
 		{
-			auto i=hm.find(file[index+1]);
+			auto i=hm.find((*file)[index+1]);
 		
 			if (i!=hm.end() && i->second==DIGIT)
 				return DIGIT;
@@ -110,7 +110,7 @@ inline CharClassifier::Type CharClassifier::get(SourceFile& file, int index)
 	}
 	
 	//	handle all other cases using the hashmap
-	char c=file[index];
+	char c=(*file)[index];
 	
 	auto i=hm.find(c);
 	
@@ -184,7 +184,7 @@ inline TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, T
 	}
 }
 
-void lexString(SourceFile& file, vector<Token>& tokens)
+void lexString(shared_ptr<SourceFile> file, vector<Token>& tokens)
 {
 	string tokenTxt;
 	int line=1;
@@ -192,7 +192,7 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 	
 	TokenData::Type type=TokenData::WHITESPACE;
 	
-	for (int i=0; i<file.size(); i++)
+	for (int i=0; i<file->size(); i++)
 	{
 		CharClassifier::Type charType=charClassifier.get(file, i);
 		TokenData::Type newType=CharClassifier::getTokenType(charType, type);
@@ -208,7 +208,7 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 					
 					for (auto op: opMatches)
 					{
-						tokens.push_back(makeToken(op->getText(), &file, line, charPos-tokenTxt.size(), type, op));
+						tokens.push_back(makeToken(op->getText(), file, line, charPos-tokenTxt.size(), type, op));
 					}
 				}
 				else if (type==TokenData::LINE_COMMENT || type==TokenData::BLOCK_COMMENT)
@@ -217,7 +217,7 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 				}
 				else
 				{
-					Token token=makeToken(tokenTxt, &file, line, charPos-tokenTxt.size(), type);
+					Token token=makeToken(tokenTxt, file, line, charPos-tokenTxt.size(), type);
 					
 					if (type==TokenData::UNKNOWN)
 					{
@@ -234,29 +234,29 @@ void lexString(SourceFile& file, vector<Token>& tokens)
 		
 		if (newType!=TokenData::WHITESPACE && newType!=TokenData::LINE_END)
 		{
-			if (newType==TokenData::STRING_LITERAL && file[i]=='\\')
+			if (newType==TokenData::STRING_LITERAL && (*file)[i]=='\\')
 			{
 				i++;
-				if (file[i]=='n')
+				if ((*file)[i]=='n')
 					tokenTxt+='\n';
-				else if (file[i]=='"')
+				else if ((*file)[i]=='"')
 					tokenTxt+='"';
-				else if (file[i]=='t')
+				else if ((*file)[i]=='t')
 					tokenTxt+='\t';
-				else if (file[i]=='\\')
+				else if ((*file)[i]=='\\')
 					tokenTxt+='\\';
 				else
-					throw PineconeError(string()+"invalid escape character '\\"+file[i]+"'", SOURCE_ERROR, makeToken(tokenTxt+file[i], &file, line, charPos-tokenTxt.size(), type));
+					throw PineconeError(string()+"invalid escape character '\\"+(*file)[i]+"'", SOURCE_ERROR, makeToken(tokenTxt+(*file)[i], file, line, charPos-tokenTxt.size(), type));
 			}
 			else
 			{
-				tokenTxt+=file[i];
+				tokenTxt+=(*file)[i];
 			}
 		}
 		
 		type=newType;
 		
-		if (file[i]=='\n')
+		if ((*file)[i]=='\n')
 		{
 			line++;
 			charPos=1;
