@@ -2,10 +2,14 @@
 
 #include <fstream>
 #include <sstream>
-#include <sys/ioctl.h> // for terminal size detection
 #include <unistd.h> // for terminal size detection
 #include <stdlib.h>
+
+//#ifdef _WIN32
+#ifdef __linux__
 #include <termcap.h>
+#include <sys/ioctl.h> // for terminal size detection
+#endif // __linux__
 
 using std::stringstream;
 
@@ -625,20 +629,25 @@ string runCmd(string cmd, bool printOutput) // if print output is false, nothing
     return result;
 }
 
+// TODO: implement for windows
 int getTermWidth()
 {
-	// reports inacurate size if the terminal is new, as is the case when running from an IDE
-	static bool firstTime=true;
-	if (firstTime)
-	{
-		usleep(20000);
-		firstTime=false;
-	}
-	
-	struct winsize w;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-	//cout << "width measured as " << w.ws_col << endl;
-	return w.ws_col;
+	#ifdef __linux__
+		// reports inacurate size if the terminal is new, as is the case when running from an IDE
+		static bool firstTime=true;
+		if (firstTime)
+		{
+			usleep(20000);
+			firstTime=false;
+		}
+		
+		struct winsize w;
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+		//cout << "width measured as " << w.ws_col << endl;
+		return w.ws_col;
+	#else
+		return 80;
+	#endif
 }
 
 
