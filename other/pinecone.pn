@@ -11,4 +11,5 @@ func :: {String}.{a: Int, b: Int} -> {Int}: (
 )
 
 print: ("hi".func: 8, 3)
-\\
+
+

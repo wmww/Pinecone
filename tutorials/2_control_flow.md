@@ -3,7 +3,7 @@ In Pinecone, control flow is done with symbols instead of keywords. There are tw
 
 ## If/Then
 
-`?` is used for ifs. You may be familiar with the ternary operator in C like languages. In Pinecone `?` can be used in much the same way (the only difference is `|` is used instead of `:`), but `?` is also used for all if statements with `|` being the 'else' operator. The body of an if statement is usually enclosed in perenthesis, but this is optional if there is only one line in it. For 'else if', follow an else with another if statement. Here is an example:
+`?` is used for ifs. You may be familiar with the ternary operator in C like languages. In Pinecone `?` can be used in much the same way (the only difference is `|` is used instead of `:`), but `?` is also used for all if statements with `|` being the 'else' operator. The body of an if statement is usually enclosed in parentheses, but this is optional if there is only one line in it. For 'else if', follow an else with another if statement. Here is an example:
 
 ```
 a: tru
