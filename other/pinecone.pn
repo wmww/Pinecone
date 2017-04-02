@@ -3,18 +3,14 @@
 #==> "../examples/tests/integration/morse.pn"
 #==> "../examples/morse.pn"
 
-
-
-//
 xyz :: {Whatev}: (
 	print: in
 	print: 2
 )
 
 xyz: 8
-\\
 
-
+//
 func :: {String}.{a: Int, b: Int} -> {Int}: (
 	
 	print: in.a
@@ -24,4 +20,5 @@ func :: {String}.{a: Int, b: Int} -> {Int}: (
 )
 
 print: ("hi".func: 8, 3)
+\\
 

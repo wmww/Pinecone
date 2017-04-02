@@ -449,7 +449,44 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	}
 	else
 	{
-		getActions(token->getText(), matches, dynamic);
+		vector<AstNodeBase*> nodes;
+		
+		actions.get(token->getText(), nodes);
+		
+		if (dynamic)
+		{
+			dynamicActions.get(token->getText(), nodes);
+		}
+		
+		for (int i=0; i<int(nodes.size()); i++)
+		{
+			if (
+				typeid(*nodes[i])==typeid(AstFuncBody)
+				&& 
+				(
+					(AstFuncBody*)nodes[i]->leftTypeNode->getReturnType()->isWhatev()
+					||
+					(AstFuncBody*)nodes[i]->rightTypeNode->getReturnType()->isWhatev()
+				)
+				&&
+				(
+					(AstFuncBody*)nodes[i]->leftTypeNode->getReturnType()->matches(left)
+					||
+					(AstFuncBody*)nodes[i]->rightTypeNode->getReturnType()->matches(right)
+				)
+			){
+				AstNode instance=(AstFuncBody*)nodes[i]->makeNonWhatevCopy(left, right);
+				out.push_back(instance);
+				actions->add(token->getText(), instance);
+			}
+			else
+			{
+				out.push_back(nodes[i]->getAction());
+			}
+		}
+		
+		if (parent)
+			parent->getActions(token->getText(), out, dynamic);
 	}
 	
 	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);

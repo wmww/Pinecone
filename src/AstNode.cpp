@@ -82,6 +82,16 @@ string AstFuncBody::getString()
 	return "function body";
 }
 
+AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
+{
+	if (!leftInType->matches(leftTypeNode->getReturnType()) || !rightInType->matches(leftTypeNode->getReturnType()))
+	{
+		throw PineconeError("AstFuncBody::makeNonWhatevCopy sent types that didn't match the original", INTERNAL_ERROR, rightTypeNode->getToken());
+	}
+	
+	return make(AstTypeType::make(leftInType), AstTypeType::make(rightInType), returnTypeNode->makeCopy(), bodyNode->makeCopy());
+}
+
 void AstFuncBody::resolveAction()
 {
 	Namespace subNs=ns->makeChildAndFrame(nameHint.empty()?"unnamed_func":nameHint);
