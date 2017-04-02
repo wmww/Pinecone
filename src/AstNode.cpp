@@ -74,6 +74,18 @@ void AstList::resolveAction()
 	action=listAction(actions);
 }
 
+/// Function body
+string AstFuncBody::getString()
+{
+	return "function body";
+}
+
+void AstFuncBody::resolveAction()
+{
+	Namespace subNs=ns->makeChildAndFrame(nameHint.empty()?"unnamed_func":nameHint);
+	ns->setInput(leftTypeNode->getReturnType(), rightTypeNode->getReturnType());
+	action=functionAction(move(bodyNode), returnTypeNode->getReturnType(), ns->getStackFrame());
+}
 
 /// Expression
 
@@ -154,19 +166,19 @@ void AstExpression::resolveAction()
 		if (leftInNode)
 		{
 			(*leftInNode)->setInput(subNs, false, Void, Void);
-			funcLeft=(*leftInNode)->getReturnType();
+			funcLeft=(*leftInNode)->getReturnType()->getSubType();
 		}
 		
 		if (rightInNode)
 		{
 			(*rightInNode)->setInput(subNs, false, Void, Void);
-			funcRight=(*rightInNode)->getReturnType();
+			funcRight=(*rightInNode)->getReturnType()->getSubType();
 		}
 		
 		if (returnNode)
 		{
 			(*returnNode)->setInput(subNs, false, Void, Void);
-			funcReturn=(*returnNode)->getReturnType();
+			funcReturn=(*returnNode)->getReturnType()->getSubType();
 		}
 		
 		if (funcLeft->isWhatev() || funcRight->isWhatev())
@@ -178,7 +190,7 @@ void AstExpression::resolveAction()
 		
 		rightIn->setInput(subNs, true, Void, Void);
 		
-		action=functionAction(move(rightIn), funcReturn, funcLeft, funcRight, subNs->getStackFrame());
+		action=functionAction(move(rightIn), funcReturn, subNs->getStackFrame());
 	}
 	else
 	{
@@ -489,7 +501,19 @@ void AstToken::resolveAction()
 				
 				if (actions.size()>0) // if there are actions with the requested name that didn't match the type
 				{
-					throw PineconeError("'"+token->getText()+"' can not take input of type {"+inLeftType->getString()+"}.{"+inRightType->getString()+"}", SOURCE_ERROR, token);
+					string posibleInputs="the following is the inputs it can take:";
+					
+					for (int i=0; i<(int)actions.size(); i++)
+					{
+						posibleInputs+="\n    ";
+						posibleInputs+=actions[i]->getInLeftType()->getString()+" . "+actions[i]->getInRightType()->getString()+" -> "+actions[i]->getReturnType()->getString();
+					}
+					
+					throw PineconeError(
+						"'"+token->getText()+"' can not take input of type "+
+						inLeftType->getString()+" . "+inRightType->getString()+"\n"+
+						posibleInputs,
+						SOURCE_ERROR, token);
 				}
 			}
 			
@@ -581,7 +605,7 @@ void AstTokenType::resolveReturnType()
 {
 	try
 	{
-		returnType=ns->getType(token->getText());
+		returnType=ns->getType(token->getText())->getMetaType();
 	}
 	catch (IdNotFoundError err)
 	{
@@ -630,15 +654,15 @@ void AstTupleType::resolveReturnType()
 		
 		if (subTypes[i].name)
 		{
-			maker.add(subTypes[i].name->getText(), subTypes[i].type->getReturnType());
+			maker.add(subTypes[i].name->getText(), subTypes[i].type->getReturnType()->getSubType());
 		}
 		else
 		{
-			maker.add(subTypes[i].type->getReturnType());
+			maker.add(subTypes[i].type->getReturnType()->getSubType());
 		}
 	}
 	
-	returnType=maker.get(true);
+	returnType=maker.get(true)->getMetaType();
 }
 
 

@@ -26,8 +26,8 @@ public:
 		}
 	}
 	
-	FunctionAction(AstNode nodeIn, Type returnTypeIn, Type leftTypeIn, Type rightTypeIn, shared_ptr<StackFrame> stackFameIn):
-		ActionData(returnTypeIn, leftTypeIn, rightTypeIn)
+	FunctionAction(AstNode nodeIn, Type returnTypeIn, shared_ptr<StackFrame> stackFameIn):
+		ActionData(returnTypeIn, stackFameIn->getLeftInType(), stackFameIn->getRightInType())
 	{
 		stackFame=stackFameIn;
 		node=move(nodeIn);
@@ -197,8 +197,8 @@ Action functionAction(Action actionIn, shared_ptr<StackFrame> stackFameIn)
 	return Action(new FunctionAction(actionIn, stackFameIn));
 }
 
-Action functionAction(AstNode nodeIn, Type returnTypeIn, Type leftTypeIn, Type rightTypeIn, shared_ptr<StackFrame> stackFameIn)
+Action functionAction(AstNode nodeIn, Type returnTypeIn, shared_ptr<StackFrame> stackFameIn)
 {
-	return Action(new FunctionAction(move(nodeIn), returnTypeIn, leftTypeIn, rightTypeIn, stackFameIn));
+	return Action(new FunctionAction(move(nodeIn), returnTypeIn, stackFameIn));
 }
 
