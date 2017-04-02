@@ -11,6 +11,22 @@ extern Namespace globalNamespace;
 
 Action resolveLiteral(Token token);
 
+void AstNodeBase::copyToNode(AstNodeBase* other, bool copyCache)
+{
+	other->inLeftType=inLeftType;
+	other->inRightType=inRightType;
+	other->nameHint=nameHint;
+	
+	if (copyCache)
+	{
+		other->action=action;
+		other->returnType=returnType;
+		other->dynamic=dynamic;
+		other->ns=ns;
+		other->inputHasBeenSet=inputHasBeenSet;
+	}
+}
+
 /// List
 
 string AstList::getString()
@@ -89,7 +105,9 @@ AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
 		throw PineconeError("AstFuncBody::makeNonWhatevCopy sent types that didn't match the original", INTERNAL_ERROR, rightTypeNode->getToken());
 	}
 	
-	return make(AstTypeType::make(leftInType), AstTypeType::make(rightInType), returnTypeNode->makeCopy(), bodyNode->makeCopy());
+	AstNode out=make(AstTypeType::make(leftInType), AstTypeType::make(rightInType), returnTypeNode->makeCopy(false), bodyNode->makeCopy(false));
+	out->setInput(ns, dynamic, Void, Void);
+	return out;
 }
 
 void AstFuncBody::resolveAction()
