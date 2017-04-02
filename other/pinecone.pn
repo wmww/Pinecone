@@ -1,5 +1,11 @@
 
-==> "../examples/simple_demo.pn"
+#==> "../examples/simple_demo.pn"
+
+xyz :: {Whatev}: (
+	print: in
+)
+
+xyz: 8
 
 //
 func :: {String}.{a: Int, b: Int} -> {Int}: (

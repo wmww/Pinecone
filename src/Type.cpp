@@ -462,6 +462,11 @@ public:
 		return "W";
 	}
 	
+	bool isCreatable()
+	{
+		return false;
+	}
+	
 	string getCppLiteral(void * data, CppProgram * prog)
 	{
 		throw PineconeError("getCppLiteral called on whatev type, wich should not have happened", INTERNAL_ERROR);

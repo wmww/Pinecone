@@ -169,6 +169,11 @@ void AstExpression::resolveAction()
 			funcReturn=(*returnNode)->getReturnType();
 		}
 		
+		if (funcLeft->isWhatev() || funcRight->isWhatev())
+		{
+			throw PineconeError("Attempted to make function with Whatev input type, which should have been swapped for something real", INTERNAL_ERROR, getToken());
+		}
+		
 		subNs->setInput(funcLeft, funcRight);
 		
 		rightIn->setInput(subNs, true, Void, Void);
@@ -453,18 +458,17 @@ void AstToken::resolveAction()
 			throw PineconeError("non overloadable operator in AstToken, it should have been removed and processed by the parser", INTERNAL_ERROR, token);
 		}
 		
-		if (inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type)
+		if (inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type!=nullptr)
 		{
 			if (inRightType->isVoid())
 			{
 				action=getElemFromTupleAction(inLeftType, token->getText());
+				return;
 			}
 			else
 			{
 				throw PineconeError("sorry, Pinecone does not yet support mutating tuples", SOURCE_ERROR, token);
 			}
-			
-			return;
 		}
 		
 		try
@@ -474,35 +478,36 @@ void AstToken::resolveAction()
 		}
 		catch (IdNotFoundError err)
 		{
-			vector<Action> actions;
-			ns->getActions(token->getText(), actions, dynamic);
-			
-			if (actions.size()>0) // if there are actions with the requested name that didn't match the type
-			{
-				throw PineconeError("improper use or attempted redefinition of '"+token->getText()+"'", SOURCE_ERROR, token);
-			}
-			
 			if (token->getType()==TokenData::OPERATOR)
 			{
 				throw PineconeError("unknown overload for operator '"+token->getText()+"'", SOURCE_ERROR, token);
 			}
+			else if (token->getType()==TokenData::IDENTIFIER)
+			{
+				vector<Action> actions;
+				ns->getActions(token->getText(), actions, dynamic);
+				
+				if (actions.size()>0) // if there are actions with the requested name that didn't match the type
+				{
+					throw PineconeError("'"+token->getText()+"' can not take input of type {"+inLeftType->getString()+"}.{"+inRightType->getString()+"}", SOURCE_ERROR, token);
+				}
+			}
 			
-			Type type=inRightType;
-			
-			if (type->getType()==TypeBase::METATYPE)
+			if (inRightType->getType()==TypeBase::METATYPE)
 			{
 				throw PineconeError("metatype handeling in "+FUNC+" not yet implemented", INTERNAL_ERROR, token);
 			}
-			else if (type->isVoid())
+			else if (inRightType->isVoid())
 			{
-				throw PineconeError("unknown identifier '"+token->getText()+"' (var can not be made bc right in type is "+type->getString()+")", SOURCE_ERROR, token);
+				//throw PineconeError("unknown identifier '"+token->getText()+"' (var can not be made bc right in type is "+type->getString()+")", SOURCE_ERROR, token);
+				throw PineconeError("unknown identifier '"+token->getText()+"'", SOURCE_ERROR, token);
 			}
-			else if (!type->isCreatable())
+			else if (!inRightType->isCreatable())
 			{
-				throw PineconeError("cannot create variable '"+token->getText()+"' of type "+type->getString(), SOURCE_ERROR, token);
+				throw PineconeError("cannot create variable '"+token->getText()+"' of type {"+inRightType->getString()+"}", SOURCE_ERROR, token);
 			}
 			
-			ns->addVar(type, token->getText());
+			ns->addVar(inRightType, token->getText());
 			
 			try
 			{
@@ -514,7 +519,7 @@ void AstToken::resolveAction()
 			}
 		}
 	}
-	else if (token->getType()==TokenData::LITERAL)
+	else if (token->getType()==TokenData::LITERAL || token->getType()==TokenData::STRING_LITERAL)
 	{
 		if (!inLeftType->isVoid() || !inRightType->isVoid())
 		{
@@ -522,11 +527,6 @@ void AstToken::resolveAction()
 		}
 		
 		action=resolveLiteral(token);
-	}
-	else if (token->getType()==TokenData::STRING_LITERAL)
-	{
-		action=resolveLiteral(token);
-		//throw PineconeError("strings are not yet supported", SOURCE_ERROR, token);
 	}
 	else
 	{

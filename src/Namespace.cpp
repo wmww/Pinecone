@@ -3,6 +3,36 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
+class ActionWrapperNode: public AstNodeBase
+{
+public:
+	
+	static unique_ptr<ActionWrapperNode> make(Action actionIn) {
+		auto out = unique_ptr<ActionWrapperNode>(new ActionWrapperNode);
+		out->inLeftType=actionIn->getInLeftType();
+		out->inRightType=actionIn->getInRightType();
+		out->returnType=actionIn->getReturnType();
+		out->action=actionIn;
+		out->dynamic=true; // shouldn't matter
+		out->ns=nullptr; // shouldn't matter
+		out->inputHasBeenSet=true;
+		return out;
+	}
+	
+	string getString() {return "action wrapper node";}
+	
+	void resolveAction()
+	{
+		throw PineconeError("ActionWrapperNode::resolveAction called, which it shouldn't have been", INTERNAL_ERROR);
+	}
+	
+	Token getToken() {return nullptr;}
+};
+
+string convertToString(Operator in) {return in->getText();}
+string convertToString(Type in) {return in->getString();}
+string convertToString(string in) {return in;}
+
 template<typename KEY>
 void NamespaceData::ActionMap<KEY>::add(KEY key, AstNode node)
 {
@@ -19,6 +49,9 @@ void NamespaceData::ActionMap<KEY>::add(KEY key, AstNode node)
 template<typename KEY>
 void NamespaceData::ActionMap<KEY>::add(KEY key, Action action)
 {
+	add(key, ActionWrapperNode::make(action));
+	
+	/*
 	auto i=actions.find(key);
 	
 	if (i==actions.end())
@@ -27,12 +60,24 @@ void NamespaceData::ActionMap<KEY>::add(KEY key, Action action)
 	}
 	
 	actions[key].push_back(action);
+	*/
 }
 
-string convertToString(Operator in) {return in->getText();}
-string convertToString(Type in) {return in->getString();}
-string convertToString(string in) {return in;}
+template<typename KEY>
+void NamespaceData::ActionMap<KEY>::get(KEY key, vector<AstNodeBase*>& out)
+{
+	auto matches=nodes.find(key);
+	
+	if (matches!=nodes.end())
+	{
+		for (unsigned i=0; i<matches->second.size(); i++)
+		{
+			out.push_back(&*matches->second[i]);
+		}
+	}
+}
 
+/*
 template<typename KEY>
 void NamespaceData::ActionMap<KEY>::get(KEY key, vector<Action>& out)
 {
@@ -76,6 +121,7 @@ void NamespaceData::ActionMap<KEY>::get(KEY key, vector<Action>& out)
 		out.insert(out.end(), matches2->second.begin(), matches2->second.end());
 	}
 }
+*/
 
 Namespace NamespaceData::makeRootNamespace()
 {
@@ -368,7 +414,7 @@ void NamespaceData::addOperator(AstNode node, Operator op)
 
 Type NamespaceData::getType(string name)
 {
-	vector<Action> results;
+	vector<AstNodeBase*> results;
 	
 	types.get(name, results);
 	
@@ -385,7 +431,7 @@ Type NamespaceData::getType(string name)
 	}
 	else if (results[0]->getReturnType()->getType()!=TypeBase::METATYPE)
 	{
-		throw PineconeError("action returning non meta type stored in namespace type map for type '"+name+"'", INTERNAL_ERROR);
+		throw PineconeError("node returning non meta type stored in namespace type map for type '"+name+"'", INTERNAL_ERROR);
 	}
 	else
 	{
@@ -452,11 +498,18 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 
 void NamespaceData::getActions(string text, vector<Action>& out, bool dynamic)
 {
-	actions.get(text, out);
+	vector<AstNodeBase*> nodes;
+	
+	actions.get(text, nodes);
 	
 	if (dynamic)
 	{
-		dynamicActions.get(text, out);
+		dynamicActions.get(text, nodes);
+	}
+	
+	for (int i=0; i<int(nodes.size()); i++)
+	{
+		out.push_back(nodes[i]->getAction());
 	}
 	
 	if (parent)
@@ -465,7 +518,14 @@ void NamespaceData::getActions(string text, vector<Action>& out, bool dynamic)
 
 void NamespaceData::getActions(Operator op, vector<Action>& out)
 {
-	operators.get(op, out);
+	vector<AstNodeBase*> nodes;
+	
+	operators.get(op, nodes);
+	
+	for (int i=0; i<int(nodes.size()); i++)
+	{
+		out.push_back(nodes[i]->getAction());
+	}
 	
 	if (parent)
 		parent->getActions(op, out);
