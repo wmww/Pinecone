@@ -21,6 +21,13 @@ public:
 	
 	string getString() {return "action wrapper node";}
 	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new ActionWrapperNode;
+		copyToNode(out, true);
+		return AstNode(out);
+	}
+	
 	void resolveAction()
 	{
 		throw PineconeError("ActionWrapperNode::resolveAction called, which it shouldn't have been", INTERNAL_ERROR);
@@ -441,6 +448,26 @@ Type NamespaceData::getType(string name)
 
 Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic)
 {
+	vector<Action> out;
+	
+	getActionsForTokenWithInput(out, token, left, right, dynamic);
+	
+	if (out.size()==0)
+	{
+		throw IdNotFoundError(token->getText(), false, shared_from_this());
+	}
+	else if (out.size()==1)
+	{
+		return out[0];
+	}
+	else
+	{
+		throw IdNotFoundError(token->getText(), true, shared_from_this());
+	}
+}
+
+Action NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token, Type left, Type right, bool dynamic)
+{
 	vector<Action> matches;
 	
 	if (token->getOp())
@@ -464,20 +491,20 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 				typeid(*nodes[i])==typeid(AstFuncBody)
 				&& 
 				(
-					(AstFuncBody*)nodes[i]->leftTypeNode->getReturnType()->isWhatev()
+					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->isWhatev()
 					||
-					(AstFuncBody*)nodes[i]->rightTypeNode->getReturnType()->isWhatev()
+					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->isWhatev()
 				)
 				&&
 				(
-					(AstFuncBody*)nodes[i]->leftTypeNode->getReturnType()->matches(left)
+					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->matches(left)
 					||
-					(AstFuncBody*)nodes[i]->rightTypeNode->getReturnType()->matches(right)
+					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->matches(right)
 				)
 			){
-				AstNode instance=(AstFuncBody*)nodes[i]->makeNonWhatevCopy(left, right);
-				out.push_back(instance);
-				actions->add(token->getText(), instance);
+				AstNode instance=((AstFuncBody*)nodes[i])->makeNonWhatevCopy(left, right);
+				out.push_back(instance->getAction());
+				actions.add(token->getText(), move(instance));
 			}
 			else
 			{
@@ -486,7 +513,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		}
 		
 		if (parent)
-			parent->getActions(token->getText(), out, dynamic);
+			parent->getActionsForTokenWithInput(out, token, left, right, dynamic);
 	}
 	
 	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);

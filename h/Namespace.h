@@ -96,6 +96,7 @@ public:
 	
 	//	returns a branch action that is the action given in token with the left and right inputs
 	//	returns voidAction if it can't find a good match
+	Action getActionsForTokenWithInput(vector<Action>& out, Token token, Type left, Type right, bool dynamic);
 	Action getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic);
 	Action getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic);
 	

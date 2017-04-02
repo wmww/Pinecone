@@ -40,7 +40,7 @@ public:
 	
 	virtual string getString()=0;
 	
-	virtual AstNode makeCopy()=0;
+	virtual AstNode makeCopy(bool copyCache)=0; // if copyCache is false, input and actions will not be copied
 	
 	Type getReturnType()
 	{
@@ -91,6 +91,8 @@ protected:
 	
 	AstNodeBase() {}
 	
+	void copyToNode(AstNodeBase* other, bool copyCache);
+	
 	virtual void resolveReturnType()
 	{
 		returnType=getAction()->getReturnType();
@@ -116,6 +118,13 @@ public:
 	bool isVoid() {return true;}
 	
 	string getString() {return "void node";}
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstVoid;
+		copyToNode(out, copyCache);
+		return AstNode(out);
+	}
 	
 	void resolveReturnType() {returnType=Void;}
 	
@@ -147,6 +156,17 @@ public:
 	
 	string getString();
 	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstList;
+		copyToNode(out, copyCache);
+		for (int i=0; i<(int)nodes.size(); i++)
+		{
+			out->nodes.push_back(nodes[i]->makeCopy(copyCache));
+		}
+		return AstNode(out);
+	}
+	
 	//void resolveReturnType();
 	
 	void resolveAction();
@@ -173,6 +193,14 @@ public:
 	}
 	
 	string getString();
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstToken;
+		copyToNode(out, copyCache);
+		out->token=token;
+		return AstNode(out);
+	}
 	
 	void resolveAction();
 	
@@ -208,13 +236,22 @@ public:
 	
 	string getString();
 	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstFuncBody;
+		copyToNode(out, copyCache);
+		out->leftTypeNode=leftTypeNode->makeCopy(copyCache);
+		out->rightTypeNode=rightTypeNode->makeCopy(copyCache);
+		out->returnTypeNode=returnTypeNode->makeCopy(copyCache);
+		out->bodyNode=bodyNode->makeCopy(copyCache);
+		return AstNode(out);
+	}
+	
 	void resolveAction();
 	
 	AstNode makeNonWhatevCopy(Type leftInType, Type rightInType);
 	
 	Token getToken() {return bodyNode->getToken();}
-	
-private:
 	
 	AstNode leftTypeNode, rightTypeNode, returnTypeNode, bodyNode;
 };
@@ -235,6 +272,16 @@ public:
 	}
 	
 	//bool isType() {return leftIn->isType() || rightIn->isType();}
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstExpression;
+		copyToNode(out, copyCache);
+		out->leftIn=leftIn->makeCopy(copyCache);
+		out->center=center->makeCopy(copyCache);
+		out->rightIn=rightIn->makeCopy(copyCache);
+		return AstNode(out);
+	}
 	
 	string getString();
 	
@@ -261,6 +308,15 @@ public:
 	}
 	
 	string getString();
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstConstExpression;
+		copyToNode(out, copyCache);
+		out->center=unique_ptr<AstToken>((AstToken*)center->makeCopy(copyCache).release());;
+		out->rightIn=center->makeCopy(copyCache);
+		return AstNode(out);
+	}
 	
 	void resolveConstant();
 	void resolveAction() {action=voidAction;};
@@ -292,6 +348,22 @@ public:
 	
 	string getString();
 	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstOpWithInput;
+		copyToNode(out, copyCache);
+		out->token=token;
+		for (int i=0; i<(int)leftIn.size(); i++)
+		{
+			out->leftIn.push_back(leftIn[i]->makeCopy(copyCache));
+		}
+		for (int i=0; i<(int)rightIn.size(); i++)
+		{
+			out->rightIn.push_back(rightIn[i]->makeCopy(copyCache));
+		}
+		return AstNode(out);
+	}
+	
 	void resolveAction();
 	
 	Token getToken() {return token;}
@@ -313,6 +385,17 @@ public:
 	}
 	
 	string getString();
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstTuple;
+		copyToNode(out, copyCache);
+		for (int i=0; i<(int)nodes.size(); i++)
+		{
+			out->nodes.push_back(nodes[i]->makeCopy(copyCache));
+		}
+		return AstNode(out);
+	}
 	
 	//void resolveReturnType();
 	
@@ -352,9 +435,17 @@ public:
 		return returnType->getString();
 	}
 	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstTypeType;
+		copyToNode(out, copyCache);
+		out->returnType=returnType;
+		return AstNode(out);
+	}
+	
 	void resolveReturnType()
 	{
-		return returnType->makeMetaType();
+		returnType=returnType->getMetaType();
 	}
 	
 	Token getToken() {return nullptr;}
@@ -376,6 +467,13 @@ public:
 	
 	string getString() {return "{}";}
 	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstVoidType;
+		copyToNode(out, copyCache);
+		return AstNode(out);
+	}
+	
 	void resolveReturnType() {returnType=Void->getMetaType();}
 	
 	Token getToken() {return nullptr;}
@@ -395,6 +493,14 @@ public:
 	}
 	
 	string getString();
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstTokenType;
+		copyToNode(out, copyCache);
+		out->token=token;
+		return AstNode(out);
+	}
 	
 	void resolveReturnType();
 	
@@ -423,6 +529,17 @@ public:
 	}
 	
 	string getString();
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstTupleType;
+		copyToNode(out, copyCache);
+		for (int i=0; i<(int)subTypes.size(); i++)
+		{
+			out->subTypes.push_back({subTypes[i].name, unique_ptr<AstType>((AstType*)subTypes[i].type->makeCopy(copyCache).release())});
+		}
+		return AstNode(out);
+	}
 	
 	void resolveReturnType();
 	
