@@ -9,8 +9,7 @@ void StackFrame::addMember(Type in)
 {
 	if (!in->isCreatable())
 	{
-		error.log("tried to insert uncreatable type "+in->getString()+" into stack frame", INTERNAL_ERROR);
-		return;
+		throw PineconeError("tried to insert uncreatable type "+in->getString()+" into stack frame", INTERNAL_ERROR);
 	}
 	
 	members.push_back(in);
@@ -25,14 +24,14 @@ void StackFrame::setInput(Type left, Type right)
 	}
 	else
 	{
-		if (left->isCreatable())
+		if (!left->isVoid())
 		{
 			leftInputOffset=frameSize;
 			leftInputIndex=members.size();
 			addMember(left);
 		}
 		
-		if (right->isCreatable())
+		if (!right->isVoid())
 		{
 			rightInputOffset=frameSize;
 			rightInputIndex=members.size();
@@ -88,8 +87,7 @@ size_t StackFrame::getRightOffset()
 	}
 	else
 	{
-		error.log("tried to get the right input offset from a stack frame that does not have a right input", INTERNAL_ERROR);
-		return 0;
+		throw PineconeError("tried to get the right input offset from a stack frame that does not have a right input", INTERNAL_ERROR);
 	}
 }
 

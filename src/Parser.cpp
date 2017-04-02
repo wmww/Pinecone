@@ -30,6 +30,8 @@ void lexString(shared_ptr<SourceFile> file, vector<Token>& tokens);
 //	splits a stream of tokens into a ListAstNode and calls parseExpression on each expression
 void parseTokenList(const vector<Token>& tokens, int left, int right, vector<AstNode>& nodes);
 
+int findExpressionSplit(const vector<Token>& tokens, int left, int right);
+
 //	recursivly parses a single expression (no action lists)
 AstNode parseExpression(const vector<Token>& tokens, int left, int right);
 
@@ -268,6 +270,48 @@ int skipBrace(const vector<Token>& tokens, int start)
 }
 */
 
+int findExpressionSplit(const vector<Token>& tokens, int left, int right)
+{
+	int minPrece=-1;
+	int indexOfMin=-1;
+	
+	for (int i=left; i<=right; i++)
+	{
+		//cout << "looking at " << tokens[i]->getText() << endl;
+		/*if (tokens[i]->getOp())
+		{
+			//cout << "precedence: " << tokens[i]->getOp()->getPrecedence()
+		}
+		*/
+		
+		if (ops->isOpenBrac(tokens[i]->getOp()))
+		{
+			int j=skipBrace(tokens, i);
+			
+			i=j; // i is now the close brace, and after it is incremented it will be the token after that
+		}
+		else if (tokens[i]->getOp() && (minPrece<0 || tokens[i]->getOp()->getPrecedence()<minPrece))
+		{
+			minPrece=tokens[i]->getOp()->getPrecedence();
+			indexOfMin=i;
+			
+			// this ensures that if the precedence is divisable by 2, the same precedence again will replace this one as the min
+			// it is my way of making even precedences be right associative and odd ones be left associative
+			if (minPrece%2)
+			{
+				minPrece++;
+			}
+		}
+	}
+	
+	if (indexOfMin<0)
+	{
+		throw PineconeError(FUNC+" could not find operator to split expression", INTERNAL_ERROR, tokens[left]);
+	}
+	
+	return indexOfMin;
+}
+
 AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 {
 	//error.log(FUNC+" called on '"+stringFromTokens(tokens, left, right)+"'", JSYK);
@@ -281,53 +325,23 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		return AstToken::make(tokens[left]);
 	}
 	
-	int minPrece=-1;
-	int indexOfMin=-1;
-	
-	for (int i=left; i<=right; i++)
+	if (ops->isOpenBrac(tokens[left]->getOp()) && skipBrace(tokens, left)==right) // if the braces enclose this entire expression
 	{
-		
-		//cout << "looking at " << tokens[i]->getText() << endl;
-		if (tokens[i]->getOp())
+		if (tokens[left]->getOp()==ops->openPeren)
 		{
-			//cout << "precedence: " << tokens[i]->getOp()->getPrecedence()
+			return astNodeFromTokens(tokens, left+1, right-1);
 		}
-		if (tokens[i]->getOp()==ops->openPeren || tokens[i]->getOp()==ops->openCrBrac)
+		else if (tokens[left]->getOp()==ops->openCrBrac)
 		{
-			int j=skipBrace(tokens, i);
-			
-			if (i==left && j==right)
-			{
-				if (tokens[i]->getOp()==ops->openPeren)
-				{
-					return astNodeFromTokens(tokens, left+1, right-1);
-				}
-				else 
-				{
-					return parseType(tokens, left+1, right-1);
-				}
-			}
-			
-			i=j;
+			return parseType(tokens, left+1, right-1);
 		}
-		else if (tokens[i]->getOp() && (minPrece<0 || tokens[i]->getOp()->getPrecedence()<minPrece))
+		else
 		{
-			minPrece=tokens[i]->getOp()->getPrecedence();
-			indexOfMin=i;
-			
-			if (minPrece%2)
-			{
-				minPrece++;
-			}
+			throw PineconeError("unhandled brace '"+tokens[left]->getOp()->getText()+"'", INTERNAL_ERROR, tokens[left]);
 		}
 	}
 	
-	int i=indexOfMin;
-	
-	if (i<0)
-	{
-		throw PineconeError(FUNC+" could not find operator to split expression", INTERNAL_ERROR, tokens[left]);
-	}
+	int i=findExpressionSplit(tokens, left, right);
 	
 	Operator op=tokens[i]->getOp();
 	
@@ -360,13 +374,6 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		parseSequence(tokens, left, right, ops->comma, nodes);
 		
 		return AstTuple::make(nodes);
-	}
-	else if (op==ops->dot)
-	{
-		AstNode leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
-		AstNode centerNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
-		
-		return AstExpression::make(move(leftNode), move(centerNode), AstVoid::make());
 	}
 	else if (op==ops->doubleColon)
 	{
@@ -437,67 +444,75 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		//return AstExpression::make(AstVoid::make(), leftNode, AstExpression::make(leftNode, AstToken::make(Token)))
 	}
-	else
+	else if (op==ops->dot)
 	{
-		AstNode leftNode=nullptr;
-		AstNode centerNode=nullptr;
+		return AstExpression::make
+		(
+			i>left ? parseExpression(tokens, left, i-1) : AstVoid::make(),
+			i<right ? parseExpression(tokens, i+1, right) : AstVoid::make(),
+			AstVoid::make()
+		);
+	}
+	else if (op==ops->colon)
+	{
+		AstNode leftNode=AstVoid::make();
+		AstNode centerNode=parseExpression(tokens, left, i-1);;
 		AstNode rightNode=i<right?parseExpression(tokens, i+1, right):AstVoid::make();
 		
-		if (op==ops->colon)
+		// make sure if it is an abc.xyz: ijk structure, it gets parsed as such, rather then (abc.xyz): ijk
+		// we do this by parsing it the latter way (already done) and then detecting if we need to change it
+		if (typeid(*centerNode)==typeid(AstExpression))
 		{
-			//for (int j=i-1; j>=left; j--)
-			/*for (int j=left; j<i; j++)
+			AstExpression * exprNode=(AstExpression*)&*centerNode;
+			
+			if (!exprNode->leftIn->isVoid() && !exprNode->center->isVoid() && exprNode->rightIn->isVoid())
 			{
-				Operator op=tokens[j]->getOp();
-				
-				if (ops->isOpenBrac(op))
-				{
-					j=skipBrace(tokens, j);
-				}
-				else if (op)
-				{
-					if (op==ops->dot)
-					{
-						if (j==left)
-							throw PineconeError("'.' needs something to its left", SOURCE_ERROR, tokens[j]);
-							
-						if (j==i-1)
-							throw PineconeError("'.' can not be followed by '"+op->getText()+"'", SOURCE_ERROR, tokens[j]);
-						
-						leftNode=parseExpression(tokens, left, j-1);
-						centerNode=parseExpression(tokens, j+1, i-1);
-					}
-					else if (op->getPrecedence()<ops->dot->getPrecedence())
-					{
-						break;
-					}
-				}
-			}*/
-			
-			//if (!leftNode)
-				leftNode=AstVoid::make();
-			
-			//if (!centerNode)
-				centerNode=parseExpression(tokens, left, i-1);
-			
-			if (typeid(*centerNode)==typeid(AstExpression))
-			{
-				AstExpression * exprNode=(AstExpression*)&*centerNode;
-				
-				if (!exprNode->leftIn->isVoid() && !exprNode->center->isVoid() && exprNode->rightIn->isVoid())
-				{
-					leftNode=move(exprNode->leftIn);
-					centerNode=move(exprNode->center);
-				}
+				leftNode=move(exprNode->leftIn);
+				centerNode=move(exprNode->center);
 			}
+		}
+		
+		// make a function body if needed, else make a normal expression
+		
+		if (
+			(centerNode->isType() || centerNode->isFunctionWithOutput())
+			&&
+			(leftNode->isVoid() || leftNode->isType())
+			&&
+			!rightNode->isType()
+		){
+			if (leftNode->isVoid())
+				leftNode=AstVoidType::make();
+			
+			AstNode funcRightIn;
+			AstNode funcReturn;
+			
+			if (centerNode->isFunctionWithOutput())
+			{
+				funcRightIn=move(((AstOpWithInput*)&*(centerNode))->leftIn[0]);
+				funcReturn=move(((AstOpWithInput*)&*(centerNode))->rightIn[0]);
+			}
+			else
+			{
+				funcRightIn=move(centerNode);
+				funcReturn=AstVoidType::make();
+			}
+			
+			return AstFuncBody::make(move(leftNode), move(funcRightIn), move(funcReturn), move(rightNode));
 		}
 		else
 		{
-			leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
-			centerNode=AstToken::make(tokens[i]);
+			return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
 		}
-		
-		return AstExpression::make(move(leftNode), move(centerNode), move(rightNode));
+	}
+	else
+	{
+		return AstExpression::make
+		(
+			i>left ? parseExpression(tokens, left, i-1) : AstVoid::make(),
+			AstToken::make(tokens[i]),
+			i<right ? parseExpression(tokens, i+1, right) : AstVoid::make()
+		);
 	}
 }
 

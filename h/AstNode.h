@@ -344,7 +344,7 @@ public:
 	
 	string getString() {return "{}";}
 	
-	void resolveReturnType() {returnType=Void;}
+	void resolveReturnType() {returnType=Void->getMetaType();}
 	
 	Token getToken() {return nullptr;}
 	
