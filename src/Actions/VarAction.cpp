@@ -15,6 +15,7 @@ public:
 		nameHint=idIn;
 		
 		setDescription("get " + typeIn->getString() + " '" + idIn + "'");
+		
 	}
 	
 	void* execute(void* inLeft, void* inRight)

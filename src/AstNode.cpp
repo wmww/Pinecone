@@ -74,7 +74,9 @@ void AstList::resolveAction()
 	action=listAction(actions);
 }
 
+
 /// Function body
+
 string AstFuncBody::getString()
 {
 	return "function body";
@@ -83,9 +85,14 @@ string AstFuncBody::getString()
 void AstFuncBody::resolveAction()
 {
 	Namespace subNs=ns->makeChildAndFrame(nameHint.empty()?"unnamed_func":nameHint);
-	ns->setInput(leftTypeNode->getReturnType(), rightTypeNode->getReturnType());
-	action=functionAction(move(bodyNode), returnTypeNode->getReturnType(), ns->getStackFrame());
+	leftTypeNode->setInput(subNs, dynamic, Void, Void);
+	rightTypeNode->setInput(subNs, dynamic, Void, Void);
+	returnTypeNode->setInput(subNs, dynamic, Void, Void);
+	subNs->setInput(leftTypeNode->getReturnType()->getSubType(), rightTypeNode->getReturnType()->getSubType());
+	bodyNode->setInput(subNs, true, Void, Void);
+	action=functionAction(move(bodyNode), returnTypeNode->getReturnType()->getSubType(), subNs->getStackFrame());
 }
+
 
 /// Expression
 
@@ -122,6 +129,9 @@ void AstExpression::resolveAction()
 	{
 		// it is a function
 		
+		throw PineconeError("a function implementation got into an expression node somehow", INTERNAL_ERROR, center->getToken());
+		
+		/*
 		Namespace subNs=ns->makeChildAndFrame("someFunction");
 		
 		AstNode* leftInNode=nullptr;
@@ -191,6 +201,7 @@ void AstExpression::resolveAction()
 		rightIn->setInput(subNs, true, Void, Void);
 		
 		action=functionAction(move(rightIn), funcReturn, subNs->getStackFrame());
+		*/
 	}
 	else
 	{
@@ -448,7 +459,7 @@ void AstOpWithInput::resolveAction()
 
 bool AstOpWithInput::isFunctionWithOutput()
 {
-	return token->getOp()==ops->rightArrow;
+	return token->getOp()==ops->rightArrow && leftIn.size()==1 && rightIn.size()==1;
 }
 
 

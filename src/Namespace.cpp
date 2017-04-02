@@ -320,7 +320,7 @@ void NamespaceData::addAction(Action action, string id)
 		try
 		{
 			getType(id);
-			throw PineconeError("tried to make multiple types with the name '"+id+"'", SOURCE_ERROR);
+			throw PineconeError("you tried to make multiple types with the name '"+id+"'", SOURCE_ERROR);
 		}
 		catch (IdNotFoundError err) {}
 		
