@@ -88,7 +88,7 @@ size_t StackFrame::getRightOffset()
 	}
 	else
 	{
-		error.log("tried to get the right input offset from a stack frame that does not have a left input", INTERNAL_ERROR);
+		error.log("tried to get the right input offset from a stack frame that does not have a right input", INTERNAL_ERROR);
 		return 0;
 	}
 }

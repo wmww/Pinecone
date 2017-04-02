@@ -34,11 +34,11 @@ public:
 	public:
 		void add(KEY key, AstNode node);
 		void add(KEY key, Action action);
-		void get(KEY key, vector<Action>& out);
+		void get(KEY key, vector<AstNodeBase*>& out);
 		
 	private:
 		unordered_map<KEY, vector<AstNode>> nodes;
-		unordered_map<KEY, vector<Action>> actions;
+		//unordered_map<KEY, vector<Action>> actions;
 	};
 	
 	/// creation functions
@@ -67,7 +67,7 @@ public:
 	
 	///	adding elements
 	
-	//	adds the input vars to the stack frame, will be called 'left' and 'right'
+	//	adds the input vars to the stack frame, will be called 'me' and 'in'
 	void setInput(Type left, Type right);
 	
 	//	add a get and set action for a variable also adds its data to the stack frame
@@ -100,7 +100,7 @@ public:
 	Action getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic);
 	
 	//	returns the given action with a conversion to the given type put over top of it if needed
-	Action getActionConvertedToType(Action actionIn, Type outType);
+	//Action getActionConvertedToType(Action actionIn, Type outType);
 	
 	//	addes all the matching actions in this and in all parents to out
 	void getActions(string text, vector<Action>& out, bool dynamic);

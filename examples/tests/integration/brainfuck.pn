@@ -1,7 +1,7 @@
 # Tests the Pinecone brainfuck interpreter
 
 # for the interpreter to be happy, there needs to be an extra newline at the end, idk why
-print: "enter your brainfuck code: Hello World!\n_____"
+print: "enter your brainfuck code: Hello World!\n\n_____"
 
 symInput: "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
 
