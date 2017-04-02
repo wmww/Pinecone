@@ -40,6 +40,8 @@ public:
 	
 	virtual string getString()=0;
 	
+	virtual AstNode makeCopy()=0;
+	
 	Type getReturnType()
 	{
 		if (!returnType)
@@ -208,6 +210,8 @@ public:
 	
 	void resolveAction();
 	
+	AstNode makeNonWhatevCopy(Type leftInType, Type rightInType);
+	
 	Token getToken() {return bodyNode->getToken();}
 	
 private:
@@ -330,6 +334,34 @@ public:
 	{
 		throw PineconeError("AstType::resolveAction called, which it shouldn't have been", INTERNAL_ERROR, getToken());
 	}
+};
+
+class AstTypeType: public AstType
+{
+public:
+	
+	static unique_ptr<AstTypeType> make(Type typeIn)
+	{
+		unique_ptr<AstTypeType> node(new AstTypeType);
+		node->returnType=typeIn;
+		return node;
+	}
+	
+	string getString()
+	{
+		return returnType->getString();
+	}
+	
+	void resolveReturnType()
+	{
+		return returnType->makeMetaType();
+	}
+	
+	Token getToken() {return nullptr;}
+	
+private:
+	
+	Type returnType;
 };
 
 class AstVoidType: public AstType
