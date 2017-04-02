@@ -191,6 +191,11 @@ public:
 	{
 		auto node=new AstFuncBody();
 		
+		if (!leftTypeIn->isType() || !rightTypeIn->isType() || !returnTypeIn->isType())
+		{
+			throw PineconeError("AstFuncBody made with function input nodes that are not types", INTERNAL_ERROR);
+		}
+		
 		node->leftTypeNode=move(leftTypeIn);
 		node->rightTypeNode=move(rightTypeIn);
 		node->returnTypeNode=move(returnTypeIn);
