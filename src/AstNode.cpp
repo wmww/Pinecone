@@ -531,7 +531,7 @@ void AstToken::resolveAction()
 		{
 			if (token->getType()==TokenData::OPERATOR)
 			{
-				throw PineconeError("unknown overload for operator '"+token->getText()+"'", SOURCE_ERROR, token);
+				throw PineconeError("unknown overload for "+inLeftType->getString()+" "+token->getText()+" "+inRightType->getString()+"'", SOURCE_ERROR, token);
 			}
 			else if (token->getType()==TokenData::IDENTIFIER)
 			{
