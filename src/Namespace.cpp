@@ -446,38 +446,23 @@ Type NamespaceData::getType(string name)
 	}
 }
 
-Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic)
+void NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token, Type left, Type right, bool dynamic)
 {
-	vector<Action> out;
-	
-	getActionsForTokenWithInput(out, token, left, right, dynamic);
-	
-	if (out.size()==0)
-	{
-		throw IdNotFoundError(token->getText(), false, shared_from_this());
-	}
-	else if (out.size()==1)
-	{
-		return out[0];
-	}
-	else
-	{
-		throw IdNotFoundError(token->getText(), true, shared_from_this());
-	}
-}
-
-Action NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token, Type left, Type right, bool dynamic)
-{
-	vector<Action> matches;
+	vector<AstNodeBase*> nodes;
 	
 	if (token->getOp())
 	{
-		getActions(token->getOp(), matches);
+		operators.get(token->getOp(), nodes);
+		
+		for (int i=0; i<int(nodes.size()); i++)
+		{
+			Action action=nodes[i]->getAction();
+			if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
+				out.push_back(action);
+		}
 	}
 	else
 	{
-		vector<AstNodeBase*> nodes;
-		
 		actions.get(token->getText(), nodes);
 		
 		if (dynamic)
@@ -487,6 +472,9 @@ Action NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token tok
 		
 		for (int i=0; i<int(nodes.size()); i++)
 		{
+			/*if (typeid(*nodes[i])==typeid(AstFuncBody))
+				nodes[i]->getAction(); // this makes sure all the internal inputs are set and shouldn't actually resolve the function body
+			
 			if (
 				typeid(*nodes[i])==typeid(AstFuncBody)
 				&& 
@@ -506,9 +494,11 @@ Action NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token tok
 				out.push_back(instance->getAction());
 				actions.add(token->getText(), move(instance));
 			}
-			else
+			else*/
 			{
-				out.push_back(nodes[i]->getAction());
+				Action action=nodes[i]->getAction();
+				if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
+					out.push_back(action);
 			}
 		}
 		
@@ -516,16 +506,29 @@ Action NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token tok
 			parent->getActionsForTokenWithInput(out, token, left, right, dynamic);
 	}
 	
+		
 	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
-	
-	Action selection=findActionWithInput(matches, left, right);
-	
-	if (selection)
-		return selection;
-	else
-		throw IdNotFoundError(token->getText(), matches.size()>0, shared_from_this());
 }
 
+Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic)
+{
+	vector<Action> out;
+	
+	getActionsForTokenWithInput(out, token, left, right, dynamic);
+	
+	if (out.size()==0)
+	{
+		throw IdNotFoundError(token->getText(), false, shared_from_this());
+	}
+	else if (out.size()==1)
+	{
+		return out[0];
+	}
+	else
+	{
+		throw IdNotFoundError(token->getText(), true, shared_from_this());
+	}
+}
 Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic)
 {
 	Action selection=getActionForTokenWithInput(token, left->getReturnType(), right->getReturnType(), dynamic);
