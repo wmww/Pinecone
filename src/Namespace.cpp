@@ -269,7 +269,8 @@ void NamespaceData::setInput(Type left, Type right)
 	
 	stackFrame->setInput(left, right);
 	
-	if (!left->isVoid())
+	//if (!left->isVoid())
+	if (left->isCreatable())
 	{
 		string leftName="me";
 		size_t leftOffset=stackFrame->getLeftOffset();
@@ -279,7 +280,8 @@ void NamespaceData::setInput(Type left, Type right)
 		addAction(leftSetAction, leftName);
 	}
 	
-	if (!right->isVoid())
+	//if (!right->isVoid())
+	if (right->isCreatable())
 	{
 		string rightName="in";
 		size_t rightOffset=stackFrame->getRightOffset();
@@ -473,31 +475,29 @@ void NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token
 		
 		for (int i=0; i<int(nodes.size()); i++)
 		{
-			/*if (typeid(*nodes[i])==typeid(AstFuncBody))
-				nodes[i]->getAction(); // this makes sure all the internal inputs are set and shouldn't actually resolve the function body
+			Action action=nodes[i]->getAction(); // this makes sure all the internal inputs are set and shouldn't actually resolve the function body
 			
 			if (
 				typeid(*nodes[i])==typeid(AstFuncBody)
 				&& 
 				(
-					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->isWhatev()
+					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->getSubType()->isWhatev()
 					||
-					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->isWhatev()
+					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->getSubType()->isWhatev()
 				)
 				&&
 				(
-					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->matches(left)
-					||
-					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->matches(right)
+					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->getSubType()->matches(left)
+					&&
+					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->getSubType()->matches(right)
 				)
 			){
 				AstNode instance=((AstFuncBody*)nodes[i])->makeNonWhatevCopy(left, right);
 				out.push_back(instance->getAction());
 				actions.add(token->getText(), move(instance));
 			}
-			else*/
+			else
 			{
-				Action action=nodes[i]->getAction();
 				if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
 					out.push_back(action);
 			}

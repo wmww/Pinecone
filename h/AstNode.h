@@ -70,6 +70,11 @@ public:
 			resolveReturnType();
 		}
 		
+		if (!returnType)
+		{
+			throw PineconeError("AST node "+getString()+"failed to supply a return type", INTERNAL_ERROR);
+		}
+		
 		return returnType;
 	}
 	
@@ -461,14 +466,14 @@ public:
 	
 	void resolveReturnType()
 	{
-		returnType=returnType->getMetaType();
+		returnType=returnTypeNotMeta->getMetaType();
 	}
 	
 	Token getToken() {return nullptr;}
 	
 private:
 	
-	Type returnType;
+	Type returnTypeNotMeta;
 };
 
 class AstVoidType: public AstType
@@ -490,7 +495,12 @@ public:
 		return AstNode(out);
 	}
 	
-	void resolveReturnType() {returnType=Void->getMetaType();}
+	//void resolveReturnType() {returnType=Void->getMetaType();}
+	
+	void resolveReturnType()
+	{
+		returnType=Void->getMetaType();
+	}
 	
 	Token getToken() {return nullptr;}
 	
