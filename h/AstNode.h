@@ -38,6 +38,22 @@ public:
 	virtual bool isType() {return false;}
 	virtual bool isFunctionWithOutput() {return false;}
 	
+	/*
+	Type getInLeftType()
+	{
+		if (!inputHasBeenSet)
+			throw PineconeError("tried to get inLeftType before input was set", INTERNAL_ERROR, getToken());
+		return inLeftType;
+	}
+	
+	Type getInRightType()
+	{
+		if (!inputHasBeenSet)
+			throw PineconeError("tried to get inRightType before input was set", INTERNAL_ERROR, getToken());
+		return inRightType;
+	}
+	*/
+	
 	virtual string getString()=0;
 	
 	virtual AstNode makeCopy(bool copyCache)=0; // if copyCache is false, input and actions will not be copied
