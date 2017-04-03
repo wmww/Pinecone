@@ -457,6 +457,7 @@ void NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token
 		for (int i=0; i<int(nodes.size()); i++)
 		{
 			Action action=nodes[i]->getAction();
+			
 			if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
 				out.push_back(action);
 		}
@@ -502,10 +503,10 @@ void NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token
 			}
 		}
 		
-		if (parent)
-			parent->getActionsForTokenWithInput(out, token, left, right, dynamic);
 	}
 	
+	if (parent)
+		parent->getActionsForTokenWithInput(out, token, left, right, dynamic);
 		
 	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
 }
@@ -529,6 +530,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		throw IdNotFoundError(token->getText(), true, shared_from_this());
 	}
 }
+
 Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic)
 {
 	Action selection=getActionForTokenWithInput(token, left->getReturnType(), right->getReturnType(), dynamic);

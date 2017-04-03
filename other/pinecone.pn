@@ -12,7 +12,7 @@ xyz :: {Whatev}: (
 xyz: 8
 \\
 
-
+//
 func :: {String}.{a: Int, b: Int} -> {Int}: (
 	
 	print: in.a
@@ -20,7 +20,10 @@ func :: {String}.{a: Int, b: Int} -> {Int}: (
 	
 	in.b
 )
+\\
 
-print: (("hi").func: (8, 3))
+a: 78 .String
+
+print: "hello " +  a
 
 
