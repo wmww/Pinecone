@@ -65,7 +65,7 @@ public:
 		PTR,
 		BOOL,
 		TUPLE,
-		GENERIC,
+		WHATEV,
 		METATYPE,
 	};
 	

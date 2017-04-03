@@ -24,14 +24,16 @@ void StackFrame::setInput(Type left, Type right)
 	}
 	else
 	{
-		if (!left->isVoid())
+		//if (!left->isVoid())
+		if (left->isCreatable())
 		{
 			leftInputOffset=frameSize;
 			leftInputIndex=members.size();
 			addMember(left);
 		}
 		
-		if (!right->isVoid())
+		//if (!right->isVoid())
+		if (right->isCreatable())
 		{
 			rightInputOffset=frameSize;
 			rightInputIndex=members.size();

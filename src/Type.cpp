@@ -436,6 +436,11 @@ public:
 		return type;
 	}
 	
+	bool isWhatev()
+	{
+		return type->isWhatev();
+	}
+	
 protected:
 	
 	Type type;
@@ -479,7 +484,7 @@ public:
 	
 	PrimitiveType getType()
 	{
-		return GENERIC;
+		return WHATEV;
 	}
 	
 	bool isWhatev()
@@ -565,19 +570,21 @@ bool TypeBase::matches(Type other)
 	if (other==shared_from_this())
 		return true;
 	
-	auto otherType=other->getType();
-	
-	if (otherType!=getType())
+	if (getType()==WHATEV || other->getType()==WHATEV)
+	{
+		return true;
+	}
+	else if (other->getType()!=getType())
 	{
 		return false;
 	}
-	else if (!matchesSameTypeType(other))
+	else if (matchesSameTypeType(other))
 	{
-		return false;
+		return true;
 	}
 	else
 	{
-		return true;
+		return false;
 	}
 }
 

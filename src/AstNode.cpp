@@ -100,12 +100,12 @@ string AstFuncBody::getString()
 
 AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
 {
-	if (!leftInType->matches(leftTypeNode->getReturnType()) || !rightInType->matches(leftTypeNode->getReturnType()))
+	if (!leftInType->matches(leftTypeNode->getReturnType()->getSubType()) || !rightInType->matches(rightTypeNode->getReturnType()->getSubType()))
 	{
 		throw PineconeError("AstFuncBody::makeNonWhatevCopy sent types that didn't match the original", INTERNAL_ERROR, rightTypeNode->getToken());
 	}
 	
-	AstNode out=make(AstTypeType::make(leftInType), AstTypeType::make(rightInType), returnTypeNode->makeCopy(false), bodyNode->makeCopy(false));
+	AstNode out=make(AstTypeType::make(leftInType->getMetaType()), AstTypeType::make(rightInType->getMetaType()), returnTypeNode->makeCopy(false), bodyNode->makeCopy(false));
 	out->setInput(ns, dynamic, Void, Void);
 	return out;
 }
@@ -118,7 +118,7 @@ void AstFuncBody::resolveAction()
 	returnTypeNode->setInput(subNs, dynamic, Void, Void);
 	subNs->setInput(leftTypeNode->getReturnType()->getSubType(), rightTypeNode->getReturnType()->getSubType());
 	bodyNode->setInput(subNs, true, Void, Void);
-	action=functionAction(move(bodyNode), returnTypeNode->getReturnType()->getSubType(), subNs->getStackFrame());
+	action=functionAction(bodyNode->makeCopy(true), returnTypeNode->getReturnType()->getSubType(), subNs->getStackFrame());
 }
 
 
