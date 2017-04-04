@@ -4,14 +4,13 @@
 #==> "../examples/morse.pn"
 
 
-xyz :: {Whatev}: (
-	print: in
-	print: 2
-)
+		xyz :: {Whatev}: (
+			print: "input is "+in.String+"!"
+		)
 
-xyz: 8
-
-xyz: 4.7
+		xyz: 8
+		xyz: 4.7
+		xyz: tru
 
 
 //
