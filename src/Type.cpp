@@ -197,7 +197,11 @@ public:
 			if (i.type->isWhatev())
 			{
 				hasWhatev=true;
-				break;
+			}
+			
+			if (!i.type->isCreatable())
+			{
+				hasOnlyCreatable=false;
 			}
 		}
 		
@@ -306,6 +310,11 @@ public:
 		return hasWhatev;
 	}
 	
+	bool isCreatable()
+	{
+		return hasOnlyCreatable;
+	}
+	
 protected:
 	
 	bool matchesSameTypeType(Type other)
@@ -338,6 +347,7 @@ private:
 	unique_ptr<vector<NamedType>> subTypes;
 	bool isAnonymous=true;
 	bool hasWhatev=false;
+	bool hasOnlyCreatable=true;
 };
 
 class PtrType: public TypeBase

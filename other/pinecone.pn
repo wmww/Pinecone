@@ -4,19 +4,17 @@
 #==> "../examples/morse.pn"
 
 
-xyz :: {Whatev}.{}: (
-	print: "input is "+me.String+"!"
+xyz :: {a: Whatev, b: Int}.{}: (
+	print: "input " + me.b.String + " is " + me.a.String + "!"
 )
 
 #xyz: 8
 #xyz: 4.7
 #xyz: tru
 
-8 .xyz
-4.7 .xyz
-tru .xyz
-
-print: 1.Dub
+(8.3, 9) .xyz
+#4.7 .xyz
+#tru .xyz
 
 //
 func :: {String}.{a: Int, b: Int} -> {Int}: (
