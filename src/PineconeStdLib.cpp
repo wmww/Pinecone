@@ -489,14 +489,19 @@ void populateConstants()
 		isLinux=true;
 		isUnix=true;
 	
-	#elifdef _WIN32 //works forboth 32 and 64 bit systems
-		isWindows=true;
-	
-	#elifdef __APPLE__
-		isMac=true;
-		isUnix=true;
-	
-	#endif
+	#else
+		
+		#ifdef _WIN32 //works forboth 32 and 64 bit systems
+			isWindows=true;
+		
+		#else
+			#ifdef __APPLE__
+				isMac=true;
+				isUnix=true;
+			#endif // __APPLE__
+		#endif // _WIN32
+		
+	#endif // __linux__
 	
 	table->addAction(constGetAction(&isLinux, Bool, "OS_IS_LINUX"), "OS_IS_LINUX");
 	table->addAction(constGetAction(&isWindows, Bool, "OS_IS_WINDOWS"), "OS_IS_WINDOWS");
