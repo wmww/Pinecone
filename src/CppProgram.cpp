@@ -8,6 +8,9 @@ string getValidCppId(string in)
 {
 	string cpp;
 	
+	if (in.empty())
+		in="no_name";
+	
 	int start=0;
 	
 	// all this should work with unicode (although it may inject random (but valid) characters into the C++ names)
@@ -32,9 +35,6 @@ string getValidCppId(string in)
 		start=i+1;
 		
 	} while (start<int(in.size()));
-	
-	if (cpp.empty())
-		cpp="no_name";
 	
 	return cpp;
 }

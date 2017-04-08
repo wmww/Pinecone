@@ -1,29 +1,38 @@
 
-#==> "../examples/simple_demo.pn"
-#==> "../examples/tests/integration/morse.pn"
-#==> "../examples/morse.pn"
-
-
-xyz :: {a: Whatev, b: Int}.{}: (
-	print: "input " + me.b.String + " is " + me.a.String + "!"
-)
-
-#xyz: 8
-#xyz: 4.7
-#xyz: tru
-
-(8.3, 9) .xyz
-#4.7 .xyz
-#tru .xyz
-
 //
-func :: {String}.{a: Int, b: Int} -> {Int}: (
+WhatevStruct ::
+{
+	foo: Int
+	bar: Whatev
+}
+
+counter: 0
+
+WhatevStruct :: {Whatev} -> {WhatevStruct}: (
 	
-	print: in.a
-	print: me
-	
-	in.b
+	out: counter, in
+	counter: counteer + 1
+	out
 )
+
+func :: {WhatevStruct}: (
+	
+	print: in.bar
+)
+
+
+var: WhatevStruct: "hay"
+
+func: var
 \\
 
+//
+a :: {} -> {Whatev}: 8
 
+print: a
+\\
+
+b :: {Whatev}: print: in
+
+b: tru
+b: fls

@@ -274,6 +274,15 @@ public:
 	
 	Token getToken() {return bodyNode->getToken();}
 	
+	bool isWhatev()
+	{
+		return
+			leftTypeNode->getReturnType()->isWhatev() ||
+			rightTypeNode->getReturnType()->isWhatev() ||
+			returnTypeNode->getReturnType()->isWhatev();
+	
+	}
+	
 	AstNode leftTypeNode, rightTypeNode, returnTypeNode, bodyNode;
 };
 
