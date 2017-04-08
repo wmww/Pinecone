@@ -280,6 +280,28 @@ void addToProgIntToStr(CppProgram * prog)
 	}
 }
 
+void addToProgStrToInt(CppProgram * prog)
+{
+	if (!prog->hasFunc("$strToInt"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$intToStr", {{strType, "in"}}, "int",
+			"int out = 0;\n"
+			"for (int i = 0; i < in._size; i++)\n"
+			"{\n"
+			"	if (in._data[i] >= '0' && in._data[i] <= '9')\n"
+			"	{\n"
+			"		out = out * 10 + in._data[i] - '0';\n"
+			"	}\n"
+			"}\n"
+			"if (in._size > 0 && in._data[0] == '-')\n"
+			"	out *= -1;\n"
+			"return out;\n"
+		);
+	}
+}
+
 void addToProgConcatStr(CppProgram * prog)
 {
 	if (!prog->hasFunc("$concatStr"))
@@ -769,6 +791,24 @@ void populateConverters()
 		retrn (int)right
 	,
 		"((int)$:)"
+	);
+	
+	addAction("Int", String, Void, Int,
+		LAMBDA_HEADER
+		{
+			int* out=(int*)malloc(sizeof(int));
+			*out=stringToInt(pncnStr2CppStr(leftIn));
+			return out;
+		},
+		ADD_CPP_HEADER
+		{
+			addToProgStrToInt(prog);
+			
+			prog->name("$strToInt");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 	
 	//to Dub
