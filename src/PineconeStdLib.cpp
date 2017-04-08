@@ -286,13 +286,49 @@ void addToProgStrToInt(CppProgram * prog)
 	{
 		string strType=prog->getTypeCode(String);
 		
-		prog->addFunc("$intToStr", {{strType, "in"}}, "int",
+		prog->addFunc("$strToInt", {{strType, "in"}}, "int",
 			"int out = 0;\n"
 			"for (int i = 0; i < in._size; i++)\n"
 			"{\n"
 			"	if (in._data[i] >= '0' && in._data[i] <= '9')\n"
 			"	{\n"
 			"		out = out * 10 + in._data[i] - '0';\n"
+			"	}\n"
+			"	else if (in._data[i] == '.')\n"
+			"		break;\n"
+			"}\n"
+			"if (in._size > 0 && in._data[0] == '-')\n"
+			"	out *= -1;\n"
+			"return out;\n"
+		);
+	}
+}
+
+void addToProgStrToDub(CppProgram * prog)
+{
+	if (!prog->hasFunc("$strToDub"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$strToDub", {{strType, "in"}}, "double",
+			"double out = 0;\n"
+			"int divider = 1;\n"
+			"for (int i = 0; i < in._size; i++)\n"
+			"{\n"
+			"	if (divider == 1)\n"
+			"	{\n"
+			"		if (in._data[i] >= '0' && in._data[i] <= '9')\n"
+			"			out = out * 10 + in._data[i] - '0';\n"
+			"		else if (in._data[i] == '.')\n"
+			"			divider = 10;\n"
+			"	}\n"
+			"	else\n"
+			"	{\n"
+			"		if (in._data[i] >= '0' && in._data[i] <= '9')\n"
+			"		{\n"
+			"			out += ((double)(in._data[i] - '0')) / (double)divider;\n"
+			"			divider *= 10;\n"
+			"		}\n"
 			"	}\n"
 			"}\n"
 			"if (in._size > 0 && in._data[0] == '-')\n"
@@ -822,6 +858,24 @@ void populateConverters()
 		retrn (double)right
 	,
 		"((double)$:)"
+	);
+	
+	addAction("Dub", String, Void, Dub,
+		LAMBDA_HEADER
+		{
+			double* out=(double*)malloc(sizeof(double));
+			*out=stringToDouble(pncnStr2CppStr(leftIn));
+			return out;
+		},
+		ADD_CPP_HEADER
+		{
+			addToProgStrToDub(prog);
+			
+			prog->name("$strToDub");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 }
 
