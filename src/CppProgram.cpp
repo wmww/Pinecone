@@ -107,9 +107,9 @@ void CppNameContainer::addPn(const string& pn, const string& cppNameHint)
 	cppSet.insert(cpp);
 }
 
-void CppNameContainer::reserveCpp(const string& cpp)
+void CppNameContainer::reserveCpp(const string& cpp, bool ignoreCollisions)
 {
-	if (hasCpp(cpp))
+	if (!ignoreCollisions && hasCpp(cpp))
 	{
 		throw PineconeError("called CppNameContainer::reserveCpp with id '"+cpp+"', which already exists", INTERNAL_ERROR);
 	}
@@ -475,6 +475,7 @@ void CppProgram::declareVar(const string& nameIn, Type typeIn, string initialVal
 	}
 	
 	activeFunc->namespaceStack.back()->addPn(nameIn);
+	activeFunc->namespaceStack[0]->reserveCpp(pnToCpp(nameIn), true);
 	
 	activeFunc->varDeclareSource+=getTypeCode(typeIn)+" "+pnToCpp(nameIn);
 	if (!initialValue.empty())
