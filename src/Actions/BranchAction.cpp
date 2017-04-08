@@ -66,13 +66,16 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		if (leftInput->getReturnType()!=action->getInLeftType())
-			leftInput=cppTupleCastAction(leftInput, action->getInLeftType());
+		Action leftInTmp = leftInput;
+		Action rightInTmp = rightInput;
 		
-		if (rightInput->getReturnType()!=action->getInRightType())
-			rightInput=cppTupleCastAction(rightInput, action->getInRightType());
+		if (leftInTmp->getReturnType()!=action->getInLeftType())
+			leftInTmp=cppTupleCastAction(leftInTmp, action->getInLeftType());
 		
-		action->addToProg(leftInput, rightInput, prog);
+		if (rightInTmp->getReturnType()!=action->getInRightType())
+			rightInTmp=cppTupleCastAction(rightInTmp, action->getInRightType());
+		
+		action->addToProg(leftInTmp, rightInTmp, prog);
 	}
 	
 private:
@@ -134,7 +137,12 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		action->addToProg(voidAction, rightInput, prog);
+		Action rightInTmp = rightInput;
+		
+		if (rightInTmp->getReturnType()!=action->getInRightType())
+			rightInTmp=cppTupleCastAction(rightInTmp, action->getInRightType());
+		
+		action->addToProg(voidAction, rightInTmp, prog);
 	}
 	
 private:
@@ -190,7 +198,12 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		action->addToProg(leftInput, voidAction, prog);
+		Action leftInTmp = leftInput;
+		
+		if (leftInTmp->getReturnType()!=action->getInLeftType())
+			leftInTmp=cppTupleCastAction(leftInTmp, action->getInLeftType());
+		
+		action->addToProg(leftInTmp, voidAction, prog);
 	}
 	
 private:
@@ -200,9 +213,9 @@ private:
 
 Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 {
-	return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
+	//return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 	
-	/*
+	
 	if (leftInputIn->getReturnType()->isVoid())
 	{
 		if (rightInputIn->getReturnType()->isVoid())
@@ -225,5 +238,4 @@ Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn)
 			return Action(new BranchAction(leftInputIn, actionIn, rightInputIn));
 		}
 	}
-	*/
 }

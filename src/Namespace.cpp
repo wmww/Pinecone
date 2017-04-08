@@ -507,7 +507,7 @@ void NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token
 	
 	if (parent)
 		parent->getActionsForTokenWithInput(out, token, left, right, dynamic);
-		
+	
 	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
 }
 
