@@ -696,19 +696,50 @@ void populateConverters()
 		"0.0"
 	);
 	
+	func("Byte", Void, Void, Byte,
+		retrn 0;
+	,
+		"0"
+	);
+	
 	
 	///casting
 	
 	//to bool
+	func("Bool", Void, Bool, Bool,
+		retrn right
+	,
+		"$:"
+	);
+	
 	func("Bool", Void, Int, Bool,
 		retrn right!=0
 	,
 		"($: != 0)"
 	);
+	
 	func("Bool", Void, Dub, Bool,
 		retrn right!=0
 	,
 		"($: != 0.0)"
+	);
+	
+	func("Bool", Bool, Void, Bool,
+		retrn left
+	,
+		"$."
+	);
+	
+	func("Bool", Int, Void, Bool,
+		retrn left!=0
+	,
+		"($. != 0)"
+	);
+	
+	func("Bool", Dub, Void, Bool,
+		retrn left!=0
+	,
+		"($. != 0.0)"
 	);
 	
 	//to Byte
@@ -722,6 +753,18 @@ void populateConverters()
 		retrn (unsigned char)right
 	,
 		"((unsigned char)$:)"
+	);
+	
+	func("Byte", Bool, Void, Byte,
+		retrn (left?1:0)
+	,
+		"($. ? 1 : 0)"
+	);
+	
+	func("Byte", Int, Void, Byte,
+		retrn (unsigned char)left
+	,
+		"((unsigned char)$.)"
 	);
 	
 	//to Int
@@ -743,6 +786,25 @@ void populateConverters()
 		"((int)$:)"
 	);
 	
+	func("Int", Bool, Void, Int,
+		retrn (left?1:0)
+	,
+		"($. ? 1 : 0)"
+	);
+	
+	func("Int", Byte, Void, Int,
+		retrn (int)left
+	,
+		"((int)$.)"
+	);
+	
+	func("Int", Dub, Void, Int,
+		retrn (int)left
+	,
+		"((int)$.)"
+	);
+	
+	
 	//to Dub
 	func("Dub", Void, Bool, Dub,
 		retrn (right?1:0)
@@ -754,6 +816,18 @@ void populateConverters()
 		retrn (double)right
 	,
 		"((double)$:)"
+	);
+	
+	func("Dub", Bool, Void, Dub,
+		retrn (left?1:0)
+	,
+		"($. ? 1.0 : 0.0)"
+	);
+		
+	func("Dub", Int, Void, Dub,
+		retrn (double)left
+	,
+		"((double)$.)"
 	);
 }
 
