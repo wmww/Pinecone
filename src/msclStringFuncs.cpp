@@ -450,6 +450,24 @@ string doubleToString(double in)
 	return to_string(a)+"."+to_string(b);
 }
 
+int stringToInt(string in)
+{
+	int out = 0;
+	
+	for (int i = 0; i < (int)in.size(); i++)
+	{
+		if (in[i] >= '0' && in[i] <= '9')
+		{
+			out = out * 10 + in[i] - '0';
+		}
+	}
+	
+	if (in.size() > 0 && in[0] == '-')
+		out *= -1;
+	
+	return out;
+}
+
 string loadEntireFile(string inName, bool printOutput)
 {
 	std::fstream inFile;
