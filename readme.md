@@ -45,7 +45,7 @@ The features that are currently implemented are as follows:
 * Interpreter for rapid development and simplicity
 * Transpiler to C++ for max performance
 
-the following features are coming soon:
+The following features are coming soon:
 
 * Whatev type (equivalent to templates or generics in other languages)
 * Arrays of any type (Whatev support needed)
@@ -55,11 +55,11 @@ the following features are coming soon:
 * Windows support
 
 ## Compatibility
-Pincone currently requires zero external dependencies (and the only one that will likely be added is LLVM). You will need a C++11 compiler to build it, and make and GCC makes things easier. Pinecone is developed primarily on Linux and usually works on OSX. It does not currently work on Windows, but support should be added soon.
+Pinecone currently requires zero external dependencies (and the only one that will likely be added is LLVM). You will need a C++11 compiler to build it, and make and GCC makes things easier. Pinecone is developed primarily on Linux and usually works on OSX. It does not currently work on Windows, but support should be added soon.
 
 ## Example
 
-here is the common demo program FizzBuzz wretten in Pinecone. It prints the numbers from 1 to 20, but it prints "Fizz" if the number is divisable by 3, "Buzz" if it is divisable by 5 and "FizzBuzz" if it is divisable by both. You can find more samples in the examples directory or the tutorials.
+Here is the common demo program FizzBuzz written in Pinecone. It prints the numbers from 1 to 20, but it prints "Fizz" if the number is divisible by 3, "Buzz" if it is divisable by 5 and "FizzBuzz" if it is divisible by both. You can find more samples in the [examples directory](https://github.com/william01110111/Pinecone/tree/master/examples) or the [tutorials](https://github.com/william01110111/Pinecone/tree/master/tutorials).
 
 ```
 # FizzBuzz
