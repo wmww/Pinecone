@@ -52,10 +52,9 @@ the following features are coming soon:
 * Pass-by-reference
 * Proper classes (pass-by-reference needed)
 * Operator overloading
-* Windows support
 
 ## Compatibility
-Pincone currently requires zero external dependencies (and the only one that will likely be added is LLVM). You will need a C++11 compiler to build it, and make and GCC makes things easier. Pinecone is developed primarily on Linux and usually works on OSX. It does not currently work on Windows, but support should be added soon.
+Pincone currently requires zero external dependencies (and the only one that will likely be added is LLVM). You will need a C++11 compiler to build it, and the process is easier with GCC and Make. Pinecone has been successfully tested on Linux, MacOS and Windows.
 
 ## Example
 
