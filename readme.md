@@ -57,7 +57,6 @@ The following features are coming soon:
 Pinecone currently requires zero external dependencies (and the only one that will likely be added is LLVM). You will need a C++11 compiler to build it, and the process is easier with GCC and Make. Pinecone has been successfully tested on Linux, MacOS and Windows.
 
 ## Example
-
 Here is the common demo program FizzBuzz written in Pinecone. It prints the numbers from 1 to 20, but it prints "Fizz" if the number is divisible by 3, "Buzz" if it is divisable by 5 and "FizzBuzz" if it is divisible by both. You can find more samples in the [examples directory](https://github.com/william01110111/Pinecone/tree/master/examples) or the [tutorials](https://github.com/william01110111/Pinecone/tree/master/tutorials).
 
 ```
@@ -87,3 +86,8 @@ fizzBuzz :: {start: Int, end: Int}: (
 	)
 )
 ```
+
+## Contributing
+I have not yet added enough documentation to the language internals to make it practical for others to contribute to the language itself. If you are interested in adding a specific feature or just helping out, post in the [subreddit](https://www.reddit.com/r/PineconeLang/) or direct message me on [reddit](www.reddit.com/u/william01110111/) or [twitter](https://twitter.com/PineconeLang). Fixes and improvements to the readmes and tutorials are always welcome.
+
+
