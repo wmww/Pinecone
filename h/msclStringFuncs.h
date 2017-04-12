@@ -107,6 +107,10 @@ string assembleTreeString(const string& root, vector<string>& leaves);
 //	converts a double to a string, with always at least one zero before and after the decimal
 string doubleToString(double in);
 
+int stringToInt(string in);
+
+double stringToDouble(string in);
+
 //	load entire file and return its contents
 //		inName: the path to the file to open
 //		debug: if to print status several times to stdout

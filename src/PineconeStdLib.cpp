@@ -280,6 +280,64 @@ void addToProgIntToStr(CppProgram * prog)
 	}
 }
 
+void addToProgStrToInt(CppProgram * prog)
+{
+	if (!prog->hasFunc("$strToInt"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$strToInt", {{strType, "in"}}, "int",
+			"int out = 0;\n"
+			"for (int i = 0; i < in._size; i++)\n"
+			"{\n"
+			"	if (in._data[i] >= '0' && in._data[i] <= '9')\n"
+			"	{\n"
+			"		out = out * 10 + in._data[i] - '0';\n"
+			"	}\n"
+			"	else if (in._data[i] == '.')\n"
+			"		break;\n"
+			"}\n"
+			"if (in._size > 0 && in._data[0] == '-')\n"
+			"	out *= -1;\n"
+			"return out;\n"
+		);
+	}
+}
+
+void addToProgStrToDub(CppProgram * prog)
+{
+	if (!prog->hasFunc("$strToDub"))
+	{
+		string strType=prog->getTypeCode(String);
+		
+		prog->addFunc("$strToDub", {{strType, "in"}}, "double",
+			"double out = 0;\n"
+			"int divider = 1;\n"
+			"for (int i = 0; i < in._size; i++)\n"
+			"{\n"
+			"	if (divider == 1)\n"
+			"	{\n"
+			"		if (in._data[i] >= '0' && in._data[i] <= '9')\n"
+			"			out = out * 10 + in._data[i] - '0';\n"
+			"		else if (in._data[i] == '.')\n"
+			"			divider = 10;\n"
+			"	}\n"
+			"	else\n"
+			"	{\n"
+			"		if (in._data[i] >= '0' && in._data[i] <= '9')\n"
+			"		{\n"
+			"			out += ((double)(in._data[i] - '0')) / (double)divider;\n"
+			"			divider *= 10;\n"
+			"		}\n"
+			"	}\n"
+			"}\n"
+			"if (in._size > 0 && in._data[0] == '-')\n"
+			"	out *= -1;\n"
+			"return out;\n"
+		);
+	}
+}
+
 void addToProgConcatStr(CppProgram * prog)
 {
 	if (!prog->hasFunc("$concatStr"))
@@ -479,6 +537,35 @@ void populateConstants()
 			"VERSION"
 		);
 	}
+	
+	// OS
+	bool isLinux=false;
+	bool isWindows=false;
+	bool isUnix=false;
+	bool isMac=false;
+	
+	#ifdef __linux__
+		isLinux=true;
+		isUnix=true;
+	
+	#else
+		
+		#ifdef _WIN32 //works forboth 32 and 64 bit systems
+			isWindows=true;
+		
+		#else
+			#ifdef __APPLE__
+				isMac=true;
+				isUnix=true;
+			#endif // __APPLE__
+		#endif // _WIN32
+		
+	#endif // __linux__
+	
+	table->addAction(constGetAction(&isLinux, Bool, "OS_IS_LINUX"), "OS_IS_LINUX");
+	table->addAction(constGetAction(&isWindows, Bool, "OS_IS_WINDOWS"), "OS_IS_WINDOWS");
+	table->addAction(constGetAction(&isMac, Bool, "OS_IS_MAC"), "OS_IS_MAC");
+	table->addAction(constGetAction(&isUnix, Bool, "OS_IS_UNIX"), "OS_IS_UNIX");
 	
 	func("IS_TRANSPILED", Void, Void, Bool,
 		retrn false;
@@ -805,6 +892,24 @@ void populateConverters()
 	);
 	
 	
+	addAction("Int", String, Void, Int,
+		LAMBDA_HEADER
+		{
+			int* out=(int*)malloc(sizeof(int));
+			*out=stringToInt(pncnStr2CppStr(leftIn));
+			return out;
+		},
+		ADD_CPP_HEADER
+		{
+			addToProgStrToInt(prog);
+			
+			prog->name("$strToInt");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
+	);
+	
 	//to Dub
 	func("Dub", Void, Bool, Dub,
 		retrn (right?1:0)
@@ -828,6 +933,24 @@ void populateConverters()
 		retrn (double)left
 	,
 		"((double)$.)"
+	);
+	
+	addAction("Dub", String, Void, Dub,
+		LAMBDA_HEADER
+		{
+			double* out=(double*)malloc(sizeof(double));
+			*out=stringToDouble(pncnStr2CppStr(leftIn));
+			return out;
+		},
+		ADD_CPP_HEADER
+		{
+			addToProgStrToDub(prog);
+			
+			prog->name("$strToDub");
+			prog->pushExpr();
+				left->addToProg(prog);
+			prog->popExpr();
+		}
 	);
 }
 
