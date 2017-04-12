@@ -450,6 +450,56 @@ string doubleToString(double in)
 	return to_string(a)+"."+to_string(b);
 }
 
+int stringToInt(string in)
+{
+	int out = 0;
+	
+	for (int i = 0; i < (int)in.size(); i++)
+	{
+		if (in[i] >= '0' && in[i] <= '9')
+		{
+			out = out * 10 + in[i] - '0';
+		}
+		else if (in[i] == '.')
+			break;
+	}
+	
+	if (in.size() > 0 && in[0] == '-')
+		out *= -1;
+	
+	return out;
+}
+
+double stringToDouble(string in)
+{
+	double out = 0;
+	int divider = 1;
+	
+	for (int i = 0; i < (int)in.size(); i++)
+	{
+		if (divider == 1)
+		{
+			if (in[i] >= '0' && in[i] <= '9')
+				out = out * 10 + in[i] - '0';
+			else if (in[i] == '.')
+				divider = 10;
+		}
+		else
+		{
+			if (in[i] >= '0' && in[i] <= '9')
+			{
+				out += (double)(in[i] - '0') / divider;
+				divider *= 10;
+			}
+		}
+	}
+	
+	if (in.size() > 0 && in[0] == '-')
+		out *= -1;
+	
+	return out;
+}
+
 string loadEntireFile(string inName, bool printOutput)
 {
 	std::fstream inFile;

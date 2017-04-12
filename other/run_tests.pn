@@ -1,3 +1,9 @@
+
+pthslsh: "/"
+
+OS_IS_WINDOWS ?
+	pthslsh: "\\"
+
 options: ""
 
 IS_TRANSPILED ?
@@ -23,9 +29,15 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 	
 	print: in.folder + ":"
 	
-	filepath: "examples/tests/" + in.folder
+	filepath: "examples" + pthslsh + "tests" + pthslsh + in.folder
 	
-	cmd: "ls " + filepath + "/ | grep .pn"
+	cmd: String
+	
+	OS_IS_UNIX ? (
+		cmd: "ls " + filepath + pthslsh + " | grep .pn"
+	)|(
+		cmd: "dir /B " + filepath + " | FINDSTR /C:.pn"
+	)
 	
 	allFiles: runCmd: cmd
 	
@@ -34,7 +46,7 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 	j: 0 | j < allFiles.len | j: j+1 @ (
 		j = allFiles.len-1 || (allFiles.sub: j, j+1) = "\n" ?(
 			name: allFiles.sub: i, j
-			runTest: filepath + "/" + name, (name.sub: 0, name.len-3), in.printDetails
+			runTest: filepath + pthslsh + name, (name.sub: 0, name.len-3), in.printDetails
 			i: j+1
 		)
 	)
