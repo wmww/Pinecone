@@ -494,6 +494,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		}
 	}
 	
+	nodes.clear();
 	getMatches(nodes, searchText, false, false, true);
 	
 	for (auto i: nodes)
