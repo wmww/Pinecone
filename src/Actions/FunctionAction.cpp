@@ -95,9 +95,14 @@ public:
 			resolveAction();
 		}
 		
-		string name="%"+nameHint;
-		if (name.empty())
-			name="^func_"+to_string((long)&*action);
+		string name="%";
+		
+		name+=nameHint.empty() ?
+			"func_"
+			:
+			nameHint;
+		
+		name+="_"+to_string((long)&*action);
 		
 		if (!prog->hasFunc(name))
 		{
