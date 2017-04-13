@@ -40,8 +40,7 @@ string convertToString(Operator in) {return in->getText();}
 string convertToString(Type in) {return in->getString();}
 string convertToString(string in) {return in;}
 
-template<typename KEY>
-void NamespaceData::ActionMap<KEY>::add(KEY key, AstNode node)
+void NamespaceData::ActionMap::add(string key, AstNode node)
 {
 	auto i=nodes.find(key);
 	
@@ -53,8 +52,7 @@ void NamespaceData::ActionMap<KEY>::add(KEY key, AstNode node)
 	nodes[key].push_back(move(node));
 }
 
-template<typename KEY>
-void NamespaceData::ActionMap<KEY>::add(KEY key, Action action)
+void NamespaceData::ActionMap::add(string key, Action action)
 {
 	add(key, ActionWrapperNode::make(action));
 	
@@ -70,8 +68,7 @@ void NamespaceData::ActionMap<KEY>::add(KEY key, Action action)
 	*/
 }
 
-template<typename KEY>
-void NamespaceData::ActionMap<KEY>::get(KEY key, vector<AstNodeBase*>& out)
+void NamespaceData::ActionMap::get(string key, vector<AstNodeBase*>& out)
 {
 	auto matches=nodes.find(key);
 	
@@ -365,7 +362,7 @@ void NamespaceData::addAction(Action action, string id)
 
 void NamespaceData::addOperator(Action action, Operator op)
 {
-	operators.add(op, action);
+	actions.add(op->getText(), action);
 	//addToMap(op->getText(), OPERATOR, allIds);
 	//addToMap(op, action, operators);
 }
@@ -407,7 +404,18 @@ void NamespaceData::addAction(AstNode node, string id)
 		}
 		catch (IdNotFoundError err)*/
 		{
-			actions.add(id, move(node));
+			//node->setInput(shared_from_this(), false, Void, Void);
+			
+			if ( // if the left or the right is a Whatev and the types match up
+				typeid(*node)==typeid(AstFuncBody) && ((AstFuncBody*)&*node)->isWhatev()
+			){
+				whatevActions.add(id, move(node));
+			}
+			else
+			{
+				actions.add(id, move(node));
+			}
+			
 			//addToMap(id, ACTION, allIds);
 			//addToMap(id, action, actions);
 		}
@@ -416,7 +424,7 @@ void NamespaceData::addAction(AstNode node, string id)
 
 void NamespaceData::addOperator(AstNode node, Operator op)
 {
-	operators.add(op, move(node));
+	actions.add(op->getText(), move(node));
 	//addToMap(op->getText(), OPERATOR, allIds);
 	//addToMap(op, action, operators);
 }
@@ -448,87 +456,66 @@ Type NamespaceData::getType(string name)
 	}
 }
 
-void NamespaceData::getActionsForTokenWithInput(vector<Action>& out, Token token, Type left, Type right, bool dynamic)
-{
-	vector<AstNodeBase*> nodes;
-	
-	if (token->getOp())
-	{
-		operators.get(token->getOp(), nodes);
-		
-		for (int i=0; i<int(nodes.size()); i++)
-		{
-			Action action=nodes[i]->getAction();
-			
-			if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
-				out.push_back(action);
-		}
-	}
-	else
-	{
-		actions.get(token->getText(), nodes);
-		
-		if (dynamic)
-		{
-			dynamicActions.get(token->getText(), nodes);
-		}
-		
-		for (int i=0; i<int(nodes.size()); i++)
-		{
-			Action action=nodes[i]->getAction(); // this makes sure all the internal inputs are set and shouldn't actually resolve the function body
-			
-			if (
-				typeid(*nodes[i])==typeid(AstFuncBody)
-				&& 
-				(
-					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->getSubType()->isWhatev()
-					||
-					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->getSubType()->isWhatev()
-				)
-				&&
-				(
-					((AstFuncBody*)nodes[i])->leftTypeNode->getReturnType()->getSubType()->matches(left)
-					&&
-					((AstFuncBody*)nodes[i])->rightTypeNode->getReturnType()->getSubType()->matches(right)
-				)
-			){
-				AstNode instance=((AstFuncBody*)nodes[i])->makeNonWhatevCopy(left, right);
-				out.push_back(instance->getAction());
-				actions.add(token->getText(), move(instance));
-			}
-			else
-			{
-				if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
-					out.push_back(action);
-			}
-		}
-		
-	}
-	
-	if (parent)
-		parent->getActionsForTokenWithInput(out, token, left, right, dynamic);
-	
-	//error.log("found "+to_string(matches.size())+" overloads for "+token->getText(), JSYK, token);
-}
-
 Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic)
 {
-	vector<Action> out;
+	vector<Action> matches;
+	vector<AstNodeBase*> nodes;
 	
-	getActionsForTokenWithInput(out, token, left, right, dynamic);
+	string searchText=token->getText();
 	
-	if (out.size()==0)
+	getMatches(nodes, searchText, true, dynamic, false);
+	
+	for (auto i: nodes)
 	{
-		throw IdNotFoundError(token->getText(), false, shared_from_this());
+		Action action=i->getAction();
+		
+		if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
+			matches.push_back(action);
 	}
-	else if (out.size()==1)
+	
+	if (!matches.empty())
 	{
-		return out[0];
+		if (matches.size() == 1)
+		{
+			return matches[0];
+		}
+		else
+		{
+			throw IdNotFoundError(searchText, true, shared_from_this());
+		}
 	}
-	else
+	
+	getMatches(nodes, searchText, false, false, true);
+	
+	for (auto i: nodes)
 	{
-		throw IdNotFoundError(token->getText(), true, shared_from_this());
+		if (typeid(*i)!=typeid(AstFuncBody))
+			throw PineconeError("AST node other then AstFuncBody made it into the whatev table", INTERNAL_ERROR, i->getToken());
+		
+		if ( // getSubType is needed because leftTypeNode is a type node and a type node always returns a metatype
+			((AstFuncBody*)i)->leftTypeNode->getReturnType()->getSubType()->matches(left)
+			&&
+			((AstFuncBody*)i)->rightTypeNode->getReturnType()->getSubType()->matches(right)
+		) {
+			AstNode instance=((AstFuncBody*)i)->makeNonWhatevCopy(left, right);
+			matches.push_back(instance->getAction());
+			actions.add(token->getText(), move(instance));
+		}
 	}
+	
+	if (!matches.empty())
+	{
+		if (matches.size() == 1)
+		{
+			return matches[0];
+		}
+		else
+		{
+			throw IdNotFoundError(searchText, true, shared_from_this());
+		}
+	}
+	
+	throw IdNotFoundError(searchText, false, shared_from_this());
 }
 
 Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic)
@@ -565,6 +552,27 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Actio
 	return voidAction;
 }*/
 
+void NamespaceData::getMatches(vector<AstNodeBase*>& out, string text, bool checkActions, bool checkDynamic, bool checkWhatev)
+{
+	if (checkActions)
+	{
+		actions.get(text, out);
+	}
+	
+	if (checkDynamic)
+	{
+		dynamicActions.get(text, out);
+	}
+	
+	if (checkWhatev)
+	{
+		whatevActions.get(text, out);
+	}
+	
+	if (parent)
+		parent->getMatches(out, text, checkActions, checkDynamic, checkWhatev);
+}
+
 void NamespaceData::getActions(string text, vector<Action>& out, bool dynamic)
 {
 	vector<AstNodeBase*> nodes;
@@ -589,7 +597,7 @@ void NamespaceData::getActions(Operator op, vector<Action>& out)
 {
 	vector<AstNodeBase*> nodes;
 	
-	operators.get(op, nodes);
+	actions.get(op->getText(), nodes);
 	
 	for (int i=0; i<int(nodes.size()); i++)
 	{

@@ -112,10 +112,8 @@ AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
 
 void AstFuncBody::resolveAction()
 {
+	setTypesInput();
 	Namespace subNs=ns->makeChildAndFrame(nameHint.empty()?"unnamed_func":nameHint);
-	leftTypeNode->setInput(subNs, dynamic, Void, Void);
-	rightTypeNode->setInput(subNs, dynamic, Void, Void);
-	returnTypeNode->setInput(subNs, dynamic, Void, Void);
 	subNs->setInput(leftTypeNode->getReturnType()->getSubType(), rightTypeNode->getReturnType()->getSubType());
 	bodyNode->setInput(subNs, true, Void, Void);
 	action=functionAction(bodyNode->makeCopy(true), returnTypeNode->getReturnType()->getSubType(), subNs->getStackFrame());
