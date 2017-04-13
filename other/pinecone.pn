@@ -1,6 +1,4 @@
 
-print: 10 != 11
-
 //
 WhatevStruct ::
 {
@@ -28,19 +26,15 @@ var: WhatevStruct: "hay"
 func: var
 \\
 
-//
-a :: {} -> {Whatev}: 8
-
-print: a
-\\
-
-//
-b :: {Whatev}:
+a :: {} -> {Whatev}:
 (
-	print: in
+	8
 )
 
-b: tru
-b: 8
-b: fls
-\\
+print: a
+
+
+
+
+
+
