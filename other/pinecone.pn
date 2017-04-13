@@ -1,5 +1,5 @@
 # tests use of the Whatev type
-print: "9\n3.2\nhay\n4.7\n4_\nfls_\n8.3\n4.7\nayy\ntru\n1.9\ntru\nyo\n5\n_____"
+print: "9\n3.2\nhay\n4.7\n4_\nfls_\n8.3\n4.7\nayy\ntru\n1.9\ntru\nyo\n5\ntru\n9waddup\n_____"
 
 func0: 9
 func0: 3.2
@@ -14,6 +14,11 @@ func2: "ayy", tru
 func2: 1.9, tru
 
 func3: Struct0: "yo"
+
+print: func4
+
+print: func5: 7.1
+print: func5: "waddup"
 
 func0 :: {Whatev}:
 (
@@ -46,4 +51,15 @@ func3 :: {Struct0}:
 (
 	print: in.foo
 	print: in.bar
+)
+
+func4 :: {} -> {Whatev}:
+(
+	print: tru
+	9
+)
+
+func5 :: {Whatev} -> {Whatev}:
+(
+	in
 )
