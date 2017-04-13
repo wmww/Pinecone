@@ -1,65 +1,8 @@
-# tests use of the Whatev type
-print: "9\n3.2\nhay\n4.7\n4_\nfls_\n8.3\n4.7\nayy\ntru\n1.9\ntru\nyo\n5\ntru\n9waddup\n_____"
 
-func0: 9
-func0: 3.2
-func0: "hay"
-func0: 4.7
-
-4.func1
-fls.func1
-
-func2: 8.3, 4.7
-func2: "ayy", tru
-func2: 1.9, tru
-
-func3: Struct0: "yo"
-
-print: func4
-
-print: func5: 7.1
-print: func5: "waddup"
-
-func0 :: {Whatev}:
+putInPeren :: {Whatev} -> {Whatev}:
 (
-	print: in
+	"(" + in.String + ")"
 )
 
-func1 :: {Whatev}.{}:
-(
-	print: me.String + "_"
-)
-
-func2 :: {abc: Whatev, xyz: Whatev}:
-(
-	print: in.abc
-	print: in.xyz
-)
-
-Struct0 ::
-{
-	foo: Whatev
-	bar: Int
-}
-
-Struct0 :: {Whatev} -> {Struct0}:
-(
-	in, 5
-)
-
-func3 :: {Struct0}:
-(
-	print: in.foo
-	print: in.bar
-)
-
-func4 :: {} -> {Whatev}:
-(
-	print: tru
-	9
-)
-
-func5 :: {Whatev} -> {Whatev}:
-(
-	in
-)
+print: putInPeren: 8
+print: putInPeren: tru
