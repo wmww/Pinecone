@@ -88,6 +88,9 @@ public:
 			}
 			
 			resolveAction();
+			
+			if (!nameHint.empty())
+				action->nameHint=nameHint;
 		}
 		
 		return action;
