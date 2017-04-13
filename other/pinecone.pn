@@ -1,4 +1,6 @@
 
+print: 10 != 11
+
 //
 WhatevStruct ::
 {
@@ -32,6 +34,7 @@ a :: {} -> {Whatev}: 8
 print: a
 \\
 
+//
 b :: {Whatev}:
 (
 	print: in
@@ -40,4 +43,4 @@ b :: {Whatev}:
 b: tru
 b: 8
 b: fls
-
+\\
