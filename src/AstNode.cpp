@@ -100,12 +100,36 @@ string AstFuncBody::getString()
 
 AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
 {
-	if (!leftInType->matches(leftTypeNode->getReturnType()->getSubType()) || !rightInType->matches(rightTypeNode->getReturnType()->getSubType()))
+	Type leftWhatevType=leftTypeNode->getReturnType()->getSubType();
+	Type rightWhatevType=rightTypeNode->getReturnType()->getSubType();
+	
+	if (!leftInType->matches(leftWhatevType) || !rightInType->matches(rightWhatevType))
 	{
 		throw PineconeError("AstFuncBody::makeNonWhatevCopy sent types that didn't match the original", INTERNAL_ERROR, rightTypeNode->getToken());
 	}
 	
-	AstNode out=make(AstTypeType::make(leftInType->getMetaType()), AstTypeType::make(rightInType->getMetaType()), returnTypeNode->makeCopy(false), bodyNode->makeCopy(false));
+	AstNode actualLeftTypeNode;
+	AstNode actualRightTypeNode;
+	
+	if (leftWhatevType->isWhatev())
+	{
+		actualLeftTypeNode=AstTypeType::make(leftWhatevType->actuallyIs(leftInType));
+	}
+	else
+	{
+		actualLeftTypeNode=leftTypeNode->makeCopy(false);
+	}
+	
+	if (rightWhatevType->isWhatev())
+	{
+		actualRightTypeNode=AstTypeType::make(rightWhatevType->actuallyIs(rightInType));
+	}
+	else
+	{
+		actualRightTypeNode=rightTypeNode->makeCopy(false);
+	}
+	
+	AstNode out=make(move(actualLeftTypeNode), move(actualRightTypeNode), returnTypeNode->makeCopy(false), bodyNode->makeCopy(false));
 	out->setInput(ns, dynamic, Void, Void);
 	return out;
 }
@@ -119,7 +143,7 @@ void AstFuncBody::resolveAction()
 	Type funcReturnType=returnTypeNode->getReturnType()->getSubType();
 	if (funcReturnType->isWhatev())
 	{
-		funcReturnType=bodyNode->getReturnType();
+		funcReturnType=funcReturnType->actuallyIs(bodyNode->getReturnType());
 	}
 	action=functionAction(bodyNode->makeCopy(true), funcReturnType, subNs->getStackFrame());
 }
@@ -647,7 +671,7 @@ void AstTokenType::resolveReturnType()
 {
 	try
 	{
-		returnType=ns->getType(token->getText())->getMetaType();
+		returnType=ns->getType(token->getText())->getMeta();
 	}
 	catch (IdNotFoundError err)
 	{
@@ -704,7 +728,7 @@ void AstTupleType::resolveReturnType()
 		}
 	}
 	
-	returnType=maker.get(true)->getMetaType();
+	returnType=maker.get(true)->getMeta();
 }
 
 

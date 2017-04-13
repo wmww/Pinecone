@@ -6,7 +6,7 @@ class TypeGetAction: public ActionData
 public:
 	
 	TypeGetAction(Type typeIn):
-		ActionData(typeIn->getMetaType(), Void, Void)
+		ActionData(typeIn->getMeta(), Void, Void)
 	{
 		setDescription(typeIn->getString()+" (type)");
 	}

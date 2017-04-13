@@ -471,7 +471,7 @@ public:
 	static unique_ptr<AstTypeType> make(Type typeIn)
 	{
 		unique_ptr<AstTypeType> node(new AstTypeType);
-		node->returnType=typeIn;
+		node->returnTypeNotMeta=typeIn;
 		return node;
 	}
 	
@@ -490,7 +490,7 @@ public:
 	
 	void resolveReturnType()
 	{
-		returnType=returnTypeNotMeta->getMetaType();
+		returnType=returnTypeNotMeta->getMeta();
 	}
 	
 	Token getToken() {return nullptr;}
@@ -519,11 +519,9 @@ public:
 		return AstNode(out);
 	}
 	
-	//void resolveReturnType() {returnType=Void->getMetaType();}
-	
 	void resolveReturnType()
 	{
-		returnType=Void->getMetaType();
+		returnType=Void->getMeta();
 	}
 	
 	Token getToken() {return nullptr;}

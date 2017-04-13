@@ -1,39 +1,20 @@
 
-//
 WhatevStruct ::
 {
 	foo: Int
 	bar: Whatev
 }
 
-counter: 0
-
-WhatevStruct :: {Whatev} -> {WhatevStruct}: (
-	
-	out: counter, in
-	counter: counteer + 1
-	out
-)
-
-func :: {WhatevStruct}: (
-	
-	print: in.bar
-)
-
-
-var: WhatevStruct: "hay"
-
-func: var
-\\
-
-a :: {} -> {Whatev}:
+WhatevStruct :: {Whatev} -> {WhatevStruct}:
 (
-	8
+	7, in
 )
 
-print: a
+var0: WhatevStruct: 8.7
+var1: WhatevStruct: "abc"
 
-
+print: var0.bar
+print: var1.bar
 
 
 

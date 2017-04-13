@@ -315,6 +315,20 @@ public:
 		return hasOnlyCreatable;
 	}
 	
+	Type actuallyIs(Type target)
+	{
+		TupleTypeMaker maker;
+		
+		auto targetTypes=target->getAllSubTypes();
+		
+		for (int i=0; i<(int)subTypes->size(); i++)
+		{
+			maker.add((*subTypes)[i].name, (*subTypes)[i].type->actuallyIs((*targetTypes)[i].type));
+		}
+		
+		return maker.get(isAnonymous);
+	}
+	
 protected:
 	
 	bool matchesSameTypeType(Type other)
@@ -392,6 +406,11 @@ public:
 		return type;
 	}
 	
+	Type actuallyIs(Type target)
+	{
+		return getSubType()->actuallyIs(target->getSubType())->getPtr();
+	}
+	
 protected:
 	
 	Type type;
@@ -451,6 +470,11 @@ public:
 		return type->isWhatev();
 	}
 	
+	Type actuallyIs(Type target)
+	{
+		return getSubType()->actuallyIs(target->getSubType())->getMeta();
+	}
+	
 protected:
 	
 	Type type;
@@ -507,6 +531,11 @@ public:
 		throw PineconeError("getSubType called on whatev type, wich should not have happened", INTERNAL_ERROR);
 	}
 	
+	Type actuallyIs(Type target)
+	{
+		return target;
+	}
+	
 protected:
 	
 	Type type;
@@ -546,7 +575,7 @@ const Type Int = TypeBase::makeNewPrimitive(TypeBase::INT);
 const Type Dub = TypeBase::makeNewPrimitive(TypeBase::DUB);
 Type String = nullptr;
 
-Type TypeBase::getMetaType()
+Type TypeBase::getMeta()
 {
 	return Type(new MetaType(shared_from_this()));
 }
@@ -596,6 +625,21 @@ bool TypeBase::matches(Type other)
 	{
 		return false;
 	}
+}
+
+Type TypeBase::actuallyIs(Type target)
+{
+	if (!matches(target))
+	{
+		throw PineconeError("actuallyIs called with type that doesn't match", INTERNAL_ERROR);
+	}
+	
+	if (isWhatev())
+	{
+		throw PineconeError("actuallyIs not implemented properly for Whatev type", INTERNAL_ERROR);
+	}
+	
+	return shared_from_this();
 }
 
 Type makeTuple(const vector<NamedType>& in, bool isAnonymous)
