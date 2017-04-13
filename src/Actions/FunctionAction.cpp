@@ -95,14 +95,15 @@ public:
 			resolveAction();
 		}
 		
+		// construct a unique name that will NEVER collide with another funtion (even in the case of overloaded functions with the same Pinecone name)
+		// note that this name will be used to determine if this function has already been used in C++, so it should generate the same name every time
 		string name="%";
 		
-		name+=nameHint.empty() ?
-			"func_"
-			:
-			nameHint;
+		name+=(nameHint.empty() ? "func" : nameHint);
 		
 		name+="_"+to_string((long)&*action);
+		
+		//name+="_"+getInLeftType()->getCompactString()+"_"+getInRightType()->getCompactString();
 		
 		if (!prog->hasFunc(name))
 		{
