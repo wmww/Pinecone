@@ -265,6 +265,7 @@ public:
 		out->rightTypeNode=rightTypeNode->makeCopy(copyCache);
 		out->returnTypeNode=returnTypeNode->makeCopy(copyCache);
 		out->bodyNode=bodyNode->makeCopy(copyCache);
+		out->typesInputSet=typesInputSet;
 		return AstNode(out);
 	}
 	
@@ -274,8 +275,21 @@ public:
 	
 	Token getToken() {return bodyNode->getToken();}
 	
+	void setTypesInput()
+	{
+		if (!typesInputSet)
+		{
+			leftTypeNode->setInput(ns, false, Void, Void);
+			rightTypeNode->setInput(ns, false, Void, Void);
+			returnTypeNode->setInput(ns, false, Void, Void);
+			typesInputSet=true;
+		}
+	}
+	
 	bool isWhatev()
 	{
+		setTypesInput();
+		
 		return
 			leftTypeNode->getReturnType()->isWhatev() ||
 			rightTypeNode->getReturnType()->isWhatev() ||
@@ -284,6 +298,7 @@ public:
 	}
 	
 	AstNode leftTypeNode, rightTypeNode, returnTypeNode, bodyNode;
+	bool typesInputSet=false;
 };
 
 class AstExpression: public AstNodeBase

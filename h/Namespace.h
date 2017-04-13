@@ -28,16 +28,15 @@ class NamespaceData: public std::enable_shared_from_this<NamespaceData>
 {
 public:
 	
-	template<typename KEY>
 	class ActionMap
 	{
 	public:
-		void add(KEY key, AstNode node);
-		void add(KEY key, Action action);
-		void get(KEY key, vector<AstNodeBase*>& out);
+		void add(string key, AstNode node);
+		void add(string key, Action action);
+		void get(string key, vector<AstNodeBase*>& out);
 		
 	private:
-		unordered_map<KEY, vector<AstNode>> nodes;
+		unordered_map<string, vector<AstNode>> nodes;
 		//unordered_map<KEY, vector<Action>> actions;
 	};
 	
@@ -96,7 +95,6 @@ public:
 	
 	//	returns a branch action that is the action given in token with the left and right inputs
 	//	returns voidAction if it can't find a good match
-	void getActionsForTokenWithInput(vector<Action>& out, Token token, Type left, Type right, bool dynamic);
 	Action getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic);
 	Action getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic);
 	
@@ -106,6 +104,8 @@ public:
 	//	addes all the matching actions in this and in all parents to out
 	void getActions(string text, vector<Action>& out, bool dynamic);
 	void getActions(Operator, vector<Action>& out);
+	
+	void getMatches(vector<AstNodeBase*>& out, string text, bool checkActions, bool checkDynamic, bool checkWhatev);
 	
 	//Action addConverter(Action action, Type type);
 	//Action addConverter(Action action, vector<Type>& types);
@@ -156,19 +156,22 @@ private:
 	//	has the id type of every identifier in this namespace
 	//unordered_map<string, vector<IdType>> allIds;
 	
-	ActionMap<string> dynamicActions;
+	ActionMap dynamicActions;
 	
 	//	contains all generic actions in this namespace, and all converters (but not operators)
-	ActionMap<string> actions;
+	ActionMap actions;
+	
+	// contains actions that use a whatev type
+	ActionMap whatevActions;
 	
 	//	contains all converters (aka constructors), is a subset of actions
 	//ActionMap<Type> converters;
 	
 	//	contains all operators
-	ActionMap<Operator> operators;
+	//ActionMap<Operator> operators;
 	
 	//	contains all types in this namespace
-	ActionMap<string> types;
+	ActionMap types;
 };
 
 class IdNotFoundError
