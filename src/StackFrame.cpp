@@ -24,20 +24,26 @@ void StackFrame::setInput(Type left, Type right)
 	}
 	else
 	{
-		//if (!left->isVoid())
 		if (left->isCreatable())
 		{
 			leftInputOffset=frameSize;
 			leftInputIndex=members.size();
 			addMember(left);
 		}
+		else if (left!=Void)
+		{
+			throw PineconeError("stack frame left input set to "+left->getString()+", which is neither creatable nore a normal void", INTERNAL_ERROR);
+		}
 		
-		//if (!right->isVoid())
 		if (right->isCreatable())
 		{
 			rightInputOffset=frameSize;
 			rightInputIndex=members.size();
 			addMember(right);
+		}
+		else if (right!=Void)
+		{
+			throw PineconeError("stack frame right input set to "+right->getString()+", which is neither creatable nore a normal void", INTERNAL_ERROR);
 		}
 		
 		inputSet=true;

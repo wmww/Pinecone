@@ -89,8 +89,9 @@ public:
 	
 	//TypeBase(string nameIn) {name=nameIn;}
 	
-	Type getMetaType();
+	Type getMeta();
 	Type getPtr();
+	virtual Type actuallyIs(Type target); // returns a type with with the whatevs resolved with the target type
 	
 	static string getString(PrimitiveType in);
 	virtual string getString()=0;
@@ -133,6 +134,7 @@ class TupleTypeMaker
 public:
 	TupleTypeMaker();
 	void add(string name, Type type);
+
 	void add(Type type);
 	
 	Type get(bool isAnonymous);
