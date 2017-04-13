@@ -29,7 +29,7 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 	
 	print: in.folder + ":"
 	
-	filepath: "examples" + pthslsh + "tests" + pthslsh + in.folder
+	filepath: "tests" + pthslsh + in.folder
 	
 	cmd: String
 	
