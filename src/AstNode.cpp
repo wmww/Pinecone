@@ -116,7 +116,12 @@ void AstFuncBody::resolveAction()
 	Namespace subNs=ns->makeChildAndFrame(nameHint.empty()?"unnamed_func":nameHint);
 	subNs->setInput(leftTypeNode->getReturnType()->getSubType(), rightTypeNode->getReturnType()->getSubType());
 	bodyNode->setInput(subNs, true, Void, Void);
-	action=functionAction(bodyNode->makeCopy(true), returnTypeNode->getReturnType()->getSubType(), subNs->getStackFrame());
+	Type funcReturnType=returnTypeNode->getReturnType()->getSubType();
+	if (funcReturnType->isWhatev())
+	{
+		funcReturnType=bodyNode->getReturnType();
+	}
+	action=functionAction(bodyNode->makeCopy(true), funcReturnType, subNs->getStackFrame());
 }
 
 
