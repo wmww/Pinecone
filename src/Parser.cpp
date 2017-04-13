@@ -406,10 +406,10 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		AstNode leftNode=i>left?parseExpression(tokens, left, i-1):AstVoid::make();
 		AstNode centerNode=AstToken::make(
 			makeToken(
-				tokens[i]->getText(),
+				ops->equal->getText(),
 				tokens[i]->getFile(),
 				tokens[i]->getLine(),
-				tokens[i]->getCharPos(),
+				tokens[i]->getCharPos()+1,
 				TokenData::OPERATOR,
 				ops->equal
 			)
@@ -417,7 +417,7 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 		
 		AstNode notNode=AstToken::make(
 			makeToken(
-				tokens[i]->getText(),
+				ops->notOp->getText(),
 				tokens[i]->getFile(),
 				tokens[i]->getLine(),
 				tokens[i]->getCharPos(),
