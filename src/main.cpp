@@ -83,7 +83,7 @@ int main(int argc, char ** argv)
 		if (error.getIfErrorLogged())
 		{
 			if (flags.debug)
-				cout << endl << ">>>>>>    execution abouted due to previous error    <<<<<<" << endl;
+				cout << endl << ">>>>>>    execution aborted due to previous error    <<<<<<" << endl;
 			else
 				cout << "program not executed due to errors" << endl;
 		}
