@@ -461,7 +461,16 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	vector<Action> matches;
 	vector<AstNodeBase*> nodes;
 	
-	string searchText=token->getText();
+	string searchText;
+	
+	if (token->getOp())
+	{
+		searchText=token->getOp()->getText();
+	}
+	else
+	{
+		searchText=token->getText();
+	}
 	
 	getMatches(nodes, searchText, true, dynamic, false);
 	
