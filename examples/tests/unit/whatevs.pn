@@ -47,3 +47,4 @@ func3 :: {Struct0}:
 	print: in.foo
 	print: in.bar
 )
+
