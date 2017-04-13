@@ -1,21 +1,23 @@
 
-WhatevStruct ::
-{
-	foo: Int
-	bar: Whatev
-}
 
-WhatevStruct :: {Whatev} -> {WhatevStruct}:
+func :: {Whatev}:
 (
-	7, in
+	print: in
 )
 
-var0: WhatevStruct: 8.7
-var1: WhatevStruct: "abc"
-
-print: var0.bar
-print: var1.bar
+func: 8
+func: "hay"
 
 
+a :: {Int}:
+(
+	print: "Int"
+)
 
+a :: {String}:
+(
+	print: "String"
+)
 
+a: 8
+a: "yo"
