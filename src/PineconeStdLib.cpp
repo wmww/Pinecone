@@ -577,14 +577,6 @@ void populateConstants()
 
 void populateOperators()
 {
-	/// ||
-	
-	func(ops->orOp, Bool, Bool, Bool,
-		retrn left || right;
-	,
-		"$. || $:"
-	);
-	
 	
 	/// +
 	

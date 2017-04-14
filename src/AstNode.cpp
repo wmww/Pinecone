@@ -503,7 +503,7 @@ void AstOpWithInput::resolveAction()
 			action=listAction(actions);
 		}
 	}
-	else if (token->getOp()==ops->andOp)
+	else if (token->getOp()==ops->andOp || token->getOp()==ops->orOp)
 	{
 		if (leftIn.size()>1 || rightIn.size()>1)
 		{
@@ -531,7 +531,14 @@ void AstOpWithInput::resolveAction()
 			throw PineconeError("'"+token->getOp()->getText()+"' can only be used with Bools", SOURCE_ERROR, rightIn[0]->getToken());
 		}
 		
-		action=andAction(leftAction, rightAction);
+		if (token->getOp()==ops->andOp)
+		{
+			action=andAction(leftAction, rightAction);
+		}
+		else // (token->getOp()==ops->orOp)
+		{
+			action=orAction(leftAction, rightAction);
+		}
 	}
 	else if (token->getOp()==ops->rightArrow)
 	{
