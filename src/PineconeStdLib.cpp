@@ -405,7 +405,7 @@ void addToProgGetInputLine(CppProgram * prog)
 			"char buffer[bufferSize];\n"
 			"if (fgets(buffer, bufferSize, stdin))\n"
 			"{\n"
-			"	int size = strlen(buffer) - 1; // remove null\n"
+			"	int size = strlen(buffer);\n"
 			"	unsigned char * data = (unsigned char *)malloc(size);\n"
 			"	memcpy(data, buffer, size);\n"
 			"	return "+strType+"(size, data);\n"
