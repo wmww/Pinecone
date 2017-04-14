@@ -14,4 +14,4 @@ I tried to write a compiler with LLVM, but it was hard so I gave up.
 ## Using the Transpiler
 There are three command line arguments relevent transpiling `-cpp`, `-bin` and `-e`. These arguments can be used any combonation and if any are preasent, transpiling will be used instead of interpreting. `-cpp` and `-bin` should each be followed by a filepath which the transpiled source code and compiled binary executable will be saved to repectivly. `-e` should be used last, as subsequent arguments will be ignored. It means to actually execute the program, rather then just saving the output files. If cpp or bin file is not specified, they will be saved to a temporary file in your current directory which should be deleted automatically when the program is done. For compiling to a binary executable, and thus executing, the GCC compiler must be installed on your system.
 
-[index](index.md) | [next: Temporary Hacks ->](6_temporary_hacks.md)
+[index](index.md) | [next: Temporary Hacks ->](7_temporary_hacks.md)
