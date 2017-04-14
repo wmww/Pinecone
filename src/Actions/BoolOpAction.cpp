@@ -1,81 +1,76 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 
-/*
 class AndAction: public ActionData
 {
 public:
 	
-	IfElseAction(Action conditionIn, Action ifActionIn, Action elseActionIn)
-		:ActionData(Void, Void, Void)
+	AndAction(Action firstActionIn, Action secondActionIn)
+		:ActionData(Bool, Void, Void)
 	{
-		condition=conditionIn;
-		ifAction=ifActionIn;
-		elseAction=elseActionIn;
+		firstAction=firstActionIn;
+		secondAction=secondActionIn;
 		
-		if (condition->getReturnType()!=Bool)
+		if (firstAction->getReturnType()!=Bool)
 		{
-			error.log("IfElseAction created with condition action that does not return Bool", INTERNAL_ERROR);
+			throw PineconeError("AndAction created with first action that does not return Bool", INTERNAL_ERROR);
 		}
 		
-		if (condition->getInLeftType()!=Void || condition->getInRightType()!=Void)
+		if (secondAction->getReturnType()!=Bool)
 		{
-			error.log("IfElseAction created with condition action that takes in something other then Void", INTERNAL_ERROR);
-		}
-		
-		if (ifAction->getInLeftType()!=Void || ifAction->getInRightType()!=Void)
-		{
-			error.log("IfElseAction created with action that takes in something other then Void", INTERNAL_ERROR);
+			throw PineconeError("AndAction created with second action that does not return Bool", INTERNAL_ERROR);
 		}
 	}
 
 	string getDescription()
 	{
-		return "if " + condition->getDescription() + " then " + ifAction->getDescription();
+		return firstAction->getDescription() + " && " + firstAction->getDescription();
 	}
 	
 	void* execute(void* inLeft, void* inRight)
 	{
-		void* conditionOut=condition->execute(nullptr, nullptr);
-		if (*((bool*)conditionOut))
+		bool* out=(bool*)malloc(sizeof(bool));
+		*out=false;
+		void* firstVal=firstAction->execute(nullptr, nullptr);
+		
+		if (*((bool*)firstVal))
 		{
-			free(ifAction->execute(nullptr, nullptr));
+			void* secondVal=secondAction->execute(nullptr, nullptr);
+			
+			if (*((bool*)secondVal))
+			{
+				*out=true;
+			}
+			
+			free(secondVal);
 		}
-		else
-		{
-			free(elseAction->execute(nullptr, nullptr));
-		}
-		free(conditionOut);
-		return nullptr;
+		
+		free(firstVal);
+		
+		return out;
 	}
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		prog->code("if ");
 		prog->pushExpr();
-			condition->addToProg(voidAction, voidAction, prog);
+			firstAction->addToProg(voidAction, voidAction, prog);
 		prog->popExpr();
-		prog->pushBlock();
-			ifAction->addToProg(voidAction, voidAction, prog);
-			prog->endln();
-		prog->popBlock();
-		prog->code("else");
-		prog->pushBlock();
-			elseAction->addToProg(voidAction, voidAction, prog);
-			prog->endln();
-		prog->popBlock();
+		
+		prog->code(" && ");
+		
+		prog->pushExpr();
+			secondAction->addToProg(voidAction, voidAction, prog);
+		prog->popExpr();
 	}
 	
 private:
 	
-	Action condition;
-	Action ifAction;
-	Action elseAction;
+	Action firstAction;
+	Action secondAction;
 };
 
-Action ifAction(Action conditionIn, Action ifActionIn)
+Action andAction(Action firstActionIn, Action secondActionIn)
 {
-	return Action(new IfAction(conditionIn, ifActionIn));
+	return Action(new AndAction(firstActionIn, secondActionIn));
 }
 
-*/
