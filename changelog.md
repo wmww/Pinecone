@@ -2,12 +2,14 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
+## v0.5.0 (April 14, 2017)
+
 * Made '&&' and '||' use short circuiting
 * Improved testing system
 * Added support for Windows
 * **Added Whatev type** for compile time dynamic typing and implicit function return type
 
-### v0.4.0 (Mar 26 2017)
+## v0.4.0 (Mar 26, 2017)
 
 * Added command line options for transpileing
 * **Fully implemented transpiler to C++**
@@ -21,7 +23,7 @@ Every new version gets a number of minor bug fixes, so they are not included
 * Added explicit conversion of primitive types to Strings
 * Improved tutorial navigation
 
-### v0.3.0 (Jan 18 2017)
+## v0.3.0 (Jan 18, 2017)
 
 * Added string literal support
 * Added various functions and operators for strings
