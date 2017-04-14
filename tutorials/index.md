@@ -12,8 +12,10 @@
 
 [4. Structures and Functions](4_structures_and_functions.md)
 
-[5. Transpiling to C++](5_transpiling_to_cpp.md)
+[5. Whatevs](5_whatevs.md)
 
-[6. Temporary Hacks](6_temporary_hacks.md)
+[6. Transpiling to C++](6_transpiling_to_cpp.md)
+
+[7. Temporary Hacks](7_temporary_hacks.md)
 
 

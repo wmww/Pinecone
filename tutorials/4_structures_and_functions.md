@@ -66,6 +66,20 @@ print: 8.leftInput
 noArgs
 ```
 
+The result of this code is
+
+```
+9
+7.0
+12.3
+8
+return str
+Hello
+```
+
 I know the `in.` is annoying. It will be made implicit soon.
 
-[index](index.md) | [next: Transpiling to C++ ->](5_transpiling_to_cpp.md)
+## Overloading
+You can make multiple functions with the same name as long as they take different types. This is called overloading. Overloading operators is not yet supported, but it will be.
+
+[index](index.md) | [next: Whatevs ->](5_whatevs.md)

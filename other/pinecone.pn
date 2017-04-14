@@ -1,20 +1,29 @@
-# Tests if short circuit is applied to operations with multiple bools
+# define the struct
 
-print: "1\nmyFunc called\nmyFunc called\nmyFunc called\nmyFunc called\n4\n_____"
+MyWhatevStruct ::
+{
+	foo: Int
+	bar: Whatev
+}
 
-tru || (myFunc: tru) ?
-	print: 1
+# define the constructor
 
-fls && (myFunc: tru) ?
-	print: 2
-
-!(myFunc: tru) || fls ?
-	print: 3
-
-(myFunc: fls) || (myFunc: fls) || (myFunc: tru) || (myFunc: fls) ?
-	print: 4
-
-myFunc :: {Bool} -> {Bool}: (
-	print: "myFunc called"
-	in
+makeMyWhatevStruct :: {a: Int, b: Whatev} -> {MyWhatevStruct}:
+(
+	in.a, in.b
 )
+
+# define the print function for makeMyWhatevStruct
+
+print :: {MyWhatevStruct}:
+(
+	print: in.foo.String + ", " + in.bar.String
+)
+
+# use the struct
+
+a: makeMyWhatevStruct: 8, 9.3
+b: makeMyWhatevStruct: 2, fls
+
+print: a
+print: b
