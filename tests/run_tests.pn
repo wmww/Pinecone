@@ -75,7 +75,7 @@ runTest :: {filepath: String, name: String, showDetails: Bool}:
 	print: summeryLine
 )
 
-singleTest :: {actual: String, target: String, label: String, showDetails: Bool} -> {String}:
+singleTest :: {actual: String, target: String, label: String, expectSuccess: Bool} -> {String}:
 (
 	out: String
 	
@@ -83,9 +83,12 @@ singleTest :: {actual: String, target: String, label: String, showDetails: Bool}
 	(
 		out: (asciiEscape: 1) + " . " + (asciiEscape: 0)
 	)|(
-		out: (asciiEscape: 91) + "XXX" + (asciiEscape: 0)
+		in.expectSuccess ?
+			out: (asciiEscape: 91) + "XXX" + (asciiEscape: 0)
+		|
+			out: "XXX"
 		
-		in.showDetails ?
+		in.expectSuccess ?
 		(
 			actual: String
 			target: String
@@ -113,7 +116,7 @@ singleTest :: {actual: String, target: String, label: String, showDetails: Bool}
 					target: target + (in.target.sub: i, i+1)
 			)
 			
-			errorDetails: errorDetails + (asciiEscape: 2) + (asciiEscape: 3) + in.label + (asciiEscape: 0) + "\n"
+			errorDetails: errorDetails + (asciiEscape: 3) + in.label + (asciiEscape: 0) + "\n"
 			errorDetails: errorDetails + (asciiEscape: 1) + "actual:" + (asciiEscape: 0) + "\n"
 			errorDetails: errorDetails + actual + (asciiEscape: 0)
 			errorDetails: errorDetails + (asciiEscape: 1) + "expected:" + (asciiEscape: 0) + "\n"
