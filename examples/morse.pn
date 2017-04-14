@@ -40,7 +40,9 @@ letterToMorse :: {String} -> {String}:
 (	
 	out: ""
 	
-	i: 0 | i<key.len | i: i+1 @
+	found: fls
+	
+	i: 0 | i<key.len && !found | i: i+1 @
 	(
 		(key.sub: i, i+1) = in ?
 		(
@@ -54,6 +56,9 @@ letterToMorse :: {String} -> {String}:
 			found: tru
 		)
 	)
+	
+	!found ?
+		out: "[" + in + "]"
 	
 	out
 )
