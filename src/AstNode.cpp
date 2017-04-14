@@ -130,6 +130,7 @@ AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
 	}
 	
 	AstNode out=make(move(actualLeftTypeNode), move(actualRightTypeNode), returnTypeNode->makeCopy(false), bodyNode->makeCopy(false));
+	out->nameHint=nameHint;
 	out->setInput(ns, dynamic, Void, Void);
 	return out;
 }
