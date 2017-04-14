@@ -4,15 +4,7 @@ pthslsh: "/"
 OS_IS_WINDOWS ?
 	pthslsh: "\\"
 
-options: ""
-
-IS_TRANSPILED ?
-	options: options+" -e"
-
-print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String
-print
-
-print: "unit tests:"
+print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String + " tests"
 print
 
 runTestFolder: "unit", tru
@@ -27,7 +19,8 @@ print: "tests done"
 
 runTestFolder :: {folder: String, printDetails: Bool}: (
 	
-	print: in.folder + ":"
+	print: (asciiEscape: 1) + (asciiEscape: 3) + in.folder + (asciiEscape: 0)
+	print: (asciiEscape: 4) + "interpreted  transpiled   name                              " + (asciiEscape: 0)
 	
 	filepath: "tests" + pthslsh + in.folder
 	
@@ -56,35 +49,37 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 
 runTest :: {filepath: String, name: String, printDetails: Bool}:
 (
-	cmd: "./pinecone " + in.filepath + options
+	cmdInput: "./pinecone " + in.filepath
 	
-	out: runCmd: cmd
+	resultR: splitActualAndTarget: runCmd: cmdInput + " -r"
+	resultE: splitActualAndTarget: runCmd: cmdInput + " -e"
 	
-	#print: "\t\tcommand: " + cmd
+	passedR: resultR.actual = resultR.target
+	passedE: resultE.actual = resultE.target
 	
-	quit: fls
-	i: 0
-	target: String
-	actual: String
+	summeryLine: String
 	
-	!quit @ (
-		i + splitSub.len >= out.len ? (
-			target: "no target"
-			out.len = 0 ?
-				actual: "no output for '" + in.filepath + "'"
-				|
-				actual: out
-			quit: tru
-		)|
-		(out.sub: i, i+splitSub.len) = splitSub ? (
-			target: out.sub: 0, i
-			actual: out.sub: i+splitSub.len, out.len
-			quit: tru
-		)|(
-			i: i+1
-		)
-	)
+	summeryLine: summeryLine + "    "
 	
+	passedR ?
+		summeryLine: summeryLine + (asciiEscape: 1) + " . " + (asciiEscape: 0)
+	|
+		summeryLine: summeryLine + (asciiEscape: 91) + "XXX" + (asciiEscape: 0)
+	
+	summeryLine: summeryLine + "         "
+	
+	passedE ?
+		summeryLine: summeryLine + (asciiEscape: 1) + " . " + (asciiEscape: 0)
+	|
+		summeryLine: summeryLine + (asciiEscape: 91) + "XXX" + (asciiEscape: 0)
+	
+	summeryLine: summeryLine + "       "
+	
+	summeryLine: summeryLine + in.name
+	
+	print: summeryLine
+	
+	//
 	target = actual ? (
 		print: ".\t"+in.name+" passed"
 	)|(
@@ -97,7 +92,7 @@ runTest :: {filepath: String, name: String, printDetails: Bool}:
 			print: "instead of:"
 			print: target
 			print: divideLine
-			
+			\\
 			//
 			j: 0 | j<actual.len | j: j+1 @ (
 				j>=target.len ? (
@@ -111,10 +106,46 @@ runTest :: {filepath: String, name: String, printDetails: Bool}:
 					j: actual.len
 				)
 			)
-			\\
+			\\//
 		)
 	)
+	\\
 )
 
-splitSub :: "_____\n"
+asciiEscape :: {Int} -> {String}:
+(
+	(27).ascii + "[" + in.String + "m"
+)
+
+splitActualAndTarget :: {String} -> {actual: String, target: String}:
+(
+	quit: fls
+	i: 0
+	target: String
+	actual: String
+	
+	!quit @
+	(
+		i + targetActualSplit.len >= in.len ? (
+			target: "no target"
+			in.len = 0 ?
+				actual: "no output"
+			|
+				actual: in
+			quit: tru
+		)
+		| (in.sub: i, i+targetActualSplit.len) = targetActualSplit ?
+		(
+			target: in.sub: 0, i
+			actual: in.sub: i+targetActualSplit.len, in.len
+			quit: tru
+		)|(
+			i: i+1
+		)
+	)
+
+	actual, target
+)
+
+targetActualSplit :: "_____\n"
 divideLine :: "_____________________________________________\n"
