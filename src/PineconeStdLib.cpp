@@ -406,6 +406,8 @@ void addToProgGetInputLine(CppProgram * prog)
 			"if (fgets(buffer, bufferSize, stdin))\n"
 			"{\n"
 			"	int size = strlen(buffer);\n"
+			"	while (size > 0 && buffer[size - 1] == '\\n')\n"
+			"		size-=1;\n"
 			"	unsigned char * data = (unsigned char *)malloc(size);\n"
 			"	memcpy(data, buffer, size);\n"
 			"	return "+strType+"(size, data);\n"
@@ -425,8 +427,7 @@ void addToProgEqStr(CppProgram * prog)
 		prog->addFunc("$eqStr", {{strType, "a"}, {strType, "b"}}, "bool",
 			"if (a._size != b._size)\n"
 			"	return false;\n"
-			"int size = a._size;\n"
-			"for (int i = 0; i < size; i++)\n"
+			"for (int i = 0; i < a._size; i++)\n"
 			"{\n"
 			"	if (a._data[i] != b._data[i])\n"
 			"		return false;\n"

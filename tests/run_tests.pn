@@ -97,6 +97,21 @@ runTest :: {filepath: String, name: String, printDetails: Bool}:
 			print: "instead of:"
 			print: target
 			print: divideLine
+			
+			//
+			j: 0 | j<actual.len | j: j+1 @ (
+				j>=target.len ? (
+					print: "actual longer then target"
+				)| !((actual.sub: j, j+1)=(target.sub: j, j+1)) ? (
+					print: "trouble starts at char"
+					print: j
+					print: (actual.sub: j, j+1).at: 0
+					print: "instead of"
+					print: (target.sub: j, j+1).at: 0
+					j: actual.len
+				)
+			)
+			\\
 		)
 	)
 )

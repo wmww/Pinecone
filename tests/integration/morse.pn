@@ -2,7 +2,7 @@
 
 print: "enter some text or type quit: .--. .. -. . -.-. --- -. . \nenter some text or type quit: .-.. .- -. --. \nenter some text or type quit: \n\n_____"
 
-symInput: "pinecone\\nlang\\nquit\n"
+symInput: "pinecone\\nlang\\nquit"
 
 options: ""
 
