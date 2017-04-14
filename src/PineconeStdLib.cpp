@@ -586,15 +586,6 @@ void populateOperators()
 	);
 	
 	
-	/// &&
-	
-	func(ops->andOp, Bool, Bool, Bool,
-		retrn left && right;
-	,
-		"$. && $:"
-	);
-	
-	
 	/// +
 	
 	func(ops->plus, Int, Int, Int,

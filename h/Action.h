@@ -76,6 +76,8 @@ Action branchAction(Action leftInputIn, Action actionIn, Action rightInputIn);
 Action functionAction(Action actionIn, shared_ptr<StackFrame> stackFameIn);
 Action functionAction(unique_ptr<AstNodeBase> nodeIn, Type returnTypeIn, shared_ptr<StackFrame> stackFameIn);
 
+Action andAction(Action firstActionIn, Action secondActionIn);
+
 Action ifAction(Action conditionIn, Action ifActionIn);
 Action ifElseAction(Action conditionIn, Action ifActionIn, Action elseAction);
 

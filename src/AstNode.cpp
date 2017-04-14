@@ -503,6 +503,36 @@ void AstOpWithInput::resolveAction()
 			action=listAction(actions);
 		}
 	}
+	else if (token->getOp()==ops->andOp)
+	{
+		if (leftIn.size()>1 || rightIn.size()>1)
+		{
+			throw PineconeError("'"+token->getOp()->getText()+"' can not be sent '|' separated sequence", SOURCE_ERROR, getToken());
+		}
+		
+		if (leftIn.size()!=1 || rightIn.size()!=1)
+		{
+			throw PineconeError("'"+token->getOp()->getText()+"' must be given a left and right input", SOURCE_ERROR, getToken());
+		}
+		
+		leftIn[0]->setInput(ns, dynamic, Void, Void);
+		rightIn[0]->setInput(ns, dynamic, Void, Void);
+		
+		Action leftAction=leftIn[0]->getAction();
+		Action rightAction=rightIn[0]->getAction();
+		
+		if (leftAction->getReturnType()!=Bool)
+		{
+			throw PineconeError("'"+token->getOp()->getText()+"' can only be used with Bools", SOURCE_ERROR, leftIn[0]->getToken());
+		}
+		
+		if (rightAction->getReturnType()!=Bool)
+		{
+			throw PineconeError("'"+token->getOp()->getText()+"' can only be used with Bools", SOURCE_ERROR, rightIn[0]->getToken());
+		}
+		
+		action=andAction(leftAction, rightAction);
+	}
 	else if (token->getOp()==ops->rightArrow)
 	{
 		throw PineconeError("AstOpWithInput::resolveAction called for token '"+token->getOp()->getText()+"', which it shouldn't have been", INTERNAL_ERROR, token);
