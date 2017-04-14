@@ -12,7 +12,7 @@ using std::vector;
 #include <functional>
 using std::string;
 
-#include "utils/StringUtils.h"
+#include "utils/stringUtils.h"
 
 //	returns if the substring matches the input
 //	nothing needed for unicode

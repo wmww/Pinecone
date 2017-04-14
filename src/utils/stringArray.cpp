@@ -1,4 +1,4 @@
-#include "../../h/utils/StringArray.h"
+#include "../../h/utils/stringArray.h"
 
 namespace str
 {

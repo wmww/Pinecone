@@ -1,6 +1,6 @@
 
-#include "../../h/utils/StringDrawing.h"
-#include "../../h/utils/StringArray.h"
+#include "../../h/utils/stringDrawing.h"
+#include "../../h/utils/stringArray.h"
 
 #include "../../h/msclStringFuncs.h"
 

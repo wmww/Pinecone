@@ -1,6 +1,6 @@
 #pragma once
 
-#include "StringUtils.h"
+#include "stringUtils.h"
 
 namespace str
 {
