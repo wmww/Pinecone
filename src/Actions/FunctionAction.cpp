@@ -101,7 +101,7 @@ public:
 		
 		name+=(nameHint.empty() ? "func" : nameHint);
 		
-		name+="_"+to_string((long)&*action);
+		name+="_"+to_string((unsigned long long)&*action);
 		
 		//name+="_"+getInLeftType()->getCompactString()+"_"+getInRightType()->getCompactString();
 		
