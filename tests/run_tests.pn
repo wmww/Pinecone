@@ -4,6 +4,8 @@ pthslsh: "/"
 OS_IS_WINDOWS ?
 	pthslsh: "\\"
 
+errorDetails: String
+
 print: "pinecone v"+VERSION.x.String+"."+VERSION.y.String+"."+VERSION.z.String + " tests"
 print
 
@@ -17,10 +19,17 @@ runTestFolder: "unfixed", fls
 
 print: "tests done"
 
+errorDetails.len > 0 ?
+(
+	print
+	print: "details"
+	print: errorDetails
+)
+
 runTestFolder :: {folder: String, printDetails: Bool}: (
 	
-	print: (asciiEscape: 1) + (asciiEscape: 3) + in.folder + (asciiEscape: 0)
-	print: (asciiEscape: 4) + "interpreted  transpiled   name                              " + (asciiEscape: 0)
+	print: (asciiEscape: 1) + in.folder + (asciiEscape: 0)
+	print: (asciiEscape: 2) + (asciiEscape: 3) + "interpreted  transpiled   name                              " + (asciiEscape: 0)
 	
 	filepath: "tests" + pthslsh + in.folder
 	
@@ -47,69 +56,73 @@ runTestFolder :: {folder: String, printDetails: Bool}: (
 	print
 )
 
-runTest :: {filepath: String, name: String, printDetails: Bool}:
+runTest :: {filepath: String, name: String, showDetails: Bool}:
 (
 	cmdInput: "./pinecone " + in.filepath
 	
 	resultR: splitActualAndTarget: runCmd: cmdInput + " -r"
 	resultE: splitActualAndTarget: runCmd: cmdInput + " -e"
 	
-	passedR: resultR.actual = resultR.target
-	passedE: resultE.actual = resultE.target
-	
 	summeryLine: String
 	
 	summeryLine: summeryLine + "    "
-	
-	passedR ?
-		summeryLine: summeryLine + (asciiEscape: 1) + " . " + (asciiEscape: 0)
-	|
-		summeryLine: summeryLine + (asciiEscape: 91) + "XXX" + (asciiEscape: 0)
-	
+	summeryLine: summeryLine + (singleTest: resultR.actual, resultR.target, in.name + " interpreted", in.showDetails)
 	summeryLine: summeryLine + "         "
-	
-	passedE ?
-		summeryLine: summeryLine + (asciiEscape: 1) + " . " + (asciiEscape: 0)
-	|
-		summeryLine: summeryLine + (asciiEscape: 91) + "XXX" + (asciiEscape: 0)
-	
+	summeryLine: summeryLine + (singleTest: resultE.actual, resultE.target, in.name + " transpiled", in.showDetails)
 	summeryLine: summeryLine + "       "
-	
 	summeryLine: summeryLine + in.name
 	
 	print: summeryLine
+)
+
+singleTest :: {actual: String, target: String, label: String, showDetails: Bool} -> {String}:
+(
+	out: String
 	
-	//
-	target = actual ? (
-		print: ".\t"+in.name+" passed"
+	in.actual = in.target ?
+	(
+		out: (asciiEscape: 1) + " . " + (asciiEscape: 0)
 	)|(
-		print: "X\t"+in.name+" failed"
+		out: (asciiEscape: 91) + "XXX" + (asciiEscape: 0)
 		
-		in.printDetails ? (
-			print: divideLine
-			print: "output:"
-			print: actual
-			print: "instead of:"
-			print: target
-			print: divideLine
-			\\
-			//
-			j: 0 | j<actual.len | j: j+1 @ (
-				j>=target.len ? (
-					print: "actual longer then target"
-				)| !((actual.sub: j, j+1)=(target.sub: j, j+1)) ? (
-					print: "trouble starts at char"
-					print: j
-					print: (actual.sub: j, j+1).at: 0
-					print: "instead of"
-					print: (target.sub: j, j+1).at: 0
-					j: actual.len
+		in.showDetails ?
+		(
+			actual: String
+			target: String
+			
+			isMatching: fls
+			i: 0 | i<in.actual.len | i: i+1 @
+			(
+				c: in.actual.sub: i, i+1
+				isNowMatching: (in.target.len>i) && (in.target.sub: i, i+1)=c
+				!(isNowMatching = isMatching) ?
+				(
+					isNowMatching ?
+					(
+						actual: actual + (asciiEscape: 0)
+						target: target + (asciiEscape: 0)
+					)|(
+						actual: actual + (asciiEscape: 41) + (asciiEscape: 97)
+						target: target + (asciiEscape: 42) + (asciiEscape: 97)
+					)
 				)
+				isMatching: isNowMatching
+				
+				actual: actual + c
+				in.target.len>i ?
+					target: target + (in.target.sub: i, i+1)
 			)
-			\\//
+			
+			errorDetails: errorDetails + (asciiEscape: 2) + (asciiEscape: 3) + in.label + (asciiEscape: 0) + "\n"
+			errorDetails: errorDetails + (asciiEscape: 1) + "actual:" + (asciiEscape: 0) + "\n"
+			errorDetails: errorDetails + actual + (asciiEscape: 0)
+			errorDetails: errorDetails + (asciiEscape: 1) + "expected:" + (asciiEscape: 0) + "\n"
+			errorDetails: errorDetails + target + (asciiEscape: 0)
+			errorDetails: errorDetails + (asciiEscape: 2) + divideLine + (asciiEscape: 0)
 		)
 	)
-	\\
+
+	out
 )
 
 asciiEscape :: {Int} -> {String}:
@@ -148,4 +161,4 @@ splitActualAndTarget :: {String} -> {actual: String, target: String}:
 )
 
 targetActualSplit :: "_____\n"
-divideLine :: "_____________________________________________\n"
+divideLine :: (asciiEscape: 2) + "==========================================================\n" + (asciiEscape: 0)
