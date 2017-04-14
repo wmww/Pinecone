@@ -50,9 +50,10 @@
 		<Unit filename="../h/Type.h" />
 		<Unit filename="../h/VERSION.h" />
 		<Unit filename="../h/msclStringFuncs.h" />
-		<Unit filename="../h/utils/StringArray.h" />
-		<Unit filename="../h/utils/StringDrawing.h" />
-		<Unit filename="../h/utils/StringUtils.h" />
+		<Unit filename="../h/utils/stringArray.h" />
+		<Unit filename="../h/utils/stringDrawing.h" />
+		<Unit filename="../h/utils/stringNumConversion.h" />
+		<Unit filename="../h/utils/stringUtils.h" />
 		<Unit filename="../other/pinecone.pn" />
 		<Unit filename="../other/pinecone_concept.txt" />
 		<Unit filename="../readme.md" />
@@ -81,9 +82,10 @@
 		<Unit filename="../src/Type.cpp" />
 		<Unit filename="../src/main.cpp" />
 		<Unit filename="../src/msclStringFuncs.cpp" />
-		<Unit filename="../src/utils/StringArray.cpp" />
-		<Unit filename="../src/utils/StringDrawing.cpp" />
-		<Unit filename="../src/utils/StringUtils.cpp" />
+		<Unit filename="../src/utils/stringArray.cpp" />
+		<Unit filename="../src/utils/stringDrawing.cpp" />
+		<Unit filename="../src/utils/stringNumConversion.cpp" />
+		<Unit filename="../src/utils/stringUtils.cpp" />
 		<Unit filename="../tests/run_tests.pn" />
 		<Unit filename="../tutorials/0_setting_up.md" />
 		<Unit filename="../tutorials/1_basic_concepts.md" />
