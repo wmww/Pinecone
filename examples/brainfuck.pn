@@ -12,7 +12,7 @@ j: 0 | j<data.len | j: j+1 @
 	data.set: j, 0
 
 code: "enter your brainfuck code: ".input
-#code: ",[.,]"
+#code: "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
 
 processSection: code, 0, tru
 

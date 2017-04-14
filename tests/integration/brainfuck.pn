@@ -10,5 +10,7 @@ options: ""
 IS_TRANSPILED ?
 	options: options+" -e"
 
-print: runCmd: "printf '"+symInput+"' | ./pinecone examples/brainfuck.pn" + options
+cmdOut: runCmd: "printf '"+symInput+"' | ./pinecone examples/brainfuck.pn" + options
+
+print: cmdOut
 
