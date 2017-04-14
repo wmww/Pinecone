@@ -369,8 +369,6 @@ void NamespaceData::addOperator(Action action, Operator op)
 
 void NamespaceData::addType(Type type, string id)
 {
-	if (type->nameHint.empty())
-		type->nameHint=id;
 	addAction(typeGetAction(type), id);
 }
 
