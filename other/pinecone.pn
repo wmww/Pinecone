@@ -1,4 +1,22 @@
 
+print: "1\nmyFunc called\n_____"
+
+tru || (myFunc: tru) ?
+	print: 1
+
+fls && (myFunc: tru) ?
+	print: 2
+
+!(myFunc: tru) || fls ?
+	print: 3
+
+myFunc :: {Bool} -> {Bool}: (
+	print: "myFunc called"
+	in
+)
+
+
+//
 putInPeren :: {Whatev} -> {Whatev}:
 (
 	"(" + in.String + ")"
@@ -6,4 +24,4 @@ putInPeren :: {Whatev} -> {Whatev}:
 
 print: putInPeren: 8
 print: putInPeren: tru
-
+\\
