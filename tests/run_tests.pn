@@ -94,10 +94,19 @@ singleTest :: {actual: String, target: String, label: String, expectSuccess: Boo
 			target: String
 			
 			isMatching: fls
-			i: 0 | i<in.actual.len | i: i+1 @
+			i: 0 | i<in.actual.len || i<in.target.len | i: i+1 @
 			(
-				c: in.actual.sub: i, i+1
-				isNowMatching: (in.target.len>i) && (in.target.sub: i, i+1)=c
+				ac: String
+				tc: String
+				
+				i<in.actual.len ?
+					ac: in.actual.sub: i, i+1
+				
+				i<in.target.len ?
+					tc: in.target.sub: i, i+1
+				
+				isNowMatching: ac=tc
+				
 				!(isNowMatching = isMatching) ?
 				(
 					isNowMatching ?
@@ -111,9 +120,8 @@ singleTest :: {actual: String, target: String, label: String, expectSuccess: Boo
 				)
 				isMatching: isNowMatching
 				
-				actual: actual + c
-				in.target.len>i ?
-					target: target + (in.target.sub: i, i+1)
+				actual: actual + ac
+				target: target + tc
 			)
 			
 			errorDetails: errorDetails + (asciiEscape: 3) + in.label + (asciiEscape: 0) + "\n"
