@@ -120,5 +120,5 @@ inline bool hasSuffix(const string& in, const string& suffix)
 
 }
 
-#include "StringArray.h"
-#include "StringDrawing.h"
+#include "stringArray.h"
+#include "stringDrawing.h"

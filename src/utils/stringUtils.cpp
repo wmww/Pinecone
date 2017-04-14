@@ -1,4 +1,4 @@
-#include "../../h/utils/StringUtils.h"
+#include "../../h/utils/stringUtils.h"
 #include <math.h>
 
 namespace str
@@ -129,4 +129,5 @@ string tabsToSpaces(const string& in, int tabWidth)
 }
 
 }
+
 

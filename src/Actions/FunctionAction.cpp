@@ -3,6 +3,7 @@
 #include "../../h/ErrorHandler.h"
 #include "../../h/StackFrame.h"
 #include "../../h/AstNode.h"
+#include "../../h/utils/stringNumConversion.h"
 
 #include <cstring> //for memcpy
 using std::memcpy;
@@ -101,7 +102,7 @@ public:
 		
 		name+=(nameHint.empty() ? "func" : nameHint);
 		
-		name+="_"+to_string((long)&*action);
+		name+="_"+str::ptrToUniqueStr(&*action);
 		
 		//name+="_"+getInLeftType()->getCompactString()+"_"+getInRightType()->getCompactString();
 		
