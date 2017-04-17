@@ -138,7 +138,7 @@ AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
 void AstFuncBody::resolveAction()
 {
 	setTypesInput();
-	Namespace subNs=ns->makeChildAndFrame(nameHint.empty()?"unnamed_func":nameHint);
+	Namespace subNs=ns->makeChildAndFrame(nameHint.empty()?"unnamed function's namespace":nameHint+"'s namespace");
 	subNs->setInput(leftTypeNode->getReturnType()->getSubType(), rightTypeNode->getReturnType()->getSubType());
 	bodyNode->setInput(subNs, true, Void, Void);
 	Type funcReturnType=returnTypeNode->getReturnType()->getSubType();
@@ -312,7 +312,7 @@ void AstConstExpression::resolveConstant()
 	
 	//error.log("resolveAction called for "+getString(), JSYK);
 	
-	ns->addAction(move(rightIn), center->token->getText());
+	ns->addNode(move(rightIn), center->token->getText());
 	
 	/*
 	Action rightAction=rightIn->getAction();
@@ -587,6 +587,9 @@ void AstToken::resolveAction()
 			}
 		}
 		
+		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, dynamic, true);
+		
+		/*
 		try
 		{
 			//error.log("looking for "+token->getText()+" in\n"+ns->getStringWithParents(), JSYK, token);
@@ -646,6 +649,7 @@ void AstToken::resolveAction()
 				throw err.toPineconeError(token);
 			}
 		}
+		*/
 	}
 	else if (token->getType()==TokenData::LITERAL || token->getType()==TokenData::STRING_LITERAL)
 	{
@@ -707,14 +711,7 @@ string AstTokenType::getString()
 
 void AstTokenType::resolveReturnType()
 {
-	try
-	{
-		returnType=ns->getType(token->getText())->getMeta();
-	}
-	catch (IdNotFoundError err)
-	{
-		throw err.toPineconeError(token);
-	}
+	returnType=ns->getType(token->getText(), true)->getMeta();
 }
 
 

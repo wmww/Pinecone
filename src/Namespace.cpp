@@ -3,44 +3,11 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
-class ActionWrapperNode: public AstNodeBase
-{
-public:
-	
-	static unique_ptr<ActionWrapperNode> make(Action actionIn) {
-		auto out = unique_ptr<ActionWrapperNode>(new ActionWrapperNode);
-		out->inLeftType=actionIn->getInLeftType();
-		out->inRightType=actionIn->getInRightType();
-		out->returnType=actionIn->getReturnType();
-		out->action=actionIn;
-		out->dynamic=true; // shouldn't matter
-		out->ns=nullptr; // shouldn't matter
-		out->inputHasBeenSet=true;
-		return out;
-	}
-	
-	string getString() {return "action wrapper node";}
-	
-	AstNode makeCopy(bool copyCache)
-	{
-		auto out=new ActionWrapperNode;
-		copyToNode(out, true);
-		return AstNode(out);
-	}
-	
-	void resolveAction()
-	{
-		throw PineconeError("ActionWrapperNode::resolveAction called, which it shouldn't have been", INTERNAL_ERROR);
-	}
-	
-	Token getToken() {return nullptr;}
-};
-
 string convertToString(Operator in) {return in->getText();}
 string convertToString(Type in) {return in->getString();}
 string convertToString(string in) {return in;}
 
-void NamespaceData::ActionMap::add(string key, AstNode node)
+void NamespaceData::IdMap::add(string key, AstNode node)
 {
 	auto i=nodes.find(key);
 	
@@ -52,23 +19,7 @@ void NamespaceData::ActionMap::add(string key, AstNode node)
 	nodes[key].push_back(move(node));
 }
 
-void NamespaceData::ActionMap::add(string key, Action action)
-{
-	add(key, ActionWrapperNode::make(action));
-	
-	/*
-	auto i=actions.find(key);
-	
-	if (i==actions.end())
-	{
-		actions[key]=vector<Action>();
-	}
-	
-	actions[key].push_back(action);
-	*/
-}
-
-void NamespaceData::ActionMap::get(string key, vector<AstNodeBase*>& out)
+void NamespaceData::IdMap::get(string key, vector<AstNodeBase*>& out)
 {
 	auto matches=nodes.find(key);
 	
@@ -80,52 +31,6 @@ void NamespaceData::ActionMap::get(string key, vector<AstNodeBase*>& out)
 		}
 	}
 }
-
-/*
-template<typename KEY>
-void NamespaceData::ActionMap<KEY>::get(KEY key, vector<Action>& out)
-{
-	auto matches1=nodes.find(key);
-	
-	if (matches1!=nodes.end())
-	{
-		for (unsigned i=0; i<matches1->second.size(); i++)
-		{
-			Action valAction;
-			
-			if (matches1->second[i]->isType())
-			{
-				valAction=typeGetAction(matches1->second[i]->getReturnType());
-			}
-			else
-			{
-				Action resultAction=matches1->second[i]->getAction();
-				
-				if (resultAction->isFunction())
-				{
-					valAction=resultAction;
-				}
-				else
-				{
-					void* val=resultAction->execute(nullptr, nullptr);
-					valAction=constGetAction(val, resultAction->getReturnType(), convertToString(key));
-				}
-			}
-			
-			add(key, valAction);
-		}
-		
-		nodes.erase(key);
-	}
-	
-	auto matches2=actions.find(key);
-	
-	if (matches2!=actions.end())
-	{
-		out.insert(out.end(), matches2->second.begin(), matches2->second.end());
-	}
-}
-*/
 
 Namespace NamespaceData::makeRootNamespace()
 {
@@ -273,8 +178,8 @@ void NamespaceData::setInput(Type left, Type right)
 		size_t leftOffset=stackFrame->getLeftOffset();
 		Action leftGetAction=varGetAction(leftOffset, left, leftName);
 		Action leftSetAction=varSetAction(leftOffset, left, leftName);
-		addAction(leftGetAction, leftName);
-		addAction(leftSetAction, leftName);
+		addNode(AstActionWrapper::make(leftGetAction), leftName);
+		addNode(AstActionWrapper::make(leftSetAction), leftName);
 	}
 	
 	//if (!right->isVoid())
@@ -284,12 +189,12 @@ void NamespaceData::setInput(Type left, Type right)
 		size_t rightOffset=stackFrame->getRightOffset();
 		Action rightGetAction=varGetAction(rightOffset, right, rightName);
 		Action rightSetAction=varSetAction(rightOffset, right, rightName);
-		addAction(rightGetAction, rightName);
-		addAction(rightSetAction, rightName);
+		addNode(AstActionWrapper::make(rightGetAction), rightName);
+		addNode(AstActionWrapper::make(rightSetAction), rightName);
 	}
 }
 
-void NamespaceData::addVar(Type type, string name)
+Action NamespaceData::addVar(Type type, string name)
 {
 	size_t offset=stackFrame->getSize();
 	stackFrame->addMember(type);
@@ -315,64 +220,20 @@ void NamespaceData::addVar(Type type, string name)
 		setAction=globalSetAction(offset, type, name);
 	}
 	
-	dynamicActions.add(name, getAction);
-	dynamicActions.add(name, setAction);
-}
-
-void NamespaceData::addAction(Action action, string id)
-{
-	if (action->getReturnType()->getType()==TypeBase::METATYPE)
-	{
-		try
-		{
-			getType(id);
-			throw PineconeError("you tried to make multiple types with the name '"+id+"'", SOURCE_ERROR);
-		}
-		catch (IdNotFoundError err) {}
-		
-		types.add(id, action);
-	}
-	else
-	{
-		/*try
-		{
-			Type type=getType(id);
-			
-			if (action->getReturnType()==type)
-			{
-				actions.add(id, action);
-				converters.add(type, action)
-				//addToMap(id, CONVERTER, allIds);
-				addToMap(id, action, actions);
-				addToMap(type, action, converters);
-			}
-			else
-			{
-				throw PineconeError("can not call an action '"+id+"' as there is already a type named that which does not match the return type", SOURCE_ERROR);
-			}
-		}
-		catch (IdNotFoundError err)*/
-		{
-			actions.add(id, action);
-			//addToMap(id, ACTION, allIds);
-			//addToMap(id, action, actions);
-		}
-	}
-}
-
-void NamespaceData::addOperator(Action action, Operator op)
-{
-	actions.add(op->getText(), action);
-	//addToMap(op->getText(), OPERATOR, allIds);
-	//addToMap(op, action, operators);
+	dynamicActions.add(name, AstActionWrapper::make(getAction));
+	dynamicActions.add(name, AstActionWrapper::make(setAction));
+	
+	return setAction;
 }
 
 void NamespaceData::addType(Type type, string id)
 {
-	addAction(typeGetAction(type), id);
+	auto node=AstTypeType::make(type);
+	node->setInput(shared_from_this(), false, Void, Void);
+	addNode(move(node), id);
 }
 
-void NamespaceData::addAction(AstNode node, string id)
+void NamespaceData::addNode(AstNode node, string id)
 {
 	if (node->nameHint.empty())
 		node->nameHint=id;
@@ -420,14 +281,14 @@ void NamespaceData::addAction(AstNode node, string id)
 	}
 }
 
-void NamespaceData::addOperator(AstNode node, Operator op)
+void NamespaceData::addNode(AstNode node, Operator op)
 {
 	actions.add(op->getText(), move(node));
 	//addToMap(op->getText(), OPERATOR, allIds);
 	//addToMap(op, action, operators);
 }
 
-Type NamespaceData::getType(string name)
+Type NamespaceData::getType(string name, bool throwSourceError)
 {
 	vector<AstNodeBase*> results;
 	
@@ -436,9 +297,11 @@ Type NamespaceData::getType(string name)
 	if (results.empty())
 	{
 		if (parent)
-			return parent->getType(name);
+			return parent->getType(name, throwSourceError);
+		else if (throwSourceError)
+			throw PineconeError("'"+name+"' type not found", SOURCE_ERROR);
 		else
-			throw IdNotFoundError(name, false, shared_from_this());
+			return nullptr;
 	}
 	else if (results.size()!=1)
 	{
@@ -454,7 +317,7 @@ Type NamespaceData::getType(string name)
 	}
 }
 
-Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic)
+Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic, bool throwSourceError)
 {
 	vector<Action> matches;
 	vector<AstNodeBase*> nodes;
@@ -486,9 +349,13 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		{
 			return matches[0];
 		}
+		else if (throwSourceError)
+		{
+			throw PineconeError("multiple matching instances of '"+token->getText()+"' found", SOURCE_ERROR);
+		}
 		else
 		{
-			throw IdNotFoundError(searchText, true, shared_from_this());
+			return nullptr;
 		}
 	}
 	
@@ -517,18 +384,34 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		{
 			return matches[0];
 		}
+		else if (throwSourceError)
+		{
+			throw PineconeError("multiple whatev instanes of '"+token->getText()+"' found", SOURCE_ERROR);
+		}
 		else
 		{
-			throw IdNotFoundError(searchText, true, shared_from_this());
+			return nullptr;
 		}
 	}
 	
-	throw IdNotFoundError(searchText, false, shared_from_this());
+	if (dynamic && token->getType()==TokenData::IDENTIFIER && left->isVoid() && right->isCreatable())
+	{
+		return addVar(right, token->getText());
+	}
+	
+	if (throwSourceError)
+	{
+		throw PineconeError("'"+token->getText()+"' not found", SOURCE_ERROR);
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
-Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic)
+Action NamespaceData::getActionForTokenWithInput(Token token, Action left, Action right, bool dynamic, bool throwSourceError)
 {
-	Action selection=getActionForTokenWithInput(token, left->getReturnType(), right->getReturnType(), dynamic);
+	Action selection=getActionForTokenWithInput(token, left->getReturnType(), right->getReturnType(), dynamic, throwSourceError);
 	
 	if (selection!=voidAction)
 	{
@@ -615,62 +498,3 @@ void NamespaceData::getActions(Operator op, vector<Action>& out)
 	if (parent)
 		parent->getActions(op, out);
 }
-
-/*
-void NamespaceData::getConvertersToType(Type typeIn, vector<Action>& out)
-{
-	getValuesFromMap(typeIn, out, converters);
-}
-*/
-
-Action NamespaceData::findActionWithInput(vector<Action>& actionsIn, Type leftInType, Type rightInType)
-{
-	/*
-	error.log
-	(
-		string()+
-			"findActionWithInput called."+
-			"\n\tinput:\n"+
-			[&]()->string
-			{
-				string out;
-				for (auto i: actionsIn)
-					out+="\t\t"+i->getTypesString()+"\n";
-				return out;
-			}()+
-			"\n\ttarget:\n"+
-			"\t\t"+leftInType->getString()+"."+rightInType->getString()+"\n",
-		JSYK
-	);
-	*/
-	
-	Action match(nullptr);
-	
-	for (auto i: actionsIn)
-	{
-		//if (i->getInLeftType()==leftInType && i->getInRightType()==rightInType)
-		if (i->getInLeftType()->matches(leftInType) && i->getInRightType()->matches(rightInType))
-		{
-			if (match)
-			{
-				error.log(FUNC+" found too many overloads including " + match->getDescription() + " and " + i->getDescription(), INTERNAL_ERROR);
-				return Action(nullptr);
-			}
-			else
-			{
-				match=i;
-			}
-		}
-	}
-	
-	if (match)
-	{
-		return match;
-	}
-	else
-	{
-		return Action(nullptr);
-	}
-}
-
-

@@ -75,14 +75,13 @@ Action voidAction;
 Namespace globalNamespace;
 Namespace table;
 
-void addAction(string text, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
-{
-	globalNamespace->addAction(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, text), text);
-}
+string getText(Operator op) {return op->getText();}
+string getText(string in) {return in;}
 
-void addAction(Operator op, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
+template<typename T>
+void addAction(T id, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
 {
-	globalNamespace->addOperator(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, op->getText()), op);
+	globalNamespace->addNode(AstActionWrapper::make(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, getText(id))), id);
 }
 
 function<void(Action inLeft, Action inRight, CppProgram* prog)> stringToLambda(string cppCode)
@@ -506,13 +505,13 @@ void populateBasicTypes()
 
 void populateConstants()
 {
-	table->addAction(voidAction, "void");
+	table->addNode(AstActionWrapper::make(voidAction), "void");
 	
 	bool trueVal=true;
-	table->addAction(constGetAction(&trueVal, Bool, "tru"), "tru");
+	table->addNode(AstActionWrapper::make(constGetAction(&trueVal, Bool, "tru")), "tru");
 	
 	bool falseVal=false;
-	table->addAction(constGetAction(&falseVal, Bool, "fls"), "fls");
+	table->addNode(AstActionWrapper::make(constGetAction(&falseVal, Bool, "fls")), "fls");
 	
 	// version constant
 	{
@@ -529,11 +528,13 @@ void populateConstants()
 		setValInTuple(versionTupleData, versionTupleType, "y", VERSION_Y);
 		setValInTuple(versionTupleData, versionTupleType, "z", VERSION_Z);
 		
-		table->addAction(
-			constGetAction(
-				versionTupleData,
-				versionTupleType,
-				"VERSION"
+		table->addNode(
+			AstActionWrapper::make(
+				constGetAction(
+					versionTupleData,
+					versionTupleType,
+					"VERSION"
+				)
 			),
 			"VERSION"
 		);
@@ -563,10 +564,10 @@ void populateConstants()
 		
 	#endif // __linux__
 	
-	table->addAction(constGetAction(&isLinux, Bool, "OS_IS_LINUX"), "OS_IS_LINUX");
-	table->addAction(constGetAction(&isWindows, Bool, "OS_IS_WINDOWS"), "OS_IS_WINDOWS");
-	table->addAction(constGetAction(&isMac, Bool, "OS_IS_MAC"), "OS_IS_MAC");
-	table->addAction(constGetAction(&isUnix, Bool, "OS_IS_UNIX"), "OS_IS_UNIX");
+	table->addNode(AstActionWrapper::make(constGetAction(&isLinux, Bool, "OS_IS_LINUX")), "OS_IS_LINUX");
+	table->addNode(AstActionWrapper::make(constGetAction(&isWindows, Bool, "OS_IS_WINDOWS")), "OS_IS_WINDOWS");
+	table->addNode(AstActionWrapper::make(constGetAction(&isMac, Bool, "OS_IS_MAC")), "OS_IS_MAC");
+	table->addNode(AstActionWrapper::make(constGetAction(&isUnix, Bool, "OS_IS_UNIX")), "OS_IS_UNIX");
 	
 	func("IS_TRANSPILED", Void, Void, Bool,
 		retrn false;

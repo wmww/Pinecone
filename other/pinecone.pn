@@ -1,5 +1,7 @@
 
-print: "hay".String
+a: "hay"
+
+print: a
 
 //
 # define the struct
