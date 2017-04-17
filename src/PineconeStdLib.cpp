@@ -81,7 +81,14 @@ string getText(string in) {return in;}
 template<typename T>
 void addAction(T id, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
 {
-	globalNamespace->addNode(AstActionWrapper::make(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, getText(id))), id);
+	globalNamespace->addNode(AstActionWrapper::make(lambdaAction(leftType, rightType, returnType, lambda, addCppToProg, getText(id))), getText(id));
+}
+
+void addType(Type type, string id)
+{
+	auto node=AstTypeType::make(type);
+	node->setInput(globalNamespace, false, Void, Void);
+	globalNamespace->addNode(move(node), id);
 }
 
 function<void(Action inLeft, Action inRight, CppProgram* prog)> stringToLambda(string cppCode)
@@ -494,13 +501,13 @@ void populateBasicTypes()
 {
 	String=makeTuple(vector<NamedType>{NamedType{"_size", Int}, NamedType{"_data", Byte->getPtr()}}, false);
 	
-	table->addType(Void, "Void");
-	table->addType(Bool, "Bool");
-	table->addType(Byte, "Byte");
-	table->addType(Int, "Int");
-	table->addType(Dub, "Dub");
-	table->addType(String, "String");
-	table->addType(Whatev, "Whatev");
+	addType(Void, "Void");
+	addType(Bool, "Bool");
+	addType(Byte, "Byte");
+	addType(Int, "Int");
+	addType(Dub, "Dub");
+	addType(String, "String");
+	addType(Whatev, "Whatev");
 }
 
 void populateConstants()
@@ -1251,7 +1258,7 @@ void populateIntArrayAndFuncs()
 	maker.add("_data", Int->getPtr());
 	IntArray=maker.get(false);
 	
-	table->addType(IntArray, "IntArray");
+	addType(IntArray, "IntArray");
 	
 	//func("IntArray", IntArray, Void, Int,
 	//	retrn Tuple(right, (double)((int*)malloc(Int->getSize()*right)));

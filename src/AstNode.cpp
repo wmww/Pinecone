@@ -587,7 +587,7 @@ void AstToken::resolveAction()
 			}
 		}
 		
-		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, dynamic, true);
+		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, dynamic, true, token);
 		
 		/*
 		try
@@ -711,7 +711,7 @@ string AstTokenType::getString()
 
 void AstTokenType::resolveReturnType()
 {
-	returnType=ns->getType(token->getText(), true)->getMeta();
+	returnType=ns->getType(token->getText(), true, token)->getMeta();
 }
 
 
