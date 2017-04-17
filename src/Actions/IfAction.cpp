@@ -66,8 +66,9 @@ class IfElseAction: public ActionData
 public:
 	
 	IfElseAction(Action conditionIn, Action ifActionIn, Action elseActionIn)
-		:ActionData(Void, Void, Void)
+		:ActionData([&](){return ifActionIn->getReturnType()->matches(elseActionIn->getReturnType())?ifActionIn->getReturnType():Void;}(), Void, Void)
 	{
+		returnVal=getReturnType()!=Void;
 		condition=conditionIn;
 		ifAction=ifActionIn;
 		elseAction=elseActionIn;
@@ -79,7 +80,7 @@ public:
 		
 		if (condition->getInLeftType()!=Void || condition->getInRightType()!=Void)
 		{
-			error.log("IfElseAction created with condition action that takes in something other then Void", INTERNAL_ERROR);
+			error.log("IfElseAction created with conditiofn action that takes in something other then Void", INTERNAL_ERROR);
 		}
 		
 		if (ifAction->getInLeftType()!=Void || ifAction->getInRightType()!=Void)
@@ -102,17 +103,26 @@ public:
 	
 	void* execute(void* inLeft, void* inRight)
 	{
+		void* out;
 		void* conditionOut=condition->execute(nullptr, nullptr);
 		if (*((bool*)conditionOut))
 		{
-			free(ifAction->execute(nullptr, nullptr));
+			out=ifAction->execute(nullptr, nullptr);
 		}
 		else
 		{
-			free(elseAction->execute(nullptr, nullptr));
+			out=elseAction->execute(nullptr, nullptr);
 		}
 		free(conditionOut);
-		return nullptr;
+		if (returnVal)
+		{
+			return out;
+		}
+		else
+		{
+			free(out);
+			return nullptr;
+		}
 	}
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
@@ -137,6 +147,7 @@ private:
 	Action condition;
 	Action ifAction;
 	Action elseAction;
+	bool returnVal=false;
 };
 
 Action ifAction(Action conditionIn, Action ifActionIn)
