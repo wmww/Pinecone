@@ -66,9 +66,9 @@ runTest :: {filepath: String, name: String, showDetails: Bool}:
 	summeryLine: String
 	
 	summeryLine: summeryLine + "    "
-	summeryLine: summeryLine + (singleTest: resultR.actual, resultR.target, in.name + " interpreted", in.showDetails)
+	summeryLine: summeryLine + (singleTest: resultR.actual, resultR.target, in.name + " (interpreted)", in.showDetails)
 	summeryLine: summeryLine + "         "
-	summeryLine: summeryLine + (singleTest: resultE.actual, resultE.target, in.name + " transpiled", in.showDetails)
+	summeryLine: summeryLine + (singleTest: resultE.actual, resultE.target, in.name + " (transpiled)", in.showDetails)
 	summeryLine: summeryLine + "       "
 	summeryLine: summeryLine + in.name
 	
@@ -90,50 +90,57 @@ singleTest :: {actual: String, target: String, label: String, expectSuccess: Boo
 		
 		in.expectSuccess ?
 		(
-			actual: String
-			target: String
-			
-			isMatching: fls
-			i: 0 | i<in.actual.len || i<in.target.len | i: i+1 @
-			(
-				ac: String
-				tc: String
-				
-				i<in.actual.len ?
-					ac: in.actual.sub: i, i+1
-				
-				i<in.target.len ?
-					tc: in.target.sub: i, i+1
-				
-				isNowMatching: ac=tc
-				
-				!(isNowMatching = isMatching) ?
-				(
-					isNowMatching ?
-					(
-						actual: actual + (asciiEscape: 0)
-						target: target + (asciiEscape: 0)
-					)|(
-						actual: actual + (asciiEscape: 41) + (asciiEscape: 97)
-						target: target + (asciiEscape: 42) + (asciiEscape: 97)
-					)
-				)
-				isMatching: isNowMatching
-				
-				actual: actual + ac
-				target: target + tc
-			)
-			
-			errorDetails: errorDetails + (asciiEscape: 3) + in.label + (asciiEscape: 0) + "\n"
-			errorDetails: errorDetails + (asciiEscape: 1) + "actual:" + (asciiEscape: 0) + "\n"
-			errorDetails: errorDetails + actual + (asciiEscape: 0)
-			errorDetails: errorDetails + (asciiEscape: 1) + "expected:" + (asciiEscape: 0) + "\n"
-			errorDetails: errorDetails + target + (asciiEscape: 0)
-			errorDetails: errorDetails + (asciiEscape: 2) + divideLine + (asciiEscape: 0)
+			errorDetails: errorDetails + (getDiff: in.actual, in.target, in.label)
 		)
 	)
 
 	out
+)
+
+getDiff :: {actual: String, target: String, label: String} -> {String}:
+(
+	actual: asciiEscape: 0
+	target: asciiEscape: 0
+	
+	isMatching: tru
+	i: 0 | i<in.actual.len || i<in.target.len | i: i+1 @
+	(
+		ac: String
+		tc: String
+		
+		i<in.actual.len ?
+			ac: in.actual.sub: i, i+1
+		
+		i<in.target.len ?
+			tc: in.target.sub: i, i+1
+		
+		isNowMatching: ac=tc
+		
+		!(isNowMatching = isMatching) ?
+		(
+			isNowMatching ?
+			(
+				actual: actual + (asciiEscape: 0)
+				target: target + (asciiEscape: 0)
+			)|(
+				actual: actual + (asciiEscape: 41) + (asciiEscape: 97)
+				target: target + (asciiEscape: 42) + (asciiEscape: 97)
+			)
+		)
+		isMatching: isNowMatching
+		
+		actual: actual + ac
+		target: target + tc
+	)
+	
+	out: String
+	
+	out: out + (asciiEscape: 1) + in.label + (asciiEscape: 0) + "\n"
+	out: out + (asciiEscape: 2) + "actual:" + (asciiEscape: 0) + "\n"
+	out: out + actual + (asciiEscape: 0)
+	out: out + (asciiEscape: 2) + "expected:" + (asciiEscape: 0) + "\n"
+	out: out + target + (asciiEscape: 0)
+	out: out + (asciiEscape: 2) + divideLine + (asciiEscape: 0)
 )
 
 asciiEscape :: {Int} -> {String}:
@@ -151,9 +158,9 @@ splitActualAndTarget :: {String} -> {actual: String, target: String}:
 	!quit @
 	(
 		i + targetActualSplit.len >= in.len ? (
-			target: "no target"
+			target: "no target\n"
 			in.len = 0 ?
-				actual: "no output"
+				actual: "no output\n"
 			|
 				actual: in
 			quit: tru

@@ -1,10 +1,7 @@
 
 a: "hay"
 
-print: (fls ?
-		a
-	|
-		"yo")
+print: (fls ? a | "yo")
 
 //
 # define the struct
