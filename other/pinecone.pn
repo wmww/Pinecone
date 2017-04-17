@@ -1,4 +1,15 @@
 
+//
+a:
+(
+	b: 4
+	b: b + 2
+	b
+)
+
+print: a
+\\
+
 a: "hay"
 
 print: (fls ? a | "yo")
