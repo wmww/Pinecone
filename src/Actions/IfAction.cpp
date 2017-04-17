@@ -127,7 +127,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		if (returnVal)
+		if (returnVal && prog->getExprLevel()>0)
 		{
 			prog->pushExpr();
 				condition->addToProg(voidAction, voidAction, prog);
