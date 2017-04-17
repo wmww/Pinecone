@@ -1027,6 +1027,17 @@ void populateStringFuncs()
 		}
 	);
 	
+	addAction("String", String, Void, String,
+		LAMBDA_HEADER
+		{
+			return cppStr2PncnStr(pncnStr2CppStr(leftIn));
+		},
+		ADD_CPP_HEADER
+		{
+			left->addToProg(prog);
+		}
+	);
+	
 	addAction("String", Int, Void, String,
 		LAMBDA_HEADER
 		{

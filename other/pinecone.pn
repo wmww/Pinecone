@@ -1,5 +1,8 @@
-# define the struct
 
+print: "hay".String
+
+//
+# define the struct
 MyWhatevStruct ::
 {
 	foo: Int
@@ -23,7 +26,8 @@ print :: {MyWhatevStruct}:
 # use the struct
 
 a: makeMyWhatevStruct: 8, 9.3
-b: makeMyWhatevStruct: 2, fls
+b: makeMyWhatevStruct: 2, "hay"
 
 print: a
 print: b
+\\
