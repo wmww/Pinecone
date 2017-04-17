@@ -3,10 +3,6 @@
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
 
-string convertToString(Operator in) {return in->getText();}
-string convertToString(Type in) {return in->getString();}
-string convertToString(string in) {return in;}
-
 void NamespaceData::IdMap::add(string key, AstNode node)
 {
 	auto i=nodes.find(key);
