@@ -276,11 +276,6 @@ void CppFuncBase::pushBlock()
 		throw PineconeError("CppProgram::pushBlock called when expressionLevel was not zero", INTERNAL_ERROR);
 	}
 	
-	//if (source.empty())
-	{
-	//	fakeStartBlock=true;
-	}
-	//else
 	{
 		code("{\n");
 		namespaceStack.push_back(namespaceStack.back()->makeChild());
@@ -291,11 +286,7 @@ void CppFuncBase::pushBlock()
 
 void CppFuncBase::popBlock()
 {
-	//if (fakeStartBlock)
-	{
-	//	fakeStartBlock=false;
-	}
-	//else
+	
 	{
 		if (blockLevel<=0)
 		{
