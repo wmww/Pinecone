@@ -4,7 +4,6 @@
 #include "Action.h"
 #include "Token.h"
 #include "Operator.h"
-#include "ErrorHandler.h"
 #include "AstNode.h"
 
 #include <unordered_map>

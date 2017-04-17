@@ -2,10 +2,6 @@
 
 print: "3\n3\n_____"
 
-!IS_TRANSPILED ? (
-	print: "not transpiled, so can't test"
-)
-
 a: 7
 
 func :: {a: Int, b: Int}: (

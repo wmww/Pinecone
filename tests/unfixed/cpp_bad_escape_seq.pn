@@ -4,9 +4,6 @@ tab: "\t"
 
 print: tab + "axyz\n_____"
 
-!IS_TRANSPILED ? (
-	print: "not transpiled, so can't test"
-) | (
-	print: "\taxyz"
-)
+print: "\taxyz"
+
 
