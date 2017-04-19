@@ -1,4 +1,5 @@
 
+//
 Foo :: {x: Int, y: Dub}
 
 Foo :: {Int} -> {Foo}:
@@ -11,6 +12,26 @@ foo: Foo: 2
 print: foo.x
 print: foo.y
 
-bar: tru, 47
+bar: tru, 47, ("yo", 2.9)
 
-print: bar.b
+print: bar.c.a
+\\
+
+//
+print: "8\n_____"
+
+myFunc: 8
+
+myFunc :: {arg: Int}: (
+	
+	print: in.arg
+)
+\\
+
+func :: {} -> {a: Int}: 8
+
+foo: func
+bar: Int
+bar: foo
+print: bar
+
