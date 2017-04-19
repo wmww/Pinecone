@@ -183,81 +183,7 @@ void AstExpression::resolveAction()
 	}
 	else if (center->isType() || center->isFunctionWithOutput() || leftIn->isType())
 	{
-		// it is a function
-		
 		throw PineconeError("a function implementation got into an expression node somehow", INTERNAL_ERROR, center->getToken());
-		
-		/*
-		Namespace subNs=ns->makeChildAndFrame("someFunction");
-		
-		AstNode* leftInNode=nullptr;
-		Type funcLeft=Void;
-		
-		AstNode* rightInNode=nullptr;
-		Type funcRight=Void;
-		
-		AstNode* returnNode=nullptr;
-		Type funcReturn=Void;
-		
-		if (leftIn->isType())
-		{
-			leftInNode=&leftIn;
-		}
-		else if (!leftIn->isVoid())
-		{
-			throw PineconeError("your trying to feed a non type into a type. this is dumb.", SOURCE_ERROR, leftIn->getToken());
-		}
-		
-		if (center->isFunctionWithOutput())
-		{
-			AstOpWithInput* node=(AstOpWithInput*)(&(*center));
-			
-			if (node->leftIn.size()!=1 || node->rightIn.size()!=1 || !node->leftIn[0]->isType() || !node->rightIn[0]->isType())
-			{
-				throw PineconeError("something around that arrow is fucked up. you expect me to tell you exactly what the probelem is?\nwell, sorry but things arn't always that easy. I have better things to do then write meaningful\nerror messages. fix your own damn errors.", SOURCE_ERROR, node->getToken());
-			}
-			
-			rightInNode=&node->leftIn[0];
-			returnNode=&node->rightIn[0];
-		}
-		else if (center->isType())
-		{
-			rightInNode=&center;
-		}
-		else
-		{
-			throw PineconeError("you fucked up. idk what you meant to do.", SOURCE_ERROR, center->getToken());
-		}
-		
-		if (leftInNode)
-		{
-			(*leftInNode)->setInput(subNs, false, Void, Void);
-			funcLeft=(*leftInNode)->getReturnType()->getSubType();
-		}
-		
-		if (rightInNode)
-		{
-			(*rightInNode)->setInput(subNs, false, Void, Void);
-			funcRight=(*rightInNode)->getReturnType()->getSubType();
-		}
-		
-		if (returnNode)
-		{
-			(*returnNode)->setInput(subNs, false, Void, Void);
-			funcReturn=(*returnNode)->getReturnType()->getSubType();
-		}
-		
-		if (funcLeft->isWhatev() || funcRight->isWhatev())
-		{
-			throw PineconeError("Attempted to make function with Whatev input type, which should have been swapped for something real", INTERNAL_ERROR, getToken());
-		}
-		
-		subNs->setInput(funcLeft, funcRight);
-		
-		rightIn->setInput(subNs, true, Void, Void);
-		
-		action=functionAction(move(rightIn), funcReturn, subNs->getStackFrame());
-		*/
 	}
 	else
 	{
@@ -574,6 +500,7 @@ void AstToken::resolveAction()
 			throw PineconeError("non overloadable operator in AstToken, it should have been removed and processed by the parser", INTERNAL_ERROR, token);
 		}
 		
+		/*
 		if (inLeftType->getType()==TypeBase::TUPLE && inLeftType->getSubType(token->getText()).type!=nullptr)
 		{
 			if (inRightType->isVoid())
@@ -586,6 +513,7 @@ void AstToken::resolveAction()
 				throw PineconeError("sorry, Pinecone does not yet support mutating tuples", SOURCE_ERROR, token);
 			}
 		}
+		*/
 		
 		action=ns->getActionForTokenWithInput(token, inLeftType, inRightType, dynamic, true, token);
 		

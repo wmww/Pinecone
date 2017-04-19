@@ -1,46 +1,16 @@
 
-//
-a:
+Foo :: {x: Int, y: Dub}
+
+Foo :: {Int} -> {Foo}:
 (
-	b: 4
-	b: b + 2
-	b
+	in, 7.3
 )
 
-print: a
-\\
+foo: Foo: 2
 
-a: "hay"
+print: foo.x
+print: foo.y
 
-print: (fls ? a | "yo")
+bar: tru, 47
 
-//
-# define the struct
-MyWhatevStruct ::
-{
-	foo: Int
-	bar: Whatev
-}
-
-# define the constructor
-
-makeMyWhatevStruct :: {a: Int, b: Whatev} -> {MyWhatevStruct}:
-(
-	in.a, in.b
-)
-
-# define the print function for makeMyWhatevStruct
-
-print :: {MyWhatevStruct}:
-(
-	print: in.foo.String + ", " + in.bar.String
-)
-
-# use the struct
-
-a: makeMyWhatevStruct: 8, 9.3
-b: makeMyWhatevStruct: 2, "hay"
-
-print: a
-print: b
-\\
+print: bar.b

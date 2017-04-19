@@ -58,7 +58,11 @@ public:
 	
 	
 private:
-	void getMatches(vector<AstNodeBase*>& out, string text, bool checkActions, bool checkDynamic, bool checkWhatev);
+	
+	// retrieve all nodes in the given catagories with the given names from this namespace and all its parents
+	void getNodes(vector<AstNodeBase*>& out, string text, bool checkActions, bool checkDynamic, bool checkWhatev);
+	
+	void nodesToMatchingActions(vector<Action>& out, vector<AstNodeBase*>& nodes, Type leftInType, Type rightInType);
 	
 	class IdMap
 	{
