@@ -195,6 +195,17 @@ void NamespaceData::addNode(AstNode node, string id)
 	
 	if (node->isType())
 	{
+		/*
+		Type type=node->getReturnType()->getSubType();
+		if (type->getType()==TypeBase::TUPLE)
+		{
+			for (auto i: *type->getAllSubTypes())
+			{
+				addNode(AstActionWrapper::make(getElemFromTupleAction(type, i.name)), i.name);
+			}
+		}
+		*/
+		
 		types.add(id, move(node));
 	}
 	else
@@ -245,25 +256,20 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	vector<Action> matches;
 	vector<AstNodeBase*> nodes;
 	
-	string searchText;
+	string searchText = (token->getOp() ? token->getOp()->getText() : token->getText());
 	
-	if (token->getOp())
-	{
-		searchText=token->getOp()->getText();
-	}
-	else
-	{
-		searchText=token->getText();
-	}
+	getNodes(nodes, searchText, true, dynamic, false);
 	
-	getMatches(nodes, searchText, true, dynamic, false);
+	nodesToMatchingActions(matches, nodes, left, right);
 	
-	for (auto i: nodes)
+	if (left->getType()==TypeBase::TUPLE && token->getType()==TokenData::IDENTIFIER)
 	{
-		Action action=i->getAction();
+		auto match=left->getSubType(searchText);
 		
-		if (action->getInLeftType()->matches(left) && action->getInRightType()->matches(right))
-			matches.push_back(action);
+		if (match.type)
+		{
+			matches.push_back(getElemFromTupleAction(left, searchText));
+		}
 	}
 	
 	if (!matches.empty())
@@ -283,7 +289,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	}
 	
 	nodes.clear();
-	getMatches(nodes, searchText, false, false, true);
+	getNodes(nodes, searchText, false, false, true);
 	
 	for (auto i: nodes)
 	{
@@ -332,7 +338,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	}
 }
 
-void NamespaceData::getMatches(vector<AstNodeBase*>& out, string text, bool checkActions, bool checkDynamic, bool checkWhatev)
+void NamespaceData::getNodes(vector<AstNodeBase*>& out, string text, bool checkActions, bool checkDynamic, bool checkWhatev)
 {
 	if (checkActions)
 	{
@@ -350,6 +356,17 @@ void NamespaceData::getMatches(vector<AstNodeBase*>& out, string text, bool chec
 	}
 	
 	if (parent)
-		parent->getMatches(out, text, checkActions, checkDynamic, checkWhatev);
+		parent->getNodes(out, text, checkActions, checkDynamic, checkWhatev);
+}
+
+void NamespaceData::nodesToMatchingActions(vector<Action>& out, vector<AstNodeBase*>& nodes, Type leftInType, Type rightInType)
+{
+	for (auto i: nodes)
+	{
+		Action action=i->getAction();
+		
+		if (action->getInLeftType()->matches(leftInType) && action->getInRightType()->matches(rightInType))
+			out.push_back(action);
+	}
 }
 
