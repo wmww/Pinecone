@@ -135,7 +135,7 @@ public:
 	CppTupleCastAction(Action actionIn, Type returnType):
 		ActionData(returnType, Void, Void)
 	{
-		if (actionIn->getReturnType()->getType()!=TypeBase::TUPLE || getReturnType()->getType()!=TypeBase::TUPLE || !actionIn->getReturnType()->matches(getReturnType()))
+		if ((actionIn->getReturnType()->getType()!=TypeBase::TUPLE && getReturnType()->getType()!=TypeBase::TUPLE) || !actionIn->getReturnType()->matches(getReturnType()))
 		{
 			throw PineconeError("CppCastAction was only designed to cast matching tuples, which is not how it is being used", INTERNAL_ERROR);
 		}
@@ -173,6 +173,12 @@ public:
 		{
 			addListToProgWithCppCasting((ListAction*)&*action, getReturnType(), prog);
 		}
+		else if (getReturnType()->getType()!=TypeBase::TUPLE)
+		{
+			action->addToProg(prog);
+			prog->code(".");
+			prog->code(action->getReturnType()->getAllSubTypes()[0][0].name);
+		}
 		else
 		{
 			string funcName=action->getReturnType()->getCompactString()+"=>"+getReturnType()->getCompactString();
@@ -184,22 +190,35 @@ public:
 				prog->pushFunc(funcName, "", Void, argType, getReturnType());
 					prog->declareVar("-out", getReturnType());
 					
-					auto inTypes=*action->getReturnType()->getAllSubTypes();
 					auto outTypes=*getReturnType()->getAllSubTypes();
 					
-					for (int i=0; i<int(inTypes.size()); i++)
+					if (action->getReturnType()->getType()==TypeBase::TUPLE)
 					{
-						//if (inTypes[i].type==outTypes[i].type)
+						auto inTypes=*action->getReturnType()->getAllSubTypes();
+						
+						for (int i=0; i<int(inTypes.size()); i++)
 						{
-							prog->name("-out");
-							prog->code(".");
-							prog->code(outTypes[i].name);
-							prog->code(" = ");
-							prog->name("in");
-							prog->code(".");
-							prog->code(inTypes[i].name);
-							prog->endln();
+							//if (inTypes[i].type==outTypes[i].type)
+							{
+								prog->name("-out");
+								prog->code(".");
+								prog->code(outTypes[i].name);
+								prog->code(" = ");
+								prog->name("in");
+								prog->code(".");
+								prog->code(inTypes[i].name);
+								prog->endln();
+							}
 						}
+					}
+					else
+					{
+						prog->name("-out");
+						prog->code(".");
+						prog->code(outTypes[0].name);
+						prog->code(" = ");
+						prog->name("in");
+						prog->endln();
 					}
 					
 					prog->code("return ");

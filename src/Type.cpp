@@ -610,17 +610,34 @@ bool TypeBase::matches(Type other)
 		return true;
 	
 	if (getType()==WHATEV || other->getType()==WHATEV)
-	{
 		return true;
-	}
-	else if (other->getType()!=getType())
+		
+	if (getType()==TUPLE)
 	{
+		auto subTypes=getAllSubTypes();
+		
+		if (subTypes->size()==1)
+		{
+			if ((*subTypes)[0].type->matches(other))
+				return true;
+		}
+	}
+	
+	if (other->getType()==TUPLE)
+	{
+		auto subTypes=other->getAllSubTypes();
+		
+		if (subTypes->size()==1)
+		{
+			if ((*subTypes)[0].type->matches(shared_from_this()))
+				return true;
+		}
+	}
+	
+	if (other->getType()!=getType())
 		return false;
-	}
-	else
-	{
-		return matchesSameTypeType(other);
-	}
+	
+	return matchesSameTypeType(other);
 }
 
 Type TypeBase::actuallyIs(Type target)

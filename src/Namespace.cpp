@@ -255,12 +255,12 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 {
 	vector<Action> matches;
 	vector<AstNodeBase*> nodes;
+	bool foundNodes=false;
+	AstNode tupleNode; // this is needed for memory management, so if a tuple node is needed it can be kept around until the function exits
 	
 	string searchText = (token->getOp() ? token->getOp()->getText() : token->getText());
 	
 	getNodes(nodes, searchText, true, dynamic, false);
-	
-	nodesToMatchingActions(matches, nodes, left, right);
 	
 	if (left->getType()==TypeBase::TUPLE && token->getType()==TokenData::IDENTIFIER)
 	{
@@ -268,9 +268,18 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		
 		if (match.type)
 		{
-			matches.push_back(getElemFromTupleAction(left, searchText));
+			if (right->isVoid())
+			{
+				tupleNode=AstActionWrapper::make(getElemFromTupleAction(left, searchText));
+				nodes.push_back(&*tupleNode);
+			}
 		}
 	}
+	
+	if (!nodes.empty())
+		foundNodes=true;
+	
+	nodesToMatchingActions(matches, nodes, left, right);
 	
 	if (!matches.empty())
 	{
@@ -290,6 +299,9 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	
 	nodes.clear();
 	getNodes(nodes, searchText, false, false, true);
+	
+	if (!nodes.empty())
+		foundNodes=true;
 	
 	for (auto i: nodes)
 	{
@@ -323,14 +335,17 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		}
 	}
 	
-	if (dynamic && token->getType()==TokenData::IDENTIFIER && left->isVoid() && right->isCreatable())
+	if (!foundNodes && dynamic && token->getType()==TokenData::IDENTIFIER && left->isVoid() && right->isCreatable())
 	{
 		return addVar(right, token->getText());
 	}
 	
 	if (throwSourceError)
 	{
-		throw PineconeError("'"+token->getText()+"' not found", SOURCE_ERROR, tokenForError);
+		if (foundNodes)
+			throw PineconeError("correct overload of '"+token->getText()+"' not found", SOURCE_ERROR, tokenForError);
+		else
+			throw PineconeError("'"+token->getText()+"' not found", SOURCE_ERROR, tokenForError);
 	}
 	else
 	{
@@ -367,6 +382,8 @@ void NamespaceData::nodesToMatchingActions(vector<Action>& out, vector<AstNodeBa
 		
 		if (action->getInLeftType()->matches(leftInType) && action->getInRightType()->matches(rightInType))
 			out.push_back(action);
+		
+		//Action converter=getConverter(action, leftInType, rightInType);
 	}
 }
 
