@@ -2,6 +2,12 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
+* Fixed silent error when file fails to load
+* Fixed known bug with functions that take one named argument
+* Fixed known bug that prevented `?` being useed in a ternary expression
+* Improved output of testing script
+* Internal codebase cleanup
+
 ## v0.5.0 (April 14, 2017)
 
 * Made '&&' and '||' use short circuiting
@@ -14,7 +20,7 @@ Every new version gets a number of minor bug fixes, so they are not included
 * Added command line options for transpileing
 * **Fully implemented transpiler to C++**
 * Disabled implicit conversion between two structs (if neither is an anonymous tuple)
-* Added '!=' operator
+* Added `!=` operator
 * Wrote more example programs including a brainfuck interpreter
 * Fixed bug that prevented accessing multiple layers of structures with dot ('struct.data.func: arg' now works)
 * Added a wide range of unit tests and integration tests
