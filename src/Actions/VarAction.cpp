@@ -2,6 +2,7 @@
 #include "../../h/ErrorHandler.h"
 #include "../../h/StackFrame.h"
 #include "../../h/CppProgram.h"
+#include "../../h/utils/stringNumConversion.h"
 
 class VarGetAction: public ActionData
 {
@@ -164,11 +165,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		if (getReturnType()!=String)
-		{
-			prog->code(getReturnType()->getCppLiteral(data, prog));
-		}
-		else // getReturnType()==String
+		if (getReturnType()==String)
 		{
 			//prog->code(prog->getTypeCode(getReturnType()));
 			addToProgPnStr(prog);
@@ -200,25 +197,22 @@ public:
 					{
 						prog->code(string()+c);
 					}
-					else if (c==0)
-					{
-						prog->code("\0");
-					}
 					else if (c=='\n')
 					{
 						prog->code("\\n");
 					}
 					else
 					{
-						prog->code("\\x");
-						char buf[8];
-						sprintf(buf, "%02X", c);
-						prog->code(string()+buf);
+						prog->code(str::charToCppStringLiteralEscaped(c));
 					}
 					
 				}
 				prog->code("\"");
 			prog->popExpr();
+		}
+		else
+		{
+			prog->code(getReturnType()->getCppLiteral(data, prog));
 		}
 	}
 	
