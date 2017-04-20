@@ -1,6 +1,6 @@
 # This test attempts to run the Pinecone interpreter on a nonexistant file, which should produce an error
 
-print: "error: could not open 'thisFileDoesNotExist.pn'\n_____"
+print: "error: could not open 'thisFileDoesNotExist.pn'\nprogram not executed due to errors\n\n_____"
 
 cmd: "./pinecone thisFileDoesNotExist.pn"
 

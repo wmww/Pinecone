@@ -31,11 +31,18 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 	
 	if (!error.getIfErrorLogged())
 	{
-		file=shared_ptr<SourceFile>(new SourceFile(inFilename, printOutput));
-		
-		if (printOutput)
+		try
 		{
-			cout << endl << endl << file->getBoxedString() << endl;
+			file=shared_ptr<SourceFile>(new SourceFile(inFilename, printOutput));
+			
+			if (printOutput)
+			{
+				cout << endl << endl << file->getBoxedString() << endl;
+			}
+		}
+		catch (PineconeError err)
+		{
+			err.log();
 		}
 	}
 	
