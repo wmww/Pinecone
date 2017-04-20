@@ -1,15 +1,26 @@
 
 //
 This file demonstrates the basic syntax constructs of Pinecone
+
+to run, simply run command
+path/to/pinecone/executable simple_demo.pn
 \\
 
+# that was a multi line comment. this is a single line comment
+
+# create a variable
+a: 12 # deduces the type as Int
+
+# print the value in the variable
+print: a
+
+print # print an empty line
 
 print: "if/then"
 
-a: 12
 b: 7
 
-a=9 ?
+a = 9 ?
 (
 	print: 1
 )|(
@@ -42,6 +53,18 @@ print: "for loop"
 i: 0 | i<10 | i: i+1 @
 (
 	print: i
+)
+
+print
+
+
+print: "functions"
+
+print: func: 7
+
+func :: {Int} -> {Dub}:
+(
+	(Dub: in)/2.0
 )
 
 print
@@ -81,6 +104,7 @@ print: fib: 8
 print
 
 print: "compile time constants"
+# these can be declared in any order
 
 print: y
 
@@ -88,15 +112,4 @@ x :: 10
 y :: x+z
 z :: 4
 
-print
-
-
-print: "functions"
-
-print: func: 7
-
-func :: {Int} -> {Dub}:
-(
-	(Dub: in)/2.0
-)
 
