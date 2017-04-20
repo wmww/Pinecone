@@ -4,6 +4,19 @@
 namespace str
 {
 
+string charToCppStringLiteralEscaped(unsigned char c)
+{
+	string out="\\";
+	
+	for (int i=0; i<3; i++)
+	{
+		out+=c%8+'0';
+		c/=8;
+	}
+	
+	return out;
+}
+
 string intToBase62(unsigned int num, int maxDigits)
 {
 	int i=0;

@@ -1,2 +1,11 @@
 
 print: "Hello World!"
+
+# Bad escape sequences can get into C++ transpiled code if a special char is followed by a hex digit
+
+tab: "\t"
+
+print: tab + "axyz\n_____"
+
+print: "\taxyz"
+
