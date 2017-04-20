@@ -1,10 +1,20 @@
 #include "../h/SourceFile.h"
+#include "../h/utils/fileUtils.h"
 #include "../h/msclStringFuncs.h"
 
 SourceFile::SourceFile(string filenameIn, bool printOutput)
 {
 	filename=filenameIn;
-	contents=loadEntireFile(filenameIn, printOutput)+"\n";
+	try
+	{
+		loadFile(filenameIn, contents);
+		contents+="\n";
+	}
+	catch (string err)
+	{
+		throw PineconeError(err, SOURCE_ERROR);
+	}
+	
 }
 
 string SourceFile::getDirPath()

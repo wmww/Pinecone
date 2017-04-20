@@ -23,6 +23,7 @@ errorDetails.len > 0 ?
 (
 	print
 	print: "details"
+	print
 	print: errorDetails
 )
 
@@ -129,6 +130,17 @@ getDiff :: {actual: String, target: String, label: String} -> {String}:
 		)
 		isMatching: isNowMatching
 		
+		!isMatching ?
+		(
+			# add return symbol to make newlines visable
+			
+			ac = "\n" ?
+				ac: 226.ascii + 134.ascii + 181.ascii + ac
+			
+			tc = "\n" ?
+				tc: 226.ascii + 134.ascii + 181.ascii + tc
+		)
+		
 		actual: actual + ac
 		target: target + tc
 	)
@@ -140,7 +152,7 @@ getDiff :: {actual: String, target: String, label: String} -> {String}:
 	out: out + actual + (asciiEscape: 0)
 	out: out + (asciiEscape: 2) + "expected:" + (asciiEscape: 0) + "\n"
 	out: out + target + (asciiEscape: 0)
-	out: out + (asciiEscape: 2) + divideLine + (asciiEscape: 0)
+	out: out + (asciiEscape: 2) + divideLine + (asciiEscape: 0) + "\n\n"
 )
 
 asciiEscape :: {Int} -> {String}:
