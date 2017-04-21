@@ -103,36 +103,3 @@ private:
 	IdMap types;
 };
 
-class AstActionWrapper: public AstNodeBase
-{
-public:
-	
-	static unique_ptr<AstActionWrapper> make(Action actionIn) {
-		auto out = unique_ptr<AstActionWrapper>(new AstActionWrapper);
-		out->inLeftType=actionIn->getInLeftType();
-		out->inRightType=actionIn->getInRightType();
-		out->returnType=actionIn->getReturnType();
-		out->action=actionIn;
-		out->dynamic=true; // shouldn't matter
-		out->ns=nullptr; // shouldn't matter
-		out->inputHasBeenSet=true;
-		return out;
-	}
-	
-	string getString() {return "action wrapper node";}
-	
-	AstNode makeCopy(bool copyCache)
-	{
-		auto out=new AstActionWrapper;
-		copyToNode(out, true);
-		return AstNode(out);
-	}
-	
-	void resolveAction()
-	{
-		throw PineconeError("AstActionWrapper::resolveAction called, which it shouldn't have been", INTERNAL_ERROR);
-	}
-	
-	Token getToken() {return nullptr;}
-};
-

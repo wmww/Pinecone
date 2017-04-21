@@ -1,11 +1,14 @@
 
 print: "Hello World!"
 
-# Bad escape sequences can get into C++ transpiled code if a special char is followed by a hex digit
+changePtrVal :: {Whatev}:
+(
+	#print: in.dif.typeName
+	in.dif: ((in.dif) + 3)
+)
 
-tab: "\t"
+a: new: 9
 
-print: tab + "axyz\n_____"
+changePtrVal: a
 
-print: "\taxyz"
-
+print: a.dif

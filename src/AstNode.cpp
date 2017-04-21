@@ -98,14 +98,14 @@ string AstFuncBody::getString()
 	return "function body";
 }
 
-AstNode AstFuncBody::makeNonWhatevCopy(Type leftInType, Type rightInType)
+AstNode AstFuncBody::makeCopyWithSpecificTypes(Type leftInType, Type rightInType)
 {
 	Type leftWhatevType=leftTypeNode->getReturnType()->getSubType();
 	Type rightWhatevType=rightTypeNode->getReturnType()->getSubType();
 	
 	if (!leftInType->matches(leftWhatevType) || !rightInType->matches(rightWhatevType))
 	{
-		throw PineconeError("AstFuncBody::makeNonWhatevCopy sent types that didn't match the original", INTERNAL_ERROR, rightTypeNode->getToken());
+		return nullptr;
 	}
 	
 	AstNode actualLeftTypeNode;

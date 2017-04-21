@@ -58,6 +58,11 @@ public:
 	
 	virtual AstNode makeCopy(bool copyCache)=0; // if copyCache is false, input and actions will not be copied
 	
+	virtual bool canBeWhatev() {return false;}
+	
+	// returns nullptr if it can't do it
+	virtual AstNode makeCopyWithSpecificTypes(Type leftInType, Type rightInType) {return nullptr;}
+	
 	Type getReturnType()
 	{
 		if (!returnType)
@@ -110,6 +115,7 @@ public:
 	virtual Token getToken()=0;
 	
 	string nameHint="";
+	virtual void nameHintSet() {}
 	
 protected:
 	
@@ -274,7 +280,7 @@ public:
 	
 	void resolveAction();
 	
-	AstNode makeNonWhatevCopy(Type leftInType, Type rightInType);
+	AstNode makeCopyWithSpecificTypes(Type leftInType, Type rightInType);
 	
 	Token getToken() {return bodyNode->getToken();}
 	
@@ -289,7 +295,7 @@ public:
 		}
 	}
 	
-	bool isWhatev()
+	bool canBeWhatev()
 	{
 		setTypesInput();
 		
@@ -496,6 +502,12 @@ public:
 		returnType=returnTypeNotMeta->getMeta();
 	}
 	
+	void nameHintSet()
+	{
+		if (!nameHint.empty() && returnTypeNotMeta->nameHint.empty())
+			returnTypeNotMeta->nameHint=nameHint;
+	}
+	
 	Token getToken() {return nullptr;}
 	
 private:
@@ -599,6 +611,39 @@ public:
 private:
 	
 	vector<NamedType> subTypes;
+};
+
+class AstActionWrapper: public AstNodeBase
+{
+public:
+	
+	static unique_ptr<AstActionWrapper> make(Action actionIn) {
+		auto out = unique_ptr<AstActionWrapper>(new AstActionWrapper);
+		out->inLeftType=actionIn->getInLeftType();
+		out->inRightType=actionIn->getInRightType();
+		out->returnType=actionIn->getReturnType();
+		out->action=actionIn;
+		out->dynamic=true; // shouldn't matter
+		out->ns=nullptr; // shouldn't matter
+		out->inputHasBeenSet=true;
+		return out;
+	}
+	
+	string getString() {return "action wrapper node";}
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstActionWrapper;
+		copyToNode(out, true);
+		return AstNode(out);
+	}
+	
+	void resolveAction()
+	{
+		throw PineconeError("AstActionWrapper::resolveAction called, which it shouldn't have been", INTERNAL_ERROR);
+	}
+	
+	Token getToken() {return nullptr;}
 };
 
 

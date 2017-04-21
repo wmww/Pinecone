@@ -191,7 +191,10 @@ Action NamespaceData::addVar(Type type, string name)
 void NamespaceData::addNode(AstNode node, string id)
 {
 	if (node->nameHint.empty())
+	{
 		node->nameHint=id;
+		node->nameHintSet();
+	}
 	
 	if (node->isType())
 	{
@@ -211,7 +214,7 @@ void NamespaceData::addNode(AstNode node, string id)
 	else
 	{
 		// if the left or the right is a Whatev and the types match up
-		if (typeid(*node)==typeid(AstFuncBody) && ((AstFuncBody*)&*node)->isWhatev())
+		if (node->canBeWhatev())
 		{
 			whatevActions.add(id, move(node));
 		}
@@ -305,15 +308,10 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	
 	for (auto i: nodes)
 	{
-		if (typeid(*i)!=typeid(AstFuncBody))
-			throw PineconeError("AST node other then AstFuncBody made it into the whatev table", INTERNAL_ERROR, i->getToken());
+		AstNode instance=i->makeCopyWithSpecificTypes(left, right);
 		
-		if ( // getSubType is needed because leftTypeNode is a type node and a type node always returns a metatype
-			((AstFuncBody*)i)->leftTypeNode->getReturnType()->getSubType()->matches(left)
-			&&
-			((AstFuncBody*)i)->rightTypeNode->getReturnType()->getSubType()->matches(right)
-		) {
-			AstNode instance=((AstFuncBody*)i)->makeNonWhatevCopy(left, right);
+		if (instance)
+		{
 			matches.push_back(instance->getAction());
 			actions.add(token->getText(), move(instance));
 		}
@@ -343,9 +341,9 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 	if (throwSourceError)
 	{
 		if (foundNodes)
-			throw PineconeError("correct overload of '"+token->getText()+"' not found", SOURCE_ERROR, tokenForError);
+			throw PineconeError("correct overload of '"+token->getText()+"' not found for types "+left->getString()+" and "+right->getString(), SOURCE_ERROR, tokenForError);
 		else
-			throw PineconeError("'"+token->getText()+"' not found", SOURCE_ERROR, tokenForError);
+			throw PineconeError("'"+token->getText()+"' not found for types "+left->getString()+" and "+right->getString(), SOURCE_ERROR, tokenForError);
 	}
 	else
 	{

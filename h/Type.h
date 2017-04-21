@@ -95,6 +95,7 @@ public:
 	
 	static string getString(PrimitiveType in);
 	virtual string getString()=0;
+	string getName() {return nameHint.empty()?getCompactString():nameHint;}
 	virtual string getCompactString()=0; // returns a string that is unique, only shared with other types that match this one
 	virtual string getCppLiteral(void * data, CppProgram * prog)=0;
 	
