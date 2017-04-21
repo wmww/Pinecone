@@ -2,6 +2,8 @@
 This file documents all major changes to the Pinecone langauge.
 Every new version gets a number of minor bug fixes, so they are not included
 
+### v0.5.1 (April 20, 2017)
+
 * Fixed silent error when file fails to load
 * Fixed known bug with functions that take one named argument
 * Fixed known bug that prevented `?` being useed in a ternary expression
@@ -13,12 +15,12 @@ Every new version gets a number of minor bug fixes, so they are not included
 * Made '&&' and '||' use short circuiting
 * Improved testing system
 * Added support for Windows
-* **Added Whatev type** for compile time dynamic typing and implicit function return type
+* __Added Whatev type__ for compile time dynamic typing and implicit function return type
 
 ## v0.4.0 (Mar 26, 2017)
 
 * Added command line options for transpileing
-* **Fully implemented transpiler to C++**
+* __Fully implemented transpiler to C++__
 * Disabled implicit conversion between two structs (if neither is an anonymous tuple)
 * Added `!=` operator
 * Wrote more example programs including a brainfuck interpreter
@@ -31,7 +33,7 @@ Every new version gets a number of minor bug fixes, so they are not included
 
 ## v0.3.0 (Jan 18, 2017)
 
-* Added string literal support
+* __Added string literal support__
 * Added various functions and operators for strings
 * Fixed globals
 
@@ -49,7 +51,7 @@ Every new version gets a number of minor bug fixes, so they are not included
 
 ## v0.1.0 (Jan 15, 2017)
 
-* Created Pinecone
+* __Created Pinecone__
 
 ## v0.0.0
 
