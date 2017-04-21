@@ -646,6 +646,48 @@ public:
 	Token getToken() {return nullptr;}
 };
 
+class AstWhatevToActionFactory: public AstNodeBase
+{
+public:
+	
+	static AstNode make(function<Action(Type left, Type right)> lambda)
+	{
+		auto node=new AstWhatevToActionFactory();
+		node->lambda=lambda;
+		return AstNode(node);
+	}
+	
+	string getString() {return "AstWhatevToActionFactory";}
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstWhatevToActionFactory;
+		copyToNode(out, copyCache);
+		out->lambda=lambda;
+		return AstNode(out);
+	}
+	
+	void resolveAction() {throw PineconeError("AstWhatevToActionFactory::resolveAction called, wich should never happen", INTERNAL_ERROR);}
+	
+	AstNode makeCopyWithSpecificTypes(Type leftInType, Type rightInType)
+	{
+		auto action=lambda(leftInType, rightInType);
+		if (action)
+			return AstActionWrapper::make(action);
+		else
+			return nullptr;
+	}
+	
+	Token getToken() {return nullptr;}
+	
+	bool canBeWhatev() {return true;}
+	
+private:
+	function<Action(Type leftInType, Type rightInType)> lambda;
+};
+
+
+
 
 
 

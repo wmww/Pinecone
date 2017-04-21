@@ -1030,55 +1030,7 @@ void populateStdFuncs()
 	);
 }
 
-
-
-
-
-class AstWhatevToActionFactory: public AstNodeBase
-{
-public:
-	
-	static AstNode make(function<Action(Type left, Type right)> lambda)
-	{
-		auto node=new AstWhatevToActionFactory();
-		node->lambda=lambda;
-		return AstNode(node);
-	}
-	
-	string getString() {return "AstWhatevToActionFactory";}
-	
-	AstNode makeCopy(bool copyCache)
-	{
-		auto out=new AstWhatevToActionFactory;
-		copyToNode(out, copyCache);
-		out->lambda=lambda;
-		return AstNode(out);
-	}
-	
-	void resolveAction() {throw PineconeError("AstWhatevToActionFactory::resolveAction called, wich should never happen", INTERNAL_ERROR);}
-	
-	AstNode makeCopyWithSpecificTypes(Type leftInType, Type rightInType)
-	{
-		auto action=lambda(leftInType, rightInType);
-		if (action)
-			return AstActionWrapper::make(action);
-		else
-			return nullptr;
-	}
-	
-	Token getToken() {return nullptr;}
-	
-	bool canBeWhatev() {return true;}
-	
-private:
-	function<Action(Type leftInType, Type rightInType)> lambda;
-};
-
-
-
-
-
-void populateMemManagementFuncs()
+void populateTypeInfoFuncs()
 {
 	globalNamespace->addNode(
 		AstWhatevToActionFactory::make(
@@ -1112,6 +1064,39 @@ void populateMemManagementFuncs()
 		"typeName"
 	);
 	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (leftType->isVoid() || !rightType->isVoid())
+					return nullptr;
+				
+				int val=leftType->getSize();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					Int,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						return &(*(int*)malloc(sizeof(int))=val);
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						constGetAction(&val, Int, to_string(val))->addToProg(prog);
+					},
+					"typeSize"
+				);
+			}
+		),
+		"typeSize"
+	);
+}
+
+void populateMemManagementFuncs()
+{
 	globalNamespace->addNode(
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
@@ -1619,6 +1604,7 @@ void populatePineconeStdLib()
 	populateOperators();
 	populateConverters();
 	populateStdFuncs();
+	populateTypeInfoFuncs();
 	populateMemManagementFuncs();
 	populateStringFuncs();
 	populateIntArrayAndFuncs();

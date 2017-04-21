@@ -142,7 +142,7 @@ class ConstGetAction: public ActionData
 {
 public:
 	
-	ConstGetAction(void* in, Type typeIn, string textIn):
+	ConstGetAction(const void* in, Type typeIn, string textIn):
 		ActionData(typeIn, Void, Void)
 	{
 		data=malloc(returnType->getSize());
@@ -241,7 +241,7 @@ Action globalSetAction(size_t in, Type typeIn, string textIn)
 	return Action(new VarSetAction(in, &globalFramePtr, typeIn, textIn));
 }
 
-Action constGetAction(void* in, Type typeIn, string textIn)
+Action constGetAction(const void* in, Type typeIn, string textIn)
 {
 	return Action(new ConstGetAction(in, typeIn, textIn));
 }
