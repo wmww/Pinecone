@@ -1018,6 +1018,196 @@ void populateStdFuncs()
 	);
 }
 
+
+
+
+
+class AstWhatevToActionFactory: public AstNodeBase
+{
+public:
+	
+	static AstNode make(function<Action(Type left, Type right)> lambda)
+	{
+		auto node=new AstWhatevToActionFactory();
+		node->lambda=lambda;
+		return AstNode(node);
+	}
+	
+	string getString() {return "AstWhatevToActionFactory";}
+	
+	AstNode makeCopy(bool copyCache)
+	{
+		auto out=new AstWhatevToActionFactory;
+		copyToNode(out, copyCache);
+		out->lambda=lambda;
+		return AstNode(out);
+	}
+	
+	void resolveAction() {throw PineconeError("AstWhatevToActionFactory::resolveAction called, wich should never happen", INTERNAL_ERROR);}
+	
+	AstNode makeCopyWithSpecificTypes(Type leftInType, Type rightInType)
+	{
+		auto action=lambda(leftInType, rightInType);
+		if (action)
+			return AstActionWrapper::make(action);
+		else
+			return nullptr;
+	}
+	
+	Token getToken() {return nullptr;}
+	
+	bool canBeWhatev() {return true;}
+	
+private:
+	function<Action(Type leftInType, Type rightInType)> lambda;
+};
+
+
+
+
+
+void populateMemManagementFuncs()
+{
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (leftType->isVoid() || !rightType->isVoid())
+					return nullptr;
+				
+				string val=leftType->getName();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					String,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						return cppStr2PncnStr(val);
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						void* pnStr=cppStr2PncnStr(val);
+						constGetAction(pnStr, String, val)->addToProg(prog);
+						free(pnStr);
+					},
+					"typeName"
+				);
+			}
+		),
+		"typeName"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (!leftType->isVoid() || rightType->isVoid())
+					return nullptr;
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					rightType->getPtr(),
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						size_t size=rightType->getSize();
+						void ** dataPtr=(void**)malloc(sizeof(void*));
+						*dataPtr=malloc(size);
+						memcpy(*dataPtr, rightIn, size);
+						return dataPtr;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						prog->code("&");
+						prog->pushExpr();
+							prog->code("(*malloc(sizeof(" + prog->getTypeCode(rightType) + ")))");
+							prog->code(" = ");
+							prog->pushExpr();
+								inRight->addToProg(prog);
+							prog->popExpr();
+						prog->popExpr();
+						
+						//"&((*malloc(sizeof($type)))=($data))"
+					},
+					"new"
+				);
+			}
+		),
+		"new"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (leftType->getType()!=TypeBase::PTR || leftType->isVoid() || !rightType->isVoid())
+					return nullptr;
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					leftType->getSubType(),
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						size_t size=leftType->getSubType()->getSize();
+						void * data=malloc(size);
+						memcpy(data, *(void**)leftIn, size);
+						return data;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						prog->code("*");
+						prog->pushExpr();
+							inLeft->addToProg(prog);
+						prog->popExpr();
+					},
+					"dif"
+				);
+			}
+		),
+		"dif"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (leftType->getType()!=TypeBase::PTR || !rightType->matches(leftType->getSubType()))
+					return nullptr;
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					Void,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						memcpy(*(void**)leftIn, rightIn, rightType->getSize());
+						return nullptr;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						prog->code("*");
+						prog->pushExpr();
+							inLeft->addToProg(prog);
+						prog->popExpr();
+					},
+					"dif"
+				);
+			}
+		),
+		"dif"
+	);
+}
+
 void populateStringFuncs()
 {
 	addAction("String", Void, Void, String,
@@ -1412,6 +1602,7 @@ void populatePineconeStdLib()
 	populateOperators();
 	populateConverters();
 	populateStdFuncs();
+	populateMemManagementFuncs();
 	populateStringFuncs();
 	populateIntArrayAndFuncs();
 	populateNonStdFuncs();
