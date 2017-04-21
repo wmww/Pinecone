@@ -345,7 +345,11 @@ AstNode parseExpression(const vector<Token>& tokens, int left, int right)
 	
 	Operator op=tokens[i]->getOp();
 	
-	if ((i==left)==op->takesLeftInput() || (i==right)==op->takesRightInput())
+	if (op==ops->minus && i==left && i!=right)
+	{
+		//dont error
+	}
+	else if ((i==left)==op->takesLeftInput() || (i==right)==op->takesRightInput())
 	{
 		throw PineconeError("improper use of '"+op->getText()+"' operator", SOURCE_ERROR, tokens[i]);
 	}

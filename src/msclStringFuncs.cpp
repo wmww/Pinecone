@@ -440,9 +440,9 @@ string putStringInTable(const string& in, string tableName)
 string doubleToString(double in)
 {
 	long long a=in;
-	if (in<0)
-		in*=-1;
-	unsigned long long b=(in-a)*10000000000;
+	long long b=(in-a)*10000000000;
+	if (b<0)
+		b*=-1;
 	if (b%10==9)
 		b+=1;
 	while (b>0 && !(b%10))

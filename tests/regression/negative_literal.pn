@@ -1,0 +1,7 @@
+# this tests negitive literal numbers 
+
+print: "-3\n-4.7\n9\n_____"
+
+print: -3
+print: -4.7
+print: 7-(-2)
