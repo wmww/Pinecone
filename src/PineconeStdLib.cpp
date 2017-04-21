@@ -1125,14 +1125,15 @@ void populateMemManagementFuncs()
 					{
 						prog->code("&");
 						prog->pushExpr();
-							prog->code("(*malloc(sizeof(" + prog->getTypeCode(rightType) + ")))");
+							string typeCode=prog->getTypeCode(rightType);
+							prog->code("(*(" + typeCode + "*)malloc(sizeof(" + typeCode + ")))");
 							prog->code(" = ");
 							prog->pushExpr();
 								inRight->addToProg(prog);
 							prog->popExpr();
 						prog->popExpr();
 						
-						//"&((*malloc(sizeof($type)))=($data))"
+						//"&((*($type)malloc(sizeof($type)))=($data))"
 					},
 					"new"
 				);
@@ -1198,6 +1199,10 @@ void populateMemManagementFuncs()
 						prog->code("*");
 						prog->pushExpr();
 							inLeft->addToProg(prog);
+						prog->popExpr();
+						prog->code(" = ");
+						prog->pushExpr();
+							inRight->addToProg(prog);
 						prog->popExpr();
 					},
 					"dif"
