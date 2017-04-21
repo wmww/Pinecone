@@ -374,7 +374,7 @@ void addToProgDoubleToStr(CppProgram * prog)
 		
 		prog->addFunc("$doubleToStr", {{"double", "in"}}, prog->getTypeCode(String),
 			
-			"unsigned long long b = (in - (long long)in) * 10000000000 * (in>=0 ? 1 : -1);\n"
+			"long long b = (in - (long long)in) * 10000000000 * (in>=0 ? 1 : -1);\n"
 			"if (b % 10 == 9)\n\tb += 1;\n"
 			"while (b>0 && !(b % 10))\n\tb /= 10;\n"
 			"return "+concat+"("+concat+"("+intToStr+"((int)in), "+pnStr+"(\".\")), "+intToStr+"(b));\n"
@@ -613,6 +613,18 @@ void populateOperators()
 		retrn left-right;
 	,
 		"$. - $:"
+	);
+	
+	func(ops->minus, Void, Int, Int,
+		retrn -right;
+	,
+		"- $:"
+	);
+	
+	func(ops->minus, Void, Dub, Dub,
+		retrn -right;
+	,
+		"- $:"
 	);
 	
 	

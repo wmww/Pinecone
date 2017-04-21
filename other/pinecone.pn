@@ -1,4 +1,5 @@
 
+//
 print: "Hello World!"
 
 changePtrVal :: {Whatev}:
@@ -12,3 +13,9 @@ a: new: 9
 changePtrVal: a
 
 print: a.dif
+\\
+
+print: -3
+str: (-4.7).String
+print: str
+print: 7-(-2)
