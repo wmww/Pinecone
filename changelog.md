@@ -12,7 +12,7 @@ Every new version gets a number of minor bug fixes, so they are not included
 
 ## v0.5.0 (April 14, 2017)
 
-* Made '&&' and '||' use short circuiting
+* Made `&&` and `||` use short circuiting
 * Improved testing system
 * Added support for Windows
 * __Added Whatev type__ for compile time dynamic typing and implicit function return type
