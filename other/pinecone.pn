@@ -20,3 +20,13 @@ str: (-4.7).String
 print: str
 print: 7-(-2)
 
+
+MyStruct :: {Int, Dub}
+
+MyStruct :: {} -> {MyStruct}: 8, 4.7
+
+byeBye :: {MyStruct}: print: in.typeName + " destructor called"
+
+(
+	myStruct: MyStruct
+)

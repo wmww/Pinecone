@@ -87,6 +87,11 @@ void AstList::resolveAction()
 		}
 	}
 	
+	for (Action i: *ns->getDestructorActions())
+	{
+		actions.push_back(i);
+	}
+	
 	action=listAction(actions);
 }
 
