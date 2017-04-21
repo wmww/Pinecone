@@ -55,6 +55,9 @@ public:
 	// returns the destructor of the given type, or nullptr if there isn't one
 	Action getDestructor(Type type);
 	
+	// returns the copier of the given type, or nullptr if there isn't one
+	Action getCopier(Type type);
+	
 	// returns an action that takes the input types
 	// on error, it will throw a source error if throwSourceError is true. otherwise, it will return nullptr
 	Action getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic, bool throwSourceError, Token tokenForError);
@@ -108,6 +111,9 @@ private:
 	
 	// contains destructors for types, the key string is a pointer to the type fed through ptrToUniqueStr with 6 digits
 	IdMap destructors;
+	
+	// like destructors, but for making copies
+	IdMap copiers;
 	
 	vector<Action> destructorActions;
 };
