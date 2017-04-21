@@ -1,0 +1,25 @@
+# tests various funcs that return info about types
+
+print: "String\nInt\n1\n1\n2\n0\n_____"
+
+print: "hay".typeName
+
+print: Int.typeName
+
+print: tru.typeSize
+
+print: Byte.typeSize
+
+print: (Bool, Byte).typeSize
+
+MyStruct ::
+{
+	Int
+	Dub
+	Bool
+}
+
+MyStruct :: {} -> {MyStruct}: (Int, Dub, Bool)
+
+print: MyStruct.typeSize - Int.typeSize - Dub.typeSize - Bool.typeSize
+

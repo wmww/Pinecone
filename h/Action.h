@@ -96,7 +96,7 @@ Action varGetAction(size_t in, Type typeIn, string idIn);
 Action varSetAction(size_t in, Type typeIn, string idIn);
 Action globalGetAction(size_t in, Type typeIn, string idIn);
 Action globalSetAction(size_t in, Type typeIn, string idIn);
-Action constGetAction(void* in, Type typeIn, string idIn);
+Action constGetAction(const void* in, Type typeIn, string idIn);
 
 Action typeGetAction(Type typeIn);
 
