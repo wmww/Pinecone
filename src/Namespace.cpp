@@ -2,6 +2,7 @@
 #include "../h/StackFrame.h"
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
+#include "../h/utils/stringNumConversion.h"
 
 void NamespaceData::IdMap::add(string key, AstNode node)
 {
@@ -185,6 +186,10 @@ Action NamespaceData::addVar(Type type, string name)
 	dynamicActions.add(name, AstActionWrapper::make(getAction));
 	dynamicActions.add(name, AstActionWrapper::make(setAction));
 	
+	Action destructor=getDestructor(type);
+	if (destructor)
+		destructorActions.push_back(branchAction(voidAction, destructor, getAction));
+	
 	return setAction;
 }
 
@@ -198,18 +203,12 @@ void NamespaceData::addNode(AstNode node, string id)
 	
 	if (node->isType())
 	{
-		/*
-		Type type=node->getReturnType()->getSubType();
-		if (type->getType()==TypeBase::TUPLE)
-		{
-			for (auto i: *type->getAllSubTypes())
-			{
-				addNode(AstActionWrapper::make(getElemFromTupleAction(type, i.name)), i.name);
-			}
-		}
-		*/
-		
 		types.add(id, move(node));
+	}
+	else if (id=="byeBye")
+	{
+		Type type=node->getAction()->getInRightType();
+		destructors.add(str::ptrToUniqueStr(&*type, 6), move(node));
 	}
 	else
 	{
@@ -251,6 +250,29 @@ Type NamespaceData::getType(string name, bool throwSourceError, Token tokenForEr
 	else
 	{
 		return results[0]->getReturnType()->getSubType();
+	}
+}
+
+Action NamespaceData::getDestructor(Type type)
+{
+	vector<AstNodeBase*> nodes;
+	
+	destructors.get(str::ptrToUniqueStr(&*type, 6), nodes);
+	
+	if (nodes.empty())
+	{
+		if (parent)
+			return parent->getDestructor(type);
+		else
+			return nullptr;
+	}
+	else if (nodes.size()>1)
+	{
+		throw PineconeError("multiple destructors for a single type in a single namespace", INTERNAL_ERROR);
+	}
+	else
+	{
+		return nodes[0]->getAction();
 	}
 }
 
