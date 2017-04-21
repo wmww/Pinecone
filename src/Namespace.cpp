@@ -164,6 +164,7 @@ Action NamespaceData::addVar(Type type, string name)
 	
 	Action getAction;
 	Action setAction;
+	Action copyAction;
 	
 	Namespace top=shared_from_this();
 	
@@ -183,12 +184,28 @@ Action NamespaceData::addVar(Type type, string name)
 		setAction=globalSetAction(offset, type, name);
 	}
 	
-	dynamicActions.add(name, AstActionWrapper::make(getAction));
+	copyAction=getCopier(type);
+	
+	if (copyAction)
+	{
+		dynamicActions.add(name, AstActionWrapper::make(branchAction(voidAction, copyAction, getAction)));
+	}
+	else
+	{
+		dynamicActions.add(name, AstActionWrapper::make(getAction));
+	}
 	dynamicActions.add(name, AstActionWrapper::make(setAction));
 	
 	Action destructor=getDestructor(type);
 	if (destructor)
+	{
 		destructorActions.push_back(branchAction(voidAction, destructor, getAction));
+		error.log("adding destructor", JSYK);
+	}
+	else
+	{
+		error.log("no destructor found for "+type->getString(), JSYK);
+	}
 	
 	return setAction;
 }
@@ -205,10 +222,23 @@ void NamespaceData::addNode(AstNode node, string id)
 	{
 		types.add(id, move(node));
 	}
-	else if (id=="byeBye")
+	else if (id=="__destroy__")
 	{
-		Type type=node->getAction()->getInRightType();
-		destructors.add(str::ptrToUniqueStr(&*type, 6), move(node));
+		Action action=node->getAction();
+		if (action->getInRightType()->isVoid() || !action->getInLeftType()->isVoid() || !action->getReturnType()->isVoid())
+		{
+			throw PineconeError("incorrect type signiture for destroyer", SOURCE_ERROR, node->getToken());
+		}
+		destructors.add(str::ptrToUniqueStr(&*action->getInRightType(), 6), move(node));
+	}
+	else if (id=="__copy__")
+	{
+		Action action=node->getAction();
+		if (action->getInRightType()->isVoid() || !action->getInLeftType()->isVoid() || action->getReturnType()!=action->getInRightType())
+		{
+			throw PineconeError("incorrect type signiture for copier", SOURCE_ERROR, node->getToken());
+		}
+		copiers.add(str::ptrToUniqueStr(&*action->getReturnType(), 6), move(node));
 	}
 	else
 	{
@@ -269,6 +299,29 @@ Action NamespaceData::getDestructor(Type type)
 	else if (nodes.size()>1)
 	{
 		throw PineconeError("multiple destructors for a single type in a single namespace", INTERNAL_ERROR);
+	}
+	else
+	{
+		return nodes[0]->getAction();
+	}
+}
+
+Action NamespaceData::getCopier(Type type)
+{
+	vector<AstNodeBase*> nodes;
+	
+	copiers.get(str::ptrToUniqueStr(&*type, 6), nodes);
+	
+	if (nodes.empty())
+	{
+		if (parent)
+			return parent->getCopier(type);
+		else
+			return nullptr;
+	}
+	else if (nodes.size()>1)
+	{
+		throw PineconeError("multiple copiers for a single type in a single namespace", INTERNAL_ERROR);
 	}
 	else
 	{

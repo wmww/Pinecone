@@ -25,8 +25,11 @@ MyStruct :: {Int, Dub}
 
 MyStruct :: {} -> {MyStruct}: 8, 4.7
 
-byeBye :: {MyStruct}: print: in.typeName + " destructor called"
+__destroy__ :: {MyStruct}: print: in.typeName + " destructor called"
+__copy__ :: {MyStruct} -> {MyStruct}: (print: in.typeName + " copier called" in)
 
 (
 	myStruct: MyStruct
+	a: myStruct
+	print: a.a
 )
