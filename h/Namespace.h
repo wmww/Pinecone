@@ -62,7 +62,7 @@ public:
 	// on error, it will throw a source error if throwSourceError is true. otherwise, it will return nullptr
 	Action getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic, bool throwSourceError, Token tokenForError);
 	
-	vector<Action>* getDestructorActions() {return &destructorActions;}
+	vector<Action>* getDestroyerActions() {return &destructorActions;}
 	
 private:
 	

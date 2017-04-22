@@ -1209,6 +1209,7 @@ void populateMemManagementFuncs()
 
 void populateStringFuncs()
 {
+	/*
 	auto destructorLambda=LAMBDA_HEADER
 		{
 			//if (getValFromTuple<char*>(rightIn, String, "_data")[0]==1)
@@ -1261,6 +1262,7 @@ void populateStringFuncs()
 			prog->popExpr();
 		}
 	);
+	*/
 	
 	addAction("String", Void, Void, String,
 		LAMBDA_HEADER
@@ -1458,8 +1460,8 @@ void populateStringFuncs()
 		[=](void* leftIn, void* rightIn)->void*
 		{
 			void* out=cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
-			free(destructorLambda(nullptr, leftIn));
-			free(destructorLambda(nullptr, rightIn));
+			//free(destructorLambda(nullptr, leftIn));
+			//free(destructorLambda(nullptr, rightIn));
 			return out;
 		},
 		ADD_CPP_HEADER
