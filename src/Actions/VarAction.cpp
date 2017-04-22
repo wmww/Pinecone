@@ -3,6 +3,7 @@
 #include "../../h/StackFrame.h"
 #include "../../h/CppProgram.h"
 #include "../../h/utils/stringNumConversion.h"
+#include "../../h/Namespace.h"
 
 class VarGetAction: public ActionData
 {
@@ -167,19 +168,23 @@ public:
 	{
 		if (getReturnType()==String)
 		{
-			//prog->code(prog->getTypeCode(getReturnType()));
-			addToProgPnStr(prog);
-			prog->name("$pnStr");
+			//addToProgPnStr(prog);
+			//prog->name("$pnStr");
+			prog->code(prog->getTypeCode(String));
 			prog->pushExpr();
+				
 				auto sizeInfo=getReturnType()->getSubType("_size");
 				auto dataInfo=getReturnType()->getSubType("_data");
 				if (sizeInfo.type!=Int || dataInfo.type!=Byte->getPtr())
 				{
 					throw PineconeError("ConstGetAction::addToProg failed to access string properties", INTERNAL_ERROR);
 				}
+			
+				prog->code(Int->getCppLiteral((char*)data+sizeInfo.offset, prog));
+				prog->code(", ");
 				//prog->code(Int->getCppLiteral((char*)data+sizeInfo.offset, prog));
 				//prog->code(", (unsigned char*)\"");
-				prog->code("\"");
+				prog->code("(unsigned char*)\"");
 				int len=*(int*)((char*)data+sizeInfo.offset);
 				for (int i=0; i<len; i++)
 				{
@@ -208,6 +213,7 @@ public:
 					
 				}
 				prog->code("\"");
+				
 			prog->popExpr();
 		}
 		else
@@ -241,7 +247,14 @@ Action globalSetAction(size_t in, Type typeIn, string textIn)
 	return Action(new VarSetAction(in, &globalFramePtr, typeIn, textIn));
 }
 
-Action constGetAction(const void* in, Type typeIn, string textIn)
+Action constGetAction(const void* in, Type typeIn, string textIn, Namespace ns)
 {
-	return Action(new ConstGetAction(in, typeIn, textIn));
+	Action action=Action(new ConstGetAction(in, typeIn, textIn));
+	if (ns)
+	{
+		Action copier=ns->getCopier(typeIn);
+		if (copier)
+			action=branchAction(voidAction, copier, action);
+	}
+	return action;
 }

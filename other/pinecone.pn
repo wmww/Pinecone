@@ -1,35 +1,23 @@
 
+
+i: 0 | i < 1000000000 | i: i+1 @
+(
+	str: "tjfnjksdnvdfjkngdfhgfhljsbdljnddsb"
+)
+
+a: 9
+
 //
-print: "Hello World!"
+Foo :: {Int, Bool}
 
-changePtrVal :: {Whatev}:
+Foo :: {Dub} -> {Foo}:
 (
-	#print: in.dif.typeName
-	in.dif: ((in.dif) + 3)
+	(Int: in), tru
 )
 
-a: new: 9
+foo :: Foo: 2.3
 
-changePtrVal: a
-
-print: a.dif
+print: foo.a
+print: foo.a
+print: foo.a
 \\
-
-print: -3
-str: (-4.7).String
-print: str
-print: 7-(-2)
-
-
-MyStruct :: {Int, Dub}
-
-MyStruct :: {} -> {MyStruct}: 8, 4.7
-
-__destroy__ :: {MyStruct}: print: in.typeName + " destructor called"
-__copy__ :: {MyStruct} -> {MyStruct}: (print: in.typeName + " copier called" in)
-
-(
-	myStruct: MyStruct
-	a: myStruct
-	print: a.a
-)
