@@ -73,10 +73,15 @@ Action voidAction;
 
 //shared_ptr<StackFrame> stdLibStackFrame;
 Namespace globalNamespace;
-Namespace table;
+Namespace table; // is set to equal globalNamespace, not sure why I have both. I think just because table is shorter (so its used in this file) and globalNamespace is clearer (so its used everywhere else)
 
 string getText(Operator op) {return op->getText();}
 string getText(string in) {return in;}
+
+void addConst(void* data, Type type, string name)
+{
+	globalNamespace->addNode(AstActionWrapper::make(constGetAction(data, type, name, globalNamespace)), name);
+}
 
 template<typename T>
 void addAction(T id, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
@@ -215,9 +220,10 @@ void addToProgPnStr(CppProgram * prog)
 		prog->addFunc("$pnStr", {{"const char *", "in"}}, strType,
 			"int size = 0;\n"
 			"while (in[size]) size++;\n"
-			"unsigned char * data = (unsigned char *)malloc(size);\n"
-			"memcpy(data, in, size);\n"
-			"return "+strType+"(size, data);\n"
+			//"unsigned char * data = (unsigned char *)malloc(size);\n"
+			//"memcpy(data, in, size);\n"
+			//"return "+strType+"(size, data);\n"
+			"return "+strType+"(size, (unsigned char*)in);\n"
 		);
 	}
 }
@@ -515,10 +521,10 @@ void populateConstants()
 	table->addNode(AstActionWrapper::make(voidAction), "void");
 	
 	bool trueVal=true;
-	table->addNode(AstActionWrapper::make(constGetAction(&trueVal, Bool, "tru")), "tru");
+	addConst(&trueVal, Bool, "tru");
 	
 	bool falseVal=false;
-	table->addNode(AstActionWrapper::make(constGetAction(&falseVal, Bool, "fls")), "fls");
+	addConst(&falseVal, Bool, "fls");
 	
 	// version constant
 	{
@@ -535,16 +541,7 @@ void populateConstants()
 		setValInTuple(versionTupleData, versionTupleType, "y", VERSION_Y);
 		setValInTuple(versionTupleData, versionTupleType, "z", VERSION_Z);
 		
-		table->addNode(
-			AstActionWrapper::make(
-				constGetAction(
-					versionTupleData,
-					versionTupleType,
-					"VERSION"
-				)
-			),
-			"VERSION"
-		);
+		addConst(versionTupleData, versionTupleType, "VERSION");
 	}
 	
 	// OS
@@ -571,10 +568,10 @@ void populateConstants()
 		
 	#endif // __linux__
 	
-	table->addNode(AstActionWrapper::make(constGetAction(&isLinux, Bool, "OS_IS_LINUX")), "OS_IS_LINUX");
-	table->addNode(AstActionWrapper::make(constGetAction(&isWindows, Bool, "OS_IS_WINDOWS")), "OS_IS_WINDOWS");
-	table->addNode(AstActionWrapper::make(constGetAction(&isMac, Bool, "OS_IS_MAC")), "OS_IS_MAC");
-	table->addNode(AstActionWrapper::make(constGetAction(&isUnix, Bool, "OS_IS_UNIX")), "OS_IS_UNIX");
+	addConst(&isLinux, Bool, "OS_IS_LINUX");
+	addConst(&isWindows, Bool, "OS_IS_WINDOWS");
+	addConst(&isMac, Bool, "OS_IS_MAC");
+	addConst(&isUnix, Bool, "OS_IS_UNIX");
 	
 	func("IS_TRANSPILED", Void, Void, Bool,
 		retrn false;
@@ -1054,7 +1051,7 @@ void populateTypeInfoFuncs()
 					[=](Action inLeft, Action inRight, CppProgram* prog)
 					{
 						void* pnStr=cppStr2PncnStr(val);
-						constGetAction(pnStr, String, val)->addToProg(prog);
+						constGetAction(pnStr, String, val, globalNamespace)->addToProg(prog);
 						free(pnStr);
 					},
 					"typeName"
@@ -1085,7 +1082,7 @@ void populateTypeInfoFuncs()
 					
 					[=](Action inLeft, Action inRight, CppProgram* prog)
 					{
-						constGetAction(&val, Int, to_string(val))->addToProg(prog);
+						constGetAction(&val, Int, to_string(val), globalNamespace)->addToProg(prog);
 					},
 					"typeSize"
 				);
@@ -1212,6 +1209,59 @@ void populateMemManagementFuncs()
 
 void populateStringFuncs()
 {
+	auto destructorLambda=LAMBDA_HEADER
+		{
+			//if (getValFromTuple<char*>(rightIn, String, "_data")[0]==1)
+			//	error.log("double free detected", JSYK);
+			//getValFromTuple<char*>(rightIn, String, "_data")[0]=1;
+			free(getValFromTuple<char*>(rightIn, String, "_data"));
+			return nullptr;
+		};
+	
+	addAction("__destroy__", Void, String, Void,
+		destructorLambda,
+		ADD_CPP_HEADER
+		{
+			prog->code("free");
+			prog->pushExpr();
+				right->addToProg(prog);
+				prog->code("._data");
+			prog->popExpr();
+		}
+	);
+	
+	addAction("__copy__", Void, String, String,
+		LAMBDA_HEADER
+		{
+			int size=getValFromTuple<int>(rightIn, String, "_size");
+			void* newData=malloc(size);
+			memcpy(newData, getValFromTuple<void*>(rightIn, String, "_data"), size);
+			setValInTuple(rightIn, String, "_data", newData);
+			void* out=malloc(String->getSize());
+			memcpy(out, rightIn, String->getSize());
+			return out;
+		},
+		ADD_CPP_HEADER
+		{
+			if (!prog->hasFunc("$copyStr"))
+			{
+				string strType=prog->getTypeCode(String);
+				
+				prog->addFunc("$copyStr", {{strType, "in"}}, strType,
+					"unsigned char* newData=(unsigned char*)malloc(in._size);\n"
+					"memcpy(newData, in._data, in._size);\n"
+					"in._data=newData;\n"
+					"return in;\n"
+				);
+			}
+			
+			prog->name("$copyStr");
+			prog->pushExpr();
+				right->addToProg(prog);
+			prog->popExpr();
+		}
+	);
+	
 	addAction("String", Void, Void, String,
 		LAMBDA_HEADER
 		{
@@ -1405,9 +1455,12 @@ void populateStringFuncs()
 	);
 	
 	addAction(ops->plus, String, String, String,
-		LAMBDA_HEADER
+		[=](void* leftIn, void* rightIn)->void*
 		{
-			return cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
+			void* out=cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
+			free(destructorLambda(nullptr, leftIn));
+			free(destructorLambda(nullptr, rightIn));
+			return out;
 		},
 		ADD_CPP_HEADER
 		{

@@ -200,11 +200,6 @@ Action NamespaceData::addVar(Type type, string name)
 	if (destructor)
 	{
 		destructorActions.push_back(branchAction(voidAction, destructor, getAction));
-		error.log("adding destructor", JSYK);
-	}
-	else
-	{
-		error.log("no destructor found for "+type->getString(), JSYK);
 	}
 	
 	return setAction;

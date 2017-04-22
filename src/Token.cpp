@@ -70,7 +70,7 @@ string tableStringFromTokens(const vector<Token>& tokens, string tableName)
 	string abv="", blw="";
 	string str="";
 	//const int tabSize=1;
-	const int maxWidth=80;
+	const int maxWidth=240;
 	const string seporator="    ";
 	//const string seporator="   |   ";
 	
