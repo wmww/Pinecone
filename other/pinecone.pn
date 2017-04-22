@@ -1,11 +1,13 @@
 
 
-i: 0 | i < 1000000000 | i: i+1 @
-(
-	str: "tjfnjksdnvdfjkngdfhgfhljsbdljnddsb"
-)
+splitActualAndTarget: "hay"
 
-a: 9
+splitActualAndTarget :: {String} -> {actual: String, target: String}:
+(
+	target: String
+	actual: String
+	actual, target
+)
 
 //
 Foo :: {Int, Bool}
