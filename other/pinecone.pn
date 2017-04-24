@@ -1,31 +1,5 @@
 
-# tests the calling of destroyers and copiers
 
-print: "copier called\ncopier called\n3\ndestroyer called\ndestroyer called\n_____"
-
-MyStruct :: {Int, Dub}
-
-MyStruct :: {} -> {MyStruct}: 3, 4.7
-
-__destroy__ :: {MyStruct}:
-(
-	print: "destroyer called"
-)
-
-__copy__ :: {MyStruct} -> {MyStruct}:
-(
-	print: "copier called"
-	in
-)
-
-(
-	myStruct: MyStruct
-	a: myStruct
-	print: a.a
-)
-
-
-//
 splitActualAndTarget: "hay"
 
 splitActualAndTarget :: {String} -> {actual: String, target: String}:
@@ -35,7 +9,7 @@ splitActualAndTarget :: {String} -> {actual: String, target: String}:
 	actual, target
 )
 
-
+//
 Foo :: {Int, Bool}
 
 Foo :: {Dub} -> {Foo}:
