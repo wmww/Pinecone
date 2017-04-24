@@ -169,7 +169,7 @@ public:
 				}
 			prog->popExpr();
 		}
-		else if (typeid(*action)==typeid(*listAction({voidAction, voidAction})))
+		else if (typeid(*action)==typeid(*listAction({voidAction, voidAction}, {})))
 		{
 			addListToProgWithCppCasting((ListAction*)&*action, getReturnType(), prog);
 		}

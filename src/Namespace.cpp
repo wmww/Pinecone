@@ -196,7 +196,7 @@ Action NamespaceData::addVar(Type type, string name)
 	}
 	dynamicActions.add(name, AstActionWrapper::make(setAction));
 	
-	Action destructor=getDestructor(type);
+	Action destructor=getDestroyer(type);
 	if (destructor)
 	{
 		destructorActions.push_back(branchAction(voidAction, destructor, getAction));
@@ -278,7 +278,7 @@ Type NamespaceData::getType(string name, bool throwSourceError, Token tokenForEr
 	}
 }
 
-Action NamespaceData::getDestructor(Type type)
+Action NamespaceData::getDestroyer(Type type)
 {
 	vector<AstNodeBase*> nodes;
 	
@@ -287,18 +287,29 @@ Action NamespaceData::getDestructor(Type type)
 	if (nodes.empty())
 	{
 		if (parent)
-			return parent->getDestructor(type);
+			return parent->getDestroyer(type);
 		else
 			return nullptr;
 	}
 	else if (nodes.size()>1)
 	{
-		throw PineconeError("multiple destructors for a single type in a single namespace", INTERNAL_ERROR);
+		throw PineconeError("multiple destroyers for a single type in a single namespace", INTERNAL_ERROR);
 	}
 	else
 	{
 		return nodes[0]->getAction();
 	}
+}
+
+Action NamespaceData::wrapInDestroyer(Action in)
+{
+	Action destroyer=getDestroyer(in->getReturnType());
+	
+	return destroyer ?
+			branchAction(voidAction, destroyer, in)
+		:
+			in
+	;
 }
 
 Action NamespaceData::getCopier(Type type)
