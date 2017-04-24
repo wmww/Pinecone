@@ -194,9 +194,11 @@ Action NamespaceData::addVar(Type type, string name)
 	{
 		dynamicActions.add(name, AstActionWrapper::make(getAction));
 	}
+	
 	dynamicActions.add(name, AstActionWrapper::make(setAction));
 	
 	Action destructor=getDestroyer(type);
+	
 	if (destructor)
 	{
 		destructorActions.push_back(branchAction(voidAction, destructor, getAction));
