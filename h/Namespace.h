@@ -53,7 +53,7 @@ public:
 	Type getType(string name, bool throwSourceError, Token tokenForError);
 	
 	// returns the destructor of the given type, or nullptr if there isn't one
-	Action getDestructor(Type type);
+	Action getDestroyer(Type type);
 	
 	// returns the copier of the given type, or nullptr if there isn't one
 	Action getCopier(Type type);
@@ -63,6 +63,7 @@ public:
 	Action getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic, bool throwSourceError, Token tokenForError);
 	
 	vector<Action>* getDestroyerActions() {return &destructorActions;}
+	Action wrapInDestroyer(Action in);
 	
 private:
 	

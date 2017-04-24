@@ -87,12 +87,7 @@ void AstList::resolveAction()
 		}
 	}
 	
-	for (Action i: *ns->getDestroyerActions())
-	{
-		actions.push_back(i);
-	}
-	
-	action=listAction(actions);
+	action=listAction(actions, *ns->getDestroyerActions());
 }
 
 
@@ -366,8 +361,13 @@ void AstOpWithInput::resolveAction()
 	}
 	else if (token->getOp()==ops->loop)
 	{
+		bool usesSubNS=false;
+		
 		if (leftIn.size()==3)
+		{
 			ns=ns->makeChild();
+			usesSubNS=true;
+		}
 			
 		for (int i=0; i<int(leftIn.size()); i++)
 			leftIn[i]->setInput(ns, dynamic, Void, Void);
@@ -424,15 +424,18 @@ void AstOpWithInput::resolveAction()
 			}
 		}
 		
-		action=loopAction(conditionAction, endAction, bodyAction);
+		vector<Action> actions;
 		
 		if (initAction)
-		{
-			vector<Action> actions;
-			actions.push_back(initAction);
-			actions.push_back(action);
-			action=listAction(actions);
-		}
+			actions.push_back(ns->wrapInDestroyer(initAction));
+		
+		actions.push_back(ns->wrapInDestroyer(loopAction(conditionAction, endAction, bodyAction)));
+		
+		action=usesSubNS ?
+				action=listAction(actions, *ns->getDestroyerActions())
+			:
+				action=listAction(actions, {})
+		;
 	}
 	else if (token->getOp()==ops->andOp || token->getOp()==ops->orOp)
 	{

@@ -82,7 +82,7 @@ Action orAction(Action firstActionIn, Action secondActionIn);
 Action ifAction(Action conditionIn, Action ifActionIn);
 Action ifElseAction(Action conditionIn, Action ifActionIn, Action elseAction);
 
-Action listAction(const std::vector<Action>& actionsIn);
+Action listAction(const std::vector<Action>& actionsIn, const std::vector<Action>& destroyersIn);
 
 Action loopAction(Action conditionIn, Action loopActionIn);
 Action loopAction(Action conditionIn, Action endActionIn, Action loopActionIn);
