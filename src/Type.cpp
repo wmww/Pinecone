@@ -250,6 +250,11 @@ public:
 	
 	string getCppLiteral(void * data, CppProgram * prog)
 	{
+		if (subTypes->size()==1)
+		{
+			return (*subTypes)[0].type->getCppLiteral(data, prog);
+		}
+		
 		string out;
 		out+=prog->getTypeCode(shared_from_this());
 		

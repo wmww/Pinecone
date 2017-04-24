@@ -127,6 +127,7 @@ public:
 		prog->name(name);
 		
 		prog->pushExpr();
+			/*
 			bool hasStarted=false;
 			if (getInLeftType()->getType()==TypeBase::TUPLE)
 			{
@@ -173,8 +174,8 @@ public:
 			}
 			//prog->code(", ");
 			//inRight->addToProg(prog);
+			*/
 			
-			/*
 			if (getInLeftType()->isCreatable())
 			{
 				inLeft->addToProg(prog);
@@ -184,9 +185,9 @@ public:
 			{
 				if (getInLeftType()->isCreatable())
 					prog->code(", ");
+				
 				inRight->addToProg(prog);
 			}
-			*/
 			
 		prog->popExpr();
 		

@@ -1,25 +1,16 @@
+# it gets confused when global and local vars have the same name
 
+print: "3\n3\n_____"
 
-splitActualAndTarget: "hay"
+a: 7
 
-splitActualAndTarget :: {String} -> {actual: String, target: String}:
-(
-	target: String
-	actual: String
-	actual, target
+func :: {a: Int, b: Int}: (
+	
+	a: in.a
+	
+	print: a
 )
 
-//
-Foo :: {Int, Bool}
+func: 3, 3
 
-Foo :: {Dub} -> {Foo}:
-(
-	(Int: in), tru
-)
-
-foo :: Foo: 2.3
-
-print: foo.a
-print: foo.a
-print: foo.a
-\\
+print: a

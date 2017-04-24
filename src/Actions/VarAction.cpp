@@ -34,6 +34,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		/*
 		if ((nameHint=="me" || nameHint=="in") && getReturnType()->getType()==TypeBase::TUPLE)
 		{
 			prog->code(prog->getTypeCode(getReturnType()));
@@ -49,6 +50,7 @@ public:
 			prog->popExpr();
 		}
 		else
+		*/
 		{
 			prog->declareVar(nameHint, getReturnType());
 			prog->name(nameHint);
@@ -93,6 +95,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		/*
 		if ((nameHint=="me" || nameHint=="in") && getReturnType()->getType()==TypeBase::TUPLE)
 		{
 			if (prog->getExprLevel()>0)
@@ -121,6 +124,7 @@ public:
 			prog->popBlock();
 		}
 		else
+		*/
 		{
 			prog->declareVar(nameHint, getInRightType());
 			prog->name(nameHint);
