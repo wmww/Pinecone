@@ -106,6 +106,12 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		if (sourceActions.size()==1)
+		{
+			sourceActions[0]->addToProg(prog);
+			return;
+		}
+		
 		prog->code(prog->getTypeCode(getReturnType()));
 		prog->pushExpr();
 		bool start=true;
@@ -155,7 +161,11 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		if (typeid(*action)==typeid(MakeTupleAction))
+		if (getReturnType()->getAllSubTypes()->size()==1)
+		{
+			action->addToProg(prog);
+		}
+		else if (typeid(*action)==typeid(MakeTupleAction))
 		{
 			MakeTupleAction * realAction=(MakeTupleAction*)&*action;
 			
@@ -271,6 +281,11 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		if (typeIn->getAllSubTypes()->size()==1)
+		{
+			inLeft->addToProg(prog);
+			return;
+		}
 		
 		MakeTupleAction * makeTupleAction=nullptr;
 		
@@ -304,11 +319,13 @@ public:
 		}
 		else
 		{
+			/*
 			if (inLeft->nameHint=="in" || inLeft->nameHint=="me")
 			{
 				prog->code(name);
 			}
 			else
+			*/
 			{
 				inLeft->addToProg(prog);
 				prog->code("."+name);
