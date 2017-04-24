@@ -79,7 +79,12 @@ void AstList::resolveAction()
 	{
 		try
 		{
-			actions.push_back(nodes[i]->getAction());
+			Action action=nodes[i]->getAction();
+			
+			if (i!=(int)nodes.size()-1)
+				action=ns->wrapInDestroyer(action);
+			
+			actions.push_back(action);
 		}
 		catch (PineconeError err)
 		{

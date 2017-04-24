@@ -68,7 +68,7 @@ class VarSetAction: public ActionData
 public:
 	
 	VarSetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string idIn):
-		ActionData(typeIn, Void, typeIn)
+		ActionData(Void, Void, typeIn)
 	{
 		offset=in;
 		stackPtrPtr=stackPtrPtrIn;
@@ -90,7 +90,8 @@ public:
 		//return a new copy of the data
 		void* out=malloc(returnType->getSize());
 		memcpy(out, (char*)(*stackPtrPtr)+offset, inRightType->getSize());
-		return out;
+		//return out;
+		return nullptr;
 	}
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
