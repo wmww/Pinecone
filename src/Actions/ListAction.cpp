@@ -95,7 +95,7 @@ public:
 		{
 			if (shouldReturn && i==actions.back())
 			{
-				prog->declareVar("-out", getReturnType());
+				prog->declareVar("-out", returnType);
 				prog->name("-out");
 				prog->code(" = ");
 				if (i->getReturnType()!=returnType)
