@@ -426,7 +426,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		if (foundNodes)
 			throw PineconeError("correct overload of '"+token->getText()+"' not found for types "+left->getString()+" and "+right->getString(), SOURCE_ERROR, tokenForError);
 		else
-			throw PineconeError("'"+token->getText()+"' not found for types "+left->getString()+" and "+right->getString(), SOURCE_ERROR, tokenForError);
+			throw PineconeError("'"+token->getText()+"' not found", SOURCE_ERROR, tokenForError);
 	}
 	else
 	{

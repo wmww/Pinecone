@@ -163,6 +163,7 @@ void addAction(Operator op, Type leftType, Type rightType, Type returnType, func
 }
 
 Type IntArray=nullptr;
+Type Array=nullptr;
 
 template<typename T>
 inline T getValFromTuple(void* data, Type type, string name)
@@ -1492,6 +1493,48 @@ void populateStringFuncs()
 	);
 }
 
+void populateArrayFuncs()
+{
+	TupleTypeMaker maker;
+	maker.add("_size", Int);
+	maker.add("_capacity", Int);
+	maker.add("_data", Whatev->getPtr());
+	Array=maker.get(false);
+	
+	addType(Array, "Array");
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (leftType->isVoid() || !rightType->isVoid())
+					return nullptr;
+				
+				Type ArrayType=Array->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", leftType->getPtr()}}, true));
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					ArrayType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						void* out=malloc(ArrayType->getSize());
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"Array"
+				);
+			}
+		),
+		"Array"
+	);
+}
+
 void populateIntArrayAndFuncs()
 {
 	TupleTypeMaker maker;
@@ -1657,6 +1700,7 @@ void populatePineconeStdLib()
 	populateMemManagementFuncs();
 	populateStringFuncs();
 	populateIntArrayAndFuncs();
+	populateArrayFuncs();
 	populateNonStdFuncs();
 }
 
