@@ -2,3 +2,31 @@
 
 ary: Int.Array
 
+ary.append: 8
+ary.append: 9
+ary.append: 8
+ary.append: 12
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+ary.append: 8
+
+i: 0 | i<ary.len | i: i+1 @
+(
+	print: ary.get: i
+)
+

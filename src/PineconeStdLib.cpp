@@ -164,6 +164,7 @@ void addAction(Operator op, Type leftType, Type rightType, Type returnType, func
 
 Type IntArray=nullptr;
 Type Array=nullptr;
+Type ArrayData=nullptr;
 
 template<typename T>
 inline T getValFromTuple(void* data, Type type, string name)
@@ -1499,7 +1500,8 @@ void populateArrayFuncs()
 	maker.add("_size", Int);
 	maker.add("_capacity", Int);
 	maker.add("_data", Whatev->getPtr());
-	Array=maker.get(false);
+	ArrayData=maker.get(false);
+	Array=ArrayData->getPtr();
 	
 	addType(Array, "Array");
 	
@@ -1510,16 +1512,21 @@ void populateArrayFuncs()
 				if (leftType->isVoid() || !rightType->isVoid())
 					return nullptr;
 				
-				Type ArrayType=Array->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", leftType->getPtr()}}, true));
+				Type contentsType=leftType;
+				Type arrayType=ArrayData->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", contentsType->getPtr()}}, true));
 				
 				return lambdaAction(
 					leftType,
 					rightType,
-					ArrayType,
+					arrayType->getPtr(),
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
-						void* out=malloc(ArrayType->getSize());
+						void** out=(void**)malloc(sizeof(void*));
+						*out=malloc(arrayType->getSize());
+						setValInTuple(*out, arrayType, "_size", 0);
+						setValInTuple(*out, arrayType, "_capacity", 0);
+						setValInTuple<void*>(*out, arrayType, "_data", nullptr);
 						return out;
 					},
 					
@@ -1532,6 +1539,133 @@ void populateArrayFuncs()
 			}
 		),
 		"Array"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (!leftType->matches(Array))
+					return nullptr;
+				
+				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				
+				if (!rightType->matches(contentsType))
+					return nullptr;
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					Void,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int size=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						int capacity=getValFromTuple<int>(*(void**)leftIn, arrayType, "_capacity");
+						void* data=getValFromTuple<void*>(*(void**)leftIn, arrayType, "_data");
+						
+						if (size+1>capacity)
+						{
+							if (capacity<12)
+								capacity=12;
+							else
+								capacity*=2;
+							
+							setValInTuple<int>(*(void**)leftIn, arrayType, "_capacity", capacity);
+							void* newData=malloc(capacity*contentsType->getSize());
+							memcpy(newData, data, size*contentsType->getSize());
+							free(data);
+							data=newData;
+							setValInTuple<void*>(*(void**)leftIn, arrayType, "_data", data);
+						}
+						
+						setValInTuple<int>(*(void**)leftIn, arrayType, "_size", size+1);
+						memcpy((char*)data+size*contentsType->getSize(), rightIn, contentsType->getSize());
+						
+						return nullptr;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"append"
+				);
+			}
+		),
+		"append"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (!leftType->matches(Array) || !rightType->matches(Int))
+					return nullptr;
+				
+				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				size_t elemSize=contentsType->getSize();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					contentsType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int size=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						if (*(int*)rightIn<0 || *(int*)rightIn>=size)
+							throw PineconeError("index out of bounds, tried to get element at position "+to_string(*(int*)rightIn)+" in array "+to_string(size)+" long", RUNTIME_ERROR);
+						
+						void* out=malloc(contentsType->getSize());
+						memcpy(out, getValFromTuple<char*>(*(void**)leftIn, arrayType, "_data")+(*(int*)rightIn)*elemSize, elemSize);
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"get"
+				);
+			}
+		),
+		"get"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				if (!leftType->matches(Array) || !rightType->isVoid())
+					return nullptr;
+				
+				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					contentsType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int* out=(int*)malloc(sizeof(int));
+						*out=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"len"
+				);
+			}
+		),
+		"len"
 	);
 }
 
