@@ -331,7 +331,7 @@ public:
 			maker.add((*subTypes)[i].name, (*subTypes)[i].type->actuallyIs((*targetTypes)[i].type));
 		}
 		
-		return maker.get(isAnonymous);
+		return maker.get(true);
 	}
 	
 protected:
