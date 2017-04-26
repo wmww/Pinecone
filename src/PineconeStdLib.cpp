@@ -176,6 +176,23 @@ inline T getValFromTuple(void* data, Type type, string name)
 		
 	return *((T*)((char*)data+a.offset));
 }
+/*
+template<typename T>
+inline T getValFromTuple(void* data, Type type, int index)
+{
+	if (index<0 || index>=type->getAllSubTypes()->size())
+		throw PineconeError("tried to get invalid property #"+to_string(index)+" from tuple "+type->getString(), INTERNAL_ERROR);
+		
+	int offset=0;
+	
+	for (int i=0; i<index; i++)
+	{
+		offset+=(*type->getAllSubTypes())[i]->getSize();
+	}
+	
+	return *((T*)((char*)data+offset));
+}
+*/
 
 template<typename T>
 inline void setValInTuple(void* data, Type type, string name, T val)
@@ -1635,6 +1652,53 @@ void populateArrayFuncs()
 		"get"
 	);
 	
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				
+				Type inputType=makeTuple({{"index", Int}, {"value", contentsType}}, true);
+				
+				if (!leftType->matches(Array) || !rightType->matches(inputType))
+					return nullptr;
+				
+				size_t elemSize=contentsType->getSize();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					contentsType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int size=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						int index=getValFromTuple<int>(rightIn, inputType, "index");
+						
+						if (index<0 || index>=size)
+							throw PineconeError("index out of bounds, tried to set element at position "+to_string(index)+" in array "+to_string(size)+" long", RUNTIME_ERROR);
+						
+						char* data=getValFromTuple<char*>(*(void**)leftIn, arrayType, "_data");
+						
+						memcpy(data+index*elemSize, (char*)rightIn+inputType->getSubType("value").offset, contentsType->getSize());
+						
+						return nullptr;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"set"
+				);
+			}
+		),
+		"set"
+	);
+	
+	
 	globalNamespace->addNode(
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
@@ -1648,7 +1712,7 @@ void populateArrayFuncs()
 				return lambdaAction(
 					leftType,
 					rightType,
-					contentsType,
+					Int,
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{

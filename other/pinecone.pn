@@ -25,8 +25,21 @@ ary.append: 8
 ary.append: 8
 ary.append: 8
 
+ary.set: 6, 924
+
 i: 0 | i<ary.len | i: i+1 @
 (
 	print: ary.get: i
+)
+
+strAry: String.Array
+
+strAry.append: "hay"
+strAry.append: 8.String + "___"
+strAry.append: "enter input".input
+
+i: 0 | i<(strAry.len) | i: i+1 @
+(
+	print: strAry.get: i
 )
 
