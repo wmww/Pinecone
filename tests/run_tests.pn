@@ -153,6 +153,8 @@ getDiff :: {actual: String, target: String, label: String} -> {String}:
 	out: out + (asciiEscape: 2) + "expected:" + (asciiEscape: 0) + "\n"
 	out: out + target + (asciiEscape: 0)
 	out: out + (asciiEscape: 2) + divideLine + (asciiEscape: 0) + "\n\n"
+
+	out
 )
 
 asciiEscape :: {Int} -> {String}:
