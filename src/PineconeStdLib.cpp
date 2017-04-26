@@ -413,7 +413,7 @@ void addToProgGetInputLine(CppProgram * prog)
 		addToProgCStr(prog);
 		
 		prog->addFunc("$getInputLine", {{strType, "prompt"}}, strType,
-			"printf("+prog->pnToCpp("$cStr")+"(prompt));\n"
+			"fputs("+prog->pnToCpp("$cStr")+"(prompt), stdout);\n"
 			"fflush(stdout);\n"
 			"size_t bufferSize = 4096;\n"
 			"char buffer[bufferSize];\n"
@@ -964,13 +964,13 @@ void populateStdFuncs()
 	func("print", Void, Void, Void,
 		cout << endl;
 	,
-		"printf(\"\\n\")"
+		"fputs(\"\\n\", stdout)"
 	);
 	
 	func("print", Void, Bool, Void,
 		cout << (right?"tru":"fls") << endl;
 	,
-		"printf($:?\"tru\\n\":\"fls\\n\")"
+		"fputs($:?\"tru\\n\":\"fls\\n\", stdout)"
 	);
 	
 	func("print", Void, Byte, Void,
