@@ -97,7 +97,17 @@ void AstList::resolveAction()
 
 string AstFuncBody::getString()
 {
-	return "function body";
+	vector<string> data;
+	
+	data.push_back("function");
+	
+	vector<string> types={leftTypeNode->getString(), rightTypeNode->getString(), returnTypeNode->getString()};
+	
+	data.push_back(str::makeList(types));
+	
+	data.push_back(bodyNode->getString());
+	
+	return str::makeList(data);
 }
 
 AstNode AstFuncBody::makeCopyWithSpecificTypes(Type leftInType, Type rightInType)
@@ -212,21 +222,15 @@ void AstExpression::resolveAction()
 
 string AstConstExpression::getString()
 {
-	string out;
+	string centerStr=center->getString();
 	
-	out+="(";
-	
-	out+=center->getString();
-	
+	string rightStr;
 	if (!rightIn->isVoid())
 	{
-		out+=" <<== ";
-		out+=rightIn->getString();
+		rightStr=rightIn->getString();
 	}
 	
-	out+=")";
-	
-	return out;
+	return str::makeRootUpBinaryTree(centerStr, "", "const", "", rightStr);
 }
 
 void AstConstExpression::resolveConstant()
@@ -604,21 +608,14 @@ void AstToken::resolveAction()
 
 string AstTuple::getString()
 {
-	string out;
-	
-	out+="(";
+	vector<string> data;
 	
 	for (int i=0; i<int(nodes.size()); i++)
 	{
-		if (i)
-			out+=", ";
-			
-		out+=nodes[i]->getString();
+		data.push_back(nodes[i]->getString());
 	}
 	
-	out+=")";
-	
-	return out;
+	return str::makeList(data);
 }
 
 void AstTuple::resolveAction()
@@ -639,7 +636,7 @@ void AstTuple::resolveAction()
 
 string AstTokenType::getString()
 {
-	return "AstTokenType{"+token->getText()+"}";
+	return "{"+token->getText()+"}";
 }
 
 void AstTokenType::resolveReturnType()

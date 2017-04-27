@@ -7,6 +7,8 @@ print: 7.foo: 8
 
 print: "hay"._size
 
+tuple: 7, 9, "yo"
+
 #j: 0 | j<200000 | j: j+1 @
 #(
 	//
