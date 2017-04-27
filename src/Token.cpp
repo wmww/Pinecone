@@ -6,6 +6,11 @@ Token makeToken(string textIn, shared_ptr<SourceFile> fileIn, int lineIn, int ch
 	return Token(new TokenData(textIn, fileIn, lineIn, charPosIn, tokenTypeIn, opIn));
 }
 
+Token makeToken(string textIn)
+{
+	return Token(new TokenData(textIn, nullptr, 0, 0, TokenData::IDENTIFIER, Operator(nullptr)));
+}
+
 string TokenData::typeToString(TokenData::Type in)
 {
 	switch (in)

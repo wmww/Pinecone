@@ -111,10 +111,10 @@ private:
 	IdMap types;
 	
 	// contains destructors for types, the key string is a pointer to the type fed through ptrToUniqueStr with 6 digits
-	IdMap destructors;
+	//IdMap destructors;
 	
 	// like destructors, but for making copies
-	IdMap copiers;
+	//IdMap copiers;
 	
 	vector<Action> destructorActions;
 };
