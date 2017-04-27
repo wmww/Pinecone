@@ -1589,8 +1589,8 @@ void populateArrayFuncs()
 						
 						if (size+1>capacity)
 						{
-							if (capacity<12)
-								capacity=12;
+							if (capacity<1000)
+								capacity=1000;
 							else
 								capacity*=2;
 							
@@ -1739,18 +1739,19 @@ void populateArrayFuncs()
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				assert leftType->matches(Array) && rightType->isVoid()
+				assert leftType->isVoid() && rightType->matches(Array)
 					otherwise return nullptr;
 				
-				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type arrayType=ArrayData->actuallyIs(rightType->getSubType());
 				
 				return lambdaAction(
-					leftType,
-					rightType,
-					Int,
+					Void,
+					arrayType->getPtr(),
+					Void,
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
+						error.log("Array destroyer called", JSYK);
 						int refCount=getValFromTuple<int>(*(void**)leftIn, arrayType, "_refCount");
 						refCount--;
 						if (refCount<=0)

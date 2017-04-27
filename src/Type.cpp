@@ -322,6 +322,18 @@ public:
 	
 	Type actuallyIs(Type target)
 	{
+		if (target->getType()!=TUPLE)
+		{
+			if ((*subTypes).size()==1)
+			{
+				return (*subTypes)[0].type->actuallyIs(target);
+			}
+			else
+			{
+				throw PineconeError("actuallyIs called on tuple with target that is not tuple", INTERNAL_ERROR);
+			}
+		}
+		
 		TupleTypeMaker maker;
 		
 		auto targetTypes=target->getAllSubTypes();

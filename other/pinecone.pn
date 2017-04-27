@@ -1,45 +1,56 @@
 
-
-ary: Int.Array
-
-ary.append: 8
-ary.append: 9
-ary.append: 8
-ary.append: 12
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-ary.append: 8
-
-ary.set: 6, 924
-
-i: 0 | i<ary.len | i: i+1 @
 (
-	print: ary.get: i
+	ary: Dub.Array
+	print: "hi"
 )
 
-strAry: String.Array
+#j: 0 | j<200000 | j: j+1 @
+#(
+	//
+	ary: Int.Array
 
-strAry.append: "hay"
-strAry.append: 8.String + "___"
-strAry.append: "enter input".input
+	ary.append: 8
+	ary.append: 9
+	ary.append: 8
+	ary.append: 12
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
+	ary.append: 8
 
-i: 0 | i<(strAry.len) | i: i+1 @
-(
-	print: strAry.get: i
-)
+	ary.set: 6, 924
+	\\
+	//
+	i: 0 | i<ary.len | i: i+1 @
+	(
+		print: ary.get: i
+	)
+	\\
+	//
+	strAry: String.Array
 
+	strAry.append: "hay"
+	strAry.append: 8.String + "___"
+	strAry.append: 6.9.String
+	\\
+	//
+	i: 0 | i<(strAry.len) | i: i+1 @
+	(
+		print: strAry.get: i
+	)
+	\\
+#)
