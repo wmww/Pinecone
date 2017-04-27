@@ -418,7 +418,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		}
 		else if (throwSourceError)
 		{
-			throw PineconeError("multiple whatev instanes of '"+token->getText()+"' found", SOURCE_ERROR, tokenForError);
+			throw PineconeError("multiple whatev instances of '"+token->getText()+"' found", SOURCE_ERROR, tokenForError);
 		}
 		else
 		{
