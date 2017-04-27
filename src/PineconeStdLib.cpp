@@ -7,6 +7,9 @@
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
 
+#define assert if (
+#define otherwise ) {} else
+
 #define getPncnType(typeIn) CONCAT(PNCN, typeIn)
 #define getCppType(typeIn) CONCAT(CPP, typeIn)
 
@@ -240,7 +243,7 @@ void addToProgPnStr(CppProgram * prog)
 			"int size = 0;\n"
 			"while (in[size]) size++;\n"
 			//"unsigned char * data = (unsigned char *)malloc(size);\n"
-			//"memcpy(data, in, size);\n"
+			//"memcpy(data, in, s ize);\n"
 			//"return "+strType+"(size, data);\n"
 			"return "+strType+"(size, (unsigned char*)in);\n"
 		);
@@ -1514,6 +1517,7 @@ void populateStringFuncs()
 void populateArrayFuncs()
 {
 	TupleTypeMaker maker;
+	//maker.add("_refCount", Int);
 	maker.add("_size", Int);
 	maker.add("_capacity", Int);
 	maker.add("_data", Whatev->getPtr());
@@ -1526,8 +1530,8 @@ void populateArrayFuncs()
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				if (leftType->isVoid() || !rightType->isVoid())
-					return nullptr;
+				assert leftType->isCreatable() && rightType->isVoid()
+					otherwise return nullptr;
 				
 				Type contentsType=leftType;
 				Type arrayType=ArrayData->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", contentsType->getPtr()}}, true));
@@ -1541,6 +1545,7 @@ void populateArrayFuncs()
 					{
 						void** out=(void**)malloc(sizeof(void*));
 						*out=malloc(arrayType->getSize());
+						//setValInTuple(*out, arrayType, "_refCount", 1);
 						setValInTuple(*out, arrayType, "_size", 0);
 						setValInTuple(*out, arrayType, "_capacity", 0);
 						setValInTuple<void*>(*out, arrayType, "_data", nullptr);
@@ -1562,14 +1567,14 @@ void populateArrayFuncs()
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				if (!leftType->matches(Array))
-					return nullptr;
+				assert leftType->matches(Array)
+					otherwise return nullptr;
 				
 				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
 				Type contentsType=arrayType->getSubType("_data").type->getSubType();
 				
-				if (!rightType->matches(contentsType))
-					return nullptr;
+				assert rightType->matches(contentsType)
+					otherwise return nullptr;
 				
 				return lambdaAction(
 					leftType,
@@ -1618,8 +1623,8 @@ void populateArrayFuncs()
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				if (!leftType->matches(Array) || !rightType->matches(Int))
-					return nullptr;
+				assert leftType->matches(Array) && rightType->matches(Int)
+					otherwise return nullptr;
 				
 				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
 				Type contentsType=arrayType->getSubType("_data").type->getSubType();
@@ -1652,7 +1657,6 @@ void populateArrayFuncs()
 		"get"
 	);
 	
-	
 	globalNamespace->addNode(
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
@@ -1662,8 +1666,8 @@ void populateArrayFuncs()
 				
 				Type inputType=makeTuple({{"index", Int}, {"value", contentsType}}, true);
 				
-				if (!leftType->matches(Array) || !rightType->matches(inputType))
-					return nullptr;
+				assert leftType->matches(Array) && rightType->matches(inputType)
+					otherwise return nullptr;
 				
 				size_t elemSize=contentsType->getSize();
 				
@@ -1698,13 +1702,12 @@ void populateArrayFuncs()
 		"set"
 	);
 	
-	
 	globalNamespace->addNode(
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				if (!leftType->matches(Array) || !rightType->isVoid())
-					return nullptr;
+				assert leftType->matches(Array) && rightType->isVoid()
+					otherwise return nullptr;
 				
 				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
 				Type contentsType=arrayType->getSubType("_data").type->getSubType();
@@ -1731,6 +1734,40 @@ void populateArrayFuncs()
 		),
 		"len"
 	);
+	
+	/*
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				ASSERT (leftType->matches(Array) && !rightType->isVoid()) return nullptr;
+				
+				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					Int,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int* out=(int*)malloc(sizeof(int));
+						*out=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"__destroy__"
+				);
+			}
+		),
+		"__destroy__"
+	);
+	*/
 }
 
 void populateIntArrayAndFuncs()
