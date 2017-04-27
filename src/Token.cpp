@@ -1,8 +1,11 @@
 #include "../h/Token.h"
 #include "../h/msclStringFuncs.h"
+#include "../h/utils/stringUtils.h"
 
 Token makeToken(string textIn, shared_ptr<SourceFile> fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn)
 {
+	if (str::hasPrefix(textIn, "\"") && !str::hasSuffix(textIn, "\""))
+		textIn+="\"";
 	return Token(new TokenData(textIn, fileIn, lineIn, charPosIn, tokenTypeIn, opIn));
 }
 
