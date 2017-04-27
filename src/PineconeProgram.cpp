@@ -85,7 +85,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 			cout << " ╭──────────────────────╮" << endl;
 			cout << " │ abstract syntax tree │" << endl;
 			cout << " ╰──────────────────────╯" << endl;
-			cout << astRoot->getString()   << endl;
+			cout << astRoot->getString() << endl;
 			//cout << endl << putStringInBox(astRoot->getString(), "abstract syntax tree") << endl;
 			//cout << endl << str::getBoxedString(astRoot->getString(), "abstract syntax tree") << endl;
 		}
@@ -109,7 +109,11 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 			
 			if (printOutput)
 			{
-				cout << endl << str::getBoxedString(actionRoot->getDescription(), "action tree") << endl;
+				cout << " ╭─────────────╮" << endl;
+				cout << " │ action tree │" << endl;
+				cout << " ╰─────────────╯" << endl;
+				cout << actionRoot->getDescription() << endl;
+				//cout << endl << str::getBoxedString(actionRoot->getDescription(), "action tree") << endl;
 			}
 		}
 		catch (PineconeError err)

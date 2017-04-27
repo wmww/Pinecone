@@ -5,6 +5,8 @@ myName: 8.4
 
 print: 7.foo: 8
 
+print: "hay"._size
+
 #j: 0 | j<200000 | j: j+1 @
 #(
 	//
