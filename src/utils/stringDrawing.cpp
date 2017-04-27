@@ -173,15 +173,17 @@ string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const st
 	
 	//int size=std::max(rootWidth, getMaxWidth(leftAry)+getMaxWidth(rightAry));
 	
+	int leftPadWidth=0;
+	
 	// left connection line
-	if (!leftAry.empty())
+	if (!leftLeaf.empty())
 	{
 		int endXPos=getGlyphPosOf(leftAry[0], "┴");
 		if (endXPos>0)
 		{
 			int middleYPos=rootAry.size()/2;
 			rootAry[middleYPos]="┤"+sub(rootAry[middleYPos], 1, -1);
-			int leftPadWidth=getMaxWidth(leftAry)-rootWidth/2;
+			leftPadWidth=getMaxWidth(leftAry)-rootWidth/2;
 			if (endXPos+1>leftPadWidth)
 				leftPadWidth=endXPos+1;
 			for (int i=0; i<(int)rootAry.size(); i++)
@@ -192,6 +194,37 @@ string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const st
 					rootAry[i]=padString("", endXPos)+"╭"+padString("", leftPadWidth-endXPos-1, ALIGNMENT_LEFT, "─")+rootAry[i];
 				else
 					rootAry[i]=padString("", endXPos)+"│"+padString("", leftPadWidth-endXPos-1)+rootAry[i];
+			}
+		}
+	}
+	
+	// right connection line
+	if (!rightLeaf.empty())
+	{
+		int endXPos=getGlyphPosOf(rightAry[0], "┴");
+		if (endXPos>0)
+		{
+			int middleYPos=rootAry.size()/2;
+			rootAry[middleYPos]=sub(rootAry[middleYPos], 0, getWidth(rootAry[middleYPos])-1)+"├";
+			int inset=rootWidth/2;
+			if (endXPos<inset)
+				inset=endXPos;
+			for (int i=0; i<(int)rootAry.size(); i++)
+			{
+				if (i<middleYPos)
+					rootAry[i]=rootAry[i]+padString("", getMaxWidth(rightAry)-inset);
+				else if (i==middleYPos)
+					rootAry[i]=rootAry[i]+padString("", endXPos-inset, ALIGNMENT_LEFT, "─")+"╮";
+				else
+					rootAry[i]=rootAry[i]+padString("", endXPos-inset)+"│";
+			}
+			
+			cout << "inset: " << inset << endl;
+			
+			for (int i=0; i<(int)leftAry.size(); i++)
+			{
+				cout << getWidth(rootAry[0]) << endl;
+				leftAry[i]=leftAry[i]+pad("", rootWidth+leftPadWidth-getWidth(leftAry[i])-inset);
 			}
 		}
 	}

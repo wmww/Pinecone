@@ -100,8 +100,8 @@ inline bool subMatches(const string& in, int posBytes, const string& sub)
 inline string sub(const string& in, int startGlyph, int endGlyph)
 {
 	int startByte=seek(in, startGlyph);
-	int endByte=(endGlyph==-1?(int)in.size():seek(in, endGlyph-startGlyph, startByte));
-	return in.substr(startByte, startByte-endByte);
+	int endByte=(endGlyph < 0 ? (int)in.size() : seek(in, endGlyph-startGlyph, startByte));
+	return in.substr(startByte, endByte-startByte);
 }
 
 inline bool matches(const string& a, const string& b)
