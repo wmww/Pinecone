@@ -56,7 +56,9 @@ public:
 
 	string getDescription()
 	{
-		return "[tuple of type " + getReturnType()->getString() + "]";
+		return str::putStringInTreeNodeBox("make tuple of type "+getReturnType()->getName());
+		
+		//return "[tuple of type " + getReturnType()->getString() + "]";
 		
 		/*string out;
 		out+="\n{";
@@ -269,7 +271,8 @@ public:
 	
 	string getDescription()
 	{
-		return "get element from tuple";
+		return str::putStringInTreeNodeBox(name);
+		//return "get element from tuple";
 	}
 	
 	void* execute(void* inLeft, void* inRight)

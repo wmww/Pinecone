@@ -216,7 +216,7 @@ string makeRootUpBinaryTree(const string& root, const string& leftBranch, const 
 		int leftBranchWidth=getWidth(leftBranch);
 		if (endXPos>0)
 		{
-			int leftMargin=(getMaxWidth(leftAry)-leftBranchWidth/2);
+			int leftMargin=0;//(getMaxWidth(leftAry)-leftBranchWidth)/2;
 			if (leftMargin>0)
 			{
 				for (int i=0; i<(int)leftAry.size(); i++)
@@ -265,7 +265,7 @@ string makeRootUpBinaryTree(const string& root, const string& leftBranch, const 
 				else if (i==middleYPos)
 					rootAry[i]=rootAry[i]+padString("", endXPos-inset, ALIGNMENT_LEFT, "─")+"╮";
 				else if (i==middleYPos+1 && !rightBranch.empty())
-					rootAry[i]=rootAry[i]+pad("", endXPos-inset-ceil(rightBranchWidth/2.0))+rightBranch;
+					rootAry[i]=rootAry[i]+pad("", endXPos-inset-floor(rightBranchWidth/2.0))+rightBranch;
 				else
 					rootAry[i]=rootAry[i]+padString("", endXPos-inset)+"│";
 			}
