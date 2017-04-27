@@ -114,11 +114,11 @@ void putArrayInTreeNodeBox(vector<string>& data)
 	
 	for (int i=0; i<(int)data.size(); i++)
 	{
-		data[i]="│"+data[i]+"│";
+		data[i]="│ "+data[i]+" │";
 	}
 	
-	data.push_back("╰"+pad("", width, ALIGNMENT_LEFT, "─")+"╯");
-	data.insert(data.begin(), "╭"+pad("┴", width, ALIGNMENT_CENTER, "─")+"╮");
+	data.push_back("╰─"+pad("", width, ALIGNMENT_LEFT, "─")+"─╯");
+	data.insert(data.begin(), "╭─"+pad("┴", width, ALIGNMENT_CENTER, "─")+"─╮");
 }
 
 string putStringInTreeNodeBox(const string& in)
@@ -163,7 +163,7 @@ string makeList(vector<string>& data)
 	return str::join(ary);
 }
 
-string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const string& rightLeaf)
+string makeRootUpBinaryTree(const string& root, const string& leftBranch, const string& rightBranch, const string& leftLeaf, const string& rightLeaf)
 {
 	vector<string> leftAry;
 	splitByLine(leftAry, leftLeaf);
@@ -213,19 +213,35 @@ string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const st
 	if (!leftLeaf.empty())
 	{
 		int endXPos=getGlyphPosOf(leftAry[0], "┴");
+		int leftBranchWidth=getWidth(leftBranch);
 		if (endXPos>0)
 		{
+			int leftMargin=(getMaxWidth(leftAry)-leftBranchWidth/2);
+			if (leftMargin>0)
+			{
+				for (int i=0; i<(int)leftAry.size(); i++)
+				{
+					leftAry[i]=pad("", leftMargin)+leftAry[i];
+				}
+				endXPos+=leftMargin;
+			}
 			int middleYPos=rootAry.size()/2;
 			rootAry[middleYPos]="┤"+sub(rootAry[middleYPos], 1, -1);
 			leftPadWidth=getMaxWidth(leftAry)-rootWidth/2;
 			if (endXPos+1>leftPadWidth)
 				leftPadWidth=endXPos+1;
+			if (leftPadWidth<leftBranchWidth)
+				leftPadWidth=leftBranchWidth;
 			for (int i=0; i<(int)rootAry.size(); i++)
 			{
 				if (i<middleYPos)
 					rootAry[i]=padString("", leftPadWidth)+rootAry[i];
 				else if (i==middleYPos)
 					rootAry[i]=padString("", endXPos)+"╭"+padString("", leftPadWidth-endXPos-1, ALIGNMENT_LEFT, "─")+rootAry[i];
+				else if (i==middleYPos+1 && !leftBranch.empty())
+				{
+					rootAry[i]=padString("", endXPos-floor(leftBranchWidth/2.0))+leftBranch+padString("", leftPadWidth-endXPos-ceil(leftBranchWidth/2.0))+rootAry[i];
+				}
 				else
 					rootAry[i]=padString("", endXPos)+"│"+padString("", leftPadWidth-endXPos-1)+rootAry[i];
 			}
@@ -236,19 +252,21 @@ string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const st
 	if (!rightLeaf.empty())
 	{
 		int endXPos=getGlyphPosOf(rightAry[0], "┴");
+		int rightBranchWidth=getWidth(rightBranch);
 		if (endXPos>0)
 		{
 			int middleYPos=rootAry.size()/2;
 			rootAry[middleYPos]=sub(rootAry[middleYPos], 0, getWidth(rootAry[middleYPos])-1)+"├";
 			int inset=rootWidth/2;
-			if (endXPos<inset)
-				inset=endXPos;
+			inset=min(endXPos-(int)floor(rightBranchWidth/2.0)+1, inset);
 			for (int i=0; i<(int)rootAry.size(); i++)
 			{
 				if (i<middleYPos)
 					rootAry[i]=rootAry[i]+padString("", getMaxWidth(rightAry)-inset);
 				else if (i==middleYPos)
 					rootAry[i]=rootAry[i]+padString("", endXPos-inset, ALIGNMENT_LEFT, "─")+"╮";
+				else if (i==middleYPos+1 && !rightBranch.empty())
+					rootAry[i]=rootAry[i]+pad("", endXPos-inset-ceil(rightBranchWidth/2.0))+rightBranch;
 				else
 					rootAry[i]=rootAry[i]+padString("", endXPos-inset)+"│";
 			}
