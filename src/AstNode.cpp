@@ -32,18 +32,14 @@ void AstNodeBase::copyToNode(AstNodeBase* other, bool copyCache)
 
 string AstList::getString()
 {
-	string out;
-	
-	out+="\n(";
+	vector<string> data;
 	
 	for (int i=0; i<int(nodes.size()); i++)
 	{
-		out+="\n"+indentString(nodes[i]->getString())+"\n";
+		data.push_back(nodes[i]->getString());
 	}
 	
-	out+=")";
-	
-	return out;
+	return str::makeList(data);
 }
 
 /*void AstList::resolveReturnType()
@@ -264,41 +260,35 @@ void AstConstExpression::resolveConstant()
 
 string AstOpWithInput::getString()
 {
-	string out;
+	string left;
 	
-	if (!leftIn.empty())
+	vector<string> data;
+	
+	for (int i=0; i<int(leftIn.size()); i++)
 	{
-		out+="(";
-		
-		for (int i=0; i<int(leftIn.size()); i++)
-		{
-			if (i>0)
-				out+="	|";
-				
-			out+="\n"+indentString(leftIn[i]->getString())+"\n";
-		}
-		
-		out+=") -> ";
+		data.push_back(leftIn[i]->getString());
 	}
 	
-	out+=token->getText();
+	if (data.size()==1)
+		left=data[0];
+	else if (data.size()>1)
+		left=str::makeList(data);
 	
-	if (!rightIn.empty())
+	data.clear();
+	
+	string right;
+	
+	for (int i=0; i<int(rightIn.size()); i++)
 	{
-		out+=" -> (";
-		
-		for (int i=0; i<int(rightIn.size()); i++)
-		{
-			if (i>0)
-				out+="	|";
-				
-			out+="\n"+indentString(rightIn[i]->getString())+"\n";
-		}
-		
-		out+=")";
+		data.push_back(rightIn[i]->getString());
 	}
 	
-	return out;
+	if (data.size()==1)
+		right=data[0];
+	else if (data.size()>1)
+		right=str::makeList(data);
+	
+	return str::makeRootUpBinaryTree(str::putStringInTreeNodeBox(token->getText()), left, right);
 }
 
 void AstOpWithInput::resolveAction()
@@ -501,7 +491,7 @@ bool AstOpWithInput::isFunctionWithOutput()
 
 string AstToken::getString()
 {
-	return str::getLightlyBoxedString(token->getText());
+	return str::putStringInTreeNodeBox(token->getText());
 }
 
 void AstToken::resolveAction()

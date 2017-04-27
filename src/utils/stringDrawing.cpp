@@ -108,7 +108,7 @@ string makeTreeSection(const string& root, vector<string>& leaves)
 }
 */
 
-void lightlyBoxStringArray(vector<string>& data)
+void putArrayInTreeNodeBox(vector<string>& data)
 {
 	int width=data.empty()?0:getWidth(data[0]);
 	
@@ -121,12 +121,39 @@ void lightlyBoxStringArray(vector<string>& data)
 	data.insert(data.begin(), "╭"+pad("┴", width, ALIGNMENT_CENTER, "─")+"╮");
 }
 
-string getLightlyBoxedString(const string& in)
+string putStringInTreeNodeBox(const string& in)
 {
 	vector<string> ary;
 	splitByLine(ary, in);
-	lightlyBoxStringArray(ary);
+	putArrayInTreeNodeBox(ary);
 	return join(ary);
+}
+
+string makeList(vector<string>& data)
+{
+	vector<string> ary;
+	
+	for (int i=0; i<int(data.size()); i++)
+	{
+		vector<string> elemAry;
+		str::splitByLine(elemAry, data[i]);
+		int xPos=str::getGlyphPosOf(elemAry[0], "┴");
+		if (xPos>=0)
+		{
+			ary.push_back("├─"+str::pad("", xPos, str::ALIGNMENT_LEFT, "─")+"╮");
+		}
+		for (auto i: elemAry)
+		{
+			ary.push_back("│ "+i);
+		}
+	}
+	
+	int width=str::getMaxWidth(ary);
+	
+	ary.insert(ary.begin(), "╭──┴"+padString("", width-4, str::ALIGNMENT_LEFT, "─")+"╮");
+	ary.push_back("╰"+padString("", width-1, str::ALIGNMENT_LEFT, "─")+"╯");
+	
+	return str::join(ary);
 }
 
 string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const string& rightLeaf)
@@ -219,11 +246,8 @@ string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const st
 					rootAry[i]=rootAry[i]+padString("", endXPos-inset)+"│";
 			}
 			
-			cout << "inset: " << inset << endl;
-			
 			for (int i=0; i<(int)leftAry.size(); i++)
 			{
-				cout << getWidth(rootAry[0]) << endl;
 				leftAry[i]=leftAry[i]+pad("", rootWidth+leftPadWidth-getWidth(leftAry[i])-inset);
 			}
 		}

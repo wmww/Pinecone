@@ -2,6 +2,7 @@
 # FizzBuzz
 
 # loop i from start to end
+(
 i: in.start | i <= in.end | i: i+1 @ (
 	
 	# use conditionals to print the right thing
@@ -16,6 +17,8 @@ i: in.start | i <= in.end | i: i+1 @ (
 		print: "Buzz"
 	|
 		print: i
+)
+a: 8
 )
 
 //
