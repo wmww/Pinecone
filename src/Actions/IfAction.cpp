@@ -29,7 +29,8 @@ public:
 
 	string getDescription()
 	{
-		return "if " + condition->getDescription() + " then " + ifAction->getDescription();
+		return str::makeRootUpBinaryTree("?", condition->getReturnType()->getName(), "", condition->getDescription(), ifAction->getDescription());
+		//return "if " + condition->getDescription() + " then " + ifAction->getDescription();
 	}
 
 	void* execute(void* inLeft, void* inRight)
@@ -91,7 +92,9 @@ public:
 
 	string getDescription()
 	{
-		return "if " + condition->getDescription() + " then " + ifAction->getDescription();
+		string branch=str::makeRootUpBinaryTree("╭┴╮\n│ │", "fls", "tru", elseAction->getDescription(), ifAction->getDescription());
+		return str::makeRootUpBinaryTree("?", condition->getReturnType()->getName(), "", condition->getDescription(), branch);
+		//return "if " + condition->getDescription() + " then " + ifAction->getDescription();
 	}
 
 	/*

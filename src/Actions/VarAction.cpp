@@ -4,6 +4,7 @@
 #include "../../h/CppProgram.h"
 #include "../../h/utils/stringNumConversion.h"
 #include "../../h/Namespace.h"
+#include "../../h/utils/stringDrawing.h"
 
 class VarGetAction: public ActionData
 {
@@ -55,6 +56,11 @@ public:
 			prog->declareVar(nameHint, getReturnType());
 			prog->name(nameHint);
 		}
+	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox("get "+nameHint);
 	}
 	
 private:
@@ -136,6 +142,11 @@ public:
 			//if (prog->getExprLevel()==0)
 			//	prog->endln();
 		}
+	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox("set "+nameHint);
 	}
 	
 private:
@@ -225,6 +236,11 @@ public:
 		{
 			prog->code(getReturnType()->getCppLiteral(data, prog));
 		}
+	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox(description);
 	}
 	
 private:

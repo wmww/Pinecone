@@ -82,10 +82,10 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		
 		if (printOutput)
 		{
-			cout << "   ╭──────────────────────╮" << endl;
-			cout << "  ╭┤ abstract syntax tree │" << endl;
-			cout << "  │╰──────────────────────╯" << endl;
-			cout <<astRoot->getString()   << endl;
+			cout << " ╭──────────────────────╮" << endl;
+			cout << " │ abstract syntax tree │" << endl;
+			cout << " ╰──────────────────────╯" << endl;
+			cout << astRoot->getString()   << endl;
 			//cout << endl << putStringInBox(astRoot->getString(), "abstract syntax tree") << endl;
 			//cout << endl << str::getBoxedString(astRoot->getString(), "abstract syntax tree") << endl;
 		}

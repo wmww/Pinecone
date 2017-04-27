@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "utils/stringDrawing.h"
 
 
 using std::shared_ptr;
