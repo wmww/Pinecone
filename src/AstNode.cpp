@@ -2,6 +2,7 @@
 #include "../h/Namespace.h"
 #include "../h/ErrorHandler.h"
 #include "../h/msclStringFuncs.h"
+#include "../h/utils/stringDrawing.h"
 #include "../h/AllOperators.h"
 
 //AstNode astVoid=AstNode(new AstVoid);
@@ -159,20 +160,21 @@ void AstFuncBody::resolveAction()
 
 string AstExpression::getString()
 {
-	string out;
+	string leftStr;
 	if (!leftIn->isVoid())
 	{
-		out+=indentString(leftIn->getString(), "  ")+"\n";
+		leftStr=leftIn->getString();
 	}
 	
-	out+=center->getString()+"\n";
+	string centerStr=center->getString();
 	
+	string rightStr;
 	if (!rightIn->isVoid())
 	{
-		out+=indentString(rightIn->getString(), "  ");
+		rightStr=rightIn->getString();
 	}
 	
-	return out;
+	return str::makeRootUpBinaryTree(centerStr, leftStr, rightStr);
 }
 
 void AstExpression::resolveAction()
@@ -499,7 +501,7 @@ bool AstOpWithInput::isFunctionWithOutput()
 
 string AstToken::getString()
 {
-	return token->getText();
+	return str::getLightlyBoxedString(token->getText());
 }
 
 void AstToken::resolveAction()
