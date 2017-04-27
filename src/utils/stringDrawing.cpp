@@ -157,7 +157,7 @@ string makeList(vector<string>& data)
 	
 	int width=str::getMaxWidth(ary);
 	
-	ary.insert(ary.begin(), "┏━┴"+padString("", width-5, str::ALIGNMENT_LEFT, "━")+"┓");
+	ary.insert(ary.begin(), "┏━┴"+padString("", width-4, str::ALIGNMENT_LEFT, "━")+"┓");
 	ary.push_back("┗"+padString("", width-2, str::ALIGNMENT_LEFT, "━")+"┛");
 	
 	return str::join(ary);
