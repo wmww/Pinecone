@@ -22,6 +22,7 @@ inline int seek(const string& in, int distGlyph, int startPosByte=0);
 // currently is a straight equals, but in the future could do things such as evaluate strings with different types of newlines to equal
 inline bool subMatches(const string& in, int posBytes, const string& sub);
 
+// if endGlyph is -1 it takes till the end of the string
 inline string sub(const string& in, int startGlyph, int endGlyph);
 
 inline bool matches(const string& a, const string& b);
@@ -99,7 +100,7 @@ inline bool subMatches(const string& in, int posBytes, const string& sub)
 inline string sub(const string& in, int startGlyph, int endGlyph)
 {
 	int startByte=seek(in, startGlyph);
-	int endByte=seek(in, endGlyph-startGlyph, startByte);
+	int endByte=(endGlyph==-1?(int)in.size():seek(in, endGlyph-startGlyph, startByte));
 	return in.substr(startByte, startByte-endByte);
 }
 

@@ -117,15 +117,8 @@ void lightlyBoxStringArray(vector<string>& data)
 		data[i]="│"+data[i]+"│";
 	}
 	
-	string hLine;
-	
-	for (int i=0; i<width; i++)
-	{
-		hLine+="─";
-	}
-	
-	data.push_back("╰"+hLine+"╯");
-	data.insert(data.begin(), "╭"+hLine+"╮");
+	data.push_back("╰"+pad("", width, ALIGNMENT_LEFT, "─")+"╯");
+	data.insert(data.begin(), "╭"+pad("┴", width, ALIGNMENT_CENTER, "─")+"╮");
 }
 
 string getLightlyBoxedString(const string& in)
@@ -150,42 +143,65 @@ string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const st
 	
 	if (leftAry.empty() && !rightAry.empty())
 		leftAry.push_back(padString("", getMaxWidth(rightAry)));
-	*/
-	
+		
 	if (leftAry.empty())
 		leftAry.push_back("");
+	*/
 	
-	if (rightAry.empty())
-		rightAry.push_back("");
-	
+	// make sure left and right arrays are the same size
 	while (leftAry.size()<rightAry.size())
 		leftAry.push_back("");
-	
 	while (rightAry.size()<leftAry.size())
 		rightAry.push_back("");
 	
+	// set up the root array
 	vector<string> rootAry;
 	splitByLine(rootAry, root);
+	if (rootAry.empty())
+		rootAry.push_back("");
 	padWidths(rootAry);
-	//lightlyBoxStringArray(rootAry);
+	
 	int rootWidth=getMaxWidth(rootAry);
+	//int leafWidth=std::max(std::max(getMaxWidth(leftAry), getMaxWidth(rightAry)), rootWidth)+1;
 	
-	padWidths(leftAry, std::max(getMaxWidth(leftAry), rootWidth), ALIGNMENT_CENTER);
-	padWidths(rightAry, std::max(getMaxWidth(rightAry), rootWidth), ALIGNMENT_CENTER);
+	//padWidths(leftAry, leafWidth, ALIGNMENT_LEFT);
+	//padWidths(rightAry, leafWidth, ALIGNMENT_RIGHT);
 	
-	int size=std::max(
-			rootWidth,
-			(int)(leftAry.empty()?0:leftAry[0].size())
-			+
-			(int)(rightAry.empty()?0:rightAry[0].size())
-		);
+	// make sure everything is padded
+	padWidths(leftAry);
+	padWidths(rightAry);
 	
-	padWidths(rootAry, size, ALIGNMENT_CENTER);
+	//int size=std::max(rootWidth, getMaxWidth(leftAry)+getMaxWidth(rightAry));
+	
+	// left connection line
+	if (!leftAry.empty())
+	{
+		int endXPos=getGlyphPosOf(leftAry[0], "┴");
+		if (endXPos>0)
+		{
+			int middleYPos=rootAry.size()/2;
+			rootAry[middleYPos]="┤"+sub(rootAry[middleYPos], 1, -1);
+			int leftPadWidth=getMaxWidth(leftAry)-rootWidth/2;
+			if (endXPos+1>leftPadWidth)
+				leftPadWidth=endXPos+1;
+			for (int i=0; i<(int)rootAry.size(); i++)
+			{
+				if (i<middleYPos)
+					rootAry[i]=padString("", leftPadWidth)+rootAry[i];
+				else if (i==middleYPos)
+					rootAry[i]=padString("", endXPos)+"╭"+padString("", leftPadWidth-endXPos-1, ALIGNMENT_LEFT, "─")+rootAry[i];
+				else
+					rootAry[i]=padString("", endXPos)+"│"+padString("", leftPadWidth-endXPos-1)+rootAry[i];
+			}
+		}
+	}
 	
 	for (int i=0; i<(int)leftAry.size(); i++)
 	{
 		rootAry.push_back(leftAry[i]+rightAry[i]);
 	}
+	
+	padWidths(rootAry);
 	
 	return join(rootAry);
 }
