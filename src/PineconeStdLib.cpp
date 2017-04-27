@@ -1517,7 +1517,7 @@ void populateStringFuncs()
 void populateArrayFuncs()
 {
 	TupleTypeMaker maker;
-	//maker.add("_refCount", Int);
+	maker.add("_refCount", Int);
 	maker.add("_size", Int);
 	maker.add("_capacity", Int);
 	maker.add("_data", Whatev->getPtr());
@@ -1534,7 +1534,7 @@ void populateArrayFuncs()
 					otherwise return nullptr;
 				
 				Type contentsType=leftType;
-				Type arrayType=ArrayData->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", contentsType->getPtr()}}, true));
+				Type arrayType=ArrayData->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", Int}, {"d", contentsType->getPtr()}}, true));
 				
 				return lambdaAction(
 					leftType,
@@ -1545,7 +1545,7 @@ void populateArrayFuncs()
 					{
 						void** out=(void**)malloc(sizeof(void*));
 						*out=malloc(arrayType->getSize());
-						//setValInTuple(*out, arrayType, "_refCount", 1);
+						setValInTuple(*out, arrayType, "_refCount", 1);
 						setValInTuple(*out, arrayType, "_size", 0);
 						setValInTuple(*out, arrayType, "_capacity", 0);
 						setValInTuple<void*>(*out, arrayType, "_data", nullptr);
@@ -1735,15 +1735,14 @@ void populateArrayFuncs()
 		"len"
 	);
 	
-	/*
 	globalNamespace->addNode(
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				ASSERT (leftType->matches(Array) && !rightType->isVoid()) return nullptr;
+				assert leftType->matches(Array) && rightType->isVoid()
+					otherwise return nullptr;
 				
 				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
-				Type contentsType=arrayType->getSubType("_data").type->getSubType();
 				
 				return lambdaAction(
 					leftType,
@@ -1752,9 +1751,14 @@ void populateArrayFuncs()
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
-						int* out=(int*)malloc(sizeof(int));
-						*out=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
-						return out;
+						int refCount=getValFromTuple<int>(*(void**)leftIn, arrayType, "_refCount");
+						refCount--;
+						if (refCount<=0)
+						{
+							free(getValFromTuple<void*>(*(void**)leftIn, arrayType, "_data"));
+							free(*(void**)leftIn);
+						}
+						return nullptr;
 					},
 					
 					[=](Action inLeft, Action inRight, CppProgram* prog)
@@ -1767,7 +1771,6 @@ void populateArrayFuncs()
 		),
 		"__destroy__"
 	);
-	*/
 }
 
 void populateIntArrayAndFuncs()

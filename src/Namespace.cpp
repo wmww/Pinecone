@@ -219,6 +219,7 @@ void NamespaceData::addNode(AstNode node, string id)
 	{
 		types.add(id, move(node));
 	}
+	/*
 	else if (id=="__destroy__")
 	{
 		Action action=node->getAction();
@@ -237,6 +238,7 @@ void NamespaceData::addNode(AstNode node, string id)
 		}
 		copiers.add(str::ptrToUniqueStr(&*action->getReturnType(), 6), move(node));
 	}
+	*/
 	else
 	{
 		// if the left or the right is a Whatev and the types match up
@@ -282,6 +284,9 @@ Type NamespaceData::getType(string name, bool throwSourceError, Token tokenForEr
 
 Action NamespaceData::getDestroyer(Type type)
 {
+	return getActionForTokenWithInput(makeToken("__destroy__"), Void, type, false, false, nullptr);
+	
+	/*
 	vector<AstNodeBase*> nodes;
 	
 	destructors.get(str::ptrToUniqueStr(&*type, 6), nodes);
@@ -301,6 +306,7 @@ Action NamespaceData::getDestroyer(Type type)
 	{
 		return nodes[0]->getAction();
 	}
+	*/
 }
 
 Action NamespaceData::wrapInDestroyer(Action in)
@@ -316,6 +322,9 @@ Action NamespaceData::wrapInDestroyer(Action in)
 
 Action NamespaceData::getCopier(Type type)
 {
+	return getActionForTokenWithInput(makeToken("__copy__"), Void, type, false, false, nullptr);
+	
+	/*
 	vector<AstNodeBase*> nodes;
 	
 	copiers.get(str::ptrToUniqueStr(&*type, 6), nodes);
@@ -335,6 +344,7 @@ Action NamespaceData::getCopier(Type type)
 	{
 		return nodes[0]->getAction();
 	}
+	*/
 }
 
 Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic, bool throwSourceError, Token tokenForError)
