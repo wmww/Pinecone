@@ -1,7 +1,9 @@
 
+foo :: {Int}.{Int} -> {String}: me.String+in.String
 
-	aryf: dsgfdsgfdsgdgsgfdDub.Array: 8fdsgfdfdssggfgdfdgdsgfdags
-	print: "hi"
+myName: 8.4
+
+print: 7.foo: 8
 
 #j: 0 | j<200000 | j: j+1 @
 #(

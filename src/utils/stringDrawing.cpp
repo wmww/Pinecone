@@ -230,8 +230,7 @@ string makeRootUpBinaryTree(const string& root, const string& leftBranch, const 
 			leftPadWidth=getMaxWidth(leftAry)-rootWidth/2;
 			if (endXPos+1>leftPadWidth)
 				leftPadWidth=endXPos+1;
-			if (leftPadWidth<leftBranchWidth)
-				leftPadWidth=leftBranchWidth;
+			leftPadWidth=max(leftPadWidth, (int)ceil(leftBranchWidth/2.0)+endXPos);
 			for (int i=0; i<(int)rootAry.size(); i++)
 			{
 				if (i<middleYPos)
@@ -258,7 +257,7 @@ string makeRootUpBinaryTree(const string& root, const string& leftBranch, const 
 			int middleYPos=rootAry.size()/2;
 			rootAry[middleYPos]=sub(rootAry[middleYPos], 0, getWidth(rootAry[middleYPos])-1)+"├";
 			int inset=rootWidth/2;
-			inset=min(endXPos-(int)floor(rightBranchWidth/2.0)+1, inset);
+			inset=min(endXPos-(int)floor(rightBranchWidth/2.0), inset);
 			for (int i=0; i<(int)rootAry.size(); i++)
 			{
 				if (i<middleYPos)

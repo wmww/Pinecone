@@ -62,9 +62,10 @@ public:
 	
 	string getDescription()
 	{
-		if (!action)
-			resolveAction();
-		return "func: " + description;//action->getDescription();
+		return str::putStringInTreeNodeBox("call func "+nameHint);
+		//if (!action)
+		//	resolveAction();
+		//return "func: " + description;//action->getDescription();
 	}
 	
 	bool isFunction() {return true;}

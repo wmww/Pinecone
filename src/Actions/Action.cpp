@@ -50,6 +50,11 @@ public:
 		if (prog->getExprLevel()>0)
 			prog->comment("void");
 	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox("void");
+	}
 };
 
 class LambdaAction: public ActionData
@@ -96,6 +101,11 @@ public:
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
 		cppWriter(inLeft, inRight, prog);
+	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox(description);
 	}
 	
 private:

@@ -31,6 +31,18 @@ public:
 
 	string getDescription()
 	{
+		vector<string> data;
+		
+		for (auto i=actions.begin(); i!=actions.end(); ++i)
+		{
+			if (*i)
+				data.push_back((*i)->getDescription());
+			else
+				data.push_back(str::putStringInTreeNodeBox("[null action]"));
+		}
+		
+		return str::makeList(data);
+		/*
 		string out;
 		out+="\n{";
 		
@@ -59,6 +71,7 @@ public:
 		out+="}\n";
 		
 		return out;
+		*/
 	}
 	
 	void* execute(void* inLeft, void* inRight)
