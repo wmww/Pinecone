@@ -58,10 +58,12 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 			astRoot=AstVoid::make();
 		}
 		
+		/*
 		if (printOutput)
 		{
 			cout << endl << tableStringFromTokens(tokens, "lexer output") << endl;
 		}
+		*/
 	}
 	
 	//astRoot=parseFunction(tokens, 0, tokens.size()-1, Void, Void);
@@ -80,8 +82,12 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 		
 		if (printOutput)
 		{
+			cout << "   ╭──────────────────────╮" << endl;
+			cout << "  ╭┤ abstract syntax tree │" << endl;
+			cout << "  │╰──────────────────────╯" << endl;
+			cout <<astRoot->getString()   << endl;
 			//cout << endl << putStringInBox(astRoot->getString(), "abstract syntax tree") << endl;
-			cout << endl << str::getBoxedString(astRoot->getString(), "abstract syntax tree") << endl;
+			//cout << endl << str::getBoxedString(astRoot->getString(), "abstract syntax tree") << endl;
 		}
 	}
 	
@@ -103,7 +109,7 @@ void PineconeProgram::resolveProgram(string inFilename, bool printOutput)
 			
 			if (printOutput)
 			{
-				cout << endl << putStringInBox(actionRoot->getDescription(), "action tree") << endl;
+				cout << endl << str::getBoxedString(actionRoot->getDescription(), "action tree") << endl;
 			}
 		}
 		catch (PineconeError err)
