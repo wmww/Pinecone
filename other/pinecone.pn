@@ -1,8 +1,28 @@
+# FizzBuzz
 
+	# loop i from start to end
+	i: in.start | i <= in.end | i: i+1 @ (
+		
+		# use conditionals to print the right thing
+		
+		i % 3 = 0 && i % 5 = 0 ?
+			print: "FizzBuzz"
+		|
+		i % 3 = 0 ?
+			print: "Fizz"
+		|
+		i % 5 = 0 ?
+			print: "Buzz"
+		|
+			print: i
+	)
+
+//
 (
 	ary: Dub.Array
 	print: "hi"
 )
+\\
 
 #j: 0 | j<200000 | j: j+1 @
 #(
