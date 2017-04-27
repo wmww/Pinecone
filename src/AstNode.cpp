@@ -170,7 +170,7 @@ string AstExpression::getString()
 		rightStr=rightIn->getString();
 	}
 	
-	return str::makeRootUpBinaryTree(centerStr, leftStr, rightStr);
+	return str::makeRootUpBinaryTree(centerStr, "left branch", "right branch", leftStr, rightStr);
 }
 
 void AstExpression::resolveAction()
@@ -288,7 +288,7 @@ string AstOpWithInput::getString()
 	else if (data.size()>1)
 		right=str::makeList(data);
 	
-	return str::makeRootUpBinaryTree(str::putStringInTreeNodeBox(token->getText()), left, right);
+	return str::makeRootUpBinaryTree(str::putStringInTreeNodeBox(token->getText()), "left branch", "right branch", left, right);
 }
 
 void AstOpWithInput::resolveAction()

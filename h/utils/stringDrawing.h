@@ -16,7 +16,7 @@ string putStringInTreeNodeBox(const string& in);
 // note that the input may have newlines in each element
 string makeList(vector<string>& data);
 
-string makeRootUpBinaryTree(const string& root, const string& leftLeaf, const string& rightLeaf);
+string makeRootUpBinaryTree(const string& root, const string& leftBranch, const string& rightBranch, const string& leftLeaf, const string& rightLeaf);
 
 //string makeTreeSection(const string& root, vector<string>& leaves);
 
