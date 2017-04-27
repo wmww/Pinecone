@@ -140,18 +140,25 @@ string makeList(vector<string>& data)
 		int xPos=str::getGlyphPosOf(elemAry[0], "┴");
 		if (xPos>=0)
 		{
-			ary.push_back("├─"+str::pad("", xPos, str::ALIGNMENT_LEFT, "─")+"╮");
+			ary.push_back("┠─"+str::pad("", xPos, str::ALIGNMENT_LEFT, "─")+"╮");
 		}
 		for (auto i: elemAry)
 		{
-			ary.push_back("│ "+i);
+			ary.push_back("┃ "+i);
 		}
+	}
+	
+	padWidths(ary);
+	
+	for (int i=0; i<int(ary.size()); i++)
+	{
+		ary[i]=ary[i]+" ┃";
 	}
 	
 	int width=str::getMaxWidth(ary);
 	
-	ary.insert(ary.begin(), "╭──┴"+padString("", width-4, str::ALIGNMENT_LEFT, "─")+"╮");
-	ary.push_back("╰"+padString("", width-1, str::ALIGNMENT_LEFT, "─")+"╯");
+	ary.insert(ary.begin(), "┏━┴"+padString("", width-5, str::ALIGNMENT_LEFT, "━")+"┓");
+	ary.push_back("┗"+padString("", width-2, str::ALIGNMENT_LEFT, "━")+"┛");
 	
 	return str::join(ary);
 }
