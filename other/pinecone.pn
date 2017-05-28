@@ -1,22 +1,11 @@
 
-//
-print: "Hello World!"
+cppHead: "#include <iostream>"
 
-changePtrVal :: {Whatev}:
+a: 9
+
 (
-	#print: in.dif.typeName
-	in.dif: ((in.dif) + 3)
+	a: 8
+	cppCode: "printf(\"yo %d\\n\", a);"
+	cppCode: "a = 4;"
+	print: a
 )
-
-a: new: 9
-
-changePtrVal: a
-
-print: a.dif
-\\
-
-print: -3
-str: (-4.7).String
-print: str
-print: 7-(-2)
-

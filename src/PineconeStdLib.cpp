@@ -1596,6 +1596,21 @@ void populateNonStdFuncs()
 	);
 }
 
+void populateCppInterfaceFuncs()
+{
+	addAction("cppCode", Void, String, Void, LAMBDA_HEADER
+		{
+			throw PineconeError("you can't run interpreter with code that uses 'cppCode'", SOURCE_ERROR);
+		},
+		ADD_CPP_HEADER
+		{
+			prog->pushBlock();
+			prog->code(pncnStr2CppStr(right->execute(nullptr, nullptr)));
+			prog->popBlock();
+		}
+	);
+}
+
 void populatePineconeStdLib()
 {
 	basicSetup();
@@ -1609,6 +1624,7 @@ void populatePineconeStdLib()
 	populateStringFuncs();
 	populateIntArrayAndFuncs();
 	populateNonStdFuncs();
+	populateCppInterfaceFuncs();
 }
 
 
