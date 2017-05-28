@@ -16,6 +16,7 @@ public:
 	enum Type
 	{
 		WHITESPACE,
+		LINE_BREAK,
 		NEWLINE,
 		LETTER,
 		DIGIT,
@@ -47,7 +48,7 @@ void CharClassifier::setUp()
 	hm['\t']=WHITESPACE;
 	
 	hm['\n']=NEWLINE;
-	hm[';']=NEWLINE;
+	hm[';']=LINE_BREAK;
 	
 	for (char c='a'; c<='z'; ++c)
 		hm[c]=LETTER;
@@ -160,6 +161,8 @@ inline TokenData::Type CharClassifier::getTokenType(CharClassifier::Type type, T
 		
 	case WHITESPACE:
 		return TokenData::WHITESPACE;
+		
+	case LINE_BREAK:
 	case NEWLINE:
 		return TokenData::LINE_END;
 		
