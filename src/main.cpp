@@ -127,7 +127,7 @@ int main(int argc, char ** argv)
 					binFileName="tmp_pn_compiled";
 				
 				string cmd;
-				cmd="gcc -std=c++11 '"+cppFileName+"' -o '"+binFileName+"'";
+				cmd="g++ -std=c++11 '"+cppFileName+"' -o '"+binFileName+"'";
 				
 				if (flags.debug)
 					cout << "running '"+cmd+"'" << endl;
