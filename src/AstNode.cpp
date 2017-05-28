@@ -230,7 +230,7 @@ void AstConstExpression::resolveConstant()
 {
 	if (!inLeftType->isVoid() || !inRightType->isVoid())
 	{
-		throw PineconeError("AstExpression given non void input", INTERNAL_ERROR, getToken());
+		throw PineconeError("AstConstExpression given non void input", INTERNAL_ERROR, getToken());
 	}
 	
 	//leftIn->setInput(ns, Void, Void);
@@ -238,7 +238,7 @@ void AstConstExpression::resolveConstant()
 	
 	//error.log("resolveAction called for "+getString(), JSYK);
 	
-	ns->addNode(move(rightIn), center->token->getText());
+	ns->addNode(move(rightIn->makeCopy(true)), center->token->getText());
 	
 	/*
 	Action rightAction=rightIn->getAction();

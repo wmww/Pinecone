@@ -1,13 +1,9 @@
 
 cppHead: "#include <iostream>"
-#scppHead: "using std::cout;"
-#cppHead: "using std::endl;"
+cppHead: "using std::cout;"
+cppHead: "using std::endl;"
 
 a: 9
-
-(
-	a: 8
-	cppCode: "std::cout << 8 << std::endl;"
-	cppCode: "a = 4;"
-	print: a
-)
+cppCode: "cout << a << endl;"
+cppCode: "a = 2;"
+print: a
