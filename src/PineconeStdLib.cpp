@@ -1609,6 +1609,16 @@ void populateCppInterfaceFuncs()
 			prog->popBlock();
 		}
 	);
+	
+	addAction("cppHead", Void, String, Void, LAMBDA_HEADER
+		{
+			throw PineconeError("you can't run interpreter with code that uses 'cppHead'", SOURCE_ERROR);
+		},
+		ADD_CPP_HEADER
+		{
+			prog->addHeadCode(pncnStr2CppStr(right->execute(nullptr, nullptr)));
+		}
+	);
 }
 
 void populatePineconeStdLib()
