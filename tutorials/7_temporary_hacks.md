@@ -32,15 +32,12 @@ Getting string input works great (see string tutorial). Int input is not yet sta
 Importing works similar to how it does in Python. It simply dumps another file into your current file. Right now, the import syntx is
 
 ```
-==> "path/to/target/file/from/current/file.pncn"
-```
-
-For example, to import the examples/letters file into other/pinecone, you write
-
-```
-==> "../examples/letters.pncn"
+==> "path/to/target/file/from/current/file.pn"
 ```
 
 I may keep this syntax, but I'm not sure so I'm keeping it in this tutorial.
+
+## Linking with C++
+A highly suggested feature has been the ability to integrate Pinecone into C++ projects. There are a number of ways to do this with different trade offs, and hopefully there will be a complete solution at some point. In the mean time, there is a way to use 3rd party libraries with Pinecone via two functions, `cppCode` and `cppHead`. To use these you **must** transpile instead of interpret. `cppCode` lets you drop C++ source code directly into the transpiler output. `cppHead` is the same except it adds its code to the top of the source file (outside any function). It is useful for includes.
 
 [index](index.md)
