@@ -3,6 +3,7 @@
 #include "../h/StackFrame.h"
 #include "../h/Namespace.h"
 #include "../h/CppProgram.h"
+#include "../h/utils/stringUtils.h"
 
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
@@ -485,6 +486,46 @@ void addToProgMakeIntArray(CppProgram * prog)
 	}
 }
 
+void addToProgStrWithEscapedNames(CppProgram * prog, string str)
+{
+	int i=0;
+	string buffer = "";
+	
+	while (i < (int)str.size())
+	{
+		if (str[i] == '$')
+		{
+			i++;
+			prog->code(buffer);
+			buffer = "";
+			while (i < (int)str.size())
+			{
+				char c = str[i];
+				
+				if (!(
+					(c >= '0' && c <= '9') ||
+					(c >= 'a' && c <= 'z') ||
+					(c >= 'A' && c <= 'Z')
+				)) break;
+				
+				buffer += c;
+				i++;
+			}
+			if (buffer.empty())
+				prog->code("$");
+			else
+				prog->name(buffer);
+			buffer = "";
+		}
+		else
+		{
+			buffer += str[i];
+			i++;
+		}
+	}
+	
+	prog->code(buffer);
+}
 
 
 /// setup Pinecone std lib
@@ -1605,7 +1646,7 @@ void populateCppInterfaceFuncs()
 		ADD_CPP_HEADER
 		{
 			prog->pushBlock();
-			prog->code(pncnStr2CppStr(right->execute(nullptr, nullptr)));
+			addToProgStrWithEscapedNames(prog, pncnStr2CppStr(right->execute(nullptr, nullptr)));
 			prog->popBlock();
 		}
 	);
