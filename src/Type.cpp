@@ -240,7 +240,8 @@ public:
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
-			out+=(*subTypes)[i].name.size()+"_"+(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString()+"_";
+			//out+=(*subTypes)[i].name.size()+"_"+(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString()+"_";
+			out+=(*subTypes)[i].type->getCompactString()+"_";
 		}
 		
 		out+="tT";
