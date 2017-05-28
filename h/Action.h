@@ -9,6 +9,8 @@
 #include <string>
 
 
+#include <stdlib.h> // malloc() and free() on some systems
+
 using std::shared_ptr;
 using std::unique_ptr;
 using std::to_string;
