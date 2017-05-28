@@ -3,6 +3,7 @@
 #include "../h/StackFrame.h"
 #include "../h/Namespace.h"
 #include "../h/CppProgram.h"
+#include "../h/Type.h"
 
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
@@ -167,15 +168,20 @@ void addAction(Operator op, Type leftType, Type rightType, Type returnType, func
 
 Type IntArray=nullptr;
 Type Array=nullptr;
-Type ArrayData=nullptr;
 
 template<typename T>
 inline T getValFromTuple(void* data, Type type, string name)
 {
+	while (type->getType()==TypeBase::PTR)
+	{
+		type=type->getSubType();
+		data=*(void**)data;
+	}
+	
 	OffsetAndType a=type->getSubType(name);
 	
 	if (!a.type)
-		throw PineconeError("tried to get invalid property '"+name+"' from tuple "+type->getString(), INTERNAL_ERROR);
+		throw PineconeError("tried to get invalid property '"+name+"' from type "+type->getString(), INTERNAL_ERROR);
 		
 	return *((T*)((char*)data+a.offset));
 }
@@ -200,10 +206,16 @@ inline T getValFromTuple(void* data, Type type, int index)
 template<typename T>
 inline void setValInTuple(void* data, Type type, string name, T val)
 {
+	while (type->getType()==TypeBase::PTR)
+	{
+		type=type->getSubType();
+		data=*(void**)data;
+	}
+		
 	OffsetAndType a=type->getSubType(name);
 	
 	if (!a.type)
-		throw PineconeError("tried to set invalid property '"+name+"' from tuple "+type->getString(), INTERNAL_ERROR);
+		throw PineconeError("tried to set invalid property '"+name+"' from type "+type->getString(), INTERNAL_ERROR);
 	
 	*((T*)((char*)data+a.offset))=val;
 }
@@ -1517,12 +1529,10 @@ void populateStringFuncs()
 void populateArrayFuncs()
 {
 	TupleTypeMaker maker;
-	maker.add("_refCount", Int);
 	maker.add("_size", Int);
 	maker.add("_capacity", Int);
 	maker.add("_data", Whatev->getPtr());
-	ArrayData=maker.get(false);
-	Array=ArrayData->getPtr();
+	Array=maker.get(false);
 	
 	addType(Array, "Array");
 	
@@ -1534,21 +1544,19 @@ void populateArrayFuncs()
 					otherwise return nullptr;
 				
 				Type contentsType=leftType;
-				Type arrayType=ArrayData->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", Int}, {"d", contentsType->getPtr()}}, true));
+				Type arrayType=Array->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", contentsType->getPtr()}}, true))->getPtr();
 				
 				return lambdaAction(
 					leftType,
 					rightType,
-					arrayType->getPtr(),
+					arrayType,
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
-						void** out=(void**)malloc(sizeof(void*));
-						*out=malloc(arrayType->getSize());
-						setValInTuple(*out, arrayType, "_refCount", 1);
-						setValInTuple(*out, arrayType, "_size", 0);
-						setValInTuple(*out, arrayType, "_capacity", 0);
-						setValInTuple<void*>(*out, arrayType, "_data", nullptr);
+						void* out=malloc(arrayType->getSize());
+						setValInTuple(out, arrayType, "_size", 0);
+						setValInTuple(out, arrayType, "_capacity", 0);
+						setValInTuple<void*>(out, arrayType, "_data", nullptr);
 						return out;
 					},
 					
@@ -1556,6 +1564,7 @@ void populateArrayFuncs()
 					{
 						throw PineconeError("not yet implemented", INTERNAL_ERROR);
 					},
+					
 					"Array"
 				);
 			}
@@ -1570,7 +1579,7 @@ void populateArrayFuncs()
 				assert leftType->matches(Array)
 					otherwise return nullptr;
 				
-				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type arrayType=Array->actuallyIs(leftType->getPtr());
 				Type contentsType=arrayType->getSubType("_data").type->getSubType();
 				
 				assert rightType->matches(contentsType)
@@ -1583,9 +1592,9 @@ void populateArrayFuncs()
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
-						int size=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
-						int capacity=getValFromTuple<int>(*(void**)leftIn, arrayType, "_capacity");
-						void* data=getValFromTuple<void*>(*(void**)leftIn, arrayType, "_data");
+						int size=getValFromTuple<int>(leftIn, arrayType, "_size");
+						int capacity=getValFromTuple<int>(leftIn, arrayType, "_capacity");
+						void* data=getValFromTuple<void*>(leftIn, arrayType, "_data");
 						
 						if (size+1>capacity)
 						{
@@ -1594,15 +1603,15 @@ void populateArrayFuncs()
 							else
 								capacity*=2;
 							
-							setValInTuple<int>(*(void**)leftIn, arrayType, "_capacity", capacity);
+							setValInTuple<int>(leftIn, arrayType, "_capacity", capacity);
 							void* newData=malloc(capacity*contentsType->getSize());
 							memcpy(newData, data, size*contentsType->getSize());
 							free(data);
 							data=newData;
-							setValInTuple<void*>(*(void**)leftIn, arrayType, "_data", data);
+							setValInTuple<void*>(leftIn, arrayType, "_data", data);
 						}
 						
-						setValInTuple<int>(*(void**)leftIn, arrayType, "_size", size+1);
+						setValInTuple<int>(leftIn, arrayType, "_size", size+1);
 						memcpy((char*)data+size*contentsType->getSize(), rightIn, contentsType->getSize());
 						
 						return nullptr;
@@ -1623,10 +1632,10 @@ void populateArrayFuncs()
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				assert leftType->matches(Array) && rightType->matches(Int)
+				assert leftType->matches(Array->getPtr()) && rightType->matches(Int)
 					otherwise return nullptr;
 				
-				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type arrayType=Array->actuallyIs(leftType->getSubType());
 				Type contentsType=arrayType->getSubType("_data").type->getSubType();
 				size_t elemSize=contentsType->getSize();
 				
@@ -1637,12 +1646,12 @@ void populateArrayFuncs()
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
-						int size=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						int size=getValFromTuple<int>(leftIn, arrayType, "_size");
 						if (*(int*)rightIn<0 || *(int*)rightIn>=size)
 							throw PineconeError("index out of bounds, tried to get element at position "+to_string(*(int*)rightIn)+" in array "+to_string(size)+" long", RUNTIME_ERROR);
 						
 						void* out=malloc(contentsType->getSize());
-						memcpy(out, getValFromTuple<char*>(*(void**)leftIn, arrayType, "_data")+(*(int*)rightIn)*elemSize, elemSize);
+						memcpy(out, getValFromTuple<char*>(leftIn, arrayType, "_data")+(*(int*)rightIn)*elemSize, elemSize);
 						return out;
 					},
 					
@@ -1661,12 +1670,12 @@ void populateArrayFuncs()
 		AstWhatevToActionFactory::make(
 			[](Type leftType, Type rightType) -> Action
 			{
-				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type arrayType=Array->actuallyIs(leftType->getSubType());
 				Type contentsType=arrayType->getSubType("_data").type->getSubType();
 				
 				Type inputType=makeTuple({{"index", Int}, {"value", contentsType}}, true);
 				
-				assert leftType->matches(Array) && rightType->matches(inputType)
+				assert leftType->getSubType()->matches(Array) && rightType->matches(inputType)
 					otherwise return nullptr;
 				
 				size_t elemSize=contentsType->getSize();
@@ -1678,13 +1687,13 @@ void populateArrayFuncs()
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
-						int size=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						int size=getValFromTuple<int>(leftIn, arrayType, "_size");
 						int index=getValFromTuple<int>(rightIn, inputType, "index");
 						
 						if (index<0 || index>=size)
 							throw PineconeError("index out of bounds, tried to set element at position "+to_string(index)+" in array "+to_string(size)+" long", RUNTIME_ERROR);
 						
-						char* data=getValFromTuple<char*>(*(void**)leftIn, arrayType, "_data");
+						char* data=getValFromTuple<char*>(leftIn, arrayType, "_data");
 						
 						memcpy(data+index*elemSize, (char*)rightIn+inputType->getSubType("value").offset, contentsType->getSize());
 						
@@ -1709,7 +1718,7 @@ void populateArrayFuncs()
 				assert leftType->matches(Array) && rightType->isVoid()
 					otherwise return nullptr;
 				
-				Type arrayType=ArrayData->actuallyIs(leftType->getSubType());
+				Type arrayType=Array->actuallyIs(leftType);
 				Type contentsType=arrayType->getSubType("_data").type->getSubType();
 				
 				return lambdaAction(
@@ -1720,7 +1729,7 @@ void populateArrayFuncs()
 					[=](void* leftIn, void* rightIn) -> void*
 					{
 						int* out=(int*)malloc(sizeof(int));
-						*out=getValFromTuple<int>(*(void**)leftIn, arrayType, "_size");
+						*out=getValFromTuple<int>(leftIn, arrayType, "_size");
 						return out;
 					},
 					
@@ -1742,23 +1751,58 @@ void populateArrayFuncs()
 				assert leftType->isVoid() && rightType->matches(Array)
 					otherwise return nullptr;
 				
-				Type arrayType=ArrayData->actuallyIs(rightType->getSubType());
+				Type arrayType=Array->actuallyIs(rightType);
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				size_t elemSize=contentsType->getSize();
 				
 				return lambdaAction(
 					Void,
-					arrayType->getPtr(),
+					rightType,
+					rightType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						//error.log("Array destroyer called", JSYK);
+						int size=getValFromTuple<int>(rightIn, arrayType, "_size");
+						void* newData=malloc(elemSize*size);
+						void* oldData=getValFromTuple<void*>(rightIn, arrayType, "_data");
+						memcpy(newData, oldData, elemSize*size);
+						setValInTuple(rightIn, arrayType, "_data", newData);
+						void* out=malloc(arrayType->getSize());
+						memcpy(out, rightIn, arrayType->getSize());
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"__copy__"
+				);
+			}
+		),
+		"__copy__"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				assert leftType->isVoid() && rightType->matches(Array)
+					otherwise return nullptr;
+				
+				Type arrayType=Array->actuallyIs(rightType);
+				
+				return lambdaAction(
+					Void,
+					rightType,
 					Void,
 					
 					[=](void* leftIn, void* rightIn) -> void*
 					{
-						error.log("Array destroyer called", JSYK);
-						int refCount=getValFromTuple<int>(*(void**)leftIn, arrayType, "_refCount");
-						refCount--;
-						if (refCount<=0)
-						{
-							free(getValFromTuple<void*>(*(void**)leftIn, arrayType, "_data"));
-							free(*(void**)leftIn);
-						}
+						//error.log("Array destroyer called", JSYK);
+						
+						free(getValFromTuple<void*>(rightIn, arrayType, "_data"));
 						return nullptr;
 					},
 					

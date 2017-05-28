@@ -17,5 +17,8 @@ PineconeBin
 Pinecone
 pinecone
 
+#KDevelop
+.kdev4
+
 # stupid OSX stuff
 *.DS_Store
