@@ -23,6 +23,11 @@ public:
 		return nullptr;
 	}
 	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox("{"+getReturnType()->getName()+"}");
+	}
+	
 private:
 };
 

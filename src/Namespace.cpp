@@ -2,6 +2,7 @@
 #include "../h/StackFrame.h"
 #include "../h/msclStringFuncs.h"
 #include "../h/ErrorHandler.h"
+#include "../h/utils/stringNumConversion.h"
 
 void NamespaceData::IdMap::add(string key, AstNode node)
 {
@@ -163,6 +164,7 @@ Action NamespaceData::addVar(Type type, string name)
 	
 	Action getAction;
 	Action setAction;
+	Action copyAction;
 	
 	Namespace top=shared_from_this();
 	
@@ -182,8 +184,25 @@ Action NamespaceData::addVar(Type type, string name)
 		setAction=globalSetAction(offset, type, name);
 	}
 	
-	dynamicActions.add(name, AstActionWrapper::make(getAction));
+	copyAction=getCopier(type);
+	
+	if (copyAction)
+	{
+		dynamicActions.add(name, AstActionWrapper::make(branchAction(voidAction, copyAction, getAction)));
+	}
+	else
+	{
+		dynamicActions.add(name, AstActionWrapper::make(getAction));
+	}
+	
 	dynamicActions.add(name, AstActionWrapper::make(setAction));
+	
+	Action destructor=getDestroyer(type);
+	
+	if (destructor)
+	{
+		destructorActions.push_back(branchAction(voidAction, destructor, getAction));
+	}
 	
 	return setAction;
 }
@@ -198,19 +217,28 @@ void NamespaceData::addNode(AstNode node, string id)
 	
 	if (node->isType())
 	{
-		/*
-		Type type=node->getReturnType()->getSubType();
-		if (type->getType()==TypeBase::TUPLE)
-		{
-			for (auto i: *type->getAllSubTypes())
-			{
-				addNode(AstActionWrapper::make(getElemFromTupleAction(type, i.name)), i.name);
-			}
-		}
-		*/
-		
 		types.add(id, move(node));
 	}
+	/*
+	else if (id=="__destroy__")
+	{
+		Action action=node->getAction();
+		if (action->getInRightType()->isVoid() || !action->getInLeftType()->isVoid() || !action->getReturnType()->isVoid())
+		{
+			throw PineconeError("incorrect type signiture for destroyer", SOURCE_ERROR, node->getToken());
+		}
+		destructors.add(str::ptrToUniqueStr(&*action->getInRightType(), 6), move(node));
+	}
+	else if (id=="__copy__")
+	{
+		Action action=node->getAction();
+		if (action->getInRightType()->isVoid() || !action->getInLeftType()->isVoid() || action->getReturnType()!=action->getInRightType())
+		{
+			throw PineconeError("incorrect type signiture for copier", SOURCE_ERROR, node->getToken());
+		}
+		copiers.add(str::ptrToUniqueStr(&*action->getReturnType(), 6), move(node));
+	}
+	*/
 	else
 	{
 		// if the left or the right is a Whatev and the types match up
@@ -252,6 +280,71 @@ Type NamespaceData::getType(string name, bool throwSourceError, Token tokenForEr
 	{
 		return results[0]->getReturnType()->getSubType();
 	}
+}
+
+Action NamespaceData::getDestroyer(Type type)
+{
+	return getActionForTokenWithInput(makeToken("__destroy__"), Void, type, false, false, nullptr);
+	
+	/*
+	vector<AstNodeBase*> nodes;
+	
+	destructors.get(str::ptrToUniqueStr(&*type, 6), nodes);
+	
+	if (nodes.empty())
+	{
+		if (parent)
+			return parent->getDestroyer(type);
+		else
+			return nullptr;
+	}
+	else if (nodes.size()>1)
+	{
+		throw PineconeError("multiple destroyers for a single type in a single namespace", INTERNAL_ERROR);
+	}
+	else
+	{
+		return nodes[0]->getAction();
+	}
+	*/
+}
+
+Action NamespaceData::wrapInDestroyer(Action in)
+{
+	Action destroyer=getDestroyer(in->getReturnType());
+	
+	return destroyer ?
+			branchAction(voidAction, destroyer, in)
+		:
+			in
+	;
+}
+
+Action NamespaceData::getCopier(Type type)
+{
+	return getActionForTokenWithInput(makeToken("__copy__"), Void, type, false, false, nullptr);
+	
+	/*
+	vector<AstNodeBase*> nodes;
+	
+	copiers.get(str::ptrToUniqueStr(&*type, 6), nodes);
+	
+	if (nodes.empty())
+	{
+		if (parent)
+			return parent->getCopier(type);
+		else
+			return nullptr;
+	}
+	else if (nodes.size()>1)
+	{
+		throw PineconeError("multiple copiers for a single type in a single namespace", INTERNAL_ERROR);
+	}
+	else
+	{
+		return nodes[0]->getAction();
+	}
+	*/
 }
 
 Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic, bool throwSourceError, Token tokenForError)
@@ -325,7 +418,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		}
 		else if (throwSourceError)
 		{
-			throw PineconeError("multiple whatev instanes of '"+token->getText()+"' found", SOURCE_ERROR, tokenForError);
+			throw PineconeError("multiple whatev instances of '"+token->getText()+"' found", SOURCE_ERROR, tokenForError);
 		}
 		else
 		{
@@ -343,7 +436,7 @@ Action NamespaceData::getActionForTokenWithInput(Token token, Type left, Type ri
 		if (foundNodes)
 			throw PineconeError("correct overload of '"+token->getText()+"' not found for types "+left->getString()+" and "+right->getString(), SOURCE_ERROR, tokenForError);
 		else
-			throw PineconeError("'"+token->getText()+"' not found for types "+left->getString()+" and "+right->getString(), SOURCE_ERROR, tokenForError);
+			throw PineconeError("'"+token->getText()+"' not found", SOURCE_ERROR, tokenForError);
 	}
 	else
 	{

@@ -22,6 +22,7 @@ inline int seek(const string& in, int distGlyph, int startPosByte=0);
 // currently is a straight equals, but in the future could do things such as evaluate strings with different types of newlines to equal
 inline bool subMatches(const string& in, int posBytes, const string& sub);
 
+// if endGlyph is -1 it takes till the end of the string
 inline string sub(const string& in, int startGlyph, int endGlyph);
 
 inline bool matches(const string& a, const string& b);
@@ -32,6 +33,9 @@ inline bool hasSuffix(const string& in, const string& suffix);
 
 // returns the BYTE location (not glyph location), or -1 if pattern doesn't appear
 //int searchFor(const string& in, string pattern, int startByte);
+
+// returns the glyph position of the first occurrence of pattern, or -1 if it doesn't appear
+int getGlyphPosOf(const string& in, string pattern);
 
 string tabsToSpaces(const string& in, int tabWidth=4);
 
@@ -96,8 +100,8 @@ inline bool subMatches(const string& in, int posBytes, const string& sub)
 inline string sub(const string& in, int startGlyph, int endGlyph)
 {
 	int startByte=seek(in, startGlyph);
-	int endByte=seek(in, endGlyph-startGlyph, startByte);
-	return in.substr(startByte, startByte-endByte);
+	int endByte=(endGlyph < 0 ? (int)in.size() : seek(in, endGlyph-startGlyph, startByte));
+	return in.substr(startByte, endByte-startByte);
 }
 
 inline bool matches(const string& a, const string& b)

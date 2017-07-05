@@ -1,9 +1,17 @@
 #include "../h/Token.h"
 #include "../h/msclStringFuncs.h"
+#include "../h/utils/stringUtils.h"
 
 Token makeToken(string textIn, shared_ptr<SourceFile> fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn)
 {
+	if (str::hasPrefix(textIn, "\"") && !str::hasSuffix(textIn, "\""))
+		textIn+="\"";
 	return Token(new TokenData(textIn, fileIn, lineIn, charPosIn, tokenTypeIn, opIn));
+}
+
+Token makeToken(string textIn)
+{
+	return Token(new TokenData(textIn, nullptr, 0, 0, TokenData::IDENTIFIER, Operator(nullptr)));
 }
 
 string TokenData::typeToString(TokenData::Type in)
@@ -70,7 +78,7 @@ string tableStringFromTokens(const vector<Token>& tokens, string tableName)
 	string abv="", blw="";
 	string str="";
 	//const int tabSize=1;
-	const int maxWidth=80;
+	const int maxWidth=240;
 	const string seporator="    ";
 	//const string seporator="   |   ";
 	

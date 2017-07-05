@@ -1,0 +1,17 @@
+# it gets confused when global and local vars have the same name
+
+print: "3\n3\n_____"
+
+a: 7
+
+func :: {a: Int, b: Int}: (
+	
+	a: in.a
+	
+	print: a
+)
+
+func: 3, 3
+
+print: a
+

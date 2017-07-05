@@ -16,7 +16,7 @@ void loadFile(string filepath, string& contents)
 	{
 		throw "could not open '"+filepath+"'";
 	}
-	else\
+	else
 	{
 		stringstream strStream;
 		strStream << inFile.rdbuf();//read the file

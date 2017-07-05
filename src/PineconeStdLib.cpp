@@ -4,9 +4,13 @@
 #include "../h/Namespace.h"
 #include "../h/CppProgram.h"
 #include "../h/utils/stringUtils.h"
+#include "../h/Type.h"
 
 #define CONCAT(a,b) a##_##b
 #define GET_TYPES_Tuple(t0, t1) t0, t1
+
+#define assert if (
+#define otherwise ) {} else
 
 #define getPncnType(typeIn) CONCAT(PNCN, typeIn)
 #define getCppType(typeIn) CONCAT(CPP, typeIn)
@@ -74,10 +78,15 @@ Action voidAction;
 
 //shared_ptr<StackFrame> stdLibStackFrame;
 Namespace globalNamespace;
-Namespace table;
+Namespace table; // is set to equal globalNamespace, not sure why I have both. I think just because table is shorter (so its used in this file) and globalNamespace is clearer (so its used everywhere else)
 
 string getText(Operator op) {return op->getText();}
 string getText(string in) {return in;}
+
+void addConst(void* data, Type type, string name)
+{
+	globalNamespace->addNode(AstActionWrapper::make(constGetAction(data, type, name, globalNamespace)), name);
+}
 
 template<typename T>
 void addAction(T id, Type leftType, Type rightType, Type returnType, function<void*(void*, void*)> lambda, function<void(Action inLeft, Action inRight, CppProgram* prog)> addCppToProg)
@@ -159,25 +168,55 @@ void addAction(Operator op, Type leftType, Type rightType, Type returnType, func
 }
 
 Type IntArray=nullptr;
+Type Array=nullptr;
 
 template<typename T>
 inline T getValFromTuple(void* data, Type type, string name)
 {
+	while (type->getType()==TypeBase::PTR)
+	{
+		type=type->getSubType();
+		data=*(void**)data;
+	}
+	
 	OffsetAndType a=type->getSubType(name);
 	
 	if (!a.type)
-		throw PineconeError("tried to get invalid property '"+name+"' from tuple "+type->getString(), INTERNAL_ERROR);
+		throw PineconeError("tried to get invalid property '"+name+"' from type "+type->getString(), INTERNAL_ERROR);
 		
 	return *((T*)((char*)data+a.offset));
 }
+/*
+template<typename T>
+inline T getValFromTuple(void* data, Type type, int index)
+{
+	if (index<0 || index>=type->getAllSubTypes()->size())
+		throw PineconeError("tried to get invalid property #"+to_string(index)+" from tuple "+type->getString(), INTERNAL_ERROR);
+		
+	int offset=0;
+	
+	for (int i=0; i<index; i++)
+	{
+		offset+=(*type->getAllSubTypes())[i]->getSize();
+	}
+	
+	return *((T*)((char*)data+offset));
+}
+*/
 
 template<typename T>
 inline void setValInTuple(void* data, Type type, string name, T val)
 {
+	while (type->getType()==TypeBase::PTR)
+	{
+		type=type->getSubType();
+		data=*(void**)data;
+	}
+		
 	OffsetAndType a=type->getSubType(name);
 	
 	if (!a.type)
-		throw PineconeError("tried to set invalid property '"+name+"' from tuple "+type->getString(), INTERNAL_ERROR);
+		throw PineconeError("tried to set invalid property '"+name+"' from type "+type->getString(), INTERNAL_ERROR);
 	
 	*((T*)((char*)data+a.offset))=val;
 }
@@ -216,9 +255,10 @@ void addToProgPnStr(CppProgram * prog)
 		prog->addFunc("$pnStr", {{"const char *", "in"}}, strType,
 			"int size = 0;\n"
 			"while (in[size]) size++;\n"
-			"unsigned char * data = (unsigned char *)malloc(size);\n"
-			"memcpy(data, in, size);\n"
-			"return "+strType+"(size, data);\n"
+			//"unsigned char * data = (unsigned char *)malloc(size);\n"
+			//"memcpy(data, in, s ize);\n"
+			//"return "+strType+"(size, data);\n"
+			"return "+strType+"(size, (unsigned char*)in);\n"
 		);
 	}
 }
@@ -406,7 +446,7 @@ void addToProgGetInputLine(CppProgram * prog)
 		addToProgCStr(prog);
 		
 		prog->addFunc("$getInputLine", {{strType, "prompt"}}, strType,
-			"printf("+prog->pnToCpp("$cStr")+"(prompt));\n"
+			"fputs("+prog->pnToCpp("$cStr")+"(prompt), stdout);\n"
 			"fflush(stdout);\n"
 			"size_t bufferSize = 4096;\n"
 			"char buffer[bufferSize];\n"
@@ -556,10 +596,10 @@ void populateConstants()
 	table->addNode(AstActionWrapper::make(voidAction), "void");
 	
 	bool trueVal=true;
-	table->addNode(AstActionWrapper::make(constGetAction(&trueVal, Bool, "tru")), "tru");
+	addConst(&trueVal, Bool, "tru");
 	
 	bool falseVal=false;
-	table->addNode(AstActionWrapper::make(constGetAction(&falseVal, Bool, "fls")), "fls");
+	addConst(&falseVal, Bool, "fls");
 	
 	// version constant
 	{
@@ -576,16 +616,7 @@ void populateConstants()
 		setValInTuple(versionTupleData, versionTupleType, "y", VERSION_Y);
 		setValInTuple(versionTupleData, versionTupleType, "z", VERSION_Z);
 		
-		table->addNode(
-			AstActionWrapper::make(
-				constGetAction(
-					versionTupleData,
-					versionTupleType,
-					"VERSION"
-				)
-			),
-			"VERSION"
-		);
+		addConst(versionTupleData, versionTupleType, "VERSION");
 	}
 	
 	// OS
@@ -612,10 +643,10 @@ void populateConstants()
 		
 	#endif // __linux__
 	
-	table->addNode(AstActionWrapper::make(constGetAction(&isLinux, Bool, "OS_IS_LINUX")), "OS_IS_LINUX");
-	table->addNode(AstActionWrapper::make(constGetAction(&isWindows, Bool, "OS_IS_WINDOWS")), "OS_IS_WINDOWS");
-	table->addNode(AstActionWrapper::make(constGetAction(&isMac, Bool, "OS_IS_MAC")), "OS_IS_MAC");
-	table->addNode(AstActionWrapper::make(constGetAction(&isUnix, Bool, "OS_IS_UNIX")), "OS_IS_UNIX");
+	addConst(&isLinux, Bool, "OS_IS_LINUX");
+	addConst(&isWindows, Bool, "OS_IS_WINDOWS");
+	addConst(&isMac, Bool, "OS_IS_MAC");
+	addConst(&isUnix, Bool, "OS_IS_UNIX");
 	
 	func("IS_TRANSPILED", Void, Void, Bool,
 		retrn false;
@@ -1006,13 +1037,13 @@ void populateStdFuncs()
 	func("print", Void, Void, Void,
 		cout << endl;
 	,
-		"printf(\"\\n\")"
+		"fputs(\"\\n\", stdout)"
 	);
 	
 	func("print", Void, Bool, Void,
 		cout << (right?"tru":"fls") << endl;
 	,
-		"printf($:?\"tru\\n\":\"fls\\n\")"
+		"fputs($:?\"tru\\n\":\"fls\\n\", stdout)"
 	);
 	
 	func("print", Void, Byte, Void,
@@ -1095,7 +1126,7 @@ void populateTypeInfoFuncs()
 					[=](Action inLeft, Action inRight, CppProgram* prog)
 					{
 						void* pnStr=cppStr2PncnStr(val);
-						constGetAction(pnStr, String, val)->addToProg(prog);
+						constGetAction(pnStr, String, val, globalNamespace)->addToProg(prog);
 						free(pnStr);
 					},
 					"typeName"
@@ -1126,7 +1157,7 @@ void populateTypeInfoFuncs()
 					
 					[=](Action inLeft, Action inRight, CppProgram* prog)
 					{
-						constGetAction(&val, Int, to_string(val))->addToProg(prog);
+						constGetAction(&val, Int, to_string(val), globalNamespace)->addToProg(prog);
 					},
 					"typeSize"
 				);
@@ -1253,6 +1284,59 @@ void populateMemManagementFuncs()
 
 void populateStringFuncs()
 {
+	auto destructorLambda=LAMBDA_HEADER
+		{
+			//if (getValFromTuple<char*>(rightIn, String, "_data")[0]==1)
+			//	error.log("double free detected", JSYK);
+			//getValFromTuple<char*>(rightIn, String, "_data")[0]=1;
+			free(getValFromTuple<char*>(rightIn, String, "_data"));
+			return nullptr;
+		};
+	
+	addAction("__destroy__", Void, String, Void,
+		destructorLambda,
+		ADD_CPP_HEADER
+		{
+			prog->code("free");
+			prog->pushExpr();
+				right->addToProg(prog);
+				prog->code("._data");
+			prog->popExpr();
+		}
+	);
+	
+	addAction("__copy__", Void, String, String,
+		LAMBDA_HEADER
+		{
+			int size=getValFromTuple<int>(rightIn, String, "_size");
+			void* newData=malloc(size);
+			memcpy(newData, getValFromTuple<void*>(rightIn, String, "_data"), size);
+			setValInTuple(rightIn, String, "_data", newData);
+			void* out=malloc(String->getSize());
+			memcpy(out, rightIn, String->getSize());
+			return out;
+		},
+		ADD_CPP_HEADER
+		{
+			if (!prog->hasFunc("$copyStr"))
+			{
+				string strType=prog->getTypeCode(String);
+				
+				prog->addFunc("$copyStr", {{strType, "in"}}, strType,
+					"unsigned char* newData=(unsigned char*)malloc(in._size);\n"
+					"memcpy(newData, in._data, in._size);\n"
+					"in._data=newData;\n"
+					"return in;\n"
+				);
+			}
+			
+			prog->name("$copyStr");
+			prog->pushExpr();
+				right->addToProg(prog);
+			prog->popExpr();
+		}
+	);
+	
 	addAction("String", Void, Void, String,
 		LAMBDA_HEADER
 		{
@@ -1260,11 +1344,7 @@ void populateStringFuncs()
 		},
 		ADD_CPP_HEADER
 		{
-			addToProgPnStr(prog);
-			prog->name("$pnStr");
-			prog->pushExpr();
-				prog->code("\"\"");
-			prog->popExpr();
+			prog->code(prog->getTypeCode(String)+"(0, nullptr)");
 		}
 	);
 	
@@ -1446,9 +1526,12 @@ void populateStringFuncs()
 	);
 	
 	addAction(ops->plus, String, String, String,
-		LAMBDA_HEADER
+		[=](void* leftIn, void* rightIn)->void*
 		{
-			return cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
+			void* out=cppStr2PncnStr(pncnStr2CppStr(leftIn)+pncnStr2CppStr(rightIn));
+			//free(destructorLambda(nullptr, leftIn));
+			//free(destructorLambda(nullptr, rightIn));
+			return out;
 		},
 		ADD_CPP_HEADER
 		{
@@ -1481,6 +1564,298 @@ void populateStringFuncs()
 				right->addToProg(prog);
 			prog->popExpr();
 		}
+	);
+}
+
+void populateArrayFuncs()
+{
+	TupleTypeMaker maker;
+	maker.add("_size", Int);
+	maker.add("_capacity", Int);
+	maker.add("_data", Whatev->getPtr());
+	Array=maker.get(false);
+	
+	addType(Array, "Array");
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				assert leftType->isCreatable() && rightType->isVoid()
+					otherwise return nullptr;
+				
+				Type contentsType=leftType;
+				Type arrayType=Array->actuallyIs(makeTuple({{"a", Int}, {"b", Int}, {"c", contentsType->getPtr()}}, true))->getPtr();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					arrayType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						void* out=malloc(arrayType->getSize());
+						setValInTuple(out, arrayType, "_size", 0);
+						setValInTuple(out, arrayType, "_capacity", 0);
+						setValInTuple<void*>(out, arrayType, "_data", nullptr);
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					
+					"Array"
+				);
+			}
+		),
+		"Array"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				assert leftType->matches(Array)
+					otherwise return nullptr;
+				
+				Type arrayType=Array->actuallyIs(leftType->getPtr());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				
+				assert rightType->matches(contentsType)
+					otherwise return nullptr;
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					Void,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int size=getValFromTuple<int>(leftIn, arrayType, "_size");
+						int capacity=getValFromTuple<int>(leftIn, arrayType, "_capacity");
+						void* data=getValFromTuple<void*>(leftIn, arrayType, "_data");
+						
+						if (size+1>capacity)
+						{
+							if (capacity<1000)
+								capacity=1000;
+							else
+								capacity*=2;
+							
+							setValInTuple<int>(leftIn, arrayType, "_capacity", capacity);
+							void* newData=malloc(capacity*contentsType->getSize());
+							memcpy(newData, data, size*contentsType->getSize());
+							free(data);
+							data=newData;
+							setValInTuple<void*>(leftIn, arrayType, "_data", data);
+						}
+						
+						setValInTuple<int>(leftIn, arrayType, "_size", size+1);
+						memcpy((char*)data+size*contentsType->getSize(), rightIn, contentsType->getSize());
+						
+						return nullptr;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"append"
+				);
+			}
+		),
+		"append"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				assert leftType->matches(Array->getPtr()) && rightType->matches(Int)
+					otherwise return nullptr;
+				
+				Type arrayType=Array->actuallyIs(leftType->getSubType());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				size_t elemSize=contentsType->getSize();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					contentsType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int size=getValFromTuple<int>(leftIn, arrayType, "_size");
+						if (*(int*)rightIn<0 || *(int*)rightIn>=size)
+							throw PineconeError("index out of bounds, tried to get element at position "+to_string(*(int*)rightIn)+" in array "+to_string(size)+" long", RUNTIME_ERROR);
+						
+						void* out=malloc(contentsType->getSize());
+						memcpy(out, getValFromTuple<char*>(leftIn, arrayType, "_data")+(*(int*)rightIn)*elemSize, elemSize);
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"get"
+				);
+			}
+		),
+		"get"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				Type arrayType=Array->actuallyIs(leftType->getSubType());
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				
+				Type inputType=makeTuple({{"index", Int}, {"value", contentsType}}, true);
+				
+				assert leftType->getSubType()->matches(Array) && rightType->matches(inputType)
+					otherwise return nullptr;
+				
+				size_t elemSize=contentsType->getSize();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					contentsType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int size=getValFromTuple<int>(leftIn, arrayType, "_size");
+						int index=getValFromTuple<int>(rightIn, inputType, "index");
+						
+						if (index<0 || index>=size)
+							throw PineconeError("index out of bounds, tried to set element at position "+to_string(index)+" in array "+to_string(size)+" long", RUNTIME_ERROR);
+						
+						char* data=getValFromTuple<char*>(leftIn, arrayType, "_data");
+						
+						memcpy(data+index*elemSize, (char*)rightIn+inputType->getSubType("value").offset, contentsType->getSize());
+						
+						return nullptr;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"set"
+				);
+			}
+		),
+		"set"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				assert leftType->matches(Array) && rightType->isVoid()
+					otherwise return nullptr;
+				
+				Type arrayType=Array->actuallyIs(leftType);
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				
+				return lambdaAction(
+					leftType,
+					rightType,
+					Int,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						int* out=(int*)malloc(sizeof(int));
+						*out=getValFromTuple<int>(leftIn, arrayType, "_size");
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"len"
+				);
+			}
+		),
+		"len"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				assert leftType->isVoid() && rightType->matches(Array)
+					otherwise return nullptr;
+				
+				Type arrayType=Array->actuallyIs(rightType);
+				Type contentsType=arrayType->getSubType("_data").type->getSubType();
+				size_t elemSize=contentsType->getSize();
+				
+				return lambdaAction(
+					Void,
+					rightType,
+					rightType,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						//error.log("Array destroyer called", JSYK);
+						int size=getValFromTuple<int>(rightIn, arrayType, "_size");
+						void* newData=malloc(elemSize*size);
+						void* oldData=getValFromTuple<void*>(rightIn, arrayType, "_data");
+						memcpy(newData, oldData, elemSize*size);
+						setValInTuple(rightIn, arrayType, "_data", newData);
+						void* out=malloc(arrayType->getSize());
+						memcpy(out, rightIn, arrayType->getSize());
+						return out;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"__copy__"
+				);
+			}
+		),
+		"__copy__"
+	);
+	
+	globalNamespace->addNode(
+		AstWhatevToActionFactory::make(
+			[](Type leftType, Type rightType) -> Action
+			{
+				assert leftType->isVoid() && rightType->matches(Array)
+					otherwise return nullptr;
+				
+				Type arrayType=Array->actuallyIs(rightType);
+				
+				return lambdaAction(
+					Void,
+					rightType,
+					Void,
+					
+					[=](void* leftIn, void* rightIn) -> void*
+					{
+						//error.log("Array destroyer called", JSYK);
+						
+						free(getValFromTuple<void*>(rightIn, arrayType, "_data"));
+						return nullptr;
+					},
+					
+					[=](Action inLeft, Action inRight, CppProgram* prog)
+					{
+						throw PineconeError("not yet implemented", INTERNAL_ERROR);
+					},
+					"__destroy__"
+				);
+			}
+		),
+		"__destroy__"
 	);
 }
 
@@ -1674,6 +2049,7 @@ void populatePineconeStdLib()
 	populateMemManagementFuncs();
 	populateStringFuncs();
 	populateIntArrayAndFuncs();
+	populateArrayFuncs();
 	populateNonStdFuncs();
 	populateCppInterfaceFuncs();
 }

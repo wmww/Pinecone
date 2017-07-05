@@ -3,6 +3,8 @@
 #include "../../h/StackFrame.h"
 #include "../../h/CppProgram.h"
 #include "../../h/utils/stringNumConversion.h"
+#include "../../h/Namespace.h"
+#include "../../h/utils/stringDrawing.h"
 
 class VarGetAction: public ActionData
 {
@@ -33,6 +35,7 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		/*
 		if ((nameHint=="me" || nameHint=="in") && getReturnType()->getType()==TypeBase::TUPLE)
 		{
 			prog->code(prog->getTypeCode(getReturnType()));
@@ -48,10 +51,16 @@ public:
 			prog->popExpr();
 		}
 		else
+		*/
 		{
 			prog->declareVar(nameHint, getReturnType());
 			prog->name(nameHint);
 		}
+	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox("get "+nameHint);
 	}
 	
 private:
@@ -65,7 +74,7 @@ class VarSetAction: public ActionData
 public:
 	
 	VarSetAction(size_t in, void ** stackPtrPtrIn, Type typeIn, string idIn):
-		ActionData(typeIn, Void, typeIn)
+		ActionData(Void, Void, typeIn)
 	{
 		offset=in;
 		stackPtrPtr=stackPtrPtrIn;
@@ -87,11 +96,13 @@ public:
 		//return a new copy of the data
 		void* out=malloc(returnType->getSize());
 		memcpy(out, (char*)(*stackPtrPtr)+offset, inRightType->getSize());
-		return out;
+		//return out;
+		return nullptr;
 	}
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		/*
 		if ((nameHint=="me" || nameHint=="in") && getReturnType()->getType()==TypeBase::TUPLE)
 		{
 			if (prog->getExprLevel()>0)
@@ -120,6 +131,7 @@ public:
 			prog->popBlock();
 		}
 		else
+		*/
 		{
 			prog->declareVar(nameHint, getInRightType());
 			prog->name(nameHint);
@@ -130,6 +142,11 @@ public:
 			//if (prog->getExprLevel()==0)
 			//	prog->endln();
 		}
+	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox("set "+nameHint);
 	}
 	
 private:
@@ -167,19 +184,23 @@ public:
 	{
 		if (getReturnType()==String)
 		{
-			//prog->code(prog->getTypeCode(getReturnType()));
-			addToProgPnStr(prog);
-			prog->name("$pnStr");
+			//addToProgPnStr(prog);
+			//prog->name("$pnStr");
+			prog->code(prog->getTypeCode(String));
 			prog->pushExpr();
+				
 				auto sizeInfo=getReturnType()->getSubType("_size");
 				auto dataInfo=getReturnType()->getSubType("_data");
 				if (sizeInfo.type!=Int || dataInfo.type!=Byte->getPtr())
 				{
 					throw PineconeError("ConstGetAction::addToProg failed to access string properties", INTERNAL_ERROR);
 				}
+			
+				prog->code(Int->getCppLiteral((char*)data+sizeInfo.offset, prog));
+				prog->code(", ");
 				//prog->code(Int->getCppLiteral((char*)data+sizeInfo.offset, prog));
 				//prog->code(", (unsigned char*)\"");
-				prog->code("\"");
+				prog->code("(unsigned char*)\"");
 				int len=*(int*)((char*)data+sizeInfo.offset);
 				for (int i=0; i<len; i++)
 				{
@@ -208,12 +229,18 @@ public:
 					
 				}
 				prog->code("\"");
+				
 			prog->popExpr();
 		}
 		else
 		{
 			prog->code(getReturnType()->getCppLiteral(data, prog));
 		}
+	}
+	
+	string getDescription()
+	{
+		return str::putStringInTreeNodeBox(description);
 	}
 	
 private:
@@ -241,7 +268,14 @@ Action globalSetAction(size_t in, Type typeIn, string textIn)
 	return Action(new VarSetAction(in, &globalFramePtr, typeIn, textIn));
 }
 
-Action constGetAction(const void* in, Type typeIn, string textIn)
+Action constGetAction(const void* in, Type typeIn, string textIn, Namespace ns)
 {
-	return Action(new ConstGetAction(in, typeIn, textIn));
+	Action action=Action(new ConstGetAction(in, typeIn, textIn));
+	if (ns)
+	{
+		Action copier=ns->getCopier(typeIn);
+		if (copier)
+			action=branchAction(voidAction, copier, action);
+	}
+	return action;
 }

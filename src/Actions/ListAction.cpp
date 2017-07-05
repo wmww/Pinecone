@@ -5,19 +5,15 @@ class ListAction: public ActionData
 {
 public:
 	
-	ListAction(const vector<Action>& actionsIn):
+	ListAction(const vector<Action>& actionsIn, const vector<Action>& destroyersIn):
 		ActionData
 		(
 			(actionsIn.size()>0?actionsIn.back()->getReturnType():Void),
 			Void, Void
 		)
 	{
-		if (actionsIn.size()<=0)
-		{
-			error.log("ListAction created with empty list", INTERNAL_ERROR);
-		}
-		
 		actions=actionsIn;
+		destroyers=destroyersIn;
 		
 		for (auto i=actions.begin(); i!=actions.end(); ++i)
 		{
@@ -35,6 +31,18 @@ public:
 
 	string getDescription()
 	{
+		vector<string> data;
+		
+		for (auto i=actions.begin(); i!=actions.end(); ++i)
+		{
+			if (*i)
+				data.push_back((*i)->getDescription());
+			else
+				data.push_back(str::putStringInTreeNodeBox("[null action]"));
+		}
+		
+		return str::makeList(data);
+		/*
 		string out;
 		out+="\n{";
 		
@@ -63,6 +71,7 @@ public:
 		out+="}\n";
 		
 		return out;
+		*/
 	}
 	
 	void* execute(void* inLeft, void* inRight)
@@ -74,7 +83,14 @@ public:
 			free((*i)->execute(nullptr, nullptr));
 		}
 		
-		return (*i)->execute(nullptr, nullptr);
+		void* returnVal=(*i)->execute(nullptr, nullptr);
+		
+		for (auto j: destroyers)
+		{
+			free(j->execute(nullptr, nullptr));
+		}
+		
+		return returnVal;
 	}
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
@@ -84,39 +100,47 @@ public:
 	
 	void addToProg(CppProgram* prog, Type returnType)
 	{
-		if (prog->getExprLevel()>0)
+		bool shouldReturn=(prog->getBlockLevel()==0 && prog->getIfReturnsVal()) && !prog->isMain();
+		
+		prog->pushBlock();
+		
+		for (auto i: actions)
 		{
-			prog->comment("list can not be created without a block");
-		}
-		else
-		{
-			bool shouldReturn=(prog->getBlockLevel()==0 && prog->getIfReturnsVal());
-			
-			prog->pushBlock();
-			
-			for (auto i: actions)
+			if (shouldReturn && i==actions.back())
 			{
-				if (shouldReturn && i==actions.back() && !prog->isMain())
+				prog->declareVar("-out", returnType);
+				prog->name("-out");
+				prog->code(" = ");
+				if (i->getReturnType()!=returnType)
 				{
-					prog->code("return ");
-					if (i->getReturnType()!=returnType)
-					{
-						cppTupleCastAction(i, returnType)->addToProg(prog);
-					}
-					else
-					{
-						i->addToProg(prog);
-					}
+					cppTupleCastAction(i, returnType)->addToProg(prog);
 				}
 				else
 				{
 					i->addToProg(prog);
 				}
-				prog->endln();
 			}
-			
-			prog->popBlock();
+			else
+			{
+				i->addToProg(prog);
+			}
+			prog->endln();
 		}
+		
+		for (auto i: destroyers)
+		{
+			i->addToProg(prog);
+			prog->endln();
+		}
+		
+		if (shouldReturn)
+		{
+			prog->code("return ");
+			prog->name("-out");
+			prog->endln();
+		}
+		
+		prog->popBlock();
 	}
 	
 	/*
@@ -137,6 +161,7 @@ public:
 	
 private:
 	vector<Action> actions;
+	vector<Action> destroyers;
 };
 
 void addListToProgWithCppCasting(ListAction* list, Type returnType, CppProgram* prog)
@@ -144,18 +169,19 @@ void addListToProgWithCppCasting(ListAction* list, Type returnType, CppProgram* 
 	list->addToProg(prog, returnType);
 }
 
-Action listAction(const vector<Action>& actionsIn)
+Action listAction(const vector<Action>& actionsIn, const vector<Action>& destroyersIn)
 {
-	if (actionsIn.size()==0)
+	if (actionsIn.size()==0 && destroyersIn.size()==0)
 	{
 		return voidAction;
 	}
-	else if (actionsIn.size()==1)
+	else if (actionsIn.size()==1 && destroyersIn.size()==0)
 	{
 		return actionsIn[0];
 	}
 	else
 	{
-		return Action(new ListAction(actionsIn));
+		return Action(new ListAction(actionsIn, destroyersIn));
 	}
 }
+
