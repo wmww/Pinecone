@@ -7,7 +7,7 @@
 
 //#ifdef _WIN32
 #ifdef __linux__
-#include <termcap.h>
+//#include <termcap.h>
 #include <sys/ioctl.h> // for terminal size detection
 #endif // __linux__
 
