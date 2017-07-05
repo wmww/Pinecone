@@ -1,6 +1,7 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
 #include "../../h/CppProgram.h"
+#include "../../h/utils/stringDrawing.h"
 
 class BranchAction: public ActionData
 {
@@ -46,8 +47,9 @@ public:
 	{
 		if (leftInput && action && rightInput)
 		{
+			return str::makeRootUpBinaryTree(action->getDescription(), leftInput->getReturnType()->getName(), rightInput->getReturnType()->getName(), leftInput->getDescription(), rightInput->getDescription());
 			//return getReturnType()->toString() + " <- [" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
-			return "(" + leftInput->getDescription() + " -> " + action->getDescription() + " <- " + rightInput->getDescription() + ")";
+			//return "(" + leftInput->getDescription() + " -> " + action->getDescription() + " <- " + rightInput->getDescription() + ")";
 			//return getReturnType()->getName() + " <- " + leftInput->getDescription() + "." + action->getDescription() + ":" + rightInput->getDescription();
 		}
 		else
@@ -119,8 +121,9 @@ public:
 	{
 		if (action && rightInput)
 		{
+			return str::makeRootUpBinaryTree(action->getDescription(), "", rightInput->getReturnType()->getName(), "", rightInput->getDescription());
 			//return getReturnType()->toString() + " <- [" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
-			return "(" + action->getDescription() + " <- " + rightInput->getDescription() + ")";
+			//return "(" + action->getDescription() + " <- " + rightInput->getDescription() + ")";
 			//return getReturnType()->getName() + " <- " + leftInput->getDescription() + "." + action->getDescription() + ":" + rightInput->getDescription();
 		}
 		else
@@ -180,8 +183,9 @@ public:
 	{
 		if (leftInput && action)
 		{
+			return str::makeRootUpBinaryTree(action->getDescription(), leftInput->getReturnType()->getName(), "", leftInput->getDescription(), "");
 			//return getReturnType()->toString() + " <- [" + leftInput->getDescription() + "].[" + action->getDescription() + "]:[" + rightInput->getDescription() + "]";
-			return "(" + leftInput->getDescription() + " -> " + action->getDescription() + ")";
+			//return "(" + leftInput->getDescription() + " -> " + action->getDescription() + ")";
 			//return getReturnType()->getName() + " <- " + leftInput->getDescription() + "." + action->getDescription() + ":" + rightInput->getDescription();
 		}
 		else

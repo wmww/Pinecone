@@ -1,6 +1,9 @@
 #include "../h/Action.h"
 #include "../h/Token.h"
 #include "../h/ErrorHandler.h"
+#include "../h/Namespace.h"
+
+extern Namespace globalNamespace;
 
 Action resolveIntLiteral(Token token, Type type)
 {
@@ -22,12 +25,12 @@ Action resolveIntLiteral(Token token, Type type)
 	if (type==Bool)
 	{
 		bool out=(val!=0);
-		return constGetAction(&out, type, token->getText());
+		return constGetAction(&out, type, token->getText(), globalNamespace);
 	}
 	else
 	{
 		int out=val;
-		return constGetAction(&out, type, token->getText());
+		return constGetAction(&out, type, token->getText(), globalNamespace);
 	}
 }
 
@@ -72,7 +75,7 @@ Action resolveDubLiteral(Token token)
 	}
 	
 	double out=val;
-	return constGetAction(&out, Dub, token->getText());
+	return constGetAction(&out, Dub, token->getText(), globalNamespace);
 }
 
 string pncnStr2CppStr(void* obj);
@@ -93,7 +96,7 @@ Action resolveStringLiteral(Token token)
 	
 	void* obj=cppStr2PncnStr(text);
 	
-	return constGetAction(obj, String, "\""+text+"\"");
+	return constGetAction(obj, String, "\""+text+"\"", globalNamespace);
 }
 
 Action resolveLiteral(Token token)

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "utils/stringDrawing.h"
 
 
 #include <stdlib.h> // malloc() and free() on some systems
@@ -84,7 +85,7 @@ Action orAction(Action firstActionIn, Action secondActionIn);
 Action ifAction(Action conditionIn, Action ifActionIn);
 Action ifElseAction(Action conditionIn, Action ifActionIn, Action elseAction);
 
-Action listAction(const std::vector<Action>& actionsIn);
+Action listAction(const std::vector<Action>& actionsIn, const std::vector<Action>& destroyersIn);
 
 Action loopAction(Action conditionIn, Action loopActionIn);
 Action loopAction(Action conditionIn, Action endActionIn, Action loopActionIn);
@@ -98,7 +99,9 @@ Action varGetAction(size_t in, Type typeIn, string idIn);
 Action varSetAction(size_t in, Type typeIn, string idIn);
 Action globalGetAction(size_t in, Type typeIn, string idIn);
 Action globalSetAction(size_t in, Type typeIn, string idIn);
-Action constGetAction(const void* in, Type typeIn, string idIn);
+
+class NamespaceData;
+Action constGetAction(const void* in, Type typeIn, string idIn, shared_ptr<NamespaceData> ns);
 
 Action typeGetAction(Type typeIn);
 

@@ -240,7 +240,8 @@ public:
 		
 		for (int i=0; i<int(subTypes->size()); i++)
 		{
-			out+=(*subTypes)[i].name.size()+"_"+(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString()+"_";
+			//out+=(*subTypes)[i].name.size()+"_"+(*subTypes)[i].name+"_"+(*subTypes)[i].type->getCompactString()+"_";
+			out+=(*subTypes)[i].type->getCompactString()+"_";
 		}
 		
 		out+="tT";
@@ -250,6 +251,11 @@ public:
 	
 	string getCppLiteral(void * data, CppProgram * prog)
 	{
+		if (subTypes->size()==1)
+		{
+			return (*subTypes)[0].type->getCppLiteral(data, prog);
+		}
+		
 		string out;
 		out+=prog->getTypeCode(shared_from_this());
 		
@@ -317,6 +323,18 @@ public:
 	
 	Type actuallyIs(Type target)
 	{
+		if (target->getType()!=TUPLE)
+		{
+			if ((*subTypes).size()==1)
+			{
+				return (*subTypes)[0].type->actuallyIs(target);
+			}
+			else
+			{
+				throw PineconeError("actuallyIs called on tuple with target that is not tuple", INTERNAL_ERROR);
+			}
+		}
+		
 		TupleTypeMaker maker;
 		
 		auto targetTypes=target->getAllSubTypes();
@@ -326,7 +344,7 @@ public:
 			maker.add((*subTypes)[i].name, (*subTypes)[i].type->actuallyIs((*targetTypes)[i].type));
 		}
 		
-		return maker.get(isAnonymous);
+		return maker.get(true);
 	}
 	
 protected:

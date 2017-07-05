@@ -1,5 +1,6 @@
 #include "../../h/Action.h"
 #include "../../h/ErrorHandler.h"
+#include "../../h/utils/stringDrawing.h"
 
 class AndAction: public ActionData
 {
@@ -24,7 +25,8 @@ public:
 
 	string getDescription()
 	{
-		return firstAction->getDescription() + " && " + firstAction->getDescription();
+		return str::makeRootUpBinaryTree("&&", firstAction->getReturnType()->getName(), secondAction->getReturnType()->getName(), firstAction->getDescription(), secondAction->getDescription());
+		//return firstAction->getDescription() + " && " + firstAction->getDescription();
 	}
 	
 	void* execute(void* inLeft, void* inRight)
@@ -92,7 +94,7 @@ public:
 
 	string getDescription()
 	{
-		return firstAction->getDescription() + " || " + firstAction->getDescription();
+		return str::makeRootUpBinaryTree("||", firstAction->getReturnType()->getName(), secondAction->getReturnType()->getName(), firstAction->getDescription(), secondAction->getDescription());
 	}
 	
 	void* execute(void* inLeft, void* inRight)

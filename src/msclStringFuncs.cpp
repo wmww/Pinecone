@@ -7,7 +7,7 @@
 
 //#ifdef _WIN32
 #ifdef __linux__
-#include <termcap.h>
+//#include <termcap.h>
 #include <sys/ioctl.h> // for terminal size detection
 #endif // __linux__
 
@@ -158,13 +158,13 @@ string padString(const string& in, int size, int alignment,  string pad, string 
 	
 	if (padSize<0) // need to chop
 	{
-		if (size-capSize>=4)
+		if (size-capSize>=1)
 		{
-			return leftCap+in.substr(0, size-capSize-3)+"..."+rightCap;
+			return leftCap+in.substr(0, size-capSize-1)+"…"+rightCap;
 		}
 		else if (size-capSize>=0)
 		{
-			return leftCap+string("...").substr(0, size-capSize)+rightCap;
+			return leftCap+string("…").substr(0, size-capSize)+rightCap;
 		}
 		else
 		{

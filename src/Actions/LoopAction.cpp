@@ -30,7 +30,14 @@ public:
 
 	string getDescription()
 	{
-		return "while " + condition->getDescription() + " do " + loopAction->getDescription();
+		string body=loopAction->getDescription();
+		if (endAction!=voidAction)
+		{
+			vector<string> data={body, endAction->getDescription()};
+			body=str::makeList(data);
+		}
+		return str::makeRootUpBinaryTree("@", condition->getReturnType()->getName(), "", condition->getDescription(), body);
+		//return "while " + condition->getDescription() + " do " + loopAction->getDescription();
 	}
 	
 	void* execute(void* inLeft, void* inRight)

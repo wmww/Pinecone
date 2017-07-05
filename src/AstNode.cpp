@@ -2,6 +2,7 @@
 #include "../h/Namespace.h"
 #include "../h/ErrorHandler.h"
 #include "../h/msclStringFuncs.h"
+#include "../h/utils/stringDrawing.h"
 #include "../h/AllOperators.h"
 
 //AstNode astVoid=AstNode(new AstVoid);
@@ -31,18 +32,14 @@ void AstNodeBase::copyToNode(AstNodeBase* other, bool copyCache)
 
 string AstList::getString()
 {
-	string out;
-	
-	out+="\n(";
+	vector<string> data;
 	
 	for (int i=0; i<int(nodes.size()); i++)
 	{
-		out+="\n"+indentString(nodes[i]->getString())+"\n";
+		data.push_back(nodes[i]->getString());
 	}
 	
-	out+=")";
-	
-	return out;
+	return str::makeList(data);
 }
 
 /*void AstList::resolveReturnType()
@@ -79,7 +76,12 @@ void AstList::resolveAction()
 	{
 		try
 		{
-			actions.push_back(nodes[i]->getAction());
+			Action action=nodes[i]->getAction();
+			
+			if (i!=(int)nodes.size()-1)
+				action=ns->wrapInDestroyer(action);
+			
+			actions.push_back(action);
 		}
 		catch (PineconeError err)
 		{
@@ -87,7 +89,7 @@ void AstList::resolveAction()
 		}
 	}
 	
-	action=listAction(actions);
+	action=listAction(actions, *ns->getDestroyerActions());
 }
 
 
@@ -95,7 +97,17 @@ void AstList::resolveAction()
 
 string AstFuncBody::getString()
 {
-	return "function body";
+	vector<string> data;
+	
+	data.push_back("function");
+	
+	vector<string> types={leftTypeNode->getString(), rightTypeNode->getString(), returnTypeNode->getString()};
+	
+	data.push_back(str::makeList(types));
+	
+	data.push_back(bodyNode->getString());
+	
+	return str::makeList(data);
 }
 
 AstNode AstFuncBody::makeCopyWithSpecificTypes(Type leftInType, Type rightInType)
@@ -154,20 +166,21 @@ void AstFuncBody::resolveAction()
 
 string AstExpression::getString()
 {
-	string out;
+	string leftStr;
 	if (!leftIn->isVoid())
 	{
-		out+=indentString(leftIn->getString(), "  ")+"\n";
+		leftStr=leftIn->getString();
 	}
 	
-	out+=center->getString()+"\n";
+	string centerStr=center->getString();
 	
+	string rightStr;
 	if (!rightIn->isVoid())
 	{
-		out+=indentString(rightIn->getString(), "  ");
+		rightStr=rightIn->getString();
 	}
 	
-	return out;
+	return str::makeRootUpBinaryTree(centerStr, "", "", leftStr, rightStr);
 }
 
 void AstExpression::resolveAction()
@@ -209,21 +222,15 @@ void AstExpression::resolveAction()
 
 string AstConstExpression::getString()
 {
-	string out;
+	string centerStr=center->getString();
 	
-	out+="(";
-	
-	out+=center->getString();
-	
+	string rightStr;
 	if (!rightIn->isVoid())
 	{
-		out+=" <<== ";
-		out+=rightIn->getString();
+		rightStr=rightIn->getString();
 	}
 	
-	out+=")";
-	
-	return out;
+	return str::makeRootUpBinaryTree(centerStr, "", "const", "", rightStr);
 }
 
 void AstConstExpression::resolveConstant()
@@ -257,41 +264,35 @@ void AstConstExpression::resolveConstant()
 
 string AstOpWithInput::getString()
 {
-	string out;
+	string left;
 	
-	if (!leftIn.empty())
+	vector<string> data;
+	
+	for (int i=0; i<int(leftIn.size()); i++)
 	{
-		out+="(";
-		
-		for (int i=0; i<int(leftIn.size()); i++)
-		{
-			if (i>0)
-				out+="	|";
-				
-			out+="\n"+indentString(leftIn[i]->getString())+"\n";
-		}
-		
-		out+=") -> ";
+		data.push_back(leftIn[i]->getString());
 	}
 	
-	out+=token->getText();
+	if (data.size()==1)
+		left=data[0];
+	else if (data.size()>1)
+		left=str::makeList(data);
 	
-	if (!rightIn.empty())
+	data.clear();
+	
+	string right;
+	
+	for (int i=0; i<int(rightIn.size()); i++)
 	{
-		out+=" -> (";
-		
-		for (int i=0; i<int(rightIn.size()); i++)
-		{
-			if (i>0)
-				out+="	|";
-				
-			out+="\n"+indentString(rightIn[i]->getString())+"\n";
-		}
-		
-		out+=")";
+		data.push_back(rightIn[i]->getString());
 	}
 	
-	return out;
+	if (data.size()==1)
+		right=data[0];
+	else if (data.size()>1)
+		right=str::makeList(data);
+	
+	return str::makeRootUpBinaryTree(str::putStringInTreeNodeBox(token->getText()), "", "", left, right);
 }
 
 void AstOpWithInput::resolveAction()
@@ -361,8 +362,13 @@ void AstOpWithInput::resolveAction()
 	}
 	else if (token->getOp()==ops->loop)
 	{
+		bool usesSubNS=false;
+		
 		if (leftIn.size()==3)
+		{
 			ns=ns->makeChild();
+			usesSubNS=true;
+		}
 			
 		for (int i=0; i<int(leftIn.size()); i++)
 			leftIn[i]->setInput(ns, dynamic, Void, Void);
@@ -419,15 +425,18 @@ void AstOpWithInput::resolveAction()
 			}
 		}
 		
-		action=loopAction(conditionAction, endAction, bodyAction);
+		vector<Action> actions;
 		
 		if (initAction)
-		{
-			vector<Action> actions;
-			actions.push_back(initAction);
-			actions.push_back(action);
-			action=listAction(actions);
-		}
+			actions.push_back(ns->wrapInDestroyer(initAction));
+		
+		actions.push_back(ns->wrapInDestroyer(loopAction(conditionAction, endAction, bodyAction)));
+		
+		action=usesSubNS ?
+				action=listAction(actions, *ns->getDestroyerActions())
+			:
+				action=listAction(actions, {})
+		;
 	}
 	else if (token->getOp()==ops->andOp || token->getOp()==ops->orOp)
 	{
@@ -486,7 +495,7 @@ bool AstOpWithInput::isFunctionWithOutput()
 
 string AstToken::getString()
 {
-	return token->getText();
+	return str::putStringInTreeNodeBox(token->getText());
 }
 
 void AstToken::resolveAction()
@@ -599,21 +608,14 @@ void AstToken::resolveAction()
 
 string AstTuple::getString()
 {
-	string out;
-	
-	out+="(";
+	vector<string> data;
 	
 	for (int i=0; i<int(nodes.size()); i++)
 	{
-		if (i)
-			out+=", ";
-			
-		out+=nodes[i]->getString();
+		data.push_back(nodes[i]->getString());
 	}
 	
-	out+=")";
-	
-	return out;
+	return str::makeList(data);
 }
 
 void AstTuple::resolveAction()
@@ -634,7 +636,7 @@ void AstTuple::resolveAction()
 
 string AstTokenType::getString()
 {
-	return "AstTokenType{"+token->getText()+"}";
+	return "{"+token->getText()+"}";
 }
 
 void AstTokenType::resolveReturnType()

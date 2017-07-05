@@ -52,10 +52,18 @@ public:
 	// returns UnknownType if it cant find the requested type
 	Type getType(string name, bool throwSourceError, Token tokenForError);
 	
+	// returns the destructor of the given type, or nullptr if there isn't one
+	Action getDestroyer(Type type);
+	
+	// returns the copier of the given type, or nullptr if there isn't one
+	Action getCopier(Type type);
+	
 	// returns an action that takes the input types
 	// on error, it will throw a source error if throwSourceError is true. otherwise, it will return nullptr
 	Action getActionForTokenWithInput(Token token, Type left, Type right, bool dynamic, bool throwSourceError, Token tokenForError);
 	
+	vector<Action>* getDestroyerActions() {return &destructorActions;}
+	Action wrapInDestroyer(Action in);
 	
 private:
 	
@@ -101,5 +109,13 @@ private:
 	
 	// contains all types in this namespace
 	IdMap types;
+	
+	// contains destructors for types, the key string is a pointer to the type fed through ptrToUniqueStr with 6 digits
+	//IdMap destructors;
+	
+	// like destructors, but for making copies
+	//IdMap copiers;
+	
+	vector<Action> destructorActions;
 };
 

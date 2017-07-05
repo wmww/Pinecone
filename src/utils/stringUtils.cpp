@@ -128,6 +128,23 @@ string tabsToSpaces(const string& in, int tabWidth)
 	return out;
 }
 
+int getGlyphPosOf(const string& in, string pattern)
+{
+	int glyph=0;
+	int byte=0;
+	
+	while (byte<(int)in.size())
+	{
+		if (subMatches(in, byte, pattern))
+			return glyph;
+		
+		nextGlyph(byte, in);
+		glyph++;
+	}
+	
+	return -1;
+}
+
 }
 
 

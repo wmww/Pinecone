@@ -49,7 +49,10 @@ public:
 		
 		if (!returnType->isVoid() && !returnType->matches(action->getReturnType()))
 		{
-			throw PineconeError("function body returns "+action->getReturnType()->getString()+" instead of "+returnType->getString(), SOURCE_ERROR, node->getToken());
+			// the objects that are being returned are being destroyed before the function exits
+			// also another problem: if a function returns a thing but nothing accepts the output, the destructor is not called
+			//throw PineconeError("function body returns "+action->getReturnType()->getString()+" instead of "+returnType->getString(), SOURCE_ERROR, node->getToken());
+			throw PineconeError("function body returns "+action->getReturnType()->getString()+" instead of "+returnType->getString()+"\n"+action->getDescription(), SOURCE_ERROR, node->getToken());
 		}
 		
 		if (!action->getInLeftType()->isVoid() || !action->getInRightType()->isVoid())
@@ -60,9 +63,10 @@ public:
 	
 	string getDescription()
 	{
-		if (!action)
-			resolveAction();
-		return "func: " + description;//action->getDescription();
+		return str::putStringInTreeNodeBox("call func "+nameHint);
+		//if (!action)
+		//	resolveAction();
+		//return "func: " + description;//action->getDescription();
 	}
 	
 	bool isFunction() {return true;}
@@ -130,6 +134,7 @@ public:
 		prog->name(name);
 		
 		prog->pushExpr();
+			/*
 			bool hasStarted=false;
 			if (getInLeftType()->getType()==TypeBase::TUPLE)
 			{
@@ -176,8 +181,8 @@ public:
 			}
 			//prog->code(", ");
 			//inRight->addToProg(prog);
+			*/
 			
-			/*
 			if (getInLeftType()->isCreatable())
 			{
 				inLeft->addToProg(prog);
@@ -187,9 +192,9 @@ public:
 			{
 				if (getInLeftType()->isCreatable())
 					prog->code(", ");
+				
 				inRight->addToProg(prog);
 			}
-			*/
 			
 		prog->popExpr();
 		

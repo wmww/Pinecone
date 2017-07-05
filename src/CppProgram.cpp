@@ -389,20 +389,21 @@ string CppProgram::getTypeCode(Type in)
 		
 	case TypeBase::TUPLE:
 	{
+		if (in->getAllSubTypes()->size()==1)
+			return getTypeCode((*in->getAllSubTypes())[0].type);
+		
 		string compact="{"+in->getCompactString()+"}";
 		
 		if (!globalNames->hasPn(compact))
 		{
 			globalNames->addPn(compact, in->nameHint);
-			auto names=globalNames->makeChild();
 			string code;
 			code+="struct ";
 			code+=globalNames->getCpp(compact);
 			code+="\n{\n";
 			for (auto i: *in->getAllSubTypes())
 			{
-				names->addPn(i.name);
-				code+=indentString(getTypeCode(i.type)+" "+names->getCpp(i.name)+";\n", indent);
+				code+=indentString(getTypeCode(i.type)+" "+i.name+";\n", indent);
 			}
 			
 			code+="\n";
@@ -410,7 +411,7 @@ string CppProgram::getTypeCode(Type in)
 			code+="() {}\n";
 			
 			code+="\n";
-			auto conNames=names->makeChild();
+			auto conNames=globalNames->makeChild();
 			code+=indentString(globalNames->getCpp(compact), indent);
 			code+="(";
 			bool first=true;
@@ -424,7 +425,7 @@ string CppProgram::getTypeCode(Type in)
 			code+=indentString("{\n", indent);
 			for (auto i: *in->getAllSubTypes())
 			{
-				code+=indentString(conNames->getCpp(i.name)+" = "+conNames->getCpp("+"+i.name+"_in")+";\n", indent, 2);
+				code+=indentString(i.name+" = "+conNames->getCpp("+"+i.name+"_in")+";\n", indent, 2);
 			}
 			code+=indentString("}\n", indent);
 			
@@ -565,7 +566,9 @@ void CppProgram::pushFunc(const string& name, const string& cppNameHint, Type le
 	
 	prototype+=" "+cppName+"(";
 	
-	if (false)
+	bool keepTuplesTogether=true;
+	
+	if (keepTuplesTogether)
 	{
 		if (leftIn->isCreatable())
 		{

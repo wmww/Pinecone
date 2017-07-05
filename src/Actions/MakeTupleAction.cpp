@@ -56,7 +56,9 @@ public:
 
 	string getDescription()
 	{
-		return "[tuple of type " + getReturnType()->getString() + "]";
+		return str::putStringInTreeNodeBox("make tuple of type "+getReturnType()->getName());
+		
+		//return "[tuple of type " + getReturnType()->getString() + "]";
 		
 		/*string out;
 		out+="\n{";
@@ -106,6 +108,12 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		if (sourceActions.size()==1)
+		{
+			sourceActions[0]->addToProg(prog);
+			return;
+		}
+		
 		prog->code(prog->getTypeCode(getReturnType()));
 		prog->pushExpr();
 		bool start=true;
@@ -155,7 +163,11 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
-		if (typeid(*action)==typeid(MakeTupleAction))
+		if (getReturnType()->getAllSubTypes()->size()==1)
+		{
+			action->addToProg(prog);
+		}
+		else if (typeid(*action)==typeid(MakeTupleAction))
 		{
 			MakeTupleAction * realAction=(MakeTupleAction*)&*action;
 			
@@ -169,7 +181,7 @@ public:
 				}
 			prog->popExpr();
 		}
-		else if (typeid(*action)==typeid(*listAction({voidAction, voidAction})))
+		else if (typeid(*action)==typeid(*listAction({voidAction, voidAction}, {})))
 		{
 			addListToProgWithCppCasting((ListAction*)&*action, getReturnType(), prog);
 		}
@@ -259,7 +271,8 @@ public:
 	
 	string getDescription()
 	{
-		return "get element from tuple";
+		return str::putStringInTreeNodeBox(name);
+		//return "get element from tuple";
 	}
 	
 	void* execute(void* inLeft, void* inRight)
@@ -271,6 +284,11 @@ public:
 	
 	void addToProg(Action inLeft, Action inRight, CppProgram* prog)
 	{
+		if (typeIn->getAllSubTypes()->size()==1)
+		{
+			inLeft->addToProg(prog);
+			return;
+		}
 		
 		MakeTupleAction * makeTupleAction=nullptr;
 		
@@ -304,11 +322,13 @@ public:
 		}
 		else
 		{
+			/*
 			if (inLeft->nameHint=="in" || inLeft->nameHint=="me")
 			{
 				prog->code(name);
 			}
 			else
+			*/
 			{
 				inLeft->addToProg(prog);
 				prog->code("."+name);

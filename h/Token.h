@@ -67,6 +67,7 @@ private:
 typedef shared_ptr<TokenData> Token;
 
 Token makeToken(string textIn, shared_ptr<SourceFile> fileIn, int lineIn, int charPosIn, TokenData::Type tokenTypeIn, Operator opIn=Operator(nullptr));
+Token makeToken(string textIn);
 
 string stringFromTokens(const vector<Token>& tokens, int left, int right);
 string tableStringFromTokens(const vector<Token>& tokens, string tableName);
