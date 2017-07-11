@@ -601,6 +601,8 @@ void populateConstants()
 	bool falseVal=false;
 	addConst(&falseVal, Bool, "fls");
 	
+	addConst(&ARG, std::vector<std::string>, "arg");
+	
 	// version constant
 	{
 		Type versionTupleType=
