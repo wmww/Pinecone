@@ -6,7 +6,9 @@
 
 using std::cout;
 using std::endl;
-std::vector <std::string> ARG;
+using std::vector;
+using std::string;
+vector <string> ARG;
 
 struct Flags
 {
