@@ -59,7 +59,7 @@ When you transpile and run this, the output produced is
 You can not get a return value from `cppCode`, nore can you declare a variable within it that is usable elsewhere. To get data out, you must create a variable of the correct type beforehand and set that variable within the C++ code. There is no way to call Pinecone functions from C++ code. Don't try to fine a workaround, it won't work. If you want to link with 3rd party libraries, you must transpile to a .cpp file and do the linking and compiling yourself.
 
 ## Command Line Arguments
-You can access command line arguments when interpreting, but not transpiling. Use `argLen` to get the number of arguments and `arg: argIndex` to get the string value of one. For example, here is a simple program to list all arguments:
+Use `argLen` to get the number of arguments and `arg: argIndex` to get the string value of one. For example, here is a simple program to list all arguments:
 ```
 print: "there are " + argLen.String + " args."
 
@@ -67,6 +67,6 @@ i: 0 | i < argLen | i: i + 1 @ (
 	print: arg: i
 )
 ```
-To send args into a program, run the program with the `-r` flag after the Pinecone source file name. All arguments after that will be sent in.
+To send args into a program, run the program with the `-r` or `-e` flag after the Pinecone source file name. All arguments after that will be sent in. The Pinecone source filepath will be the first arg. You can also compile the program and pass args in normally when running it without Pinecone.
 
 [index](index.md)
