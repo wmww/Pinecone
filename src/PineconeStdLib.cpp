@@ -653,6 +653,58 @@ void populateConstants()
 	,
 		"true"
 	);
+	
+	addAction("arg", Void, Int, String,
+		LAMBDA_HEADER
+		{
+			int right = *(int*)rightIn;
+			if (right < (int)cmdLineArgs.size())
+			{
+				return cppStr2PncnStr(cmdLineArgs[right]);
+			}
+			else
+			{
+				return cppStr2PncnStr("");
+			}
+		},
+		ADD_CPP_HEADER
+		{
+			addToProgPnStr(prog);
+			
+			prog->pushExpr();
+				prog->pushExpr();
+					prog->pushExpr();
+						right->addToProg(prog);
+					prog->popExpr();
+					prog->code(" < argc");
+				prog->popExpr();
+				prog->code("?");
+				prog->pushExpr();
+					prog->name("$pnStr");
+					prog->pushExpr();
+						prog->code("argv[");
+						prog->pushExpr();
+							right->addToProg(prog);
+						prog->popExpr();
+						prog->code("]");
+					prog->popExpr();
+				prog->popExpr();
+				prog->code(":");
+				prog->pushExpr();
+					prog->name("$pnStr");
+					prog->pushExpr();
+						prog->code("\"\"");
+					prog->popExpr();
+				prog->popExpr();
+			prog->popExpr();
+		}
+	);
+	
+	func("argLen", Void, Void, Int,
+		retrn cmdLineArgs.size();
+	,
+		"argc"
+	);
 }
 
 void populateOperators()

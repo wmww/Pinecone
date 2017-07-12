@@ -196,7 +196,6 @@ Flags getFlags(int argc, char ** argv)
 				{
 					flags.runCompiled=false;
 					flags.runInterpreted=true;
-					i=argc;
 					after = true;
 				}
 				else if (flag=="cpp")
@@ -231,7 +230,6 @@ Flags getFlags(int argc, char ** argv)
 				{
 					flags.runCompiled=true;
 					flags.runInterpreted=false;
-					i=argc;
 					after = true;
 				}
 				else
