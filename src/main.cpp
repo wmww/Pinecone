@@ -143,7 +143,7 @@ int main(int argc, char ** argv)
 					if (flags.debug)
 						cout << endl;
 					
-					cmd = "./"+binFileName + " " + str::join(cmdLineArgs, " ", false);
+					cmd = "./"+binFileName + " --running-from-pinecone " + str::join(cmdLineArgs, " ", false);
 					
 					if (flags.debug)
 						cout << "running '"+cmd+"'" << endl << endl;
