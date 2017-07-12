@@ -322,6 +322,10 @@ void CppProgram::setup()
 	globalIncludesCode+="#include <string.h>\n";
 	globalIncludesCode+="#include <stdlib.h>\n";
 	globalIncludesCode+="#include <stdio.h>\n";
+	
+	globalVarCode+="int argc = 0;\n";
+	globalVarCode+="char** argv = 0;\n";
+	
 	vector<string> cppReservedWords
 	{
 		// from C
@@ -359,7 +363,7 @@ void CppProgram::setup()
 		globalNames->reserveCpp(i);
 	}
 	
-	pushFunc(string("main"), Void, Void, Int);
+	pushFunc(string("_main"), Void, Void, Void);
 }
 
 string CppProgram::getTypeCode(Type in)
@@ -707,13 +711,15 @@ string CppProgram::getCppCode()
 			out+=indentString(funcSrc, indent);
 			if (!out.empty() && out.back()!='\n')
 				out+=";\n";
-			if (i.first=="main")
-				out+=indentString("return 0;\n", indent);
+			//if (i.first=="main")
+			//	out+=indentString("return 0;\n", indent);
 			//if (out.substr(out.size()-2, 2)!=";\n")
 			//	out+=";\n";
 			out+="}\n\n";
 		}
 	}
+	
+	out+="int main(int argcIn, char** argvIn)\n{\n\targc = argcIn;\n\targv = argvIn;\n\t_main();\n\treturn 0;\n}\n";
 	
 	return out;
 }
