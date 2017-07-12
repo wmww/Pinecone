@@ -24,6 +24,8 @@ using std::list;
 #include "AstNode.h"
 #include "SourceFile.h"
 
+extern vector<string> cmdLineArgs;
+
 class Element;
 
 class PineconeProgram

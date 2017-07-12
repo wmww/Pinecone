@@ -1,11 +1,6 @@
 
+print: argLen.String + " args:"
 
-a: Int.Array
-
-a.append: 8
-a.append: 8
-a.append: 8
-a.append: 8
-a.append: 8
-
-print: a.get: 0
+i: 0 | i < argLen | i: i + 1 @ (
+	print: arg: i
+)
