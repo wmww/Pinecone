@@ -8,7 +8,8 @@ using std::cout;
 using std::endl;
 using std::vector;
 using std::string;
-vector <string> ARG;
+
+vector <string> cmdLineArgs;
 
 struct Flags
 {
@@ -246,7 +247,7 @@ Flags getFlags(int argc, char ** argv)
 		}
 		else
 		{
-			ARG.push_back(arg);
+			cmdLineArgs.push_back(arg);
 		}
 	}
 	

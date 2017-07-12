@@ -24,7 +24,7 @@ using std::list;
 #include "AstNode.h"
 #include "SourceFile.h"
 
-std::vector<std::string> ARG;
+extern vector<string> cmdLineArgs;
 
 class Element;
 
