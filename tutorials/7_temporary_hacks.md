@@ -32,15 +32,41 @@ Getting string input works great (see string tutorial). Int input is not yet sta
 Importing works similar to how it does in Python. It simply dumps another file into your current file. Right now, the import syntx is
 
 ```
-==> "path/to/target/file/from/current/file.pncn"
-```
-
-For example, to import the examples/letters file into other/pinecone, you write
-
-```
-==> "../examples/letters.pncn"
+==> "path/to/target/file/from/current/file.pn"
 ```
 
 I may keep this syntax, but I'm not sure so I'm keeping it in this tutorial.
+
+## Linking with C++
+A highly suggested feature has been the ability to integrate Pinecone into C++ projects. There are a number of ways to do this with different trade offs, and hopefully there will be a complete solution at some point. In the mean time, there is a way to use 3rd party libraries with Pinecone via two functions, `cppCode` and `cppHead`. To use these you **must** transpile instead of interpret. `cppCode` lets you drop C++ source code directly into the transpiler output. `cppHead` is the same except it adds its code to the top of the source file (outside any function). It is useful for includes. Here is an example:
+
+```
+cppHead: "#include <iostream>"
+cppHead: "using std::cout;"
+cppHead: "using std::endl;"
+
+a: 9
+cppCode: "cout << a << endl;"
+cppCode: "a = 2;"
+print: a
+```
+When you transpile and run this, the output produced is
+```
+9
+2
+```
+
+You can not get a return value from `cppCode`, nore can you declare a variable within it that is usable elsewhere. To get data out, you must create a variable of the correct type beforehand and set that variable within the C++ code. There is no way to call Pinecone functions from C++ code. Don't try to fine a workaround, it won't work. If you want to link with 3rd party libraries, you must transpile to a .cpp file and do the linking and compiling yourself.
+
+## Command Line Arguments
+You can access command line arguments when interpreting, but not transpiling. Use `argLen` to get the number of arguments and `arg: argIndex` to get the string value of one. For example, here is a simple program to list all arguments:
+```
+print: "there are " + argLen.String + " args."
+
+i: 0 | i < argLen | i: i + 1 @ (
+	print: arg: i
+)
+```
+To send args into a program, run the program with the `-r` flag after the Pinecone source file name. All arguments after that will be sent in.
 
 [index](index.md)

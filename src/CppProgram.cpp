@@ -500,6 +500,11 @@ void CppProgram::declareGlobal(const string& nameIn, Type typeIn, string initial
 	globalVarCode+=code;
 }
 
+void CppProgram::addHeadCode(const string& code)
+{
+	globalIncludesCode += code + "\n";
+}
+
 bool CppProgram::hasFunc(const string& name)
 {
 	return funcs.find(name)!=funcs.end();

@@ -6,6 +6,10 @@
 
 using std::cout;
 using std::endl;
+using std::vector;
+using std::string;
+
+vector <string> cmdLineArgs;
 
 struct Flags
 {
@@ -164,77 +168,84 @@ int main(int argc, char ** argv)
 
 Flags getFlags(int argc, char ** argv)
 {
+	bool after = false;
 	Flags flags;
 	
 	for (int i=1; i<argc; i++)
 	{
 		string arg(argv[i]);
-		
-		if (arg.size()>1 && arg[0]=='-')
+		if (!after)
 		{
-			string flag=arg.substr(1, string::npos);
-			
-			if (flag=="d" || flag=="debug")
+			if (arg.size()>1 && arg[0]=='-')
 			{
-				flags.debug=true;
-			}
-			else if (flag=="v" || flag=="version")
-			{
-				flags.version=true;
-			}
-			else if (flag=="h" || flag=="help")
-			{
-				flags.help=true;
-			}
-			else if (flag=="r" || flag=="run")
-			{
-				flags.runCompiled=false;
-				flags.runInterpreted=true;
-				i=argc;
-			}
-			else if (flag=="cpp")
-			{
-				if (i+1>=argc)
+				string flag=arg.substr(1, string::npos);
+
+				if (flag=="d" || flag=="debug")
 				{
-					cout << "output file must follow '-cpp' flag";
+					flags.debug=true;
+				}
+				else if (flag=="v" || flag=="version")
+				{
+					flags.version=true;
+				}
+				else if (flag=="h" || flag=="help")
+				{
+					flags.help=true;
+				}
+				else if (flag=="r" || flag=="run")
+				{
+					flags.runCompiled=false;
+					flags.runInterpreted=true;
+					after = true;
+				}
+				else if (flag=="cpp")
+				{
+					if (i+1>=argc)
+					{
+						cout << "output file must follow '-cpp' flag";
+						flags.flagError=true;
+					}
+
+					flags.runInterpreted=false;
+
+					flags.cppOutFile=string(argv[i+1]);
+
+					i++;
+				}
+				else if (flag=="bin")
+				{
+					if (i+1>=argc)
+					{
+						cout << "output file must follow '-bin' flag";
+						flags.flagError=true;
+					}
+
+					flags.runInterpreted=false;
+
+					flags.binOutFile=string(argv[i+1]);
+
+					i++;
+				}
+				else if (flag=="e" || flag=="execute")
+				{
+					flags.runCompiled=true;
+					flags.runInterpreted=false;
+					after = true;
+				}
+				else
+				{
+					cout << "unknown flag '"+flag+"'" << endl;
 					flags.flagError=true;
 				}
-				
-				flags.runInterpreted=false;
-				
-				flags.cppOutFile=string(argv[i+1]);
-				
-				i++;
-			}
-			else if (flag=="bin")
-			{
-				if (i+1>=argc)
-				{
-					cout << "output file must follow '-bin' flag";
-					flags.flagError=true;
-				}
-				
-				flags.runInterpreted=false;
-				
-				flags.binOutFile=string(argv[i+1]);
-				
-				i++;
-			}
-			else if (flag=="e" || flag=="execute")
-			{
-				flags.runCompiled=true;
-				flags.runInterpreted=false;
-				i=argc;
 			}
 			else
 			{
-				cout << "unknown flag '"+flag+"'" << endl;
-				flags.flagError=true;
+				flags.inFiles.push_back(arg);
 			}
 		}
 		else
 		{
-			flags.inFiles.push_back(arg);
+			cmdLineArgs.push_back(arg);
 		}
 	}
 	

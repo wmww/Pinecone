@@ -3,6 +3,7 @@
 #include "../h/StackFrame.h"
 #include "../h/Namespace.h"
 #include "../h/CppProgram.h"
+#include "../h/utils/stringUtils.h"
 #include "../h/Type.h"
 
 #define CONCAT(a,b) a##_##b
@@ -525,6 +526,46 @@ void addToProgMakeIntArray(CppProgram * prog)
 	}
 }
 
+void addToProgStrWithEscapedNames(CppProgram * prog, string str)
+{
+	int i=0;
+	string buffer = "";
+	
+	while (i < (int)str.size())
+	{
+		if (str[i] == '$')
+		{
+			i++;
+			prog->code(buffer);
+			buffer = "";
+			while (i < (int)str.size())
+			{
+				char c = str[i];
+				
+				if (!(
+					(c >= '0' && c <= '9') ||
+					(c >= 'a' && c <= 'z') ||
+					(c >= 'A' && c <= 'Z')
+				)) break;
+				
+				buffer += c;
+				i++;
+			}
+			if (buffer.empty())
+				prog->code("$");
+			else
+				prog->name(buffer);
+			buffer = "";
+		}
+		else
+		{
+			buffer += str[i];
+			i++;
+		}
+	}
+	
+	prog->code(buffer);
+}
 
 
 /// setup Pinecone std lib
@@ -611,6 +652,58 @@ void populateConstants()
 		retrn false;
 	,
 		"true"
+	);
+	
+	addAction("arg", Void, Int, String,
+		LAMBDA_HEADER
+		{
+			int right = *(int*)rightIn;
+			if (right < (int)cmdLineArgs.size())
+			{
+				return cppStr2PncnStr(cmdLineArgs[right]);
+			}
+			else
+			{
+				return cppStr2PncnStr("");
+			}
+		},
+		ADD_CPP_HEADER
+		{
+			addToProgPnStr(prog);
+			
+			prog->pushExpr();
+				prog->pushExpr();
+					prog->pushExpr();
+						right->addToProg(prog);
+					prog->popExpr();
+					prog->code(" < argc");
+				prog->popExpr();
+				prog->code("?");
+				prog->pushExpr();
+					prog->name("$pnStr");
+					prog->pushExpr();
+						prog->code("argv[");
+						prog->pushExpr();
+							right->addToProg(prog);
+						prog->popExpr();
+						prog->code("]");
+					prog->popExpr();
+				prog->popExpr();
+				prog->code(":");
+				prog->pushExpr();
+					prog->name("$pnStr");
+					prog->pushExpr();
+						prog->code("\"\"");
+					prog->popExpr();
+				prog->popExpr();
+			prog->popExpr();
+		}
+	);
+	
+	func("argLen", Void, Void, Int,
+		retrn cmdLineArgs.size();
+	,
+		"argc"
 	);
 }
 
@@ -1971,6 +2064,31 @@ void populateNonStdFuncs()
 	);
 }
 
+void populateCppInterfaceFuncs()
+{
+	addAction("cppCode", Void, String, Void, LAMBDA_HEADER
+		{
+			throw PineconeError("you can't run interpreter with code that uses 'cppCode'", SOURCE_ERROR);
+		},
+		ADD_CPP_HEADER
+		{
+			prog->pushBlock();
+			addToProgStrWithEscapedNames(prog, pncnStr2CppStr(right->execute(nullptr, nullptr)));
+			prog->popBlock();
+		}
+	);
+	
+	addAction("cppHead", Void, String, Void, LAMBDA_HEADER
+		{
+			throw PineconeError("you can't run interpreter with code that uses 'cppHead'", SOURCE_ERROR);
+		},
+		ADD_CPP_HEADER
+		{
+			prog->addHeadCode(pncnStr2CppStr(right->execute(nullptr, nullptr)));
+		}
+	);
+}
+
 void populatePineconeStdLib()
 {
 	basicSetup();
@@ -1985,6 +2103,7 @@ void populatePineconeStdLib()
 	populateIntArrayAndFuncs();
 	populateArrayFuncs();
 	populateNonStdFuncs();
+	populateCppInterfaceFuncs();
 }
 
 

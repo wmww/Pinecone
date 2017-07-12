@@ -4,6 +4,7 @@
 #include "../../h/StackFrame.h"
 #include "../../h/AstNode.h"
 #include "../../h/utils/stringNumConversion.h"
+#include "../../h/utils/stringUtils.h"
 
 #include <cstring> //for memcpy
 using std::memcpy;
@@ -109,6 +110,11 @@ public:
 		name+="_"+str::ptrToUniqueStr(&*action);
 		
 		//name+="_"+getInLeftType()->getCompactString()+"_"+getInRightType()->getCompactString();
+		
+		/*
+		if (str::hasSuffix(nameHint, "_CPP"))
+			name=nameHint.substr(0, nameHint.size()-4);
+		*/
 		
 		if (!prog->hasFunc(name))
 		{
