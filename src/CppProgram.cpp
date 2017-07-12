@@ -346,6 +346,9 @@ void CppProgram::setup()
 		
 		// something else
 		"endl", "INT_MIN", "std", "INT_MAX", "MAX_RAND", "NULL",
+		
+		// my custom
+		"main", "argc", "argv",
 	};
 	/*
 	{
@@ -719,7 +722,22 @@ string CppProgram::getCppCode()
 		}
 	}
 	
-	out+="int main(int argcIn, char** argvIn)\n{\n\targc = argcIn;\n\targv = argvIn;\n\t_main();\n\treturn 0;\n}\n";
+	out+=
+"int main(int argcIn, char** argvIn)\n\
+{\n\
+	argc = argcIn;\n\
+	argv = argvIn;\n\
+	if (argc >= 2 && strcmp(argv[1], \"--running-from-pinecone\") == 0)\n\
+	{\n\
+		argc -= 2;\n\
+		if (argc == 0)\n\
+			argv = 0;\n\
+		else\n\
+			argv += 2;\n\
+	}\n\
+	_main();\n\
+	return 0;\n\
+}\n";
 	
 	return out;
 }
