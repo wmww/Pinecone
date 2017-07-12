@@ -143,7 +143,7 @@ int main(int argc, char ** argv)
 					if (flags.debug)
 						cout << endl;
 					
-					cmd = "./"+binFileName;
+					cmd = "./"+binFileName + " " + str::join(cmdLineArgs, " ", false);
 					
 					if (flags.debug)
 						cout << "running '"+cmd+"'" << endl << endl;
@@ -241,6 +241,7 @@ Flags getFlags(int argc, char ** argv)
 			else
 			{
 				flags.inFiles.push_back(arg);
+				cmdLineArgs.push_back(arg);
 			}
 		}
 		else
