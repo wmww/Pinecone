@@ -1,21 +1,21 @@
 #!/bin/bash
-echo "" > tmp.pn;
+echo "" > ./repl/tmp.pn;
 
 while [ true ]
 do
   read -p "> " cmd;
   if [ "$cmd" == ".clear" ]; then
-    echo "" > tmp.pn;
+    echo "" > ./repl/tmp.pn;
     clear;
     echo "[cleared]";
 
   elif [ "$cmd" == ".exit" ]; then
     exit 0;
   elif [ "$cmd" == ".read" ]; then
-    cat tmp.pn;
+    cat ./repl/tmp.pn;
   else
-    echo $cmd >> tmp.pn;
+    echo $cmd >> ./repl/tmp.pn;
     echo " -- ";
-    ./pinecone tmp.pn;
+    ./pinecone ./repl/tmp.pn;
   fi
 done
