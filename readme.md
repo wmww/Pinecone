@@ -87,7 +87,18 @@ The following features are coming soon:
 * Proper classes (pass-by-reference needed)
 * Operator overloading
 
+## Repl
+To run the repl (after pinecone has been installed):
+
+ * Make the `repl.sh` excitable: `chmod +x repl/repl.sh`  
+ * Run with `./repl/repl.sh`
+ * Optional: Create an alias. Add `alias pinecone=".../path/to/pinecone/repl/repl.sh"` to your `.rc` file (`~/.bashrc`, `~/.zshrc`, ect.).
+
+Commands:
+
+ * `.clear`: Clears the repl.
+ * `.read` : Prints what is in the repl.
+ * `.exit` : Exits the repl (same as ^C).
+
 ## Contributing
 I have not yet added enough documentation to the language internals to make it practical for others to contribute to the language itself. If you are interested in adding a specific feature or just helping out, post in the [subreddit](https://www.reddit.com/r/PineconeLang/) or direct message me on [reddit](www.reddit.com/u/william01110111/) or [twitter](https://twitter.com/PineconeLang). Fixes and improvements to the readmes and tutorials are always welcome.
-
-
