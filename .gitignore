@@ -22,3 +22,6 @@ pinecone
 
 # stupid OSX stuff
 *.DS_Store
+
+# repl temp file
+repl/tmp.pn
