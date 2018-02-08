@@ -1,9 +1,13 @@
 # The Pinecone Programming Language
 **_Built from the ground up to be fast, concise and intuitive._**
 
+## NOTE: PINECONE IS NO LONGER BEING ACTIVELY DEVELOPED OR MAINTAINED ## 
+
 Pinecone is a new programming language. Its goal is to combine the simplicity of a dynamic language with the performance of a compiled one. It is under rapid development, but most of the core features are ready.
 
 __If you want to program in Pinecone now, see the [tutorials](tutorials/index.md) for how to get started.__
+
+__There is also a Pinecone plugin for VIM [here](https://github.com/wsKilljoy/vim-pinecone).__
 
 __For updates, discussion and help, take a look at the Pinecone subreddit: [/r/PineconeLang](https://www.reddit.com/r/PineconeLang/)__
 
