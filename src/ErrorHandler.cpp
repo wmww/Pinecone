@@ -27,7 +27,7 @@ string ErrorHandler::priorityToStr(ErrorPriority in)
 		break;
 		
 	case INTERNAL_ERROR:
-		return "INTERNAL ERRER";
+		return "INTERNAL ERROR";
 		break;
 		
 	case RUNTIME_ERROR:
