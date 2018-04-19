@@ -1488,7 +1488,7 @@ void populateStringFuncs()
 			int val=*((int*)leftIn);
 			if (val<0 || val>=256)
 			{
-				throw PineconeError("tried to make ascii string out of value "+val, RUNTIME_ERROR);
+				throw PineconeError("tried to make ascii string out of value "+to_string(val), RUNTIME_ERROR);
 			}
 			string out;
 			out+=(char)val;
