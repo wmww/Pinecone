@@ -69,7 +69,7 @@ Pinecone currently requires zero external dependencies (and the only one that wi
 The features that are currently implemented are as follows:
 
 * Primitive data types `Bool`, `Int` and `Dub`
-* All the operators you would expect (`+`, `*`, `%`, `:`, `=`, `>`, `<=`, `&&`, etc.)
+* All the operators you would expect (`+`, `*`, `%`, `:`, `=`, `>`, `<=`, `>=`, `&&`, etc.)
 * Single and multi line comments
 * Flow control (if, if/else, while loop, for loop)
 * Constants
