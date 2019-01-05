@@ -47,6 +47,8 @@ void CharClassifier::setUp()
 	hm[' ']=WHITESPACE;
 	hm['\t']=WHITESPACE;
 	
+	hm['\r']=WHITESPACE; // ignore '\r' character on windows style line ending
+		
 	hm['\n']=NEWLINE;
 	hm[';']=LINE_BREAK;
 	
