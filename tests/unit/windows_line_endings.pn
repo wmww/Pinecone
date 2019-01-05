@@ -1,0 +1,5 @@
+# Pinecone Windows line endings test
+print: "good
+_____"
+
+print: "good"
