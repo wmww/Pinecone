@@ -18,6 +18,8 @@ AstNode astNodeFromTokens(const vector<Token>& tokens, int left, int right);
 class AstNodeBase
 {
 public:
+
+	virtual ~AstNodeBase() = default;
 	
 	void setInput(Namespace nsIn, bool dynamicIn, Type left, Type right)
 	{

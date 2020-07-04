@@ -44,6 +44,8 @@ struct OffsetAndType
 class TypeBase: public std::enable_shared_from_this<TypeBase>
 {
 public:
+
+	virtual ~TypeBase() = default;
 	
 	///steps to adding a new type (these may be old):
 	///	1. Add to the enum
